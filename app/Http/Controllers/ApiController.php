@@ -7,6 +7,8 @@ use App\Party;
 use App\Device;
 use App\Helpers\FootprintRatioCalculator;
 
+use DB;
+
 class ApiController extends Controller
 {
     public static function homepage_data()
@@ -86,12 +88,13 @@ class ApiController extends Controller
 
     public static function getEventsByGroupTag($group_tag_id)
     {
-
-        $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
+        $events = DB::table('events')->join('groups', 'groups.idgroups', '=', 'events.group')
                 ->join('grouptags_groups', 'grouptags_groups.group', '=', 'groups.idgroups')
-                  ->where('grouptags_groups.group_tag', $group_tag_id)
-                    ->select('events.*')
-                      ->get();
+                ->where('grouptags_groups.group_tag', $group_tag_id)
+                ->where('events.wordpress_post_id', '<>', '99999')
+                ->select('idevents as event_id', 'events.wordpress_post_id as event_wordpress_post_id', 'event_date', 'start', 'end', 'venue', 'events.location as address', 'events.latitude', 'events.longitude', 'events.free_text', 'pax', 'volunteers', 'hours')
+                ->addSelect('groups.idgroups as group_id', 'groups.name as group_name', 'groups.wordpress_post_id as group_wordpress_post_id')
+                ->get();
 
         return response()->json($events, 200);
     }
