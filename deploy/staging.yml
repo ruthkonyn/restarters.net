@@ -1,0 +1,15 @@
+- hosts:
+    - staging
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include: ../provision/tasks/main.yml
+    - include: ../provision/mfr/install/tasks/cache.yml
+    - include: ../provision/mfr/install/tasks/frontend.yml
+    - include: ../provision/mfr/install/tasks/nginx.yml
+    - include: ../provision/mfr/install/tasks/mapproxy.yml
+
+  handlers:
+    - include: ../provision/handlers/main.yml

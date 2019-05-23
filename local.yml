@@ -11,7 +11,7 @@ services:
       - .:/app
     env_file: .env
     working_dir: /app
-    command: /start.sh
+    command: /dev.sh
     depends_on:
       - db
   db:

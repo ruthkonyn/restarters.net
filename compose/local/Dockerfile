@@ -9,6 +9,6 @@ RUN echo 'xdebug.remote_port=9000' >> /usr/local/etc/php/php.ini
 RUN echo 'xdebug.remote_enable=1' >> /usr/local/etc/php/php.ini
 RUN echo 'xdebug.remote_connect_back=1' >> /usr/local/etc/php/php.ini
 COPY . /app
-COPY ./compose/scripts/start.sh /
-RUN chmod +x /start.sh
+COPY ./compose/scripts/dev.sh /
+RUN chmod +x /dev.sh
 WORKDIR /app

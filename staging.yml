@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./compose/staging/Dockerfile
+    container_name: app_staging
+    restart: unless-stopped
+    env_file: .env.staging
+    working_dir: /var/www
+    depends_on:
+      - db
+    networks:
+      - staging-network
+    expose:
+      - "9000"
+    command:
+      - "php-fpm"
+
+  db:
+    image: "mysql:5.7"
+    container_name: db_staging
+    restart: unless-stopped
+    env_file: .env.staging
+    volumes:
+      - "dbdata_staging:/var/lib/mysql"
+    expose:
+      - "3306"
+    networks:
+      - staging-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    container_name: nginx_staging
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - staging-network
+
+  redis:
+    image: redis:3.0
+    container_name: redis_staging
+    restart: unless-stopped
+    networks:
+      - staging-network
+
+volumes:
+  dbdata_staging:
+
+networks:
+  staging-network:
+    driver: bridge
