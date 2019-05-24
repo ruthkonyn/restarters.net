@@ -9,7 +9,7 @@
     update=yes
     version="{{ version }}"
 
-- name: Install pip, python-dev, s3cmd packages with apt
+- name: Install pip3, python3-dev, s3cmd packages with apt
   become: true
   apt:
     pkg: "{{ item }}"
@@ -21,13 +21,12 @@
     - python3-pip
     - s3cmd
 
-- name: Upgrade latest pip, setuptools, and docker-compose with pip
+- name: Upgrade latest setuptools, and docker-compose with pip
   become: true
   pip:
     name: "{{ item.name }}"
     state: latest
   with_items:
-    - { name: pip3, version: "latest", install: true }
     - { name: setuptools, version: "latest", install: true }
     - { name: docker-compose, version: "latest", install: true }
   when: (item.version=="latest" and item.install)
