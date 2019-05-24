@@ -101,3 +101,47 @@ jobs:
       # store test results for test summary
       - store_test_results:
           path: test-results
+
+  deploy:
+    docker:
+      - image: ansible/ansible:ubuntu1604
+        environment:
+          ANSIBLE_HOST_KEY_CHECKING: no
+
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install System Packages
+          command: pip install ansible==2.3.1.0
+
+      - run:
+          name: Setup ansible hosts file
+          command: echo -e '[staging]\n'$STAGING_IP >> hosts.ini
+
+      - run:
+          name: Setup ansible vault pass file
+          command: echo $ANSIBLE_VAULT_PASS >> .vault-pass
+
+      - run:
+          name: Deploy to staging
+          command: ansible-playbook -i hosts.ini deploy/staging.yml --vault-password-file=.vault-pass
+
+      - run:
+          name: Remove ansible hosts file
+          command: rm -f hosts.ini
+
+      - run:
+          name: Remove ansible vault pass file
+          command: rm -f .vault-pass
+
+workflows:
+  version: 2
+  build_test_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build

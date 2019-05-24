@@ -9,29 +9,6 @@
     update=yes
     version="{{ version }}"
 
-- name: Install pip, python-dev packages with apt
-  become: true
-  apt:
-    pkg: "{{ item }}"
-    state: latest
-    update_cache: yes
-    cache_valid_time: 600
-  with_items:
-    - python-dev
-    - python-pip
-
-- name: Upgrade latest pip, setuptools, and docker-compose with pip
-  become: true
-  pip:
-    name: "{{ item.name }}"
-    state: latest
-  with_items:
-    - { name: pip, version: "latest", install: true }
-    - { name: setuptools, version: "latest", install: true }
-    - { name: docker-compose, version: "latest", install: true }
-  when: (item.version=="latest" and item.install)
-  ignore_errors: yes
-
 - name: Build and run docker services
   docker_service:
     project_src: "{{ application_path }}"
