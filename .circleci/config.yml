@@ -123,7 +123,7 @@ jobs:
 
       - run:
           name: Deploy to staging
-          command: ansible-playbook -i hosts.ini deploy/staging.yml --vault-password-file=.vault-pass
+          command: ansible-playbook -i hosts.ini deploy/staging.yml  -e 'ansible_python_interpreter=/usr/bin/python3' --vault-password-file=.vault-pass
 
       - run:
           name: Remove ansible hosts file
