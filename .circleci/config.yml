@@ -8,6 +8,7 @@ jobs:
     branches:
       only:
         - dockerize # temp
+        - deployment # temp
     docker:
       - image: circleci/php:7.1-node-browsers
         environment:
