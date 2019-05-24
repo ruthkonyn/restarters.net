@@ -29,7 +29,7 @@
   ignore_errors: yes
 
 - name: Build and run docker services
-  docker_service:
+  docker_compose:
     project_src: "{{ application_path }}"
     build: yes
     state: present
@@ -37,4 +37,4 @@
       - "{{ deployment_env }}.yml"
 
 - name: Run database migrations
-  command: docker-compose -f staging.yml run --rm app php artisan migrate
+  command: docker-compose -f {{ application_path }}/staging.yml run --rm app php artisan migrate
