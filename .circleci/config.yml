@@ -5,10 +5,6 @@
 version: 2
 jobs:
   build:
-    branches:
-      only:
-        - dockerize # temp
-        - deployment # temp
     docker:
       - image: circleci/php:7.1-node-browsers
         environment:
@@ -141,7 +137,24 @@ workflows:
   version: 2
   build_test_and_deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only:
+                - dockerize
+                - deployment
       - deploy:
           requires:
             - build
+      # - deploy-stage:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: staging
+      # - deploy-prod:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: master
