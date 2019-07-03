@@ -143,6 +143,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::prefix('party')->group(function () {
         Route::get('/', 'PartyController@index')->name('events');
         Route::get('/all', 'PartyController@allUpcoming')->name('all-upcoming-events');
+        Route::get('/all-past', 'PartyController@allPast')->name('all-past-events');
         Route::get('/group/{group_id?}', 'PartyController@index')->name('group-events');
         Route::get('/create/{group_id?}', 'PartyController@create');
         Route::post('/create', 'PartyController@create');
@@ -164,8 +165,16 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
         Route::post('/image-upload/{id}', 'PartyController@imageUpload');
         Route::get('/image/delete/{idevents}/{id}/{path}', 'PartyController@deleteImage');
         Route::get('/contribution/{id}', 'PartyController@getContributions');
-
         Route::post('/update-volunteerquantity', 'PartyController@updateVolunteerQuantity');
+    });
+
+    // CalendarEvents Controller
+    Route::prefix('calendar')->group(function () {
+      Route::get('/user/{calendar_hash}', 'CalendarEventsController@allEventsByUser')->name('calendar-events-by-user');
+      Route::get('/group/{group}', 'CalendarEventsController@allEventsByGroup')->name('calendar-events-by-group');
+      Route::get('/group-area/{area}', 'CalendarEventsController@allEventsByArea')->name('calendar-events-by-area');
+      Route::get('/group-tag/{grouptags_groups}', 'CalendarEventsController@allEventsByGroupTag')->name('calendar-events-by-group-tag');
+      Route::get('/all-events/{hash_env}', 'CalendarEventsController@allEvents')->name('calendar-events-all');
     });
 
     //Role Controller
@@ -261,3 +270,7 @@ Route::get('markAsRead/{id}', function ($id) {
 })->name('markAsRead');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
+
+Route::get('/set-lang/{locale}', 'LocaleController@setLang');
+
+Route::post('/set-cookie', 'InformationAlertCookieController');

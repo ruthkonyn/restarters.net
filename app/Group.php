@@ -40,7 +40,27 @@ class Group extends Model implements Auditable
      */
     protected $hidden = [];
 
-    //Table Relations
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('all_hosts_count', function ($builder) {
+            $builder->withCount('allHosts');
+        });
+
+        static::addGlobalScope('all_restarters_count', function ($builder) {
+            $builder->withCount('allRestarters');
+        });
+    }
+
+
+    public function addTag($tag)
+    {
+        $this->group_tags()->save($tag);
+    }
+
+    // NGM: when tests in place, this method name should be changed to just `tags`.
+    // It's on a group, the group_ prefix is superfluous.
     public function group_tags()
     {
         return $this->belongsToMany('App\GroupTags', 'grouptags_groups', 'group', 'group_tag');
@@ -250,6 +270,42 @@ class Group extends Model implements Auditable
         ];
     }
 
+    /**
+     * Adds a volunteer to the group.
+     *
+     * @param \App\User $volunteer A registered user.
+     */
+    public function addVolunteer($volunteer)
+    {
+        $user_group = UserGroups::updateOrCreate([
+            'user' => $volunteer->id,
+            'group' => $this->idgroups,
+        ], [
+            'status' => 1,
+            'role' => Role::RESTARTER,
+        ]);
+    }
+
+    /**
+     * Convert an existing volunteer of a group into a host of the group.
+     *
+     * This also converts the volunteer's overall role into that of a host when applicable.
+     *
+     * @param App\User $groupVolunteer A user who is already a member of the group.
+     */
+    public function makeMemberAHost($groupMember)
+    {
+        if (!$this->allVolunteers()->pluck('user')->contains($groupMember->id))
+            throw new \Exception('Volunteer is not currently in this group.  Only existing group members can be made hosts.');
+
+        UserGroups::where('user', $groupMember->id)
+            ->where('group', $this->idgroups)
+            ->update(['role' => Role::HOST]);
+
+        // Update user's role (only if currently Restarter role)
+        $groupMember->convertToHost();
+    }
+
     public function getShareableLinkAttribute()
     {
         if ( ! empty($this->shareable_code)) {
@@ -259,10 +315,120 @@ class Group extends Model implements Auditable
         return '';
     }
 
-    public function isVolunteer()
+    /**
+     * @param int|null $user_id
+     * @return bool
+     */
+    public function isVolunteer($user_id = NULL)
     {
-        $attributes = ['user' => auth()->id()];
+        $attributes = ['user' => $user_id ?: auth()->id()];
 
         return $this->allConfirmedVolunteers()->where($attributes)->exists();
+    }
+
+    public function parties()
+    {
+        return $this->hasMany(Party::class, 'group', 'idgroups')->withTrashed();
+    }
+
+    /**
+     * [upcomingParties description]
+     * All Upcoming Parties where between the Start Parties Date
+     * is today or a week later
+     *
+     * @author Christopher Kelker - @date 2019-03-21
+     * @editor  Christopher Kelker
+     * @version 1.0.0
+     * @return  [type]
+     */
+    public function upcomingParties($exclude_parties = [])
+    {
+        $from = date('Y-m-d');
+        $to = date('Y-m-d', strtotime('+1 week'));
+
+        if ( ! empty($exclude_parties)) {
+            return $this->parties()
+                          ->whereBetween('event_date', [$from, $to])
+                            ->whereNotIn('idevents', $exclude_parties)
+                              ->get();
+        }
+
+        return $this->parties()->whereBetween('event_date', [$from, $to])->get();
+    }
+
+    /**
+     * [pastParties description]
+     * All Past Parties where between the Start Parties Date
+     * is yesterday or a month earlier
+     *
+     * @author Christopher Kelker - @date 2019-03-21
+     * @editor  Christopher Kelker
+     * @version 1.0.0
+     * @return  [type]
+     */
+    public function pastParties($exclude_parties = [])
+    {
+        if ( ! empty($exclude_parties)) {
+            return $this->parties()
+                          ->where('event_date', '<', date('Y-m-d'))
+                            ->whereNotIn('idevents', $exclude_parties)
+                              ->get();
+        }
+
+        return $this->parties()->where('event_date', '<', date('Y-m-d'))->get();
+    }
+
+    /**
+     * [totalPartiesHours description]
+     * Total Group Parties Hours
+     *
+     * @author Christopher Kelker - @date 2019-03-21
+     * @editor  Christopher Kelker
+     * @version 1.0.0
+     * @return  [type]
+     */
+    public function totalPartiesHours()
+    {
+        $sum = 0;
+
+        foreach ($this->parties as $key => $party) {
+            $sum += $party->hours;
+        }
+
+        return $sum;
+    }
+
+    public function groupImagePath()
+    {
+        if (is_object($this->groupImage) && is_object($this->groupImage->image)) {
+            return asset('/uploads/mid_'.$this->groupImage->image->path);
+        }
+
+        return url('/uploads/mid_1474993329ef38d3a4b9478841cc2346f8e131842fdcfd073b307.jpg');
+    }
+
+    public function getNextUpcomingEvent()
+    {
+      $event = $this->parties()->whereDate('event_date', '>=', date('Y-m-d'));
+
+      if ( ! $event->count() ) {
+        return null;
+      }
+
+      return $event->first();
+    }
+
+    public function userEvents()
+    {
+      return $this->parties()
+      ->join('events_users', 'events.idevents', '=', 'events_users.event')
+      ->where(function($query) {
+        $query->where('events.group', $this->idgroups)
+        ->where('events_users.user', auth()->id());
+      })
+      ->select('events.*')
+      ->groupBy('events.idevents')
+      ->orderBy('events.idevents', 'ASC')
+      ->get();
     }
 }

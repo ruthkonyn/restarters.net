@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'wouterNL\\Drip\\' => array($vendorDir . '/wouternl/laravel-drip/src'),
     'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
@@ -38,11 +39,13 @@ return array(
     'OwenIt\\Auditing\\' => array($vendorDir . '/owen-it/laravel-auditing/src'),
     'NunoMaduro\\Collision\\' => array($vendorDir . '/nunomaduro/collision/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
-    'Mediawiki\\Api\\' => array($vendorDir . '/addwiki/mediawiki-api-base/src'),
+    'Mediawiki\\DataModel\\' => array($vendorDir . '/addwiki/mediawiki-datamodel/src'),
+    'Mediawiki\\Api\\' => array($vendorDir . '/addwiki/mediawiki-api/src', $vendorDir . '/addwiki/mediawiki-api-base/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
     'League\\Csv\\' => array($vendorDir . '/league/csv/src'),
     'Laravelista\\LumenVendorPublish\\' => array($vendorDir . '/laravelista/lumen-vendor-publish/src'),
     'Laravel\\Tinker\\' => array($vendorDir . '/laravel/tinker/src'),
+    'Laravel\\Dusk\\' => array($vendorDir . '/laravel/dusk/src'),
     'Jenssegers\\Agent\\' => array($vendorDir . '/jenssegers/agent/src'),
     'Jaybizzle\\CrawlerDetect\\' => array($vendorDir . '/jaybizzle/crawler-detect/src'),
     'JakubOnderka\\PhpConsoleColor\\' => array($vendorDir . '/jakub-onderka/php-console-color/src'),
@@ -54,6 +57,7 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Fideloper\\Proxy\\' => array($vendorDir . '/fideloper/proxy/src'),
     'Faker\\' => array($vendorDir . '/fzaninotto/faker/src/Faker'),
+    'Facebook\\WebDriver\\' => array($vendorDir . '/facebook/webdriver/lib'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),

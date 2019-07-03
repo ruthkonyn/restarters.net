@@ -159,12 +159,14 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\MediawikiServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         App\Providers\AgentServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
         Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
+        wouterNL\Drip\DripServiceProvider::class,
     ],
 
     /*
@@ -217,6 +219,7 @@ return [
         'Honeypot' => Msurguy\Honeypot\HoneypotFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'LaravelLocalization' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+        'Drip' => wouterNL\Drip\Facades\DripFacade::class,
     ],
 
 ];
