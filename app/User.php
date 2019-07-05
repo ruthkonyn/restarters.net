@@ -2,26 +2,34 @@
 
 namespace App;
 
+use App\Events\UserDeleted;
 use App\UserGroups;
 
 use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Illuminate\Notifications\Notifiable;
+
+class WikiSyncStatus {
+    const DoNotCreate = 0;
+    const CreateAtLogin = 1;
+    const Created = 2;
+}
 
 class User extends Authenticatable
 {
     use Notifiable;
     use SoftDeletes;
+
     protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'recovery', 'recovery_expires', 'language', 'repair_network', 'location', 'age', 'gender', 'country', 'newsletter', 'invites', 'biography', 'consent_future_data', 'consent_past_data', 'consent_gdpr', 'number_of_logins', 'latitude', 'longitude', 'last_login_at', 'access_key', 'access_group_tag_id'
+        'name', 'email', 'password', 'role', 'recovery', 'recovery_expires', 'language', 'repair_network', 'location', 'age', 'gender', 'country', 'newsletter', 'drip_subscriber_id', 'invites', 'biography', 'consent_future_data', 'consent_past_data', 'consent_gdpr', 'number_of_logins', 'latitude', 'longitude', 'last_login_at', 'access_key', 'access_group_tag_id', 'calendar_hash'
     ];
 
     /**
@@ -31,6 +39,15 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'deleted' => UserDeleted::class,
     ];
 
     public function role()
@@ -310,6 +327,19 @@ class User extends Authenticatable
 
 
     /**
+     * Convert the user's role to be a Host.
+     *
+     * Currently, the only role that should be convertible to a Host is a Restarter.
+     */
+    public function convertToHost()
+    {
+        if ($this->role == Role::RESTARTER) {
+            $this->role = Role::HOST;
+            $this->save();
+        }
+    }
+
+    /**
      * Getter to display the user's repair network with options to provide the network name/slug
      *
      * NOT IN USE, decided on a more straightforward approach could be useful in the future
@@ -345,5 +375,39 @@ class User extends Authenticatable
     public function groupTag()
     {
         return $this->hasOne(GroupTags::class, 'id', 'access_group_tag_id');
+    }
+
+
+    /**
+     * Generate a username based on the user's name, and set it against this user.
+     *
+     * Attempts to mimic the same logic as Discourse username generation.
+     */
+    public function generateAndSetUsername()
+    {
+        if (empty($this->name)) {
+            throw new \Exception("Name is empty");
+        }
+
+        $name = $this->name;
+        $name = trim($name);
+        $name = transliterator_transliterate('Any-Latin;Latin-ASCII;', $name);
+
+        $name_parts = explode(' ', $name);
+
+        $desired_username = implode("_", $name_parts);
+
+        if (!(User::where('username', '=', $desired_username)->exists())) {
+            $username = $desired_username;
+        } else { // someone already has the desired username
+            $username = $desired_username.'_'.$this->id;
+        }
+
+        $this->username = $username;
+    }
+
+    public function isDripSubscriber()
+    {
+      return ! is_null($this->drip_subscriber_id);
     }
 }
