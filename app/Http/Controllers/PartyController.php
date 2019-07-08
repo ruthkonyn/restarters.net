@@ -9,6 +9,7 @@ use App\Cluster;
 use App\Device;
 use App\Events\ApproveEvent;
 use App\Events\EditEvent;
+use App\Events\EventImagesUploaded;
 use App\EventsUsers;
 use App\Group;
 use App\Helpers\FootprintRatioCalculator;
@@ -99,33 +100,44 @@ class PartyController extends Controller
 
         // Use this view for showing group only upcoming and past events
         if ( ! is_null($group_id)) {
-            $upcoming_events = Party::upcomingEvents()
-            ->where('events.group', $group_id)
-            ->get();
+          $upcoming_events = Party::upcomingEvents()
+          ->where('events.group', $group_id)
+          ->get();
 
-            $past_events = Party::pastEvents()
+          $past_events = Party::pastEvents()
             ->where('events.group', $group_id)
             ->paginate(10);
 
-            $group = Group::find($group_id);
+          $group = Group::find($group_id);
+          $upcoming_events_in_area = null;
+
         } else {
-            $upcoming_events = Party::upcomingEvents()
+          $upcoming_events = Party::upcomingEvents()
             ->where('users_groups.user', Auth::user()->id)
-            ->take(10)
+            ->take(3)
             ->get();
 
-            $past_events = Party::UsersPastEvents([auth()->id()])->paginate(10);
+        $past_events = Party::UsersPastEvents([auth()->id()])->paginate(10);
 
-            $group = null;
+        if ( ! is_null(Auth::user()->latitude) && ! is_null(Auth::user()->longitude)) {
+            $upcoming_events_in_area = Party::upcomingEventsInUserArea(Auth::user())->take(3)->get();
+        } else {
+            $upcoming_events_in_area = null;
         }
+
+          $group = null;
+        }
+
+
 
         //Looks to see whether user has a group already, if they do, they can create events
         $user_groups = UserGroups::where('user', Auth::user()->id)->count();
 
         return view('events.index', [
+            'moderate_events' => $moderate_events,
             'upcoming_events' => $upcoming_events,
             'past_events' => $past_events,
-            'moderate_events' => $moderate_events,
+            'upcoming_events_in_area' => $upcoming_events_in_area,
             'user_groups' => $user_groups,
             'EmissionRatio' => $this->EmissionRatio,
             'group' => $group,
@@ -1453,9 +1465,23 @@ class PartyController extends Controller
     public function imageUpload(Request $request, $id)
     {
         try {
-            if (isset($_FILES) && ! empty($_FILES)) {
+            if (empty($_FILES) && !empty($request->files)) {
+                // Shim to handle uploads from Tests
+                $file = $request->file('file');
+                $_FILES['file'] = [
+                    'name' => $file->getClientOriginalName(),
+                    'type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'tmp_name' => $file->getRealPath(),
+                    'error' => $file->getError(),
+                ];
+            }
+
+            if (!empty($_FILES)) {
                 $file = new FixometerFile;
                 $file->upload('file', 'image', $id, env('TBL_EVENTS'), true, false, true);
+
+                event(new EventImagesUploaded(Party::find($id), auth()->id()));
             }
 
             return 'success - image uploaded';

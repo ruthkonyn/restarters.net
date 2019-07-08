@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\EventImagesUploaded;
 use App\Events\UserDeleted;
+use App\Listeners\AnonymiseSoftDeletedUser;
 use App\Listeners\RemoveSoftDeletedUserFromAllGroups;
+use App\Listeners\SendAdminModerateEventPhotosNotification;
+use App\Listeners\SendAdminUserDeletedNotification;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -39,13 +43,19 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\CreateWordPressEditGroupPost',
         ],
 
-        UserDeleted::class => [
-            RemoveSoftDeletedUserFromAllGroups::class,
-        ],
-
         'App\Events\PasswordChanged' => [
             'App\Listeners\ChangeWikiPassword',
         ],
+
+        UserDeleted::class => [
+            RemoveSoftDeletedUserFromAllGroups::class,
+            SendAdminUserDeletedNotification::class,
+            AnonymiseSoftDeletedUser::class,
+        ],
+
+        EventImagesUploaded::class => [
+            SendAdminModerateEventPhotosNotification::class,
+        ]
     ];
 
     /**
@@ -57,7 +67,7 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        if (!empty(env('WIKI_URL'))) {
+        if (env('FEATURE__WIKI_INTEGRATION') === true) {
             Event::listen('Illuminate\Auth\Events\Login', 'App\Listeners\LogInToWiki');
         }
     }

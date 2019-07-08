@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventRepairs extends Notification implements ShouldQueue
+class AdminModerationEventPhotos extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -32,7 +32,7 @@ class EventRepairs extends Notification implements ShouldQueue
     public function via($notifiable)
     {
         if ($notifiable->invites == 1) {
-            return ['database', 'mail'];
+            return ['mail', 'database'];
         }
 
         return ['database'];
@@ -47,11 +47,12 @@ class EventRepairs extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Help us log repair info for '.$this->arr['event_name'])
-                    ->greeting('Hello!')
-                    ->line('Thank you for fixing at the \''.$this->arr['event_name'].'\' event. The host has posted photos of any feedback left by participants and repair data. Please help us to improve the details of the repairs you carried out by adding any useful information or photos you have. Any extra details you can add will help future repair attempts.')
-                    ->action('Contribute repair info', url($this->arr['event_url']))
-                    ->line('If you would like to stop receiving these emails, please visit <a href="'.$this->arr['preferences'].'">your preferences</a> on your account.');
+                      ->subject('New event photos uploaded to event: '.$this->arr['event_venue'])
+                      ->greeting('Hello!')
+                      ->line('Photos have been uploaded to an event: \''.$this->arr['event_venue'].'\'.')
+                      ->action('View event', $this->arr['event_url'])
+                      ->line('These photos might need your moderation, if they haven\'t yet been moderated by another administrator.')
+                      ->line('If you would like to stop receiving these notifications, please edit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
     }
 
     /**
@@ -63,8 +64,9 @@ class EventRepairs extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title' => 'Help us log repair info for ',
-            'name' => $this->arr['event_name'],
+            'title' => 'New event photos uploaded:',
+            'event_id' => $this->arr['event_id'],
+            'name' => $this->arr['event_venue'],
             'url' => $this->arr['event_url'],
         ];
     }
