@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Party;
 use App\Group;
 use App\GrouptagsGroups;
@@ -17,7 +18,6 @@ class CalendarEventsController extends Controller
 
     public function __construct()
     {
-      $this->middleware('auth')->except('allEvents');
       $this->ical_format = 'Ymd\THis\Z';
     }
 
@@ -35,7 +35,7 @@ class CalendarEventsController extends Controller
         $query->where('events_users.user', auth()->id())
         ->orWhere('users_groups.user', auth()->id());
       })
-      ->select('events.*')
+      ->select('events.*', 'groups.name')
       ->groupBy('idevents')
       ->orderBy('event_date', 'ASC')
       ->get();
@@ -50,7 +50,7 @@ class CalendarEventsController extends Controller
         $query->where('groups.idgroups', $group->idgroups)
               ->whereNull('events.deleted_at');
       })
-      ->select('events.*')
+      ->select('events.*', 'groups.name')
       ->groupBy('events.idevents')
       ->orderBy('events.event_date', 'ASC')
       ->get();
@@ -68,7 +68,7 @@ class CalendarEventsController extends Controller
       ->where(function ($query) use ($area) {
         $query->where('groups.area', 'like', '%'.$area.'%');
       })
-      ->select('events.*')
+      ->select('events.*', 'groups.name')
       ->groupBy('events.idevents')
       ->orderBy('events.event_date', 'ASC')
       ->get();
@@ -88,7 +88,7 @@ class CalendarEventsController extends Controller
         $query->where('grouptags_groups.id', $grouptags_groups->id)
               ->whereNull('events.deleted_at');
       })
-      ->select('events.*')
+      ->select('events.*', 'groups.name')
       ->groupBy('events.idevents')
       ->orderBy('events.event_date', 'ASC')
       ->get();
@@ -106,11 +106,10 @@ class CalendarEventsController extends Controller
         return abort(404);
       }
 
-      if ( ! FixometerHelper::hasRole(\Auth::user(), 'Administrator')) {
-        return abort(404, 'Not Administrator.');
-      }
-
-      $events = Party::whereNull('deleted_at')->get();
+      $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
+              ->whereNull('deleted_at')
+              ->select('events.*', 'groups.name')
+              ->get();
 
       $this->exportCalendar($events);
     }
@@ -119,27 +118,70 @@ class CalendarEventsController extends Controller
     {
       $icalObject[] =  "BEGIN:VCALENDAR";
       $icalObject[] =  "VERSION:2.0";
-      $icalObject[] =  "METHOD:PUBLISH";
+      $icalObject[] =  "PRODID:-//Restarters//NONSGML Events Calendar/EN";
+
+      $html2text_options = [
+          'ignore_errors' => true,
+      ];
 
       // loop over events
       foreach ($events as $event) {
-        $icalObject[] =  "BEGIN:VEVENT";
-        $icalObject[] =  "SUMMARY:{$event->venue}";
-        $icalObject[] =  "DTSTART:".date($this->ical_format, strtotime($event->event_date.' '.$event->start))."";
-        $icalObject[] =  "DTEND:".date($this->ical_format, strtotime($event->event_date.' '.$event->end))."";
-        $icalObject[] =  "LOCATION:{$event->location}";
-        $icalObject[] =  "STATUS:CONFIRMED";
-        $icalObject[] =  "END:VEVENT";
+          if ( ! is_null($event->event_date) && $event->event_date != '0000-00-00') {
+              $icalObject[] =  "BEGIN:VEVENT";
+              $icalObject[] =  "UID:{$event->idevents}";
+              $icalObject[] =  "DTSTAMP:".date($this->ical_format)."";
+              $icalObject[] =  "SUMMARY:{$event->venue} ({$event->name})";
+              $icalObject[] =  "DTSTART:".date($this->ical_format, strtotime($event->event_date.' '.$event->start))."";
+              $icalObject[] =  "DTEND:".date($this->ical_format, strtotime($event->event_date.' '.$event->end))."";
+              //$description = \Soundasleep\Html2Text::convert($event->free_text, $html2text_options);
+              //$icalObject[] =  "DESCRIPTION:".Str::limit($this->ical_split("DESCRIPTION:",$description), 60);
+              $icalObject[] =  "DESCRIPTION:".url("/party/view")."/".$event->idevents;
+              $icalObject[] =  "LOCATION:{$event->location}";
+              $icalObject[] =  "URL:".url("/party/view")."/".$event->idevents;
+              $icalObject[] =  "STATUS:CONFIRMED";
+              $icalObject[] =  "END:VEVENT";
+          }
       }
 
       // close calendar
       $icalObject[] =  "END:VCALENDAR";
 
-      $icalObject = implode("\n",$icalObject);
+      $icalObject = implode("\r\n",$icalObject);
 
       header('Content-type: text/calendar; charset=utf-8');
       header('Content-Disposition: attachment; filename="cal.ics"');
 
       echo $icalObject;
+    }
+
+    protected function ical_split($preamble, $value)
+    {
+        $value = trim($value);
+        $value = strip_tags($value);
+        $value = preg_replace('/\n+/', ' ', $value);
+        $value = preg_replace('/\s{2,}/', ' ', $value);
+        $preamble_len = strlen($preamble);
+        $lines = array();
+        while (strlen($value)>(75-$preamble_len)) {
+            $space = (75-$preamble_len);
+            $mbcc = $space;
+            while ($mbcc) {
+                $line = mb_substr($value, 0, $mbcc);
+                $oct = strlen($line);
+                if ($oct > $space) {
+                    $mbcc -= $oct-$space;
+                }
+                else {
+                    $lines[] = $line;
+                    $preamble_len = 1; // Still take the tab into account
+                    $value = mb_substr($value, $mbcc);
+                    break;
+                }
+            }
+        }
+        if (!empty($value)) {
+            $lines[] = $value;
+        }
+        return join($lines, "\n\t");
     }
 }
