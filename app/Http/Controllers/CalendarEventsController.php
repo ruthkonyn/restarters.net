@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Party;
 use App\Group;
 use App\GrouptagsGroups;
+use App\Party;
+use App\User;
 use Carbon\Carbon;
 use FixometerHelper;
 
@@ -18,22 +19,27 @@ class CalendarEventsController extends Controller
 
     public function __construct()
     {
-      $this->ical_format = 'Ymd\THis\Z';
+      $this->ical_format = 'Ymd\THis';
     }
 
     public function allEventsByUser(Request $request, $calendar_hash)
     {
-      if ( empty(auth()->user()->calendar_hash)) {
-        return redirect()->back();
-      }
+        if (empty($calendar_hash)) {
+            throw new \Exception('No calendar hash provided');
+        }
+
+        $user = User::where('calendar_hash', $calendar_hash)->first();
+        if (is_null($user)) {
+            throw new \Exception('No user calendar found for provided calendar hash');
+        }
 
       $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
       ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
       ->join('events_users', 'events_users.event', '=', 'events.idevents')
       ->whereNull('deleted_at')
-      ->where(function ($query) {
-        $query->where('events_users.user', auth()->id())
-        ->orWhere('users_groups.user', auth()->id());
+      ->where(function ($query) use ($user) {
+        $query->where('events_users.user', $user->id)
+        ->orWhere('users_groups.user', $user->id);
       })
       ->select('events.*', 'groups.name')
       ->groupBy('idevents')
@@ -128,11 +134,15 @@ class CalendarEventsController extends Controller
       foreach ($events as $event) {
           if ( ! is_null($event->event_date) && $event->event_date != '0000-00-00') {
               $icalObject[] =  "BEGIN:VEVENT";
+
+              // Timezone currently fixed to Europe/London, but in future when we 
+              // have better timezone support in the app this will need amending.
+              $icalObject[] =  "TZID:Europe/London";
               $icalObject[] =  "UID:{$event->idevents}";
               $icalObject[] =  "DTSTAMP:".date($this->ical_format)."";
               $icalObject[] =  "SUMMARY:{$event->venue} ({$event->name})";
-              $icalObject[] =  "DTSTART:".date($this->ical_format, strtotime($event->event_date.' '.$event->start))."";
-              $icalObject[] =  "DTEND:".date($this->ical_format, strtotime($event->event_date.' '.$event->end))."";
+              $icalObject[] =  "DTSTART;TZID=Europe/London:".date($this->ical_format, strtotime($event->event_date.' '.$event->start))."";
+              $icalObject[] =  "DTEND;TZID=Europe/London:".date($this->ical_format, strtotime($event->event_date.' '.$event->end))."";
               //$description = \Soundasleep\Html2Text::convert($event->free_text, $html2text_options);
               //$icalObject[] =  "DESCRIPTION:".Str::limit($this->ical_split("DESCRIPTION:",$description), 60);
               $icalObject[] =  "DESCRIPTION:".url("/party/view")."/".$event->idevents;

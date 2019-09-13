@@ -332,28 +332,25 @@ class Group extends Model implements Auditable
     }
 
     /**
-     * [upcomingParties description]
-     * All Upcoming Parties where between the Start Parties Date
-     * is today or a week later
+     * All parties for the group that are taking place today or later.
      *
      * @author Christopher Kelker - @date 2019-03-21
-     * @editor  Christopher Kelker
-     * @version 1.0.0
+     * @editor  Christopher Kelker, Neil Mather
+     * @version 1.0.1
      * @return  [type]
      */
     public function upcomingParties($exclude_parties = [])
     {
         $from = date('Y-m-d');
-        $to = date('Y-m-d', strtotime('+1 week'));
 
         if ( ! empty($exclude_parties)) {
             return $this->parties()
-                          ->whereBetween('event_date', [$from, $to])
-                            ->whereNotIn('idevents', $exclude_parties)
-                              ->get();
+                ->where('event_date', '>=', $from)
+                ->whereNotIn('idevents', $exclude_parties)
+                ->get();
         }
 
-        return $this->parties()->whereBetween('event_date', [$from, $to])->get();
+        return $this->parties()->where('event_date', '>=', $from)->get();
     }
 
     /**
@@ -409,10 +406,13 @@ class Group extends Model implements Auditable
 
     public function getNextUpcomingEvent()
     {
-      $event = $this->parties()->whereDate('event_date', '>=', date('Y-m-d'));
+      $event = $this->parties()
+             ->whereNotNull('wordpress_post_id')
+             ->whereDate('event_date', '>=', date('Y-m-d'))
+             ->orderBy('event_date', 'asc');
 
       if ( ! $event->count() ) {
-        return null;
+          return null;
       }
 
       return $event->first();
