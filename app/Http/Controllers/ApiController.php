@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\Group;
 use App\Party;
 use App\Device;
+use App\User;
 use App\Helpers\FootprintRatioCalculator;
 
 use DB;
@@ -97,5 +99,32 @@ class ApiController extends Controller
                 ->get();
 
         return response()->json($events, 200);
+    }
+
+    public static function getUserInfo()
+    {
+        $user = Auth::user()->first();
+
+        $user->makeHidden('api_token');
+        return response()->json($user->toArray());
+    }
+
+    public static function getUserList()
+    {
+        $users = User::whereNull('deleted_at')
+               ->orderBy('created_at', 'desc')
+               ->get();
+        return response()->json($users);
+    }
+
+    public static function getGroupList()
+    {
+        $groups = Group::orderBy('created_at', 'desc');
+
+        $groups = $groups->get();
+        foreach ($groups as $group) {
+            mb_convert_encoding($group, 'UTF-8', 'UTF-8');
+        }
+        return response()->json($groups);
     }
 }
