@@ -64,7 +64,9 @@ class UserGroupsController extends Controller
         $userGroupChange['user_id'] = $userGroupAssociation->user;
         $userGroupChange['user_email'] = User::find($userGroupAssociation->user)->email;
         $userGroupChange['group_id'] = $userGroupAssociation->group;
-        $userGroupChange['group_name'] = Group::find($userGroupAssociation->group)->name;
+        $group = Group::find($userGroupAssociation->group);
+        $userGroupChange['group_name'] = $group->name;
+        $userGroupChange['group_area'] = $group->area;
         $userGroupChange['id'] = md5($userGroupAssociation->id . $auditCreatedAtAsString);
 
         $userGroupChange['change_type'] = $audit->event;
