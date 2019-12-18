@@ -61,7 +61,7 @@
         </div>
         <div class="hero is-centered" style="margin-bottom:180px">
             <div class="hero-foot">
-                <div class="container">
+                <div class="container mt-md-5">
                     <header class="columns is-flex-mobile is-flex-tablet" style="text-align:left">
                     <div class="column is-half">
                 <h1 style="font-size:2.25rem; font-weight: bold; font-family:'Asap'">FaultCat</h1>
