@@ -1243,12 +1243,15 @@ class UserController extends Controller
 
         $user->save();
 
-  // Notify relevant users
-        $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
-        Notification::send($notify_users, new AdminNewUser([
-        'id' => $user->id,
-        'name' => $user->name,
-        ]));
+        // Notify relevant users
+        if (! \App::environment('local')) {
+          $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
+          
+          Notification::send($notify_users, new AdminNewUser([
+            'id' => $user->id,
+            'name' => $user->name,
+          ]));
+        }
 
       // Sync user skills
         if (!empty($skills)) {
