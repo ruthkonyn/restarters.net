@@ -1,2 +1,5 @@
-@import "bootstrap";
-@import "component/nav";
+@import 'variables';
+
+@import "bootstrap/bootstrap";
+
+@import "components/navigation-bar";

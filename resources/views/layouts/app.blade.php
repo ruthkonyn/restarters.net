@@ -3,6 +3,9 @@
 @else
   @include('layouts/header')
 @endif
+
+{{-- @include('layouts/global_header') --}}
+
 @yield('content')
 
 <!-- Modal -->

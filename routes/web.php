@@ -11,6 +11,11 @@
 |
 */
 
+Route::get('/testing123', function(){
+  return view('testing123');
+});
+
+
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');
@@ -234,7 +239,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/export/time-volunteered', 'ExportController@exportTimeVolunteered');
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
-    
+
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');
