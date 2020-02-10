@@ -10779,3 +10779,59 @@ label.form-check-label {
   font-weight: 700;
 }
 
+.pagination {
+  margin: 30px 0 0 0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px;
+}
+
+.pagination a,
+.pagination .page-link {
+  color: #000;
+  border: 0;
+  text-decoration: none;
+  border-width: 2px;
+  border-radius: 3px;
+  padding: 0.5rem 0.75rem;
+}
+
+.pagination a:focus,
+.pagination .page-link:focus {
+  background-color: transparent;
+  color: #fff;
+}
+
+.pagination a:hover,
+.pagination .page-link:hover {
+  text-decoration: underline;
+  color: #000;
+  font-weight: 700;
+  background-color: transparent;
+}
+
+.pagination .active a.page-link {
+  border: 1px solid red;
+  text-decoration: none;
+  color: #000;
+  border-radius: 3px;
+  border-bottom: 2px solid #155e67;
+  background-color: transparent !important;
+}
+
+.pagination .active a.page-link:focus {
+  background-color: #00b0c6;
+}
+
+.pagination .active a.page-link:hover {
+  background-color: #00b0c6;
+  border-color: #00b0c6;
+  text-decoration: underline;
+}
+
+.pagination .active .page-link {
+  background-color: transparent !important;
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
+}
+
