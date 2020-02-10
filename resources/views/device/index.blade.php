@@ -153,11 +153,10 @@
               </div>
             </div>
           </div>
+          
+          @include('device.global-impact')
         </div>
       </div>
-
-      @include('device.global-impact')
-
     </section>
   </form>
 
