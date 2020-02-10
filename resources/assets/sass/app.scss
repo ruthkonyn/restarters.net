@@ -33,7 +33,6 @@
 
 // BS4 Sortable
 @import 'bootstrap-sortable';
-
 @import '~leaflet/dist/leaflet';
 
 .navbar-laravel {
@@ -41,6 +40,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
+@import "global";
 @import "accordion";
 @import "admin";
 @import "alert";
@@ -76,7 +76,6 @@
 @import "mini-stats";
 @import "stat";
 @import 'truncate';
-@import "global";
 @import "errors";
 @import "gdpr-cookie-notice";
 @import 'languages';
