@@ -3,3 +3,17 @@ $brand: #0394a6;
 // Font Variables //
 $font-family-third: 'Asap', sans-serif;
 $font-family-second: 'Open Sans', sans-serif;
+
+/** Custom spacing properties */
+$spacers: () !default;
+$spacers: map-merge(
+  (
+    10: 10px,
+    15: 15px,
+    20: 20px,
+    25: 25px,
+    30: 30px,
+    40: 40px,
+  ),
+  $spacers
+);

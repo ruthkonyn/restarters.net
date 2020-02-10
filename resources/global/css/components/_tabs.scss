@@ -1,0 +1,146 @@
+@each $breakpoint in map-keys(map-remove($grid-breakpoints, xs)) {
+  .nav-#{$breakpoint}-tabs {
+    // ... https://codepen.io/dferenc/pen/YYyjYJ
+
+    .nav-tabs {
+      display: none;
+    }
+
+    .accordion-tab-header {
+      button {
+        @extend .btn;
+        @extend .rounded-0;
+        @extend .border-0;
+        @extend .w-100;
+        @extend .text-left;
+        @extend .bg-info;
+        @extend .position-relative;
+        @extend .text-dark;
+
+        h5 {
+          @extend .mb-0;
+          @extend .text-dark;
+          @extend .position-relative;
+
+          text-transform: none;
+        }
+
+        &:not(.collapsed) {
+          @extend .text-white;
+
+          h5 {
+            @extend .text-white;
+          }
+        }
+      }
+    }
+
+    @include media-breakpoint-up($breakpoint) {
+      .nav-tabs {
+        display: flex;
+      }
+
+      .accordion-tab-header {
+        display: none;
+      }
+
+      .collapse-wrapper {
+        display: block;
+      }
+    }
+
+    @include media-breakpoint-down($breakpoint) {
+      .tab-content > .tab-pane {
+        display: block !important;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+.nav-tabs-block {
+  @extend .rounded-0;
+  @extend .border-0;
+
+  .nav-item {
+    @extend .text-white;
+    @extend .bg-transparent;
+    @extend .border-0;
+    @extend .rounded-0;
+    @extend .position-relative;
+    @extend .m-0;
+
+    .nav-link {
+      @extend .rounded-0;
+
+      border: 1px solid #000;
+      background-color: #4aaebc;
+      font-family: Asap;
+      font-size: 16px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.13;
+      letter-spacing: 1.2px;
+      text-align: center;
+      color: #000;
+      text-transform: uppercase;
+      padding-top: 18px;
+      padding-bottom: 18px;
+
+      &.active {
+        border-bottom: 1px solid #4aaebc;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 5px;
+          background: black;
+        }
+      }
+    }
+
+    // same width
+    flex: 1;
+    text-align: center;
+
+    &:not(:last-child) {
+      .nav-link {
+        border-right: 0;
+      }
+    }
+  }
+}
+
+.tab-content {
+  @extend .rounded-0;
+  @extend .border-0;
+
+  .collapse-wrapper {
+    .collapse-content {
+      padding: 30px;
+      border: 1px solid #000;
+      background-color: #4aaebc;
+      border-top: 1px solid #4aaebc;
+    }
+  }
+}
+
+.summary {
+  @extend .d-flex;
+  @extend .flex-row;
+  @extend .align-items-center;
+  @extend .p-30;
+
+  border: 1px solid #000;
+  border-top: 1px solid #4aaebc;
+  background-color: #4aaebc;
+}
+.search-wrapper {
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
+}
