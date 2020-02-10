@@ -10678,6 +10678,11 @@ a.text-dark:focus {
   color: #000;
 }
 
+.btn-primary:hover svg,
+.btn-primary.dropdown-toggle:hover svg {
+  fill: #fff !important;
+}
+
 @media (min-width: 992px) {
   .form-group__offset {
     padding-right: 210px;
