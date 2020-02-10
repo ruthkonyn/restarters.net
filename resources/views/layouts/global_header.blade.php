@@ -198,10 +198,16 @@
 
         {{-- TODO: bell --}}
         @if( ! $user->unReadNotifications->isEmpty() )
+          @php $notifications = $user->unReadNotifications->sortBy('created_at')->take(10); @endphp
           <ul class="dropdown-menu-items">
-            @foreach ($user->unReadNotifications as $notification)
+            @foreach ($notifications as $notification)
               <li class="notifcation-text">
-                <a href="#">
+                <form action="{{ route('notifications.update', ['id' => $notification->id]) }}" method="POST" id="readnotification-{{ $notification->id }}">
+                  @csrf
+                   {{ method_field('PUT') }}
+                </form>
+
+                <a href="javascript:{}" onclick="document.getElementById('readnotification-{{ $notification->id }}').submit(); return false;">
                   {{ $notification->data['title'] }}
                 </a>
               </li>

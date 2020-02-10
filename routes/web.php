@@ -284,6 +284,10 @@ Route::get('markAsRead/{id}', function ($id) {
     return  redirect()->back();
 })->name('markAsRead');
 
+Route::resource('notifications', 'NotificationController')->only([
+    'update'
+]);
+
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');

@@ -69,6 +69,16 @@
             </div>
         @endif
 
+        <div class="row row-compressed">
+          <div class="col">
+            @if (\Session::has('success'))
+              <div class="alert alert-success">
+                {!! \Session::get('success') !!}
+              </div>
+            @endif
+          </div>
+        </div>
+
       @if (session('invites-feedback'))
         <div class="row row-compressed">
           <div class="col">
