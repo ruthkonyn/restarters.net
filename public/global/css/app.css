@@ -13535,6 +13535,10 @@ label.form-check-label {
   display: none;
 }
 
+.nav-sm-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
 .nav-sm-tabs .accordion-tab-header button {
   padding-top: 15px;
   padding-bottom: 15px;
@@ -13580,6 +13584,10 @@ label.form-check-label {
 
 .nav-md-tabs .nav-tabs {
   display: none;
+}
+
+.nav-md-tabs .accordion-tab-header.white {
+  background-color: #fff;
 }
 
 .nav-md-tabs .accordion-tab-header button {
@@ -13629,6 +13637,10 @@ label.form-check-label {
   display: none;
 }
 
+.nav-lg-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
 .nav-lg-tabs .accordion-tab-header button {
   padding-top: 15px;
   padding-bottom: 15px;
@@ -13674,6 +13686,10 @@ label.form-check-label {
 
 .nav-xl-tabs .nav-tabs {
   display: none;
+}
+
+.nav-xl-tabs .accordion-tab-header.white {
+  background-color: #fff;
 }
 
 .nav-xl-tabs .accordion-tab-header button {
@@ -13755,6 +13771,14 @@ label.form-check-label {
   background: black;
 }
 
+.nav-tabs-block .nav-item .nav-link.white {
+  background-color: #fff;
+}
+
+.nav-tabs-block .nav-item .nav-link.white.active {
+  border-bottom: 1px solid #000;
+}
+
 .nav-tabs-block .nav-item:not(:last-child) .nav-link {
   border-right: 0;
 }
@@ -13764,6 +13788,11 @@ label.form-check-label {
   border: 1px solid #000;
   background-color: #4aaebc;
   border-top: 1px solid #4aaebc;
+}
+
+.tab-content .collapse-wrapper .collapse-content.white {
+  background-color: #fff;
+  border-top: 1px solid #000;
 }
 
 .tab-content .tab-pane:not(:last-child) .accordion-tab-header button {
@@ -13786,7 +13815,7 @@ label.form-check-label {
   line-height: 1.17;
   letter-spacing: normal;
   text-align: left;
-  color: #ffffff;
+  color: #fff;
 }
 
 .collapse-plus-and-minus button h5::after {

@@ -4,6 +4,10 @@
       display: none;
     }
 
+    .accordion-tab-header.white {
+      background-color: $white;
+    }
+
     .accordion-tab-header {
       button {
         @extend .btn;
@@ -106,6 +110,14 @@
       }
     }
 
+    .nav-link.white {
+      background-color: $white;
+
+      &.active {
+        border-bottom: 1px solid $black;
+      }
+    }
+
     // same width
     flex: 1;
     text-align: center;
@@ -128,6 +140,11 @@
       border: 1px solid #000;
       background-color: #4aaebc;
       border-top: 1px solid #4aaebc;
+    }
+
+    .collapse-content.white {
+      background-color: $white;
+      border-top: 1px solid $black;
     }
   }
 
@@ -169,5 +186,5 @@
   line-height: 1.17;
   letter-spacing: normal;
   text-align: left;
-  color: #ffffff;
+  color: #fff;
 }
