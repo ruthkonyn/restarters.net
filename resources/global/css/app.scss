@@ -19,3 +19,11 @@
 @import "components/collapse";
 @import "components/popover";
 @import "components/cards";
+
+.pagination {
+  li.page-item {
+    &.disabled {
+      display: none;
+    }
+  }
+}

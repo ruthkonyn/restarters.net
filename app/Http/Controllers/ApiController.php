@@ -23,11 +23,14 @@ class ApiController extends Controller
         $Party = new Party;
         $Device = new Device;
 
-        $allparties = Party::pastEvents()->get();
+        $allparties = Party::pastEvents()
+        ->withCount('allDevices')
+        ->get();
 
         $participants = 0;
         $hours_volunteered = 0;
         $waste_prevented = 0;
+        $devices_count = 0;
 
         $footprintRatioCalculator = new FootprintRatioCalculator();
         $emissionRatio = $footprintRatioCalculator->calculateRatio();
@@ -40,10 +43,14 @@ class ApiController extends Controller
             if (is_array($waste)) {
               $waste_prevented += round($waste['ewaste'], 2);
             }
+
+            $devices_count += $party->all_devices_count;
         }
 
         $co2Total = $Device->getWeights();
 
+
+        $result['devices_count'] = $devices_count;
         $result['waste_prevented'] = number_format($waste_prevented, 0);
         $result['participants'] = $participants;
         $result['hours_volunteered'] = $hours_volunteered;

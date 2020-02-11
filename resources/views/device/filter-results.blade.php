@@ -43,7 +43,7 @@
       <div id="content" class="tab-content" role="tablist">
         <div id="pane-A" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
           <div class="accordion-tab-header collapse-plus-and-minus" role="tab" id="heading-A">
-            <button class="btn" data-toggle="collapse" data-target="#collapse-A" aria-expanded="true" aria-controls="collapse-A">
+            <button class="btn" type="button" data-toggle="collapse" data-target="#collapse-A" aria-expanded="true" aria-controls="collapse-A">
               <h5>
                 @lang('devices.device_info')
               </h5>
@@ -91,7 +91,7 @@
 
         <div id="pane-B" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
           <div class="accordion-tab-header collapse-plus-and-minus" role="tab" id="heading-B">
-            <button class="btn collapsed" data-toggle="collapse" data-target="#collapse-B" aria-expanded="true" aria-controls="collapse-B">
+            <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapse-B" aria-expanded="true" aria-controls="collapse-B">
               <h5>
                 @lang('devices.repair_info')
               </h5>
@@ -136,7 +136,7 @@
 
         <div id="pane-C" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
           <div class="accordion-tab-header collapse-plus-and-minus" role="tab" id="heading-C">
-            <button class="btn collapsed" data-toggle="collapse" data-target="#collapse-C" aria-expanded="true" aria-controls="collapse-C">
+            <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapse-C" aria-expanded="true" aria-controls="collapse-C">
               <h5>
                 @lang('devices.event_info')
               </h5>
@@ -181,7 +181,7 @@
 
         <div id="pane-D" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-D">
           <div class="accordion-tab-header collapse-plus-and-minus" role="tab" id="heading-D">
-            <button class="btn collapsed" data-toggle="collapse" data-target="#collapse-D" aria-expanded="true" aria-controls="collapse-D">
+            <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapse-D" aria-expanded="true" aria-controls="collapse-D">
               <h5>
                 Group Info
               </h5>
@@ -199,11 +199,11 @@
     </div>
 
     <div class="nav-tab-summary-section">
-      <button type="button" name="button" class="btn btn-sm btn-primary mr-40">
+      <button type="submit" name="button" class="btn btn-sm btn-primary mr-40">
         @include('svgs.fixometer.search_ico')
       </button>
 
-      <h2 class="mb-0">{{ $list->total() }} results</h2>
+      <h2 class="mb-0">{{ isset($list) ? $list->total() : $global_impact_data->devices_count }} results</h2>
     </div>
   </div>
 

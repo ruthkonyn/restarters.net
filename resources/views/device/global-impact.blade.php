@@ -27,7 +27,7 @@
             @include('svgs.fixometer.smile_doodle')
           </div>
 
-          <h3>{{ $global_impact_data->participants }}</h3>
+          <h3>{{ $impact_data->participants }}</h3>
           <p>participants</p>
         </div>
       </div>
@@ -39,7 +39,7 @@
           <div class="svg-wrapper">
             @include('svgs.fixometer.clock_doodle')
           </div>
-          <h3>{{ $global_impact_data->hours_volunteered }}</h3>
+          <h3>{{ $impact_data->hours_volunteered }}</h3>
           <p>hours of volunteered time</p>
         </div>
       </div>
@@ -51,7 +51,7 @@
           <div class="svg-wrapper">
             @include('svgs.fixometer.phone_doodle')
           </div>
-          <h3>{{ $global_impact_data->items_fixed }}</h3>
+          <h3>{{ $impact_data->items_fixed }}</h3>
           <p>devices repaired</p>
         </div>
       </div>
@@ -65,7 +65,7 @@
 
           </div>
 
-          <h3>{{ $global_impact_data->waste_prevented }}</h3>
+          <h3>{{ $impact_data->waste_prevented }}</h3>
           <p>waste prevented</p>
         </div>
       </div>
@@ -79,7 +79,7 @@
 
           </div>
 
-          <h3>{{ number_format($global_impact_data->emissions, 0) }}</h3>
+          <h3>{{ number_format($impact_data->emissions, 0) }}</h3>
           <p>CO2 emissinos prevented</p>
         </div>
       </div>

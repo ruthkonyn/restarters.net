@@ -27,10 +27,10 @@ mix.webpackConfig({
 // ], 'public/js/gdpr-cookie-notice.js');
 //
 // mix.js('resources/assets/js/app.js', 'public/js')
-//     .sass('resources/assets/sass/app.scss', 'public/css')
+//    .sass('resources/assets/sass/app.scss', 'public/css')
 //    .browserSync({
 //         proxy: 'fixo.meter:8888'
 //     });
 
 mix.js('resources/global/js/app.js', 'public/global/js')
-  .sass('resources/global/css/app.scss', 'public/global/css');
+   .sass('resources/global/css/app.scss', 'public/global/css');

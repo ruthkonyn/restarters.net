@@ -1290,7 +1290,7 @@ function initAutocomplete() {
         this.value = this.value + "\n";
       }
     });
-    
+
     $('#participants_qty').on('change', function() {
       updateParticipants();
     });

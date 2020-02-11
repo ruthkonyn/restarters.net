@@ -13933,3 +13933,7 @@ label.form-check-label {
   color: #000;
 }
 
+.pagination li.page-item.disabled {
+  display: none;
+}
+

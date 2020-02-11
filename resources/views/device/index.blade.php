@@ -53,14 +53,14 @@
                         Items
                       </span>
                       <svg xmlns="http://www.w3.org/2000/svg" id="Layer" width="24.75" height="24.75" viewBox="0 0 24.75 24.75">
-                          <defs>
-                              <style>
-                                  .cls-1{fill:#0392a6;fill-rule:evenodd}
-                              </style>
-                          </defs>
-                          <g id="Vrstva_343" data-name="Vrstva 343">
-                              <path id="Path_246" d="M24.4 1H2.35A1.35 1.35 0 0 0 1 2.35V24.4a1.35 1.35 0 0 0 1.35 1.35H24.4a1.35 1.35 0 0 0 1.35-1.35V2.35A1.35 1.35 0 0 0 24.4 1zm-.9 15.75h-5.625v-5.625H23.5zM3.25 11.125h12.375v5.625H3.25zm20.25-2.25h-5.625V3.25H23.5zM3.25 3.25h12.375v5.625H3.25zm0 20.25V19h12.375v4.5zm14.625 0V19H23.5v4.5z" class="cls-1" data-name="Path 246" transform="translate(-1 -1)"/>
-                          </g>
+                        <defs>
+                          <style>
+                          .cls-1{fill:#0392a6;fill-rule:evenodd}
+                          </style>
+                        </defs>
+                        <g id="Vrstva_343" data-name="Vrstva 343">
+                          <path id="Path_246" d="M24.4 1H2.35A1.35 1.35 0 0 0 1 2.35V24.4a1.35 1.35 0 0 0 1.35 1.35H24.4a1.35 1.35 0 0 0 1.35-1.35V2.35A1.35 1.35 0 0 0 24.4 1zm-.9 15.75h-5.625v-5.625H23.5zM3.25 11.125h12.375v5.625H3.25zm20.25-2.25h-5.625V3.25H23.5zM3.25 3.25h12.375v5.625H3.25zm0 20.25V19h12.375v4.5zm14.625 0V19H23.5v4.5z" class="cls-1" data-name="Path 246" transform="translate(-1 -1)"/>
+                        </g>
                       </svg>
                     </button>
 
@@ -85,82 +85,87 @@
                 @endif
               </div>
 
-              <div class="table-responsive" id="sort-table">
-                <table class="table table-hover bootg table-devices" id="devices-table">
-                  <thead>
-                    <tr>
-                      <th width="120"   @if( !FixometerHelper::hasRole(Auth::user(), 'Administrator') ) colspan="3" @endif>
-                      </th>
+              @if (isset($list))
+                <div class="table-responsive" id="sort-table">
+                  <table class="table table-hover bootg table-devices" id="devices-table">
+                    <thead>
+                      <tr>
+                        <th width="120"   @if( !FixometerHelper::hasRole(Auth::user(), 'Administrator') ) colspan="3" @endif>
+                        </th>
 
-                      <th scope="col" class="category" @if( !FixometerHelper::checkColumn('category', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-category" class="sort-column @if( $sort_column == 'category' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.category')
-                        </label>
-                      </th>
-                      <th scope="col" class="brand" @if( !FixometerHelper::checkColumn('brand', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-brand" class="sort-column @if( $sort_column == 'brand' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.brand')
-                        </label>
-                      </th>
-                      <th scope="col" class="model" @if( !FixometerHelper::checkColumn('model', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-model" class="sort-column @if( $sort_column == 'model' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.model')
-                        </label>
-                      </th>
-                      <th scope="col" class="problem" @if( !FixometerHelper::checkColumn('problem', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-problem" class="sort-column @if( $sort_column == 'problem' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.comment')
-                        </label>
-                      </th>
-                      <th scope="col" class="group_name" @if( !FixometerHelper::checkColumn('group_name', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-group_name" class="sort-column @if( $sort_column == 'group_name' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.group')
-                        </label>
-                      </th>
-                      <th scope="col" class="event_date" @if( !FixometerHelper::checkColumn('event_date', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-event_date" class="sort-column @if( $sort_column == 'event_date' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.devices_date')
-                        </label>
-                      </th>
-                      <th scope="col" class="repair_status" @if( !FixometerHelper::checkColumn('repair_status', $user_preferences) ) style="display: none;" @endif>
-                        <label for="label-repair_status" class="sort-column @if( $sort_column == 'repair_status' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                          @lang('devices.state')
-                        </label>
-                      </th>
-                    </tr>
-                  </thead>
+                        <th scope="col" class="category" @if( !FixometerHelper::checkColumn('category', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-category" class="sort-column @if( $sort_column == 'category' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.category')
+                          </label>
+                        </th>
+                        <th scope="col" class="brand" @if( !FixometerHelper::checkColumn('brand', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-brand" class="sort-column @if( $sort_column == 'brand' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.brand')
+                          </label>
+                        </th>
+                        <th scope="col" class="model" @if( !FixometerHelper::checkColumn('model', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-model" class="sort-column @if( $sort_column == 'model' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.model')
+                          </label>
+                        </th>
+                        <th scope="col" class="problem" @if( !FixometerHelper::checkColumn('problem', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-problem" class="sort-column @if( $sort_column == 'problem' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.comment')
+                          </label>
+                        </th>
+                        <th scope="col" class="group_name" @if( !FixometerHelper::checkColumn('group_name', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-group_name" class="sort-column @if( $sort_column == 'group_name' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.group')
+                          </label>
+                        </th>
+                        <th scope="col" class="event_date" @if( !FixometerHelper::checkColumn('event_date', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-event_date" class="sort-column @if( $sort_column == 'event_date' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.devices_date')
+                          </label>
+                        </th>
+                        <th scope="col" class="repair_status" @if( !FixometerHelper::checkColumn('repair_status', $user_preferences) ) style="display: none;" @endif>
+                          <label for="label-repair_status" class="sort-column @if( $sort_column == 'repair_status' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+                            @lang('devices.state')
+                          </label>
+                        </th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    @php( $user = Auth::user() )
-                    @php( $is_admin = FixometerHelper::hasRole($user, 'Administrator') )
-                    @foreach($list as $device)
-                      @if ( $is_admin || $device->repaired_by == $user->id )
-                        @include('partials.device-row-with-edit')
-                      @else
-                        @include('partials.device-row-collapse')
-                      @endif
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
+                    <tbody>
+                      @php( $user = Auth::user() )
+                      @php( $is_admin = FixometerHelper::hasRole($user, 'Administrator') )
+                      @foreach($list as $device)
+                        @if ( $is_admin || $device->repaired_by == $user->id )
+                          @include('partials.device-row-with-edit')
+                        @else
+                          @include('partials.device-row-collapse')
+                        @endif
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
 
-              <br>
+                <br>
 
-              <div class="d-flex justify-content-center">
-                <nav aria-label="Page navigation example">
-                  <ul class="pagination">
-                    @if (!empty($_GET))
-                      {!! $list->appends(request()->input())->links() !!}
-                    @else
-                      {!! $list->links() !!}
-                    @endif
-                  </ul>
-                </nav>
-              </div>
+                <div class="d-flex justify-content-center">
+                  <nav aria-label="Page navigation example">
+                    {{-- Custom pagination view --}}
+                    <ul class="pagination">
+                      @include('pagination', [
+                        'paginator' => $list->appends(request()->input()),
+                        'onEachSide' => 4
+                      ])
+                    </ul>
+                  </nav>
+                </div>
+              @endif
+
             </div>
           </div>
 
-          @include('device.global-impact')
+          <div class="row">
+            @include('device.global-impact')
+          </div>
         </div>
       </div>
     </section>
