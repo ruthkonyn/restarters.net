@@ -13182,6 +13182,14 @@ a.text-dark:focus {
   color: #fff !important;
 }
 
+.btn-primary:focus svg path {
+  fill: #fff !important;
+}
+
+.btn-primary:hover svg path {
+  fill: #000 !important;
+}
+
 .btn-primary:active {
   background-color: #000 !important;
   color: #fff !important;

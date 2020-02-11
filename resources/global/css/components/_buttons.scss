@@ -91,6 +91,20 @@
   &:focus {
     background-color: $black;
     color: $white !important;
+
+    svg {
+      path {
+        fill: $white !important;
+      }
+    }
+  }
+
+  &:hover {
+    svg {
+      path {
+        fill: $black !important;
+      }
+    }
   }
 
   &:active {
