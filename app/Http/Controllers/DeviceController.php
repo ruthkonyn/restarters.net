@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Notification;
 use View;
+use Illuminate\Http\JsonResponse;
 
 class DeviceController extends Controller
 {
@@ -68,8 +69,6 @@ class DeviceController extends Controller
     public function index($search = null)
     {
         $Category = new Category;
-        // $Group = new Group;
-        // $Device = new Device;
 
         $categories = $Category->listed();
 
@@ -123,27 +122,32 @@ class DeviceController extends Controller
 
         // $all_devices = DeviceList::orderBy('sorter', 'DSC')->paginate(env('PAGINATE'));
         $all_devices = Device::with('deviceCategory')
-                                ->with('deviceEvent')
-                                    ->with('barriers')
-                                        ->orderBy('iddevices', 'DSC')
-                                            ->paginate(env('PAGINATE'));
-        // } else {
-        //     $groups_user_ids = UserGroups::where('user', $user->id)
-        //     ->pluck('group')
-        //     ->toArray();
-        //
-        //     $device_ids = Device::whereIn('event', EventsUsers::where('user', Auth::id())->pluck('event'))->pluck('iddevices');
-        //
-        //     $all_devices = DeviceList::whereIn('id', $device_ids)->orderBy('sorter', 'DSC')->paginate(env('PAGINATE'));
-        //
-        //     $all_groups = Group::whereIn('idgroups', $groups_user_ids)->get();
-        // }
+        ->with('deviceEvent')
+        ->with('barriers')
+        ->orderBy('iddevices', 'DSC')
+        ->paginate(env('PAGINATE'));
+
+
+        $most_recent_finished_event = Party::with('theGroup')
+        ->hasDevicesRepaired(5)
+        ->eventHasFinished()
+        ->orderBy('event_date', 'DESC')
+        ->first();
+
+        $global_impact_data = app('App\Http\Controllers\ApiController')
+        ->homepage_data();
+
+        if ($global_impact_data instanceof JsonResponse) {
+          $global_impact_data = $global_impact_data->getData();
+        }
 
         return view('device.index', [
             'title' => 'Devices',
             'categories' => $categories,
             'groups' => $all_groups,
             'list' => $all_devices,
+            'most_recent_finished_event' => $most_recent_finished_event,
+            'global_impact_data' => $global_impact_data,
             'selected_groups' => null,
             'selected_categories' => null,
             'from_date' => null,

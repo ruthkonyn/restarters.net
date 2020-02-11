@@ -100,6 +100,12 @@ $(document).ready(function () {
     $(this).toggleClass('dropdown-active');
     $(this).parents().children('.dropdown-menu-items').toggle();
   });
+
+  $('.entireRowClickable').click(function () {
+    window.location = $(this).find('a').attr('href');
+  }).hover(function () {
+    $(this).toggleClass('hoverablePointer');
+  });
 });
 
 /***/ }),

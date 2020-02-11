@@ -275,3 +275,26 @@
     }
   }
 }
+
+.call_to_action {
+  @extend .text-white;
+  @extend .px-15;
+  @extend .d-flex;
+  @extend .flex-row;
+  @extend .align-items-center;
+
+  background-color: #000;
+  font-family: Asap;
+  font-size: 18px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: normal;
+  text-align: left;
+  color: #ffffff;
+}
+
+.hoverablePointer {
+  cursor: pointer;
+}

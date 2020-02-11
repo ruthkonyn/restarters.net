@@ -1,5 +1,5 @@
 @php( $user_preferences = session('column_preferences') )
-<tr>
+<tr class="entireRowClickable">
     @if( !FixometerHelper::hasRole(Auth::user(), 'Administrator') )
         @include('partials/device-comment-photo', ['comment' => $device->problem ])
     @endif

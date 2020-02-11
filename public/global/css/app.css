@@ -6654,7 +6654,8 @@ button.bg-dark:focus {
 .nav-wrapper,
 .summary,
 .card-summary .card-body,
-.card-summary .card-body .svg-wrapper {
+.card-summary .card-body .svg-wrapper,
+.call_to_action {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6923,7 +6924,8 @@ button.bg-dark:focus {
 .nav-wrapper .nav-left,
 .nav-wrapper .nav-right,
 .nav-wrapper,
-.summary {
+.summary,
+.call_to_action {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: row !important;
@@ -7051,7 +7053,8 @@ button.bg-dark:focus {
 .nav-wrapper .nav-right > li > a,
 .summary,
 .card-summary .card-body,
-.card-summary .card-body .svg-wrapper {
+.card-summary .card-body .svg-wrapper,
+.call_to_action {
   -webkit-box-align: center !important;
       -ms-flex-align: center !important;
           align-items: center !important;
@@ -8626,7 +8629,8 @@ button.bg-dark:focus {
 }
 
 .pr-15,
-.px-15 {
+.px-15,
+.call_to_action {
   padding-right: 15px !important;
 }
 
@@ -8636,7 +8640,8 @@ button.bg-dark:focus {
 }
 
 .pl-15,
-.px-15 {
+.px-15,
+.call_to_action {
   padding-left: 15px !important;
 }
 
@@ -12624,7 +12629,8 @@ button.bg-dark:focus {
 }
 
 .text-white,
-.nav-tabs-block .nav-item {
+.nav-tabs-block .nav-item,
+.call_to_action {
   color: #fff !important;
 }
 
@@ -13826,5 +13832,22 @@ label.form-check-label {
 
 .collapse-plus-and-minus-controller:not(.collapsed)::after {
   background-image: url(/images/minus-icon.svg?e898b915ea60ee8cb312ab5a6c333208);
+}
+
+.call_to_action {
+  background-color: #000;
+  font-family: Asap;
+  font-size: 18px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: normal;
+  text-align: left;
+  color: #ffffff;
+}
+
+.hoverablePointer {
+  cursor: pointer;
 }
 

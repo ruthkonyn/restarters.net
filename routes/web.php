@@ -11,11 +11,6 @@
 |
 */
 
-Route::get('/testing123', function(){
-  return view('testing123');
-});
-
-
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');

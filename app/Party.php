@@ -5,7 +5,7 @@ namespace App;
 use App\Device;
 use App\EventUsers;
 use App\Helpers\FootprintRatioCalculator;
-
+use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -811,5 +811,27 @@ class Party extends Model implements Auditable
       } else {
         return '';
       }
+    }
+
+    public function scopeHasDevicesRepaired($query, int $has_x_devices_fixed = 1)
+    {
+        return $query->whereHas('allDevices', function($query) {
+          return $query->where('repair_status', 1);
+        }, '>=', $has_x_devices_fixed);
+    }
+
+    public function scopeEventHasFinished($query)
+    {
+        $now = Carbon::now();
+
+        return $query->whereRaw("CONCAT(`event_date`, ' ', `end`) < '{$now}'");
+    }
+
+    public function getWastePreventedAttribute()
+    {
+        $footprintRatioCalculator = new FootprintRatioCalculator();
+        $emissionRatio = $footprintRatioCalculator->calculateRatio();
+
+        return round($this->getEventStats($emissionRatio)['ewaste'], 2);
     }
 }
