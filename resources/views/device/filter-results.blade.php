@@ -198,7 +198,7 @@
       </div>
     </div>
 
-    <div class="summary">
+    <div class="nav-tab-summary-section">
       <button type="button" name="button" class="btn btn-sm btn-primary mr-40">
         @include('svgs.fixometer.search_ico')
       </button>

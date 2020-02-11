@@ -1,8 +1,21 @@
+// Variables
 @import 'variables';
+
+// Bootstrap
 @import "bootstrap/bootstrap";
+
+// Navigation
 @import "components/navigation-bar";
+
+// Helpers
+@import "helpers/box-shadows";
+@import "helpers/hoverable";
+
+// Other
 @import "components/buttons";
 @import "components/forms";
 @import "components/pagination";
 @import "components/tabs";
+@import "components/collapse";
 @import "components/popover";
+@import "components/cards";

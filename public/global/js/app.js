@@ -68,48 +68,60 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(2);
+module.exports = __webpack_require__(4);
 
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 $(document).ready(function () {
+
+  __webpack_require__(2);
+  __webpack_require__(3);
+
   console.log('ready!');
-
-  $('.toggle-dropdown-menu').click(function () {
-
-    // If item is already active then close all.
-    if ($(this).hasClass('dropdown-active')) {
-      $('.toggle-dropdown-menu').each(function () {
-        $(this).removeClass('dropdown-active');
-        $(this).parents().children('.dropdown-menu-items').hide();
-      });
-
-      return false;
-    }
-
-    // Close all existing items except current.
-    $('.toggle-dropdown-menu').not(this).each(function () {
-      $(this).removeClass('dropdown-active');
-      $(this).parents().children('.dropdown-menu-items').hide();
-    });
-
-    // Show items.
-    $(this).toggleClass('dropdown-active');
-    $(this).parents().children('.dropdown-menu-items').toggle();
-  });
-
-  $('.entireRowClickable').click(function () {
-    window.location = $(this).find('a').attr('href');
-  }).hover(function () {
-    $(this).toggleClass('hoverablePointer');
-  });
 });
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+$('.toggle-dropdown-menu').click(function () {
+
+  // If item is already active then close all.
+  if ($(this).hasClass('dropdown-active')) {
+    $('.toggle-dropdown-menu').each(function () {
+      $(this).removeClass('dropdown-active');
+      $(this).parents().children('.dropdown-menu-items').hide();
+    });
+
+    return false;
+  }
+
+  // Close all existing items except current.
+  $('.toggle-dropdown-menu').not(this).each(function () {
+    $(this).removeClass('dropdown-active');
+    $(this).parents().children('.dropdown-menu-items').hide();
+  });
+
+  // Show items.
+  $(this).toggleClass('dropdown-active');
+  $(this).parents().children('.dropdown-menu-items').toggle();
+});
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+$('.entireRowClickable').click(function () {
+  window.location = $(this).find('a').attr('href');
+}).hover(function () {
+  $(this).toggleClass('hoverablePointer');
+});
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

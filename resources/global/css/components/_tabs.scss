@@ -1,23 +1,5 @@
-
-.box-shadow-offset {
-  -webkit-box-shadow: 6px 6px 0 0 #000;
-  box-shadow: 6px 6px 0 0 #000;
-}
-
-@each $breakpoint in map-keys(map-remove($grid-breakpoints, xs)) {
-  @include media-breakpoint-up($breakpoint) {
-    .offset-#{$breakpoint}-box-shadow {
-      -webkit-box-shadow: 6px 6px 0 0 #000;
-      box-shadow: 6px 6px 0 0 #000;
-    }
-  }
-}
-
-
 @each $breakpoint in map-keys(map-remove($grid-breakpoints, xs)) {
   .nav-#{$breakpoint}-tabs {
-    // ... https://codepen.io/dferenc/pen/YYyjYJ
-
     .nav-tabs {
       display: none;
     }
@@ -160,7 +142,7 @@
   }
 }
 
-.summary {
+.nav-tab-summary-section {
   @extend .d-flex;
   @extend .flex-row;
   @extend .align-items-center;
@@ -169,111 +151,6 @@
   border: 1px solid #000;
   border-top: 1px solid #4aaebc;
   background-color: #4aaebc;
-}
-.search-wrapper {
-
-}
-
-.card-summary {
-  @extend .rounded-0;
-  @extend .h-100;
-  @extend .box-shadow-offset;
-
-  border: 1px solid #000;
-
-  .card-body {
-    @extend .d-flex;
-    @extend .align-items-center;
-    @extend .flex-column;
-    @extend .p-10;
-
-    .svg-wrapper {
-      @extend .d-flex;
-      @extend .align-items-center;
-
-      min-height: 100px;
-      max-height: 100px;
-
-      svg {
-
-        width: 80px;
-      }
-    }
-
-    h3 {
-      @extend .mb-10;
-
-      font-family: Asap;
-      font-size: 36px;
-      font-weight: bold;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.13;
-      letter-spacing: normal;
-      text-align: center;
-      color: #0392a6;
-    }
-
-    p {
-      @extend .mb-0;
-
-      font-family: Asap;
-      font-size: 18px;
-      font-weight: bold;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.17;
-      letter-spacing: normal;
-      text-align: center;
-      color: #000;
-    }
-  }
-}
-
-.collapse-plus-and-minus {
-  button {
-    h5 {
-      &::after {
-        content: '';
-        background-image: url(../../svgs/add-icon.svg);
-        width: 18px;
-        height: 18px;
-        display: inline-block;
-        background-repeat: no-repeat;
-        text-align: center;
-        vertical-align: middle;
-        position: absolute;
-        right: 0;
-      }
-    }
-
-    &:not(.collapsed) {
-      h5 {
-        &::after {
-          background-image: url(../../svgs/minus-icon.svg);
-        }
-      }
-    }
-  }
-}
-
-.collapse-plus-and-minus-controller {
-  &::after {
-    content: '';
-    background-image: url(../../svgs/add-icon.svg);
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-    background-repeat: no-repeat;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  &:not(.collapsed) {
-    &::after {
-      background-image: url(../../svgs/minus-icon.svg);
-    }
-  }
 }
 
 .call_to_action {
@@ -293,8 +170,4 @@
   letter-spacing: normal;
   text-align: left;
   color: #ffffff;
-}
-
-.hoverablePointer {
-  cursor: pointer;
 }

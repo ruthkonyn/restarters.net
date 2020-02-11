@@ -6652,10 +6652,10 @@ button.bg-dark:focus {
 .nav-wrapper .nav-left > li > a,
 .nav-wrapper .nav-right > li > a,
 .nav-wrapper,
-.summary,
+.nav-tab-summary-section,
+.call_to_action,
 .card-summary .card-body,
-.card-summary .card-body .svg-wrapper,
-.call_to_action {
+.card-summary .card-body .svg-wrapper {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6924,7 +6924,7 @@ button.bg-dark:focus {
 .nav-wrapper .nav-left,
 .nav-wrapper .nav-right,
 .nav-wrapper,
-.summary,
+.nav-tab-summary-section,
 .call_to_action {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
@@ -7051,10 +7051,10 @@ button.bg-dark:focus {
 .nav-wrapper .nav-right > li,
 .nav-wrapper .nav-left > li > a,
 .nav-wrapper .nav-right > li > a,
-.summary,
+.nav-tab-summary-section,
+.call_to_action,
 .card-summary .card-body,
-.card-summary .card-body .svg-wrapper,
-.call_to_action {
+.card-summary .card-body .svg-wrapper {
   -webkit-box-align: center !important;
       -ms-flex-align: center !important;
           align-items: center !important;
@@ -8694,7 +8694,7 @@ button.bg-dark:focus {
 }
 
 .p-30,
-.summary {
+.nav-tab-summary-section {
   padding: 30px !important;
 }
 
@@ -13076,6 +13076,44 @@ a.text-dark:focus {
   font-weight: normal !important;
 }
 
+.box-shadow-offset,
+.card-summary {
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
+}
+
+@media (min-width: 576px) {
+  .offset-sm-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 768px) {
+  .offset-md-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 992px) {
+  .offset-lg-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 1200px) {
+  .offset-xl-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+.hoverablePointer {
+  cursor: pointer;
+}
+
 .btn,
 .nav-sm-tabs .accordion-tab-header button,
 .nav-md-tabs .accordion-tab-header button,
@@ -13493,40 +13531,6 @@ label.form-check-label {
   font-weight: 700;
 }
 
-.box-shadow-offset,
-.card-summary {
-  -webkit-box-shadow: 6px 6px 0 0 #000;
-  box-shadow: 6px 6px 0 0 #000;
-}
-
-@media (min-width: 576px) {
-  .offset-sm-box-shadow {
-    -webkit-box-shadow: 6px 6px 0 0 #000;
-    box-shadow: 6px 6px 0 0 #000;
-  }
-}
-
-@media (min-width: 768px) {
-  .offset-md-box-shadow {
-    -webkit-box-shadow: 6px 6px 0 0 #000;
-    box-shadow: 6px 6px 0 0 #000;
-  }
-}
-
-@media (min-width: 992px) {
-  .offset-lg-box-shadow {
-    -webkit-box-shadow: 6px 6px 0 0 #000;
-    box-shadow: 6px 6px 0 0 #000;
-  }
-}
-
-@media (min-width: 1200px) {
-  .offset-xl-box-shadow {
-    -webkit-box-shadow: 6px 6px 0 0 #000;
-    box-shadow: 6px 6px 0 0 #000;
-  }
-}
-
 .nav-sm-tabs .nav-tabs {
   display: none;
 }
@@ -13766,38 +13770,14 @@ label.form-check-label {
   border-bottom: 0 !important;
 }
 
-.summary {
+.nav-tab-summary-section {
   border: 1px solid #000;
   border-top: 1px solid #4aaebc;
   background-color: #4aaebc;
 }
 
-.card-summary {
-  border: 1px solid #000;
-}
-
-.card-summary .card-body .svg-wrapper {
-  min-height: 100px;
-  max-height: 100px;
-}
-
-.card-summary .card-body .svg-wrapper svg {
-  width: 80px;
-}
-
-.card-summary .card-body h3 {
-  font-family: Asap;
-  font-size: 36px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: normal;
-  text-align: center;
-  color: #0392a6;
-}
-
-.card-summary .card-body p {
+.call_to_action {
+  background-color: #000;
   font-family: Asap;
   font-size: 18px;
   font-weight: bold;
@@ -13805,8 +13785,8 @@ label.form-check-label {
   font-style: normal;
   line-height: 1.17;
   letter-spacing: normal;
-  text-align: center;
-  color: #000;
+  text-align: left;
+  color: #ffffff;
 }
 
 .collapse-plus-and-minus button h5::after {
@@ -13839,23 +13819,6 @@ label.form-check-label {
 
 .collapse-plus-and-minus-controller:not(.collapsed)::after {
   background-image: url(/images/minus-icon.svg?e898b915ea60ee8cb312ab5a6c333208);
-}
-
-.call_to_action {
-  background-color: #000;
-  font-family: Asap;
-  font-size: 18px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.17;
-  letter-spacing: normal;
-  text-align: left;
-  color: #ffffff;
-}
-
-.hoverablePointer {
-  cursor: pointer;
 }
 
 .popover-group {
@@ -13930,6 +13893,43 @@ label.form-check-label {
 
 .popover-calendar-feed p,
 .popover-calendar-feed a {
+  color: #000;
+}
+
+.card-summary {
+  border: 1px solid #000;
+}
+
+.card-summary .card-body .svg-wrapper {
+  min-height: 100px;
+  max-height: 100px;
+}
+
+.card-summary .card-body .svg-wrapper svg {
+  width: 80px;
+}
+
+.card-summary .card-body h3 {
+  font-family: Asap;
+  font-size: 36px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: normal;
+  text-align: center;
+  color: #0392a6;
+}
+
+.card-summary .card-body p {
+  font-family: Asap;
+  font-size: 18px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: normal;
+  text-align: center;
   color: #000;
 }
 
