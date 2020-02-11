@@ -13144,6 +13144,14 @@ a.text-dark:focus {
   color: #000 !important;
 }
 
+.btn-primary.dropdown-toggle::after {
+  display: none !important;
+}
+
+.btn-primary.dropdown-toggle svg path {
+  fill: #000 !important;
+}
+
 .btn-primary.dropdown-toggle:focus,
 .btn-primary.dropdown-toggle:active {
   border: solid 1px #000;
@@ -13158,6 +13166,11 @@ a.text-dark:focus {
   color: #fff;
 }
 
+.btn-primary.dropdown-toggle:focus svg path,
+.btn-primary.dropdown-toggle:active svg path {
+  fill: #fff !important;
+}
+
 .btn-primary:focus {
   background-color: #000;
   color: #fff !important;
@@ -13166,6 +13179,10 @@ a.text-dark:focus {
 .btn-primary:active {
   background-color: #000 !important;
   color: #fff !important;
+}
+
+.btn-primary:active svg path {
+  fill: #fff !important;
 }
 
 .btn-primary:hover,
@@ -13177,9 +13194,120 @@ a.text-dark:focus {
   color: #000;
 }
 
-.btn-primary:hover svg,
-.btn-primary.dropdown-toggle:hover svg {
+.show .dropdown-toggle {
+  background-color: #000 !important;
+  color: #fff;
+}
+
+.show .dropdown-toggle svg path {
   fill: #fff !important;
+}
+
+.btn-group__duo .btn,
+.btn-group__duo .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo button {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.btn-group__duo .dropdown:first-child .btn,
+.btn-group__duo .dropdown:first-child .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button {
+  border-radius: 0;
+  border-right: 1px solid #155e67;
+}
+
+.btn-group__duo .dropdown:last-child .btn,
+.btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
+  border-radius: 0;
+}
+
+@media (max-width: 991.98px) {
+  .btn-group__duo .dropdown:last-child .btn,
+  .btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
+  .nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
+  .nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
+  .nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
+  .nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
+    border-radius: 0;
+  }
+}
+
+.btn-group__duo .dropdown-menu {
+  padding: 10px 5px 5px 5px;
+  min-width: 100%;
+  top: -1px !important;
+  background-color: #fff;
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+          box-shadow: 6px 6px 0 0 #000;
+  border: solid 1px #000;
+  border-radius: 0;
+}
+
+.btn-group__duo .dropdown-item {
+  padding: 0 10px;
+  background-color: #fff;
+  color: #0394a6;
+  text-transform: uppercase;
+  font-family: "Asap", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-group__duo .dropdown-item input[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 0;
+  background-color: #fff;
+  border: 1px solid #000;
+  margin-right: 5px;
+}
+
+.btn-group__duo .dropdown-item input[type="checkbox"]:checked::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-image: url(/images/check-tick.svg?e91ab6b39d1c8fff84f966447dd13d33);
+  background-repeat: no-repeat;
+  background-position: center center;
+  content: "";
+}
+
+.btn-group__duo .dropdown-item:hover,
+.btn-group__duo .dropdown-item:focus {
+  background-color: #000;
+  color: #fff;
 }
 
 @media (min-width: 992px) {
@@ -13224,6 +13352,11 @@ label.form-check-label {
   width: 100%;
 }
 
+.form-control__select .select2-container--default .select2-selection--single .select2-selection__arrow b {
+  background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
+  background-repeat: no-repeat;
+}
+
 .form-control__select .select2-container--default .select2-selection--single {
   border: 0;
 }
@@ -13241,10 +13374,23 @@ label.form-check-label {
   top: 4px !important;
 }
 
+.form-control__select .select2-selection__arrow b {
+  border: 0;
+  border-color: unset !important;
+  border-style: unset !important;
+  background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
+  width: 14px !important;
+  height: 8px !important;
+  left: 10% !important;
+  background-repeat: no-repeat;
+}
+
 .form-control__select .select2-selection--multiple {
   margin-top: 0;
   margin-bottom: 0;
-  border: 0 none !important;
+  background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
+  background-repeat: no-repeat;
+  background-position: 97% 50%;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice {
