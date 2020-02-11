@@ -188,17 +188,17 @@
       </li>
 
       <li>
-        <a href="#" class="@if( ! $user->unReadNotifications->isEmpty() ) toggle-dropdown-menu @endif">
+        <a href="#" class="@if( ! Auth::user()->unReadNotifications->isEmpty() ) toggle-dropdown-menu @endif">
           @include('svgs/navigation/bell-icon')
 
-          @if( ! $user->unReadNotifications->isEmpty() )
+          @if( ! Auth::user()->unReadNotifications->isEmpty() )
             <span class="bell-icon-active"></span>
           @endif
         </a>
 
         {{-- TODO: bell --}}
-        @if( ! $user->unReadNotifications->isEmpty() )
-          @php $notifications = $user->unReadNotifications->sortBy('created_at')->take(10); @endphp
+        @if( ! Auth::user()->unReadNotifications->isEmpty() )
+          @php $notifications = Auth::user()->unReadNotifications->sortBy('created_at')->take(10); @endphp
           <ul class="dropdown-menu-items">
             @foreach ($notifications as $notification)
               <li class="notifcation-text">
