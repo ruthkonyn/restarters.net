@@ -13312,8 +13312,7 @@ a.text-dark:focus {
 
 .btn-group__duo .dropdown-item:hover,
 .btn-group__duo .dropdown-item:focus {
-  background-color: #000;
-  color: #fff;
+  background-color: #f9f9f9;
 }
 
 @media (min-width: 992px) {
@@ -13849,5 +13848,80 @@ label.form-check-label {
 
 .hoverablePointer {
   cursor: pointer;
+}
+
+.popover-group {
+  bottom: 2px;
+  left: 5px;
+}
+
+.popover-group svg {
+  position: relative;
+  z-index: 1;
+  top: 2px;
+  margin-right: 5px;
+}
+
+.popover-body {
+  font-size: 14px;
+  font-family: "Open Sans", sans-serif;
+  color: #5a5a5a;
+}
+
+.popover__table {
+  border-color: #0394a6;
+  border: 0;
+}
+
+.popover__table .popover-body {
+  font-size: 13px;
+  background-color: #000;
+  border-radius: 0;
+  color: #fff;
+  padding: 5px 10px;
+}
+
+.popover__table .arrow::after,
+.popover__table .arrow::before {
+  border-bottom-color: #000;
+  border-top-color: #000;
+}
+
+.popover-calendar-feed {
+  font-family: "Open Sans", sans-serif;
+  min-width: 370px;
+  border: 0;
+}
+
+.popover-calendar-feed .arrow {
+  top: calc((0.5rem) * -1);
+  color: rgba(0, 0, 0, 0.125);
+  z-index: 1;
+}
+
+.popover-calendar-feed .popover-body {
+  padding: 0;
+}
+
+.popover-calendar-feed .card {
+  font-size: 13px;
+}
+
+.popover-calendar-feed .card .btn,
+.popover-calendar-feed .card .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .popover-calendar-feed .card button,
+.popover-calendar-feed .card .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .popover-calendar-feed .card button,
+.popover-calendar-feed .card .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .popover-calendar-feed .card button,
+.popover-calendar-feed .card .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .popover-calendar-feed .card button {
+  min-width: 0;
+  font-size: 0;
+}
+
+.popover-calendar-feed p,
+.popover-calendar-feed a {
+  color: #000;
 }
 
