@@ -214,7 +214,6 @@ AND devices.event = events.idevents ';
         } elseif ( ! is_null($year) && is_numeric($year) && ! is_null($g) && is_numeric($g)) {
             return DB::select(DB::raw($sql), array('year' => $year, 'g' => $g));
         }
-        dd(DB::select(DB::raw($sql)));
 
         return DB::select(DB::raw($sql));
     }
