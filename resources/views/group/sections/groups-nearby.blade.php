@@ -1,10 +1,10 @@
-<section class="table-section" id="groups-near">
+<section class="table-section py-30" id="groups-near">
   <h2>
-    @lang('groups.groups_title2') <sup>(<a href="/group/all">See all groups</a>)</sup>
+    @lang('groups.groups_title2')
   </h2>
 
   <div class="table-responsive">
-    <table role="table" class="table table-striped table-hover table-layout-fixed">
+    <table role="table" class="table table-striped table-hover">
       @include('partials.tables.head-groups')
       <tbody>
         @if( ! $groups_near_you->isEmpty() )

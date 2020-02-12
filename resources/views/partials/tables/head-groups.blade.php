@@ -8,7 +8,6 @@
     <th width="200" scope="col">
     </th>
 
-    {{-- TODO --}}
     {{-- LOCATION --}}
     <th scope="col">
       <label for="label-upcoming_event" class="sort-column justify-content-center">
@@ -16,8 +15,7 @@
       </label>
     </th>
 
-    {{-- TODO --}}
-    {{-- USER --}}
+    {{-- RESTARTERS --}}
     <th scope="col" class="text-center">
       <label for="label-upcoming_event" class="sort-column justify-content-center">
         @include('svgs/navigation/user-icon')

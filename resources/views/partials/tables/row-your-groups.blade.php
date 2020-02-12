@@ -17,7 +17,7 @@
   </td>
 
   {{-- LOCATION --}}
-  <td colspan="1">
+  <td class="text-center" colspan="1">
     {{{ $group->getLocation() }}}
   </td>
 
@@ -34,6 +34,7 @@
   </td>
 
   {{-- FOLLOW BUTTON --}}
+  {{-- TODO: Link/route for unfollowing to be confirmed. --}}
   <td class="text-center" colspan="1">
     <a class="btn btn-primary" href="/group/join/{{ $group->idgroups }}" id="join-group">
       Unfollow

@@ -43,18 +43,21 @@ class GroupController extends Controller
         $user = Auth::user();
 
         // All groups only
-        $groupsQuery = Group::orderBy('name', 'ASC');
+        $groupsQuery = Group::with('allRestarters', 'parties', 'groupImage.image')
+        ->orderBy('name', 'ASC');
         $groups = $groupsQuery->paginate(env('PAGINATE'));
         $groups_count = $groupsQuery->count();
 
         //Look for groups where user ID exists in pivot table
-        $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')->toArray();
+        $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')
+        ->toArray();
 
         $sort_direction = request()->input('sort_direction');
         $sort_column = request()->input('sort_column');
 
         //Look for groups where user ID exists in pivot table
-        $your_groups = Group::join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+        $your_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
+        ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
         ->join('events', 'events.group', '=', 'groups.idgroups')
         ->where('users_groups.user', $user->id);
 
@@ -73,7 +76,8 @@ class GroupController extends Controller
 
         //Assuming we have valid lat and long values, let's see what is nearest
         if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
-            $groups_near_you = Group::select(DB::raw('`groups`.*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( groups.latitude ) ) * cos( radians( groups.longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( groups.latitude ) ) ) ) AS distance'))
+            $groups_near_you = Group::with('allRestarters', 'parties', 'groupImage.image')
+            ->select(DB::raw('`groups`.*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( groups.latitude ) ) * cos( radians( groups.longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( groups.latitude ) ) ) ) AS distance'))
             ->having('distance', '<=', 150)
             ->join('events', 'events.group', '=', 'groups.idgroups')
             ->whereNotIn('groups.idgroups', $your_groups_uniques);

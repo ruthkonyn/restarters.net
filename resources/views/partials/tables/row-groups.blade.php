@@ -17,16 +17,20 @@
   </td>
 
   {{-- LOCATION --}}
-  <td colspan="1">
+  <td class="text-center" colspan="1">
     {{{ $group->getLocation() }}}
   </td>
 
-  <td colspan="1">
-
+  {{-- RESTARTERS --}}
+  <td class="text-center" colspan="1">
+    {{ $group->allRestarters->count() }}
   </td>
 
-  <td colspan="1">
-
+  {{-- PARTCIPANTS --}}
+  <td class="text-center" colspan="1">
+    @if ( ! $group->parties->isEmpty())
+      {{ $group->parties->sum('pax') }}
+    @endif
   </td>
 
   {{-- NEXT EVENT DATE --}}

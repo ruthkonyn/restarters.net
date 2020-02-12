@@ -1,0 +1,28 @@
+.alert {
+  &-custom {
+    @extend .border-0;
+    @extend .rounded-0;
+
+    p {
+      @extend .font-weight-bold;
+    }
+
+    .close {
+      opacity: 1;
+
+      span {
+        @extend .text-dark;
+
+        text-shadow: none;
+      }
+    }
+  }
+
+  &-danger {
+    background-color: #f45b69 !important;
+
+    p {
+      @extend .text-white;
+    }
+  }
+}
