@@ -1,4 +1,4 @@
-@if( !is_null($groups) )
+@if( ! is_null($groups) )
   <section class="table-section" id="all-groups">
     <h2>@lang('groups.groups_title3')</h2>
 
@@ -12,55 +12,12 @@
 
     <div class="table-responsive">
       <table role="table" class="table table-striped table-hover table-layout-fixed" id="sort-table">
-        <thead>
-          <tr>
-            <th width="42">
-            </th>
-
-            <th width="140" scope="col">
-              <label for="label-name"  class="sort-column @if( $sort_column == 'name' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                @lang('groups.groups_name')
-              </label>
-            </th>
-
-            <th width="140" scope="col">
-              <label for="label-location" class="sort-column @if( $sort_column == 'distance' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                @lang('groups.groups_location')
-              </label>
-            </th>
-
-            <th width="70" scope="col" class="text-center">
-              <label for="label-hosts" class="sort-column @if( $sort_column == 'hosts' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                @lang('groups.groups_hosts')
-              </label>
-            </th>
-
-            <th width="80" scope="col" class="text-center">
-              <label for="label-restarters" class="sort-column @if( $sort_column == 'restarters' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                @lang('groups.groups_restarters')
-              </label>
-            </th>
-
-            <th width="100" scope="col" class="text-center">
-              <label for="label-upcoming_event" class="sort-column @if( $sort_column == 'upcoming_event' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                @lang('groups.groups_upcoming_event')
-              </label>
-            </th>
-
-            @if( FixometerHelper::hasRole(Auth::user(), 'Administrator'))
-              <th width="75" scope="col" class="text-center">
-                <label for="label-created" class="sort-column @if( $sort_column == 'created_at' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                  {{ __('Created At') }}
-                </label>
-              </th>
-            @endif
-          </tr>
-        </thead>
+        @include('partials.tables.head-groups')
 
         <tbody>
-          @if( !$groups->isEmpty() )
+          @if( ! $groups->isEmpty() )
             @foreach ($groups as $group)
-              @include('partials.tables.row-all-groups')
+              @include('partials.tables.row-groups')
             @endforeach
           @else
             <tr>
@@ -81,7 +38,7 @@
       </nav>
     </div>
     <div class="d-flex justify-content-center">
-        {{ $groups_count }} results
+      {{ $groups_count }} results
     </div>
   </section>
 @endif

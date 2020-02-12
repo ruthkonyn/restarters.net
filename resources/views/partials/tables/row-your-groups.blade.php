@@ -21,14 +21,6 @@
     {{{ $group->getLocation() }}}
   </td>
 
-  <td colspan="1">
-
-  </td>
-
-  <td colspan="1">
-
-  </td>
-
   {{-- NEXT EVENT DATE --}}
   @php ($next_upcoming_event = $group->getNextUpcomingEvent())
   <td class="text-center">
@@ -43,10 +35,8 @@
 
   {{-- FOLLOW BUTTON --}}
   <td class="text-center" colspan="1">
-    @if ( ! in_array($group->idgroups, $your_groups_uniques) )
-      <a class="btn btn-primary" href="/group/join/{{ $group->idgroups }}" id="join-group">
-        Follow
-      </a>
-    @endif
+    <a class="btn btn-primary" href="/group/join/{{ $group->idgroups }}" id="join-group">
+      Unfollow
+    </a>
   </td>
 </tr>

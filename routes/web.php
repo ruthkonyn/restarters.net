@@ -134,6 +134,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
 
     //Group Controller
     Route::prefix('group')->group(function () {
+        Route::get('/', 'GroupController@index')->name('groups');
         Route::get('/create', 'GroupController@create')->name('create-group');
         Route::post('/create', 'GroupController@create');
         Route::get('/edit/{id}', 'GroupController@edit');
@@ -145,7 +146,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
         Route::post('/image-upload/{id}', 'GroupController@imageUpload');
         Route::get('/image/delete/{idgroups}/{id}/{path}', 'GroupController@ajaxDeleteImage');
         Route::get('/search/column', 'GroupController@searchColumn');
-        Route::get('/{all?}', 'GroupController@index')->name('groups');
         Route::get('/all/search', 'GroupController@search');
         Route::get('/search', 'GroupController@searchColumn');
         Route::get('/make-host/{group_id}/{user_id}', 'GroupController@getMakeHost');

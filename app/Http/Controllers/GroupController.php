@@ -40,79 +40,56 @@ class GroupController extends Controller
 
     public function index($all = false)
     {
-        //Get current logged in user
         $user = Auth::user();
 
-        $groups = null;
+        // All groups only
+        $groupsQuery = Group::orderBy('name', 'ASC');
+        $groups = $groupsQuery->paginate(env('PAGINATE'));
+        $groups_count = $groupsQuery->count();
 
-        if ($all) {
-
-            // All groups only
-            $groupsQuery = Group::orderBy('name', 'ASC');
-            $groups = $groupsQuery->paginate(env('PAGINATE'));
-            $groups_count = $groupsQuery->count();
-
-            //Get all group tags
-            $all_group_tags = GroupTags::all();
-
-            //Look for groups where user ID exists in pivot table
-            $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')->toArray();
-
-            return view('group.index', [
-                'your_groups' => null,
-                'your_groups_uniques' => $your_groups_uniques,
-                'groups_near_you' => null,
-                'groups' => $groups,
-                'your_area' => null,
-                'all' => $all,
-                'all_group_tags' => $all_group_tags,
-                'sort_direction' => 'ASC',
-                'sort_column' => 'name',
-                'groups_count' => $groups_count,
-            ]);
-        }
+        //Look for groups where user ID exists in pivot table
+        $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')->toArray();
 
         $sort_direction = request()->input('sort_direction');
         $sort_column = request()->input('sort_column');
 
         //Look for groups where user ID exists in pivot table
         $your_groups = Group::join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
-            ->join('events', 'events.group', '=', 'groups.idgroups')
-            ->where('users_groups.user', $user->id);
+        ->join('events', 'events.group', '=', 'groups.idgroups')
+        ->where('users_groups.user', $user->id);
 
-            if ( ! empty($sort_direction) && ! empty($sort_column)) {
-              $your_groups = $your_groups->whereDate('events.event_date', '>=', date('Y-m-d'))
-                    ->orderBy('events.event_date', $sort_direction);
-            }
+        if ( ! empty($sort_direction) && ! empty($sort_column)) {
+            $your_groups = $your_groups->whereDate('events.event_date', '>=', date('Y-m-d'))
+            ->orderBy('events.event_date', $sort_direction);
+        }
 
-            $your_groups = $your_groups->orderBy('groups.name', 'ASC')
-            ->groupBy('groups.idgroups')
-            ->select('groups.*')
-            ->get();
+        $your_groups = $your_groups->orderBy('groups.name', 'ASC')
+        ->groupBy('groups.idgroups')
+        ->select('groups.*')
+        ->get();
 
         //Make sure we don't show the same groups in nearest to you
         $your_groups_uniques = $your_groups->pluck('idgroups')->toArray();
 
         //Assuming we have valid lat and long values, let's see what is nearest
         if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
-          $groups_near_you = Group::select(DB::raw('`groups`.*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( groups.latitude ) ) * cos( radians( groups.longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( groups.latitude ) ) ) ) AS distance'))
-              ->having('distance', '<=', 150)
-              ->join('events', 'events.group', '=', 'groups.idgroups')
-              ->whereNotIn('groups.idgroups', $your_groups_uniques);
+            $groups_near_you = Group::select(DB::raw('`groups`.*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( groups.latitude ) ) * cos( radians( groups.longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( groups.latitude ) ) ) ) AS distance'))
+            ->having('distance', '<=', 150)
+            ->join('events', 'events.group', '=', 'groups.idgroups')
+            ->whereNotIn('groups.idgroups', $your_groups_uniques);
 
-          if ( ! empty($sort_direction) && ! empty($sort_column)) {
-            $groups_near_you = $groups_near_you->whereDate('events.event_date', '>=', date('Y-m-d'))
-                  ->orderBy('events.event_date', $sort_direction);
-          }
+            if ( ! empty($sort_direction) && ! empty($sort_column)) {
+                $groups_near_you = $groups_near_you->whereDate('events.event_date', '>=', date('Y-m-d'))
+                ->orderBy('events.event_date', $sort_direction);
+            }
 
-          $groups_near_you = $groups_near_you->groupBy('groups.idgroups')
-              ->orderBy('distance', 'ASC')
-              ->orderBy('distance', 'ASC')
-              ->take(10)
-              ->get();
-
+            $groups_near_you = $groups_near_you->groupBy('groups.idgroups')
+            ->orderBy('distance', 'ASC')
+            ->orderBy('distance', 'ASC')
+            ->take(10)
+            ->get();
         } else {
-            $groups_near_you = null;
+            $groups_near_you = collect([]);
         }
 
         return view('group.index', [
@@ -120,10 +97,12 @@ class GroupController extends Controller
             'your_groups_uniques' => $your_groups_uniques,
             'groups_near_you' => $groups_near_you,
             'groups' => $groups,
+            'groups_count' => $groups_count,
             'your_area' => $user->location,
             'all' => $all,
-            'sort_direction' => $sort_direction,
-            'sort_column' => $sort_column,
+            'all_group_tags' => GroupTags::all(),
+            'sort_direction' => $sort_direction ? $sort_direction : 'ASC',
+            'sort_column' => $sort_column ? $sort_column : 'name',
         ]);
     }
 
@@ -283,7 +262,7 @@ class GroupController extends Controller
             if (empty($name)) {
                 $error['name'] = 'Please input a name.';
             }
-            
+
             if ( ! empty($location)) {
                 $lat_long = FixometerHelper::getLatLongFromCityCountry($location);
 
