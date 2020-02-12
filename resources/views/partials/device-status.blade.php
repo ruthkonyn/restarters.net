@@ -11,7 +11,7 @@
           $device = 'repairable';
           break;
         case( 1 ):
-          $state = 'success';
+          $state = 'primary';
           $device = 'fixed';
           break;
 

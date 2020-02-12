@@ -191,10 +191,10 @@ class DeviceController extends Controller
             return $all_devices->get();
         }
 
-        $all_devices_collection = $all_devices->get();
-        $all_devices_paginated = $all_devices->paginate(env('PAGINATE'));
+        $all_deviced_grouped = $all_devices->get()
+        ->groupBy('event');
 
-        $grouped = $all_devices_collection->groupBy('event');
+        $all_devices_paginated = $all_devices->paginate(env('PAGINATE'));
 
         $footprintRatioCalculator = new FootprintRatioCalculator();
         $emissionRatio = $footprintRatioCalculator->calculateRatio();
@@ -207,7 +207,7 @@ class DeviceController extends Controller
           'emissions' => 0,
         ];
 
-        $grouped->each(function($devices, $event_id) use($impact_data, $emissionRatio) {
+        $all_deviced_grouped->each(function($devices, $event_id) use($impact_data, $emissionRatio) {
           $devices->each(function($device) use($impact_data, $emissionRatio) {
             $stats = $device->getStats($emissionRatio);
 

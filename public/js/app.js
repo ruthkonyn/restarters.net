@@ -31201,6 +31201,9 @@ function select2Fields() {
     jQuery('.select2').select2();
     jQuery('.select2-repair-barrier').select2(repair_barrier_options);
     jQuery('.select2-tags').select2(tag_options);
+    jQuery('.select2-categories').select2(Object.assign(tag_options, { placeholder: "Category" }));
+    jQuery('.select2-repair-status').select2(Object.assign(tag_options, { placeholder: "Repair status" }));
+    jQuery('.select2-group').select2(Object.assign(tag_options, { placeholder: "Group" }));
     jQuery(".select2-with-input").select2(tag_options_with_input);
     jQuery(".select2-with-input-group").select2({
       width: 'auto',
@@ -31212,6 +31215,9 @@ function select2Fields() {
     $target.find('.select2').select2();
     $target.find('.select2-repair-barrier').select2(repair_barrier_options);
     $target.find('.select2-tags').select2(tag_options);
+    $target.find('.select2-categories').select2(Object.assign(tag_options, { placeholder: "Category" }));
+    $target.find('.select2-repair-status').select2(Object.assign(tag_options, { placeholder: "Repair status" }));
+    $target.find('.select2-group').select2(Object.assign(tag_options, { placeholder: "Group" }));
     $target.find(".select2-with-input").select2(tag_options_with_input);
     $target.find(".select2-with-input-group").select2({
       width: 'auto',

@@ -15,10 +15,13 @@
 @import "components/buttons";
 @import "components/forms";
 @import "components/pagination";
+@import "components/tables";
 @import "components/tabs";
 @import "components/collapse";
 @import "components/popover";
 @import "components/cards";
+
+@import "plugins/select2";
 
 .pagination {
   li.page-item {

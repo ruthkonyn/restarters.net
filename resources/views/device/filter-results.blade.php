@@ -53,10 +53,10 @@
           <div id="collapse-A" class="collapse collapse-wrapper show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
             <div class="collapse-content">
               <div class="row">
-                <div class="col-12 col-md-4 form-group">
-                  <label for="items_cat">@lang('devices.category'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="items_cat" class="sr-only">@lang('devices.category'):</label>
                   <div class="form-control form-control__select">
-                    <select id="categories" name="categories[]" class="form-control select2-tags" multiple title="Choose categories...">
+                    <select id="categories" name="categories[]" class="form-control select2-categories" multiple title="Choose categories...">
                       @if(isset($categories))
                         @foreach($categories as $cluster)
                           <optgroup label="<?php echo $cluster->name; ?>">
@@ -73,16 +73,16 @@
                   </div>
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="brand">@lang('devices.device_brand'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="brand" class="sr-only">@lang('devices.device_brand'):</label>
                   <input type="text" class="form-control field" id="brand" name="brand"
-                  placeholder="e.g. Apple..." value="{{ $brand }}">
+                  placeholder="@lang('devices.device_brand')" value="{{ $brand }}">
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="model">@lang('devices.device_model'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="model" class="sr-only">@lang('devices.device_model'):</label>
                   <input type="text" class="form-control field" id="model" name="model"
-                  placeholder="e.g. iPhone..." value="{{ $model }}">
+                  placeholder="@lang('devices.device_model')" value="{{ $model }}">
                 </div>
               </div>
             </div>
@@ -101,10 +101,10 @@
           <div id="collapse-B" class="collapse collapse-wrapper" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
             <div class="collapse-content">
               <div class="row">
-                <div class="col-12 col-md-4 form-group">
-                  <label for="status">Repair Status:</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="status" class="sr-only">Repair Status:</label>
                   <div class="form-control form-control__select">
-                    <select id="status" name="status[]" class="form-control select2-tags" multiple title="Device status...">
+                    <select id="status" name="status[]" class="form-control select2-repair-status" multiple title="Device status...">
                       <option @if (! empty($status) && in_array(1, $status)) selected @endif value="1">
                         Fixed
                       </option>
@@ -118,16 +118,19 @@
                   </div>
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="problem">@lang('devices.search_comments'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="problem" class="sr-only">@lang('devices.search_comments'):</label>
                   <input type="text" class="form-control field" id="problem" name="problem"
-                  placeholder="e.g. screen..." value="{{ $problem }}">
+                  placeholder="@lang('devices.search_comments')" value="{{ $problem }}">
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="suitable-for-wiki">@lang('devices.suitable'):</label>
-                  <input type="checkbox" id="suitable-for-wiki" name="wiki" value="1" {{ $wiki ? 'checked' : '' }} />
-                  <small class="form-text text-muted">@lang('devices.suitable_help')</small>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="suitable-for-wiki" class="sr-only">@lang('devices.suitable'):</label>
+                  <div class="d-flex flex-row align-items-start">
+                    <input type="checkbox" id="suitable-for-wiki" name="wiki" value="1" {{ $wiki ? 'checked' : '' }}
+                    placeholder="@lang('devices.suitable')" class="ml-0 mr-3"/>
+                    <label class="form-text-corrected" for="suitable-for-wiki">@lang('devices.suitable_help')</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -146,10 +149,10 @@
           <div id="collapse-C" class="collapse collapse-wrapper" data-parent="#content" role="tabpanel" aria-labelledby="heading-C">
             <div class="collapse-content">
               <div class="row">
-                <div class="col-12 col-md-4 form-group">
-                  <label for="items_group">@lang('devices.group'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="items_group" class="sr-only">@lang('devices.group'):</label>
                   <div class="form-control form-control__select">
-                    <select id="groups" name="groups[]" class="form-control select2-tags" multiple data-live-search="true" title="Choose groups...">
+                    <select id="groups" name="groups[]" class="form-control select2-group" multiple data-live-search="true" title="Choose groups...">
                       @if(isset($groups))
                         @foreach($groups as $g)
                           <option value="<?php echo $g->idgroups; ?>" @if (!empty($selected_groups) && in_array($g->idgroups, $selected_groups)) selected @endif>
@@ -161,17 +164,17 @@
                   </div>
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="from-date">@lang('devices.from_date'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="from-date" class="sr-only">@lang('devices.from_date'):</label>
                   <input type="date" class="field form-control" id="search-from-date" name="from-date"
-                  value="{{ $from_date }}">
+                  value="{{ $from_date }}" placeholder="@lang('devices.from_date')" onfocus="(this.type='date')" onblur="(this.type='text')">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                 </div>
 
-                <div class="col-12 col-md-4 form-group">
-                  <label for="to-date">@lang('devices.to_date'):</label>
+                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                  <label for="to-date" class="sr-only">@lang('devices.to_date'):</label>
                   <input type="date" class="field form-control" id="search-to-date" name="to-date"
-                  value="{{ $to_date }}">
+                  value="{{ $to_date }}" placeholder="@lang('devices.to_date')" onfocus="(this.type='date')" onblur="(this.type='text')">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                 </div>
               </div>
