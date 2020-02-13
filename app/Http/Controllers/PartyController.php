@@ -60,7 +60,7 @@ class PartyController extends Controller
 
     public function index(Request $request)
     {
-        $moderate_events = null;
+        $moderate_events = collect([]);
         if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             $moderate_events = Party::RequiresModeration()->get();
         }
@@ -80,19 +80,19 @@ class PartyController extends Controller
         $all_events_count = $all_events_query->count();
         $all_events = $all_events_query->paginate(env('PAGINATE'));
 
-
-        // Party::usersPastEvents([
-        //   Auth::id()
-        // ])->paginate(10);
-
-        // $all_events = Party::pastEvents()
-        // ->where('events.group', $group_id)
-        // ->paginate(10);
-
         $upcoming_events_in_area = collect([]);
         if ( ! is_null(Auth::user()->latitude) && ! is_null(Auth::user()->longitude)) {
             $upcoming_events_in_area = Party::upcomingEventsInUserArea(Auth::user())->get();
         }
+
+        $see_past_events = collect([]);
+        if ($request->input('see_past_events') == 1 || $request->input('see_past_events') == true) {
+          $see_past_events = Party::usersPastEvents([
+            Auth::id()
+          ])->get();
+        }
+
+        dd($see_past_events);
 
         //Looks to see whether user has a group already, if they do, they can create events
         $user_groups = UserGroups::where('user', Auth::id())->count();
