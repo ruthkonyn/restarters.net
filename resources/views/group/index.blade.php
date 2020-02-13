@@ -82,31 +82,27 @@
               </ul>
               <div class="tab-content" id="content" role="tablist">
                 <div id="pane-A" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
-                  <div id="collapse-A" class="collapse collapse-wrapper show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
-                    <div class="collapse-content white">
-                      <div class="row">
-                        <div class="col-12 col-md-12 form-group">
-                          @if( !is_null($your_groups) )
-                            <div class="row">
-                              <div class="col">
-                                @include('group.sections.user-groups')
-                              </div>
+                  <div class="tab-pane-content p-30">
+                    <div class="row">
+                      <div class="col-12 col-md-12 form-group">
+                        @if( !is_null($your_groups) )
+                          <div class="row">
+                            <div class="col">
+                              @include('group.sections.user-groups')
                             </div>
-                          @endif
-                        </div>
+                          </div>
+                        @endif
                       </div>
                     </div>
                   </div>
                 </div>
                 <div id="pane-B" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
-                  <div id="collapse-B" class="collapse collapse-wrapper show" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
-                    <div class="collapse-content white">
-                      <div class="row">
-                        <div class="col-12 col-md-12 form-group">
-                          <div class="row">
-                            <div class="col">
-                              @include('group.sections.groups-nearby')
-                            </div>
+                  <div class="tab-pane-content p-30">
+                    <div class="row">
+                      <div class="col-12 col-md-12 form-group">
+                        <div class="row">
+                          <div class="col">
+                            @include('group.sections.groups-nearby')
                           </div>
                         </div>
                       </div>
@@ -114,14 +110,12 @@
                   </div>
                 </div>
                 <div id="pane-C" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
-                  <div id="collapse-C" class="collapse collapse-wrapper show" data-parent="#content" role="tabpanel" aria-labelledby="heading-C">
-                    <div class="collapse-content white">
-                      <div class="row">
-                        <div class="col-12 col-md-12 form-group">
-                          <div class="row">
-                            <div class="col">
-                              @include('group.sections.all-groups')
-                            </div>
+                  <div class="tab-pane-content p-30">
+                    <div class="row">
+                      <div class="col-12 col-md-12 form-group">
+                        <div class="row">
+                          <div class="col">
+                            @include('group.sections.all-groups')
                           </div>
                         </div>
                       </div>

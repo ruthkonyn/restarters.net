@@ -35,22 +35,50 @@
 }
 
 .no-space-mobile {
-  @include media-breakpoint-down(md) {
+  .tab-pane-content {
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+  }
+
+  .nav-tabs-block {
+    .nav-item {
+      .nav-link {
+        &.active {
+          border-bottom: 0 !important;
+        }
+      }
+    }
+  }
+
+  // NOTE: Resolve border not connecting issue
+  .tab-content {
+    top: -1px;
+    position: relative;
+  }
+
+  @include media-breakpoint-down(sm) {
     position: absolute;
     left: 0;
     right: 0;
 
     .nav-tabs-block {
-      .nav-item:first-child {
-        border-left: 0;
-      }
+      .nav-item {
+        &:first-child {
+          .nav-link {
+            border-left: 0 !important;
+          }
+        }
 
-      .nav-item:last-child {
-        border-right: 0;
+        &:last-child {
+          .nav-link {
+            border-right: 0 !important;
+          }
+        }
       }
     }
 
-    .collapse-content {
+    .tab-pane-content {
       border-left: 0;
       border-right: 0;
     }

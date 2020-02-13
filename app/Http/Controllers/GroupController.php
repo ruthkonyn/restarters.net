@@ -45,8 +45,8 @@ class GroupController extends Controller
         // All groups only
         $groupsQuery = $this->filterGroups($request);
 
-        $groups = $groupsQuery->paginate(env('PAGINATE'));
         $groups_count = $groupsQuery->count();
+        $groups = $groupsQuery->paginate(env('PAGINATE'));
 
         //Look for groups where user ID exists in pivot table
         $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')
@@ -112,7 +112,6 @@ class GroupController extends Controller
             'selected_country' => $request->input('country'),
             'selected_tags' => $request->input('tags'),
             'sort',
-            'groups_count' => $roups_count,
         ]);
     }
 

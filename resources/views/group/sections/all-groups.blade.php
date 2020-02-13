@@ -1,5 +1,5 @@
 <section class="table-section py-30" id="all-groups">
-  <p class="mb-30">There are <span class="font-weight-bold">{{ $groups->count() }} groups</span></p>
+  <p class="mb-30">There are <span class="font-weight-bold">{{ $groups_count }} groups</span></p>
 
   {{-- TODO: Open filters collapse --}}
   <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only" />
