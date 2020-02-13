@@ -195,8 +195,8 @@
         cursor: pointer;
         position: relative;
         border-radius: 0;
-        background-color: #fff;
-        border: 1px solid #000;
+        background-color: $white;
+        border: 1px solid $black;
         margin-right: 5px;
 
         &:checked {

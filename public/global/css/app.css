@@ -13369,6 +13369,7 @@ button.bg-dark:focus {
 
 .text-white,
 .alert-danger p,
+.td-event-date.td-event-in-progress span,
 .nav-tabs-block .nav-item,
 .call_to_action {
   color: #fff !important;
@@ -14791,6 +14792,47 @@ label.form-check-label {
   background-color: #d0dae6;
 }
 
+.td-event-date {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.td-event-date span {
+  font-family: Asap;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.td-event-date span.td-event-day {
+  font-size: 34px;
+}
+
+@media (max-width: 991.98px) {
+  .td-event-date span.td-event-day {
+    font-size: 28px;
+  }
+}
+
+.td-event-date span.td-event-month {
+  font-size: 22px;
+}
+
+@media (max-width: 991.98px) {
+  .td-event-date span.td-event-month {
+    font-size: 20px;
+  }
+}
+
+.td-event-date.td-event-in-progress {
+  background-color: #000;
+}
+
 .nav-sm-tabs .nav-tabs {
   display: none;
 }
@@ -15259,11 +15301,6 @@ label.form-check-label {
 
 .no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
   border-bottom: 0 !important;
-}
-
-.no-space-mobile .tab-content {
-  top: -1px;
-  position: relative;
 }
 
 @media (max-width: 767.98px) {

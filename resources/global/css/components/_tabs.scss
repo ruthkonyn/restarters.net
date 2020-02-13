@@ -98,7 +98,7 @@
           line-height: 1.13;
           letter-spacing: 1.2px;
           text-align: center;
-          color: #000;
+          color: $black;
           text-transform: uppercase;
         }
       }
@@ -147,7 +147,7 @@
     .nav-link {
       @extend .rounded-0;
 
-      border: 1px solid #000;
+      border: 1px solid $black;
       background-color: #4aaebc;
       font-family: Asap;
       font-size: 16px;
@@ -157,7 +157,7 @@
       line-height: 1.13;
       letter-spacing: 1.2px;
       text-align: center;
-      color: #000;
+      color: $black;
       text-transform: uppercase;
       padding-top: 18px;
       padding-bottom: 18px;
@@ -204,7 +204,7 @@
   .collapse-wrapper {
     .collapse-content {
       padding: 30px;
-      border: 1px solid #000;
+      border: 1px solid $black;
       background-color: #4aaebc;
       border-top: 1px solid #4aaebc;
     }
@@ -232,7 +232,7 @@
   @extend .align-items-center;
   @extend .p-30;
 
-  border: 1px solid #000;
+  border: 1px solid $black;
   border-top: 1px solid #4aaebc;
   background-color: #4aaebc;
 }
@@ -244,7 +244,7 @@
   @extend .flex-row;
   @extend .align-items-center;
 
-  background-color: #000;
+  background-color: $black;
   font-family: Asap;
   font-size: 18px;
   font-weight: bold;
@@ -253,5 +253,5 @@
   line-height: 1.17;
   letter-spacing: normal;
   text-align: left;
-  color: #fff;
+  color: $white;
 }

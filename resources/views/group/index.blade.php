@@ -56,7 +56,7 @@
           </div>
         </form>
       @else
-        <form action="/group/" method="get" id="device-search">
+        <form action="/group/" method="get" id="groups-search">
           <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
           <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
             <div class="offset-md-box-shadow no-space-mobile">

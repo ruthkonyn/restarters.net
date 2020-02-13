@@ -23,7 +23,7 @@
       line-height: 30px;
       display: block;
       text-align: center;
-      color: #000;
+      color: $black;
       font-family: Asap;
       font-size: 16px;
       font-weight: normal;
@@ -44,7 +44,7 @@
       }
 
       &.dropdown-active {
-        background-color: #000;
+        background-color: $black;
 
         > * {
           display: none;
@@ -71,13 +71,13 @@
         content: '';
         width: 100%;
         position: absolute;
-        border-bottom: 7px solid #000;
+        border-bottom: 7px solid $black;
         left: 0;
         right: 0;
         top: -35px;
 
         @include media-breakpoint-down(md) {
-          border-bottom: 4px solid #000;
+          border-bottom: 4px solid $black;
           top: auto;
           bottom: 0;
         }
@@ -90,13 +90,13 @@
           content: '';
           width: 100%;
           position: absolute;
-          border-bottom: 7px solid #000;
+          border-bottom: 7px solid $black;
           left: 0;
           right: 0;
           top: -35px;
 
           @include media-breakpoint-down(md) {
-            border-bottom: 4px solid #000;
+            border-bottom: 4px solid $black;
             top: auto;
             bottom: 0;
           }
@@ -145,7 +145,7 @@
       -webkit-box-direction: normal;
 
       z-index: 1500;
-      background-color: #fff;
+      background-color: $white;
 
       li {
         margin: auto !important;
@@ -174,7 +174,7 @@
     display: none;
     float: right;
     list-style: none;
-    background-color: #000;
+    background-color: $black;
     background-clip: padding-box;
     padding: 27px 30px;
     float: left;
@@ -190,7 +190,7 @@
 
       a {
         text-align: left;
-        color: #fff;
+        color: $white;
         font-size: 16px;
         font-weight: bold;
         font-stretch: normal;
@@ -211,7 +211,7 @@
       &.dropdown-menu-header {
         font-size: 13px;
         font-weight: normal;
-        color: #fff;
+        color: $white;
         letter-spacing: 1px;
         text-transform: uppercase;
       }

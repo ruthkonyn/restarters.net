@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\GroupTags;
 use App\Audits;
 use App\Brands;
 use App\Category;
@@ -27,7 +28,6 @@ use App\Party;
 use App\Session;
 use App\User;
 use App\UserGroups;
-
 use Auth;
 use DateTime;
 use DB;
@@ -40,43 +40,14 @@ use Spatie\CalendarLinks\Link;
 
 class PartyController extends Controller
 {
-
-  // protected $hostParties = array();
-    // protected $permissionsChecker;
-
     public $TotalWeight;
+
     public $TotalEmission;
+
     public $EmissionRatio;
 
     public function __construct()
     {
-        //($model, $controller, $action)
-
-        // parent::__construct($model, $controller, $action);
-        //
-        // $Auth = new Auth($url);
-        // if(!$Auth->isLoggedIn() && $action != 'stats'){
-        //     header('Location: /user/login');
-        // }
-        //
-        // $user = $Auth->getProfile();
-        // $this->user = $user;
-        // $this->set('user', $user);
-        // $this->set('header', true);
-        //
-        // if (hasRole($this->user, 'Host'))
-        // {
-        //     $Group = new Group;
-        //     $group = $Group->ofThisUser($this->user->id);
-        //     $this->set('usergroup', $group[0]);
-        //     $parties = $this->Party->ofThisGroup($group[0]->idgroups);
-        //
-        //     foreach($parties as $party){
-        //         $this->hostParties[] = $party->idevents;
-        //     }
-        //     $User = new User;
-        //     $this->set('profile', $User->profilePage($this->user->id));
-
         $Device = new Device;
         $weights = $Device->getWeights();
 
@@ -85,64 +56,142 @@ class PartyController extends Controller
 
         $footprintRatioCalculator = new FootprintRatioCalculator();
         $this->EmissionRatio = $footprintRatioCalculator->calculateRatio();
-        // }
-      //
-      // $this->permissionsChecker = new PermissionsChecker($this->user, $this->hostParties);
     }
 
-    public function index($group_id = null)
+    public function index(Request $request)
     {
+        $moderate_events = null;
         if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             $moderate_events = Party::RequiresModeration()->get();
-        } else {
-            $moderate_events = null;
         }
 
-        // Use this view for showing group only upcoming and past events
-        if ( ! is_null($group_id)) {
-          $upcoming_events = Party::upcomingEvents()
-          ->where('events.group', $group_id)
-          ->get();
+        $upcoming_events = Party::upcomingEvents()
+        // ->where('users_groups.user', Auth::id())
+        // ->where('events.group', $group_id)
+        ->get();
 
-          $past_events = Party::pastEvents()
-            ->where('events.group', $group_id)
-            ->paginate(10);
+        // Quick fix to resolve the shared partial form with groups index
+        if ($request->input('sort_column') == 'name') {
+          $request->merge(['sort_column' => 'event_date']);
+        }
 
-          $group = Group::find($group_id);
-          $upcoming_events_in_area = null;
+        $all_events_query = $this->filterEvents($request);
 
-        } else {
-          $upcoming_events = Party::upcomingEvents()
-            ->where('users_groups.user', Auth::user()->id)
-            ->take(3)
-            ->get();
+        $all_events_count = $all_events_query->count();
+        $all_events = $all_events_query->paginate(env('PAGINATE'));
 
-        $past_events = Party::UsersPastEvents([auth()->id()])->paginate(10);
 
+        // Party::usersPastEvents([
+        //   Auth::id()
+        // ])->paginate(10);
+
+        // $all_events = Party::pastEvents()
+        // ->where('events.group', $group_id)
+        // ->paginate(10);
+
+        $upcoming_events_in_area = collect([]);
         if ( ! is_null(Auth::user()->latitude) && ! is_null(Auth::user()->longitude)) {
-            $upcoming_events_in_area = Party::upcomingEventsInUserArea(Auth::user())->take(3)->get();
-        } else {
-            $upcoming_events_in_area = null;
+            $upcoming_events_in_area = Party::upcomingEventsInUserArea(Auth::user())->get();
         }
-
-          $group = null;
-        }
-
-
 
         //Looks to see whether user has a group already, if they do, they can create events
-        $user_groups = UserGroups::where('user', Auth::user()->id)->count();
+        $user_groups = UserGroups::where('user', Auth::id())->count();
 
         return view('events.index', [
             'moderate_events' => $moderate_events,
             'upcoming_events' => $upcoming_events,
-            'past_events' => $past_events,
+            'all_events' => $all_events,
+            'all_events_count' => $all_events_count,
             'upcoming_events_in_area' => $upcoming_events_in_area,
             'user_groups' => $user_groups,
             'EmissionRatio' => $this->EmissionRatio,
             'group' => $group,
+            'all_group_tags' => GroupTags::all(),
+            'your_groups_uniques' => $your_groups_uniques,
+            'your_area' => $user->location,
+            'sort_direction' => $sort_direction ? $sort_direction : 'DESC',
+            'sort_column' => $sort_column ? $sort_column : 'event_date',
+            'name' => $request->input('name'),
+            'location' => $request->input('location'),
+            'selected_country' => $request->input('country'),
+            'selected_tags' => $request->input('tags'),
         ]);
     }
+
+    /**
+     * @author Christopher Kelker - @date 13-02-2020
+     * @param   Request     $request
+     * @return  Collection
+     */
+     public function filterEvents(Request $request)
+     {
+         // variables
+         $events_query = Party::with([
+           'allDevices.deviceCategory',
+           'allInvited',
+           'allConfirmedVolunteers',
+           'host',
+           'theGroup',
+           'devices.deviceCategory',
+           'users',
+           'owner',
+         ]);
+
+         $events_query->when($request->input('name'), function ($query, $name) {
+           return $query->where('free_text', 'like', "%{$name}%")
+           ->orWhereHas('theGroup', function($query) use ($name) {
+             return $query->where('name', 'like', "%{$name}%");
+           });
+         });
+
+         $events_query->when($request->input('location'), function ($query, $location) {
+           return $query->where(function ($query) use ($location) {
+               $query->where('location', 'like', "%{$location}%")
+               ->orWhere('area', 'like', "%{$location}%");
+           });
+         });
+
+         $events_query->when($request->input('country'), function ($query, $country) {
+           return $query->whereHas('theGroup', function($query) use($country) {
+             return $query->where('country', $country);
+           });
+         });
+
+         $events_query->when($request->input('tags'), function ($query, $tags){
+           return $query->whereIn('group',
+             GrouptagsGroups::whereIn('group_tag', $tags)->pluck('group')
+           );
+         });
+
+         // Default orderBy();
+         $events_query = $events_query->orderBy('event_date', 'DESC');
+         $sort_direction = $request->input('sort_direction');
+         $events_query->when($request->input('sort_column'), function ($query, $sort_column) use ($sort_direction) {
+           if ($sort_column == 'event_date') {
+             // TODO
+             return $query->orderBy('event_date', $sort_direction);
+           }
+
+           if ($sort_column == 'distance') {
+             return $query->orderBy('location', $sort_direction);
+           }
+
+           if ($sort_column == 'hosts') {
+             return $query->orderBy('all_hosts_count', $sort_direction);
+           }
+
+           if ($sort_column == 'restarters') {
+             return $query->orderBy('all_restarters_count', $sort_direction);
+           }
+
+           if ($sort_column == 'created_at') {
+             return $query->orderBy('created_at', $sort_direction)
+             ->whereNotNull('created_at');
+           }
+         });
+
+         return $events_query;
+     }
 
     public function allPast()
     {
@@ -174,7 +223,7 @@ class PartyController extends Controller
 
       // Let's determine whether currently logged in user is associated with any groups
         $user_groups = UserGroups::join('groups', 'groups.idgroups', '=', 'users_groups.group')
-                                ->where('user', Auth::user()->id)
+                                ->where('user', Auth::id())
                                   ->where('role', 3)
                                     ->select('groups.idgroups AS id', 'groups.name')
                                       ->get();
@@ -228,7 +277,7 @@ class PartyController extends Controller
             $venue = $request->input('venue');
             $location = $request->input('location');
             $group = $request->input('group');
-            $user_id = Auth::user()->id;
+            $user_id = Auth::id();
 
             // saving this for wordpress
             $wp_date = $event_date;
@@ -284,7 +333,7 @@ class PartyController extends Controller
 
                     EventsUsers::create([
                         'event' => $idParty,
-                        'user' => Auth::user()->id,
+                        'user' => Auth::id(),
                         'status' => 1,
                         'role' => 3,
                     ]);
@@ -435,7 +484,7 @@ class PartyController extends Controller
         $co2Total = $Device->getWeights();
         $device_count_status = $Device->statusCount();
 
-        $groups_user_is_host_of = UserGroups::where('user', Auth::user()->id)
+        $groups_user_is_host_of = UserGroups::where('user', Auth::id())
         ->where('role', 3)
         ->pluck('group')
         ->toArray();
@@ -665,7 +714,7 @@ class PartyController extends Controller
         $hosts = EventsUsers::where('event', $id)->where('role', 3)->where('status', 1)->get();
 
         if (Auth::check()) {
-            $is_attending = EventsUsers::where('event', $id)->where('user', Auth::user()->id)->first();
+            $is_attending = EventsUsers::where('event', $id)->where('user', Auth::id())->first();
         } else {
             $is_attending = null;
         }
@@ -1131,14 +1180,14 @@ class PartyController extends Controller
     public function getGroupEmails($event_id, $object = false)
     {
         $group_user_ids = UserGroups::where('group', Party::find($event_id)->group)
-        ->where('user', '!=', Auth::user()->id)
+        ->where('user', '!=', Auth::id())
         ->pluck('user')
         ->toArray();
 
         // Users already associated with the event.
         // (Not including those invited but not RSVPed)
         $event_user_ids = EventsUsers::where('event', $event_id)
-        ->where('user', '!=', Auth::user()->id)
+        ->where('user', '!=', Auth::id())
         ->where('status', 1)
         ->pluck('user')
         ->toArray();
@@ -1167,14 +1216,14 @@ class PartyController extends Controller
     public function getGroupEmailsWithNames($event_id)
     {
         $group_user_ids = UserGroups::where('group', Party::find($event_id)->group)
-        ->where('user', '!=', Auth::user()->id)
+        ->where('user', '!=', Auth::id())
         ->pluck('user')
         ->toArray();
 
         // Users already associated with the event.
         // (Not including those invited but not RSVPed)
         $event_user_ids = EventsUsers::where('event', $event_id)
-        ->where('user', '!=', Auth::user()->id)
+        ->where('user', '!=', Auth::id())
         ->where('status', 1)
         ->pluck('user')
         ->toArray();
@@ -1195,7 +1244,7 @@ class PartyController extends Controller
             'success' => false,
         ];
 
-        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::user()->id)) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
+        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::id())) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             Party::find($event_id)->update([
                 'pax' => $quantity,
             ]);
@@ -1217,7 +1266,7 @@ class PartyController extends Controller
             'success' => false,
         ];
 
-        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::user()->id)) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
+        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::id())) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             Party::find($event_id)->update([
                 'volunteers' => $quantity,
             ]);
@@ -1240,7 +1289,7 @@ class PartyController extends Controller
         ];
 
         //Has current logged in user got permission to remove volunteer
-        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::user()->id)) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
+        if ((FixometerHelper::hasRole(Auth::user(), 'Host') && FixometerHelper::userHasEditPartyPermission($event_id, Auth::id())) || FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             //Let's get the user before we delete them
             $volunteer = EventsUsers::where('user', $user_id)->where('event', $event_id)->first();
 
@@ -1385,7 +1434,7 @@ class PartyController extends Controller
 
     public function cancelInvite($event_id)
     {
-        $user_event = EventsUsers::where('user', Auth::user()->id)->where('event', $event_id)->delete();
+        $user_event = EventsUsers::where('user', Auth::id())->where('event', $event_id)->delete();
 
         return redirect('/party/view/'.$event_id)->with('success', 'You are no longer attending this event');
     }
@@ -1439,7 +1488,7 @@ class PartyController extends Controller
         // Send email
         if ( ! is_null($volunteer_email_address)) {
             $event = Party::find($event_id);
-            $from = User::find(Auth::user()->id);
+            $from = User::find(Auth::id());
 
             $hash = substr(bin2hex(openssl_random_pseudo_bytes(32)), 0, 24);
             $url = url('/user/register/'.$hash);
@@ -1481,7 +1530,7 @@ class PartyController extends Controller
                 $file = new FixometerFile;
                 $file->upload('file', 'image', $id, env('TBL_EVENTS'), true, false, true);
 
-                event(new EventImagesUploaded(Party::find($id), auth()->id()));
+                event(new EventImagesUploaded(Party::find($id), Auth::id()));
             }
 
             return 'success - image uploaded';
@@ -1495,7 +1544,7 @@ class PartyController extends Controller
     {
         $user = Auth::user();
 
-        $in_event = EventsUsers::where('event', $event_id)->where('user', Auth::user()->id)->first();
+        $in_event = EventsUsers::where('event', $event_id)->where('user', Auth::id())->first();
         if (FixometerHelper::hasRole($user, 'Administrator') || is_object($in_event)) {
             $Image = new FixometerFile;
             $Image->deleteImage($id, $path);
@@ -1545,7 +1594,7 @@ class PartyController extends Controller
         $event = Party::find($event_id);
 
         // Check that current logged in user is a host of the event or a host of the group
-        if (FixometerHelper::userHasEditPartyPermission($event_id) || FixometerHelper::userIsHostOfGroup($event->group, Auth::user()->id)) {
+        if (FixometerHelper::userHasEditPartyPermission($event_id) || FixometerHelper::userIsHostOfGroup($event->group, Auth::id())) {
             $all_restarters = User::join('events_users', 'events_users.user', '=', 'users.id')
             ->where('events_users.status', 1)
             ->where('events_users.role', 4)
@@ -1574,7 +1623,7 @@ class PartyController extends Controller
         }
 
         // Check for authentication
-        if (FixometerHelper::userHasEditPartyPermission($id) || FixometerHelper::userIsHostOfGroup($event->group, Auth::user()->id)) {
+        if (FixometerHelper::userHasEditPartyPermission($id) || FixometerHelper::userIsHostOfGroup($event->group, Auth::id())) {
             // Let's delete everything just to be certain
             $audits = Audits::where('auditable_type', 'App\Party')->where('auditable_id', $id)->delete();
             $device = Device::where('event', $id)->delete();

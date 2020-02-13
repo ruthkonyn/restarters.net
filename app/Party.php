@@ -773,8 +773,8 @@ class Party extends Model implements Auditable
     public function checkForMissingData()
     {
       $participants_count = $this->participants;
-      $volunteers_count = $this->allConfirmedVolunteers()->count();
-      $devices_count = $this->allDevices()->count();
+      $volunteers_count = $this->allConfirmedVolunteers->count();
+      $devices_count = $this->allDevices->count();
 
       return [
         'participants_count' => $participants_count,

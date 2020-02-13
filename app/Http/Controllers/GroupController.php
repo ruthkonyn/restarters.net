@@ -111,7 +111,6 @@ class GroupController extends Controller
             'location' => $request->input('location'),
             'selected_country' => $request->input('country'),
             'selected_tags' => $request->input('tags'),
-            'sort',
         ]);
     }
 
