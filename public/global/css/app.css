@@ -576,7 +576,8 @@ pre code {
   overflow-y: scroll;
 }
 
-.container {
+.container,
+.nav-wrapper {
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;
@@ -585,31 +586,34 @@ pre code {
 }
 
 @media (min-width: 576px) {
-  .container {
+  .container,
+  .nav-wrapper {
     max-width: 540px;
   }
 }
 
 @media (min-width: 768px) {
-  .container {
+  .container,
+  .nav-wrapper {
     max-width: 720px;
   }
 }
 
 @media (min-width: 992px) {
-  .container {
+  .container,
+  .nav-wrapper {
     max-width: 960px;
   }
 }
 
 @media (min-width: 1200px) {
-  .container {
+  .container,
+  .nav-wrapper {
     max-width: 1140px;
   }
 }
 
-.container-fluid,
-.nav-wrapper {
+.container-fluid {
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;
@@ -13551,7 +13555,8 @@ a.form-text-corrected:focus {
     min-width: 992px !important;
   }
 
-  .container {
+  .container,
+  .nav-wrapper {
     min-width: 992px !important;
   }
 
@@ -13693,7 +13698,6 @@ a.form-text-corrected:focus {
 }
 
 .nav-wrapper {
-  max-width: 1270px;
   padding-top: 35px;
   padding-bottom: 35px;
 }
