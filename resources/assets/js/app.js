@@ -760,6 +760,9 @@ function initAutocomplete() {
       jQuery('.select2-categories').select2(
         Object.assign(tag_options, {placeholder: "Category"})
       );
+      jQuery('.select2-tags-placeholder').select2(
+        Object.assign(tag_options, {placeholder: "Tag"})
+      );
       jQuery('.select2-countries').select2(
         Object.assign(tag_options, {placeholder: "Country"})
       );
@@ -783,6 +786,9 @@ function initAutocomplete() {
       $target.find('.select2-tags').select2(tag_options);
       $target.find('.select2-categories').select2(
         Object.assign(tag_options, {placeholder: "Category"})
+      );
+      $target.find('.select2-tags-placeholder').select2(
+        Object.assign(tag_options, {placeholder: "Tag"})
       );
       $target.find('.select2-countries').select2(
         Object.assign(tag_options, {placeholder: "Country"})

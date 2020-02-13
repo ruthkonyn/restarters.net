@@ -81,6 +81,13 @@ $(document).ready(function () {
   __webpack_require__(3);
 
   console.log('ready!');
+
+  // Change controller for collapse text
+  $('.collapse-plus-and-minus-controller').click(function () {
+    $(this).text(function (i, old) {
+      return old == 'OPEN FILTERS' ? 'CLOSE FILTERS' : 'OPEN FILTERS';
+    });
+  });
 });
 
 /***/ }),

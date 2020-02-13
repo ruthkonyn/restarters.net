@@ -31202,6 +31202,7 @@ function select2Fields() {
     jQuery('.select2-repair-barrier').select2(repair_barrier_options);
     jQuery('.select2-tags').select2(tag_options);
     jQuery('.select2-categories').select2(Object.assign(tag_options, { placeholder: "Category" }));
+    jQuery('.select2-tags-placeholder').select2(Object.assign(tag_options, { placeholder: "Tag" }));
     jQuery('.select2-countries').select2(Object.assign(tag_options, { placeholder: "Country" }));
     jQuery('.select2-repair-status').select2(Object.assign(tag_options, { placeholder: "Repair status" }));
     jQuery('.select2-group').select2(Object.assign(tag_options, { placeholder: "Group" }));
@@ -31217,6 +31218,7 @@ function select2Fields() {
     $target.find('.select2-repair-barrier').select2(repair_barrier_options);
     $target.find('.select2-tags').select2(tag_options);
     $target.find('.select2-categories').select2(Object.assign(tag_options, { placeholder: "Category" }));
+    $target.find('.select2-tags-placeholder').select2(Object.assign(tag_options, { placeholder: "Tag" }));
     $target.find('.select2-countries').select2(Object.assign(tag_options, { placeholder: "Country" }));
     $target.find('.select2-repair-status').select2(Object.assign(tag_options, { placeholder: "Repair status" }));
     $target.find('.select2-group').select2(Object.assign(tag_options, { placeholder: "Group" }));

@@ -146,7 +146,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
         Route::post('/image-upload/{id}', 'GroupController@imageUpload');
         Route::get('/image/delete/{idgroups}/{id}/{path}', 'GroupController@ajaxDeleteImage');
         Route::get('/search/column', 'GroupController@searchColumn');
-        Route::get('/all/search', 'GroupController@search');
         Route::get('/search', 'GroupController@searchColumn');
         Route::get('/make-host/{group_id}/{user_id}', 'GroupController@getMakeHost');
         Route::get('/remove-volunteer/{group_id}/{user_id}', 'GroupController@getRemoveVolunteer');

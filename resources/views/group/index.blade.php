@@ -49,7 +49,9 @@
               @include('group.sections.sidebar-all-groups')
             </div>
             <div class="col-lg-9">
-              @include('group.sections.all-groups')
+              @if( ! is_null($groups) )
+                @include('group.sections.all-groups')
+              @endif
             </div>
           </div>
         </form>
@@ -57,7 +59,7 @@
         <form action="/group/" method="get" id="device-search">
           <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
           <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
-            <div class="collapse offset-md-box-shadow d-md-block show" id="collapseSearchFilters">
+            <div class="offset-md-box-shadow no-space-mobile">
               <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
                 <li class="nav-item">
                   <a id="tab-A" href="#pane-A" class="nav-link white active" data-toggle="tab" role="tab">

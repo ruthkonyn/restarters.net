@@ -17,13 +17,13 @@
   </td>
 
   {{-- LOCATION --}}
-  <td class="text-center" colspan="1">
+  <td class="text-center d-none d-md-table-cell" colspan="1">
     {{{ $group->getLocation() }}}
   </td>
 
   {{-- NEXT EVENT DATE --}}
   @php ($next_upcoming_event = $group->getNextUpcomingEvent())
-  <td class="text-center">
+  <td class="text-center d-none d-md-table-cell" colspan="1">
     @if ( is_null($next_upcoming_event) )
       <p>@lang('groups.upcoming_none_planned')</p>
     @else

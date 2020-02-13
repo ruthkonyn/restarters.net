@@ -17,17 +17,17 @@
   </td>
 
   {{-- LOCATION --}}
-  <td class="text-center" colspan="1">
+  <td class="text-center d-none d-md-table-cell" colspan="1">
     {{{ $group->getLocation() }}}
   </td>
 
   {{-- RESTARTERS --}}
-  <td class="text-center" colspan="1">
+  <td class="text-center d-none d-md-table-cell" colspan="1">
     {{ $group->allRestarters->count() }}
   </td>
 
   {{-- PARTCIPANTS --}}
-  <td class="text-center" colspan="1">
+  <td class="text-center d-none d-md-table-cell" colspan="1">
     @if ( ! $group->parties->isEmpty())
       {{ $group->parties->sum('pax') }}
     @endif
@@ -35,7 +35,7 @@
 
   {{-- NEXT EVENT DATE --}}
   @php ($next_upcoming_event = $group->getNextUpcomingEvent())
-  <td class="text-center">
+  <td class="text-center d-none d-md-table-cell">
     @if ( is_null($next_upcoming_event) )
       <p>@lang('groups.upcoming_none_planned')</p>
     @else

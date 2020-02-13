@@ -10,6 +10,7 @@
 // Helpers
 @import "helpers/box-shadows";
 @import "helpers/hoverable";
+@import "helpers/flex";
 
 // Other
 @import "components/alerts";
@@ -21,6 +22,7 @@
 @import "components/collapse";
 @import "components/popover";
 @import "components/cards";
+@import "components/filter-controls";
 
 @import "plugins/select2";
 
@@ -28,6 +30,29 @@
   li.page-item {
     &.disabled {
       display: none;
+    }
+  }
+}
+
+.no-space-mobile {
+  @include media-breakpoint-down(md) {
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    .nav-tabs-block {
+      .nav-item:first-child {
+        border-left: 0;
+      }
+
+      .nav-item:last-child {
+        border-right: 0;
+      }
+    }
+
+    .collapse-content {
+      border-left: 0;
+      border-right: 0;
     }
   }
 }
