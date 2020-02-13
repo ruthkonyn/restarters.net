@@ -1,10 +1,10 @@
-{{-- @if( Auth::guest() )
-  @include('layouts/header_plain')
-@else
-  @include('layouts/header')
-@endif --}}
+@auth
+  @include('layouts/global_header')
+@endauth
 
-@include('layouts/global_header')
+@guest
+  @include('layouts/header_plain')
+@endguest
 
 @yield('content')
 
