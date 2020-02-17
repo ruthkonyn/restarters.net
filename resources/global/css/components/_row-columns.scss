@@ -1,0 +1,15 @@
+.border-between > [class*='col-']:before {
+  content: "";
+  position: absolute;
+  border: 5px dashed #FF0000;
+  top: -3px;
+  bottom: -3px;
+  left: -3px;
+  right: -3px;
+
+  // change to background image and space between
+}
+
+.border-between > [class*='col-']:first-child:before {
+  display: none;
+}

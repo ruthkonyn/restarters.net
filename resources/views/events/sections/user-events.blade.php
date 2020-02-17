@@ -13,7 +13,7 @@
   </div>
 
   {{-- TODO: Read more collapse --}}
-  <div class="row my-40">
+  <div class="row border-between my-40">
     <div class="col-12 col-lg-4">
       <b>
         Repair events are a great way to learn and share repair skills and do our bit for the planet by giving our broken stuff a new lease of life.
@@ -27,12 +27,11 @@
     </div>
 
     <div class="col-12 col-lg-4">
-      <p>
+      <p class="mb-0">
         Don't see an event for your group?
       </p>
 
       @if( FixometerHelper::userCanCreateEvents(Auth::user()) )
-        <br>
         <a href="/party/create">
           Add one!
         </a>
@@ -48,7 +47,7 @@
     </h1>
 
     <div class="table-responsive">
-      <table role="table" class="table table-striped table-hover">
+      <table role="table" class="table table-striped table-hover mb-0">
         @include('partials.tables.head-events')
 
         <tbody>
@@ -70,7 +69,7 @@
   {{-- END Events to Moderate (Admin Only) --}}
 
   <div class="table-responsive">
-    <table role="table" class="table table-striped table-hover">
+    <table role="table" class="table table-striped table-hover mb-0">
       @include('partials.tables.head-events')
       <tbody>
         @if( ! $upcoming_events->isEmpty() )
@@ -88,7 +87,7 @@
     </table>
   </div>
 
-  <div class="form-check">
+  <div class="form-check custom-check-tick mt-45 mb-0">
     <input class="form-check-input" type="checkbox" name="see_past_events" value="1" id="inputCheckSeePastEvents" data-toggle="collapse" data-target="#collapsePastEvents">
     <label class="form-check-label" for="inputCheckSeePastEvents">
       See also <span class="font-weight-bold">Past Events</span>
@@ -97,7 +96,7 @@
 
   <div id='collapsePastEvents' class='collapse'>
     <div class="table-responsive">
-      <table role="table" class="table table-striped table-hover">
+      <table role="table" class="table table-striped table-hover mb-0">
         @include('partials.tables.head-events-full')
         <tbody>
           @if( ! $past_events->isEmpty() )

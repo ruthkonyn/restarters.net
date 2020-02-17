@@ -24,30 +24,37 @@
     @endif
   </td>
 
+  {{-- PARTICPANTS --}}
+  <td colspan="1">
+    {{ $event->pax }}
+  </td>
+
+  {{-- RESTARTERS --}}
+  <td colspan="1">
+    {{ $event->pax }}
+  </td>
+
+  {{-- WASTE PREVENTED --}}
   <td colspan="1">
 
   </td>
 
+  {{-- CO2 EMISSIONS PREVENTED --}}
   <td colspan="1">
 
   </td>
 
+  {{-- FIXED DEVICES --}}
   <td colspan="1">
 
   </td>
 
+  {{-- REPAIRABLE DEVICES --}}
   <td colspan="1">
 
   </td>
 
-  <td colspan="1">
-
-  </td>
-
-  <td colspan="1">
-
-  </td>
-
+  {{-- DEAD DEVICES --}}
   <td colspan="1">
 
   </td>

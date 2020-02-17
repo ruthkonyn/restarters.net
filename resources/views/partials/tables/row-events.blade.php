@@ -57,13 +57,13 @@
     @if ( $event->isVolunteer() )
       <td class="text-center">
         <span class="font-weight-bold mr-2">You're going!</span>
-        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           @include('svgs.fixometer.calendar-plus-icon')
         </a>
       </td>
     @else
       <td class="text-center">
-        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
       </td>
@@ -74,13 +74,13 @@
     @if ( $event->isVolunteer() )
       <td colspan="1" class="text-center">
         <span class="font-weight-bold mr-2">You're going!</span>
-        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           @include('svgs.fixometer.calendar-plus-icon')
         </a>
       </td>
     @else
       <td colspan="1" class="text-center">
-        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
       </td>
@@ -90,13 +90,13 @@
 
     @if ( $event->isVolunteer() )
       <td colspan="1" class="text-center">
-        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           Add a device
         </a>
       </td>
     @else
       <td colspan="1" class="text-center">
-        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary">
+        <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
       </td>
