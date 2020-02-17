@@ -6617,7 +6617,8 @@ button.bg-dark:focus {
 .nav-tabs-block .nav-item,
 .nav-tabs-block .nav-item .nav-link,
 .tab-content,
-.card-summary {
+.card-summary,
+.tooltip .tooltip-inner {
   border-radius: 0 !important;
 }
 
@@ -15703,6 +15704,30 @@ label.form-check-label {
 
 .border-between > [class*='col-']:first-child:before {
   display: none;
+}
+
+.tooltip {
+  top: -6px !important;
+}
+
+.tooltip .arrow {
+  left: 50% !important;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+}
+
+.tooltip .tooltip-inner {
+  padding: 8px 12px;
+  font-family: Asap;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.67;
+  letter-spacing: normal;
+  text-align: center;
+  color: #fff;
+  max-width: none;
 }
 
 .select2-search__field {

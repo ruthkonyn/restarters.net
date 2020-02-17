@@ -25,37 +25,39 @@
   </td>
 
   {{-- PARTICPANTS --}}
-  <td colspan="1">
+  <td colspan="1" class="text-center d-none d-md-table-cell">
     {{ $event->pax }}
   </td>
 
   {{-- RESTARTERS --}}
-  <td colspan="1">
-    {{ $event->pax }}
+  <td colspan="1" class="text-center d-none d-md-table-cell">
+    {{ $event->checkForMissingData()['volunteers_count'] }}
   </td>
 
-  {{-- WASTE PREVENTED --}}
-  <td colspan="1">
+  @php( $stats = $event->getEventStats($EmissionRatio) )
 
+  {{-- WASTE PREVENTED --}}
+  <td colspan="1" class="text-center">
+    {{ number_format(round($stats['ewaste']), 0) }}
   </td>
 
   {{-- CO2 EMISSIONS PREVENTED --}}
-  <td colspan="1">
-
+  <td colspan="1" class="text-center">
+    {{ number_format(round($stats['co2']), 0) }}
   </td>
 
   {{-- FIXED DEVICES --}}
-  <td colspan="1">
-
+  <td colspan="1" class="text-center d-none d-md-table-cell">
+    {{ $stats['fixed_devices'] }}
   </td>
 
   {{-- REPAIRABLE DEVICES --}}
-  <td colspan="1">
-
+  <td colspan="1" class="text-center d-none d-md-table-cell">
+    {{ $stats['repairable_devices'] }}
   </td>
 
   {{-- DEAD DEVICES --}}
-  <td colspan="1">
-
+  <td colspan="1" class="text-center d-none d-md-table-cell">
+    {{ $stats['dead_devices'] }}
   </td>
 </tr>

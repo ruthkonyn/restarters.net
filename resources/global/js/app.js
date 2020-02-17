@@ -11,4 +11,11 @@ $(document).ready(function() {
       return old == 'OPEN FILTERS' ? 'CLOSE FILTERS' : 'OPEN FILTERS';
     });
   });
+
+  // Initialize tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
+
+  $('#tesing123').tooltip('show');
 });

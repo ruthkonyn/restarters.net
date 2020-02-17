@@ -46,7 +46,7 @@
       </svg> @lang('events.events_title_admin')
     </h1>
 
-    <div class="table-responsive">
+    <div class="table-responsive mb-20">
       <table role="table" class="table table-striped table-hover mb-0">
         @include('partials.tables.head-events')
 
@@ -94,7 +94,7 @@
     </label>
   </div>
 
-  <div id='collapsePastEvents' class='collapse'>
+  <div id='collapsePastEvents' class="collapse show">
     <div class="table-responsive">
       <table role="table" class="table table-striped table-hover mb-0">
         @include('partials.tables.head-events-full')
