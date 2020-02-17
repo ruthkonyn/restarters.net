@@ -89,13 +89,13 @@
   </div>
 
   <div class="form-check">
-    <input class="form-check-input" type="checkbox" name="see_past_events" value="1" id="inputCheckSeePastEvents">
+    <input class="form-check-input" type="checkbox" name="see_past_events" value="1" id="inputCheckSeePastEvents" data-toggle="collapse" data-target="#collapsePastEvents">
     <label class="form-check-label" for="inputCheckSeePastEvents">
       See also <span class="font-weight-bold">Past Events</span>
     </label>
   </div>
 
-  {{-- @if ($see_past_events)
+  <div id='collapsePastEvents' class='collapse'>
     <div class="table-responsive">
       <table role="table" class="table table-striped table-hover">
         @include('partials.tables.head-events-full')
@@ -114,5 +114,6 @@
         </tbody>
       </table>
     </div>
-  @endif --}}
+  </div>
+
 </section>

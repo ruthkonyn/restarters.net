@@ -725,9 +725,8 @@ class Party extends Model implements Auditable
      */
     public function isVolunteer($user_id = NULL)
     {
-        $attributes = ['user' => $user_id ?: auth()->id()];
-
-        return $this->allConfirmedVolunteers()->where($attributes)->exists();
+        return $this->allConfirmedVolunteers
+        ->contains('user', $user_id ?: auth()->id());
     }
 
     public function isBeingAttendedBy($userId)
@@ -833,5 +832,16 @@ class Party extends Model implements Auditable
         $emissionRatio = $footprintRatioCalculator->calculateRatio();
 
         return round($this->getEventStats($emissionRatio)['ewaste'], 2);
+    }
+
+    public function scopeWithAll($query) {
+        return $query->with([
+          'allDevices.deviceCategory',
+          'allInvited',
+          'allConfirmedVolunteers',
+          'host',
+          'theGroup.groupImage.image',
+          'devices.deviceCategory',
+        ]);
     }
 }

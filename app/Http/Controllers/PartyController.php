@@ -62,12 +62,14 @@ class PartyController extends Controller
     {
         $moderate_events = collect([]);
         if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
-            $moderate_events = Party::RequiresModeration()->get();
+            $moderate_events = Party::withAll()
+            ->requiresModeration()
+            ->get();
         }
 
-        $upcoming_events = Party::upcomingEvents()
-        // ->where('users_groups.user', Auth::id())
-        // ->where('events.group', $group_id)
+        $upcoming_events = Party::withAll()
+        ->upcomingEvents()
+        ->where('users_groups.user', Auth::id())
         ->get();
 
         // Quick fix to resolve the shared partial form with groups index
@@ -82,17 +84,14 @@ class PartyController extends Controller
 
         $upcoming_events_in_area = collect([]);
         if ( ! is_null(Auth::user()->latitude) && ! is_null(Auth::user()->longitude)) {
-            $upcoming_events_in_area = Party::upcomingEventsInUserArea(Auth::user())->get();
+            $upcoming_events_in_area = Party::withAll()
+            ->upcomingEventsInUserArea(Auth::user())->get();
         }
 
-        $see_past_events = collect([]);
-        if ($request->input('see_past_events') == 1 || $request->input('see_past_events') == true) {
-          $see_past_events = Party::usersPastEvents([
-            Auth::id()
-          ])->get();
-        }
-
-        dd($see_past_events);
+        $past_events = Party::withAll()
+        ->usersPastEvents([
+          Auth::id()
+        ])->get();
 
         //Looks to see whether user has a group already, if they do, they can create events
         $user_groups = UserGroups::where('user', Auth::id())->count();
@@ -102,10 +101,10 @@ class PartyController extends Controller
             'upcoming_events' => $upcoming_events,
             'all_events' => $all_events,
             'all_events_count' => $all_events_count,
+            'past_events' => $past_events,
             'upcoming_events_in_area' => $upcoming_events_in_area,
             'user_groups' => $user_groups,
             'EmissionRatio' => $this->EmissionRatio,
-            'group' => $group,
             'all_group_tags' => GroupTags::all(),
             'your_groups_uniques' => $your_groups_uniques,
             'your_area' => $user->location,
@@ -126,16 +125,7 @@ class PartyController extends Controller
      public function filterEvents(Request $request)
      {
          // variables
-         $events_query = Party::with([
-           'allDevices.deviceCategory',
-           'allInvited',
-           'allConfirmedVolunteers',
-           'host',
-           'theGroup',
-           'devices.deviceCategory',
-           'users',
-           'owner',
-         ]);
+         $events_query = Party::withAll();
 
          $events_query->when($request->input('name'), function ($query, $name) {
            return $query->where('free_text', 'like', "%{$name}%")
