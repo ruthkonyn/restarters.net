@@ -66,7 +66,7 @@
 </div>
 
 <div class="d-block d-md-none text-right mt-10">
-  <a class="collapse-plus-and-minus-controller" data-toggle="collapse" href="#collapseSearchFilters" aria-expanded="true" aria-controls="collapseSearchFilters">
+  <a class="collapse-plus-and-minus-controller" data-close-text="Close Filters" data-open-text="Open Filters" data-toggle="collapse" href="#collapseSearchFilters" aria-expanded="true" aria-controls="collapseSearchFilters">
     Close Filters
   </a>
 

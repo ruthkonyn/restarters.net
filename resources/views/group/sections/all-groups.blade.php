@@ -5,14 +5,6 @@
 
   @include('group.group-filters')
 
-  <div class="d-block d-md-none text-right mt-10">
-    <a class="collapse-plus-and-minus-controller" data-toggle="collapse" href="#collapseSearchFilters" aria-expanded="true" aria-controls="collapseSearchFilters">
-      Close Filters
-    </a>
-
-    <hr class="m-0 hr-sm">
-  </div>
-
   <div class="table-responsive">
     <table role="table" class="table table-striped table-hover" id="sort-table">
       @include('partials.tables.head-groups')
@@ -30,7 +22,7 @@
       </tbody>
     </table>
   </div>
-  
+
   <div class="d-flex justify-content-center">
     <nav aria-label="Page navigation example">
       {{-- Custom pagination view --}}

@@ -56,10 +56,19 @@
 
     @if ( $event->isVolunteer() )
       <td class="text-center">
-        <span class="font-weight-bold mr-2">You're going!</span>
-        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
-          @include('svgs.fixometer.calendar-plus-icon')
-        </a>
+        <span class="font-weight-bold mr-2 d-none d-md-inline">You're going!</span>
+        @if ( Auth::check() )
+          @php( $user = auth()->user() )
+          @php( $copy_link = url("/calendar/single-event/{$event->idevents}") )
+          @php( $user_edit_link = url("/profile/edit/{$user->id}") )
+          @include('partials.calendar-feed-button', [
+            'copy_link' => $copy_link,
+            'user_edit_link' => $user_edit_link,
+            'modal_title' => __('calendars.events_modal_title'),
+            'modal_text' => __('calendars.events_modal_text'),
+            'single_event' => true,
+          ])
+        @endif
       </td>
     @else
       <td class="text-center">
@@ -73,10 +82,19 @@
 
     @if ( $event->isVolunteer() )
       <td colspan="1" class="text-center">
-        <span class="font-weight-bold mr-2">You're going!</span>
-        <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
-          @include('svgs.fixometer.calendar-plus-icon')
-        </a>
+        <span class="font-weight-bold mr-2 d-none d-md-inline">You're going!</span>
+        @if ( Auth::check() )
+          @php( $user = auth()->user() )
+          @php( $copy_link = url("/calendar/single-event/{$event->idevents}") )
+          @php( $user_edit_link = url("/profile/edit/{$user->id}") )
+          @include('partials.calendar-feed-button', [
+            'copy_link' => $copy_link,
+            'user_edit_link' => $user_edit_link,
+            'modal_title' => __('calendars.events_modal_title'),
+            'modal_text' => __('calendars.events_modal_text'),
+            'single_event' => true,
+          ])
+        @endif
       </td>
     @else
       <td colspan="1" class="text-center">

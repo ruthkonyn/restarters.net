@@ -150,21 +150,6 @@
             <div class="collapse-content">
               <div class="row">
                 <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
-                  <label for="items_group" class="sr-only">@lang('devices.group'):</label>
-                  <div class="form-control form-control__select">
-                    <select id="groups" name="groups[]" class="form-control select2-group" multiple data-live-search="true" title="Choose groups...">
-                      @if(isset($groups))
-                        @foreach($groups as $g)
-                          <option value="<?php echo $g->idgroups; ?>" @if (!empty($selected_groups) && in_array($g->idgroups, $selected_groups)) selected @endif>
-                            <?php echo $g->name; ?>
-                          </option>
-                        @endforeach
-                      @endif
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
                   <label for="from-date" class="sr-only">@lang('devices.from_date'):</label>
                   <input type="date" class="field form-control" id="search-from-date" name="from-date"
                   value="{{ $from_date }}" placeholder="@lang('devices.from_date')" onfocus="(this.type='date')" onblur="(this.type='text')">
@@ -193,8 +178,20 @@
 
           <div id="collapse-D" class="collapse collapse-wrapper" data-parent="#content" role="tabpanel" aria-labelledby="heading-D">
             <div class="collapse-content">
-              {{-- TODO --}}
-              ...
+              <div class="col-12 col-md-4 form-group mb-3 mb-md-0">
+                <label for="items_group" class="sr-only">@lang('devices.group'):</label>
+                <div class="form-control form-control__select">
+                  <select id="groups" name="groups[]" class="form-control select2-group" multiple data-live-search="true" title="Choose groups...">
+                    @if(isset($groups))
+                      @foreach($groups as $g)
+                        <option value="<?php echo $g->idgroups; ?>" @if (!empty($selected_groups) && in_array($g->idgroups, $selected_groups)) selected @endif>
+                          <?php echo $g->name; ?>
+                        </option>
+                      @endforeach
+                    @endif
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -211,19 +208,10 @@
   </div>
 
   <div class="d-block d-md-none text-right mt-10">
-    <a class="collapse-plus-and-minus-controller" data-toggle="collapse" href="#collapseSearchFilters" aria-expanded="false" aria-controls="collapseSearchFilters" style="font-family: Asap;
-    font-size: 14px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    letter-spacing: 2.5px;
-    text-align: center;
-    color: #000;
-    text-transform: uppercase;
-    font-size: 18px;">
-    Close Filters
-  </a>
+    <a class="collapse-plus-and-minus-controller" data-close-text="Close Filters" data-open-text="Open Filters" data-toggle="collapse" href="#collapseSearchFilters" aria-expanded="false" aria-controls="collapseSearchFilters">
+      Close Filters
+    </a>
 
-  <hr class="m-0" style="height: 2px; border-top: 2px solid #000;">
-</div>
+    <hr class="m-0 hr-sm">
+  </div>
 </div>

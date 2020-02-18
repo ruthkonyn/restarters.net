@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-12 col-md-12">
           <div class="d-flex align-items-center">
-            <h1 id="dashboard__header" class="mb-0" style="margin-right: 30px;">
+            <h1 id="dashboard__header" class="mb-0 mr-30">
               @lang('devices.devices')
             </h1>
             <div class="mr-auto d-none d-md-block" style="width: 95px; height: 76px;">
@@ -23,7 +23,7 @@
             </button>
           </div>
 
-          <hr style="height: 5px; border-top: 5px solid #000; margin-top: 50px; margin-bottom: 50px;">
+          <hr class="hr-lg">
         </div>
       </div>
     </div>

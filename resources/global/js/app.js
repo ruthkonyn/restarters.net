@@ -6,15 +6,15 @@ $(document).ready(function() {
   console.log('ready!');
 
   // Change controller for collapse text
-  $('.collapse-plus-and-minus-controller').click(function(){
+  $('.collapse-plus-and-minus-controller').click(function() {
     $(this).text(function(i,old){
-      return old == 'OPEN FILTERS' ? 'CLOSE FILTERS' : 'OPEN FILTERS';
+      return old == $(this).attr('data-close-text') ? $(this).attr('data-open-text') : $(this).attr('data-close-text');
     });
   });
 
   // Initialize tooltips
   $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
   });
 
   $('#tesing123').tooltip('show');

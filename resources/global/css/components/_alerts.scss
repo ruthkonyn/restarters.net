@@ -4,7 +4,11 @@
     @extend .rounded-0;
 
     p {
-      @extend .font-weight-bold;
+      font-size: 16px;
+      font-family: Asap;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
     }
 
     .close {

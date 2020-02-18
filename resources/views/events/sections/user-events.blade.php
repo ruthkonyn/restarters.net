@@ -1,18 +1,21 @@
 <section class="table-section py-30" id="user-events">
 
   <div class="alert alert-danger alert-custom alert-dismissible fade show mb-0" role="alert">
+    <div class="d-flex flex-row flex-wrap align-items-center">
+      <div class="mr-3 mb-2 mb-lg-0">
+        @include('svgs.fixometer.alert-doodle')
+      </div>
 
-    {{-- TODO: Awaiting megaphone doodle/icon --}}
-    <p class="mb-0">
-      You can now add all your upcoming events to your personal calendar!
-    </p>
+      <p class="mb-0">
+        You can now add all your upcoming events to your personal calendar!
+      </p>
+    </div>
 
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  {{-- TODO: Read more collapse --}}
   <div class="row border-between my-40">
     <div class="col-12 col-lg-4">
       <b>
@@ -20,13 +23,13 @@
       </b>
     </div>
 
-    <div class="col-12 col-lg-4">
-      <p>
+    <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore2">
+      <p class="mb-0">
         Events organised by griups you run of follow appear below. If you plan on going, make sure you click the RSVP button to let the organisers know.
       </p>
     </div>
 
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore2">
       <p class="mb-0">
         Don't see an event for your group?
       </p>
@@ -37,6 +40,14 @@
         </a>
       @endif
     </div>
+  </div>
+
+  <div class="d-block d-md-none text-right">
+    <a class="collapse-plus-and-minus-controller" data-close-text="Read More" data-open-text="Read Less" data-toggle="collapse" href=".collapseReadMore" aria-expanded="true" aria-controls="collapseReadMore1 collapseReadMore1">
+      Read Less
+    </a>
+
+    <hr class="m-0 hr-sm">
   </div>
 
   {{-- Events to Moderate (Admin Only) --}}

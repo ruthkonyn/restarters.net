@@ -29,7 +29,7 @@
             </h1>
 
             <div class="mr-auto d-none d-md-block">
-              {{-- TODO: Coffee doodle icon --}}
+              @include('svgs.group.group-doodle')
             </div>
 
             @if( FixometerHelper::hasRole(Auth::user(), 'Administrator') || FixometerHelper::hasRole(Auth::user(), 'Host') )

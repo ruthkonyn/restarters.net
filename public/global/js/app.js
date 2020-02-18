@@ -85,7 +85,7 @@ $(document).ready(function () {
   // Change controller for collapse text
   $('.collapse-plus-and-minus-controller').click(function () {
     $(this).text(function (i, old) {
-      return old == 'OPEN FILTERS' ? 'CLOSE FILTERS' : 'OPEN FILTERS';
+      return old == $(this).attr('data-close-text') ? $(this).attr('data-open-text') : $(this).attr('data-close-text');
     });
   });
 

@@ -60,6 +60,7 @@ Route::prefix('calendar')->group(function () {
     Route::get('/group-area/{area}', 'CalendarEventsController@allEventsByArea')->name('calendar-events-by-area');
     Route::get('/group-tag/{grouptags_groups}', 'CalendarEventsController@allEventsByGroupTag')->name('calendar-events-by-group-tag');
     Route::get('/all-events/{hash_env}', 'CalendarEventsController@allEvents')->name('calendar-events-all');
+    Route::get('/single-event/{event_id}', 'CalendarEventsController@singleEvent')->name('calendar-events-single');
 });
 
 Route::prefix('faultcat')->group(function () {
