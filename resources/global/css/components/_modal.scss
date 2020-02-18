@@ -12,6 +12,15 @@
 
   .close {
     margin: -1.3rem -1.5rem -1rem auto;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+
+    svg {
+      fill: $black;
+      width: 15px;
+      height: 15px;
+    }
   }
 
   border: 0 none;
@@ -20,6 +29,9 @@
 
 .modal-content {
   padding: 30px 20px 20px;
+  border-radius: 0;
+  box-shadow: 6px 6px 0 0 $black;
+  position: relative;
 
   @include media-breakpoint-up(md) {
     padding: 30px 35px 40px;

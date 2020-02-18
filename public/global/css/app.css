@@ -15841,6 +15841,219 @@ label.form-check-label {
   max-width: none;
 }
 
+.modal button[type=submit] {
+  margin-top: 9px;
+}
+
+.modal-header {
+  border: 0 none;
+  padding-bottom: 0;
+}
+
+.modal-header h5 {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+
+.modal-header .close {
+  margin: -1.3rem -1.5rem -1rem auto;
+  position: absolute;
+  top: 15px;
+  right: 25px;
+}
+
+.modal-header .close svg {
+  fill: #000;
+  width: 15px;
+  height: 15px;
+}
+
+.modal-content {
+  padding: 30px 20px 20px;
+  border-radius: 0;
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+          box-shadow: 6px 6px 0 0 #000;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .modal-content {
+    padding: 30px 35px 40px;
+  }
+}
+
+.form-control {
+  border: 2px solid #bec0c0;
+}
+
+.form-control:focus {
+  border-color: #0394a6;
+}
+
+.input-group .input-group-append .input-group-text {
+  border: 2px solid #bec0c0;
+  border-left: 0 none;
+}
+
+.form-group label,
+.flex-dynamic-row .flex-dynamic label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 17px;
+}
+
+.after-offset {
+  color: #5a5a5a;
+  font-size: 90%;
+}
+
+.modal__invite textarea {
+  min-height: 140px;
+}
+
+.modal__description p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-form legend {
+  margin: 0 0 30px 0;
+  font-size: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.modal-form .modal-dialog {
+  max-width: 445px;
+}
+
+.modal-form .close {
+  color: #000 !important;
+  font-size: 40px !important;
+}
+
+.modal-form .btn-primary {
+  margin: auto 0 !important;
+}
+
+.modal-form .button-group {
+  padding-top: 0;
+  padding-bottom: 20px;
+}
+
+.modal-brand .modal-content {
+  padding: 40px 55px;
+}
+
+.modal-brand .close {
+  right: 35px !important;
+  top: 20px !important;
+}
+
+.modal-reporting.modal-intro .modal-dialog {
+  max-width: 768px !important;
+}
+
+.modal-reporting.modal-intro .modal-body {
+  text-align: left;
+  padding: 0;
+}
+
+.modal-reporting.modal-intro .modal-content {
+  padding: 50px;
+  border: 0;
+  border-radius: 5px;
+}
+
+@media (max-width: 767.98px) {
+  .fixed-overlay {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background: #fff;
+    height: 100%;
+    overflow: scroll;
+    padding: 30px;
+    background-color: #f9f9f9;
+  }
+
+  .fixed-overlay .block,
+  .fixed-overlay .edit-panel {
+    border: 0;
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .fixed-overlay-md {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background: #fff;
+    height: 100%;
+    overflow: scroll;
+    padding: 30px;
+    background-color: #f9f9f9;
+  }
+
+  .fixed-overlay-md .block,
+  .fixed-overlay-md .edit-panel {
+    border: 0;
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .mobile-search-bar {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+        align-content: center;
+  }
+
+  .mobile-search-bar__close {
+    margin: auto 0 auto 30px;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+  }
+
+  .mobile-search-bar__close svg {
+    display: block;
+    margin: auto;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .mobile-search-bar-md {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+        align-content: center;
+  }
+
+  .mobile-search-bar-md__close {
+    margin: auto 0 auto 30px;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+  }
+
+  .mobile-search-bar-md__close svg {
+    display: block;
+    margin: auto;
+  }
+}
+
 .select2-search__field {
   width: auto !important;
   padding-left: 7px !important;
