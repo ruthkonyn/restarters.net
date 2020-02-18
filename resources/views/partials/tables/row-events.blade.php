@@ -16,13 +16,14 @@
     {{ $event->getEventDate('D j M Y') }}, {{ $event->getEventStartEnd() }}
   </td>
 
-  {{-- GROUP ICON --}}
-  <td colspan="1" class="table-cell-icon">
-    @php( $group_image = $event->theGroup->groupImage )
+  {{-- ICON --}}
+  <td class="table-cell-icon" colspan="1">
+    @php $event_group = $event->theGroup; @endphp
+    @php $group_image = $event_group->groupImage; @endphp
     @if( is_object($group_image) && is_object($group_image->image) )
-      <img src="{{ asset('/uploads/thumbnail_' . $group_image->image->path) }}" alt="{{{ $event->theGroup->name }}}">
+      <img src="{{ $group_image->image->asset_path }}" alt="{{{ $event_group->name }}}">
     @else
-      <img src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event->theGroup->name }}}">
+      <img src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event_group->name }}}">
     @endif
   </td>
 
@@ -35,7 +36,7 @@
 
   {{-- INVITES --}}
   <td colspan="1" class="text-center d-none d-md-table-cell">
-    {{ $event->allInvited->count() }}
+    {{ $event->all_invited_count }}
   </td>
 
   {{-- PARTCIPANTS --}}

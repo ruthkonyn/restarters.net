@@ -127,23 +127,18 @@ class DashboardController extends Controller
 
         // Get events nearest (or not) to you
         // Should the user have location info
-        if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
-            $upcoming_events = Party::havingDistanceWithin(40) // 20 miles
-            ->whereDate('event_date', '>=', date('Y-m-d'))
-            ->orderBy('event_date', 'ASC')
-            ->orderBy('start', 'ASC')
-            ->orderBy('distance', 'ASC')
-            ->take(3)
-            ->get();
-
-        // Else show them the latest three
-        } else {
-            $upcoming_events = Party::whereDate('event_date', '>=', date('Y-m-d'))
-            ->select('events.*')
-            ->orderBy('event_date', 'ASC')
-            ->take(3)
-            ->get();
-        }
+        $upcoming_events = Party::upcomingEvents()
+        ->where('users_groups.user', $user->id)
+        ->when($user->hasLocationSet(), function($query) {
+            return $query->havingDistanceWithin(40); // 24 miles
+        })
+        ->orderBy('event_date', 'ASC')
+        ->orderBy('start', 'ASC')
+        ->when($user->hasLocationSet(), function($query) {
+            return $query->orderBy('distance', 'ASC');
+        })
+        ->take(3)
+        ->get();
 
         $rssRetriever = new CachingRssRetriever('https://therestartproject.org/feed');
         $news_feed = $rssRetriever->getRSSFeed(3);
@@ -166,7 +161,7 @@ class DashboardController extends Controller
         // Logic includes new groups within 20 miles of the user's location
         // (if set) within the last month.
         $new_groups = collect([]);
-        if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
+        if ($user->hasLocationSet()) {
           $new_groups = Group::createdWithinLastMonth()
           ->havingDistanceWithin(32.1869) // 20 miles
           ->orderBy('idgroups', 'DESC')
@@ -182,12 +177,6 @@ class DashboardController extends Controller
         ->select('groups.*')
         ->take(3)
         ->get();
-
-        // $upcoming_events = Party::withAll()
-        // ->upcomingEvents()
-        // ->where('users_groups.user', Auth::id())
-        // ->take(3)
-        // ->get();
 
         return view('dashboard.index', [
             'show_getting_started' => ! $userExistsInDiscourse || ! $has_profile_pic || ! $has_skills || ! $in_group || ! $in_event,

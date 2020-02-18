@@ -60,6 +60,8 @@ class PartyController extends Controller
 
     public function index(Request $request)
     {
+        DB::enableQueryLog();
+
         $moderate_events = collect([]);
         if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             $moderate_events = Party::withAll()
@@ -93,8 +95,8 @@ class PartyController extends Controller
           Auth::id()
         ])->get();
 
-        //Looks to see whether user has a group already, if they do, they can create events
-        $user_groups = UserGroups::where('user', Auth::id())->count();
+
+        $log = DB::getQueryLog();
 
         return view('events.index', [
             'moderate_events' => $moderate_events,
@@ -103,10 +105,8 @@ class PartyController extends Controller
             'all_events_count' => $all_events_count,
             'past_events' => $past_events,
             'upcoming_events_in_area' => $upcoming_events_in_area,
-            'user_groups' => $user_groups,
             'EmissionRatio' => $this->EmissionRatio,
             'all_group_tags' => GroupTags::all(),
-            'your_groups_uniques' => $your_groups_uniques,
             'your_area' => $user->location,
             'sort_direction' => $sort_direction ? $sort_direction : 'DESC',
             'sort_column' => $sort_column ? $sort_column : 'event_date',
