@@ -15883,7 +15883,7 @@ label.form-check-label {
 }
 
 .form-control {
-  border: 2px solid #bec0c0;
+  border: 2px solid #000;
 }
 
 .form-control:focus {
