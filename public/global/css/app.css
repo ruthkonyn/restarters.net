@@ -15591,6 +15591,11 @@ label.form-check-label {
   padding: 0;
 }
 
+.popover-calendar-feed .form-control {
+  height: 50px;
+  margin-right: 10px;
+}
+
 .popover-calendar-feed .card {
   font-size: 13px;
 }
