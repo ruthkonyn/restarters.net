@@ -14729,12 +14729,12 @@ label.form-check-label {
   font-weight: 700;
 }
 
-.clear:after,
-.table-section:after,
-.table .table-cell-upload:after,
-.clear:before,
-.table-section:before,
-.table .table-cell-upload:before {
+.clear::after,
+.table-section::after,
+.table .table-cell-upload::after,
+.clear::before,
+.table-section::before,
+.table .table-cell-upload::before {
   content: "";
   display: table;
   clear: both;
@@ -14777,7 +14777,7 @@ label.form-check-label {
   border: none;
   vertical-align: middle;
   font-family: "Open Sans", sans-serif;
-  padding: 7px 5px 9px;
+  padding: 9px 5px 13px;
   border-bottom: 1px solid #000;
 }
 
@@ -15153,9 +15153,9 @@ label.form-check-label {
   font-style: normal;
   line-height: 1.3;
   letter-spacing: 1.2px;
-  color: #ffffff;
+  color: #fff;
   text-transform: uppercase;
-  padding: 0.25em 0em;
+  padding: 0.25em 0;
   text-align: center;
   display: block;
 }
