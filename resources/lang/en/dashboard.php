@@ -15,7 +15,8 @@ return array (
   'discussion_header' => 'Meet the community',
   'join_discussion' => 'Join the discussion',
   'log_devices' => 'Log devices',
-  'title' => 'Dashboard',
+  'title' => 'Welcome to Restarters Global Community',
+  'title_mobile' => 'Global Community',
   'subtitle' => 'Keep up to date with the latest activity in the Restarters community.',
   'groups_near_you_header' => 'Groups near you',
   'groups_near_you_text' => 'Follow a repair group to find out more about community repair in your area.',
@@ -25,4 +26,6 @@ return array (
   'groups_near_you_start_a_group' => 'Would you like to start or add a group?  <a href=":resources_url">Learn more</a>.',
   'groups_near_you_set_location' => '<a href=":profile_url">Set your town/city</a> to help us find groups near you.',
   'groups_near_you_your_location_is' => 'Your town/city is currently set to :location.',
+  'groups_box' => 'Your Groups',
+  'groups_box_mobile' => 'Your Restart Groups',
 );

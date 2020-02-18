@@ -80,12 +80,14 @@ class DeviceController extends Controller
         ->orderBy('event_date', 'DESC')
         ->first();
 
+
         $global_impact_data = app('App\Http\Controllers\ApiController')
         ->homepage_data();
 
         if ($global_impact_data instanceof JsonResponse) {
           $global_impact_data = $global_impact_data->getData();
         }
+
 
         return view('device.index', [
             'title' => 'Devices',

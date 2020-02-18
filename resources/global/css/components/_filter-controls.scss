@@ -24,4 +24,14 @@
     margin-top: 50px;
     margin-bottom: 50px;
   }
+
+  &-dashed {
+    @extend .border-0;
+
+    background-image: url('../../svgs/rectangle.svg');
+    background-repeat: repeat;
+    background-position: left;
+    height: 3px;
+    background-size: 20px 35px;
+  }
 }

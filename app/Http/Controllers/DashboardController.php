@@ -20,22 +20,6 @@ use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
-    // public function __construct($model, $controller, $action){
-    //     parent::__construct($model, $controller, $action);
-    //
-    //     $Auth = new Auth($url);
-    //     if(!$Auth->isLoggedIn()){
-    //         header('Location: /user/login');
-    //     }
-    //     else {
-    //
-    //         $user = $Auth->getProfile();
-    //         $this->user = $user;
-    //         $this->set('user', $user);
-    //         $this->set('header', true);
-    //     }
-    // }
-
     public function index()
     {
         $user = User::getProfile(Auth::id());
@@ -82,12 +66,12 @@ class DashboardController extends Controller
         //If users has events, let's see whether they have any past events
         if ($in_event) {
             $past_events = Party::whereIn('idevents', $event_ids)
-                     ->whereDate('event_date', '<', date('Y-m-d'))
-                     ->join('groups', 'events.group', '=', 'idGroups')
-                     ->select('events.*', 'groups.name')
-                     ->orderBy('events.event_date', 'desc')
-                     ->take(3)
-                     ->get();
+            ->whereDate('event_date', '<', date('Y-m-d'))
+            ->join('groups', 'events.group', '=', 'idGroups')
+            ->select('events.*', 'groups.name')
+            ->orderBy('events.event_date', 'desc')
+            ->take(3)
+            ->get();
 
             if (empty($past_events->toArray())) {
                 $past_events = null;
@@ -99,12 +83,12 @@ class DashboardController extends Controller
         //Host specific queries
         if (FixometerHelper::hasRole($user, 'Host') && $in_group) {
             $outdated_groups = Group::join('users_groups', 'groups.idgroups', '=', 'users_groups.group')
-                                ->where('users_groups.user', Auth::user()->id)
-                                  ->where('users_groups.role', 3)
-                                    ->whereDate('updated_at', '<=', date('Y-m-d', strtotime('-3 Months')))
-                                      ->select('groups.*')
-                                        ->take(3)
-                                          ->get();
+            ->where('users_groups.user', Auth::user()->id)
+            ->where('users_groups.role', 3)
+            ->whereDate('updated_at', '<=', date('Y-m-d', strtotime('-3 Months')))
+            ->select('groups.*')
+            ->take(3)
+            ->get();
 
             if (empty($outdated_groups->toArray())) {
                 $outdated_groups = null;
@@ -112,14 +96,14 @@ class DashboardController extends Controller
 
             if ($in_event) {
                 $active_group_ids = Party::whereIn('idevents', $event_ids)
-                                    ->whereDate('event_date', '>', date('Y-m-d'))
-                                        ->pluck('events.group')
-                                          ->toArray();
+            ->whereDate('event_date', '>', date('Y-m-d'))
+            ->pluck('events.group')
+            ->toArray();
 
                 $non_active_group_ids = array_diff($group_ids, $active_group_ids);
                 $inactive_groups = Group::whereIn('idgroups', $non_active_group_ids)
-                                        ->take(3)
-                                          ->get();
+                ->take(3)
+                ->get();
             }
 
             if ( ! isset($inactive_groups) || empty($inactive_groups->toArray())) {
@@ -141,22 +125,24 @@ class DashboardController extends Controller
             $all_groups = null;
         }
 
-        //Get events nearest (or not) to you
-        if ( ! is_null($user->latitude) && ! is_null($user->longitude)) { //Should the user have location info
-            $upcoming_events = Party::select(DB::raw('*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( latitude ) ) ) ) AS distance'))
-            ->having('distance', '<=', 40)
-              ->whereDate('event_date', '>=', date('Y-m-d'))
-                ->orderBy('event_date', 'ASC')
-                  ->orderBy('start', 'ASC')
-                    ->orderBy('distance', 'ASC')
-                      ->take(3)
-                        ->get();
-        } else { //Else show them the latest three
+        // Get events nearest (or not) to you
+        // Should the user have location info
+        if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
+            $upcoming_events = Party::havingDistanceWithin(40) // 20 miles
+            ->whereDate('event_date', '>=', date('Y-m-d'))
+            ->orderBy('event_date', 'ASC')
+            ->orderBy('start', 'ASC')
+            ->orderBy('distance', 'ASC')
+            ->take(3)
+            ->get();
+
+        // Else show them the latest three
+        } else {
             $upcoming_events = Party::whereDate('event_date', '>=', date('Y-m-d'))
-                                  ->select('events.*')
-                                    ->orderBy('event_date', 'ASC')
-                                      ->take(3)
-                                        ->get();
+            ->select('events.*')
+            ->orderBy('event_date', 'ASC')
+            ->take(3)
+            ->get();
         }
 
         $rssRetriever = new CachingRssRetriever('https://therestartproject.org/feed');
@@ -175,6 +161,34 @@ class DashboardController extends Controller
         $devices_gateway = new Device;
         $impact_stats = $devices_gateway->getWeights();
 
+
+        // 'Newly added' CTA
+        // Logic includes new groups within 20 miles of the user's location
+        // (if set) within the last month.
+        $new_groups = collect([]);
+        if ( ! is_null($user->latitude) && ! is_null($user->longitude)) {
+          $new_groups = Group::createdWithinLastMonth()
+          ->havingDistanceWithin(32.1869) // 20 miles
+          ->orderBy('idgroups', 'DESC')
+          ->get();
+        }
+
+        $user_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
+        ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+        ->join('events', 'events.group', '=', 'groups.idgroups')
+        ->where('users_groups.user', $user->id)
+        ->orderBy('groups.name', 'ASC')
+        ->groupBy('groups.idgroups')
+        ->select('groups.*')
+        ->take(3)
+        ->get();
+
+        // $upcoming_events = Party::withAll()
+        // ->upcomingEvents()
+        // ->where('users_groups.user', Auth::id())
+        // ->take(3)
+        // ->get();
+
         return view('dashboard.index', [
             'show_getting_started' => ! $userExistsInDiscourse || ! $has_profile_pic || ! $has_skills || ! $in_group || ! $in_event,
             'gmaps' => true,
@@ -192,36 +206,13 @@ class DashboardController extends Controller
             'inactive_groups' => $inactive_groups,
             'news_feed' => $news_feed,
             'all_groups' => $all_groups,
+            'new_groups' => $new_groups,
+            'user_groups' => $user_groups,
             'onboarding' => $onboarding,
             'impact_stats' => $impact_stats,
             'wiki_pages' => $wiki_pages,
             'hot_topics' => $this->getDiscourseHotTopics(),
         ]);
-
-        /*
-        $this->set('title', 'Dashboard');
-        $this->set('charts', true);
-
-        $Parties    = new Party;
-        $Devices    = new Device;
-        $Groups     = new Group;
-
-
-        $this->set('upcomingParties', $Parties->findNextParties());
-
-        $devicesByYear = array();
-        for( $i = 1; $i < 4; $i++ ){
-
-          $devices = $Devices->getByYears($i);
-          $deviceList = array();
-          foreach( $devices as $listed ) {
-              $deviceList[$listed->event_year] = $listed->total_devices;
-          }
-          $devicesByYear[$i] = $deviceList;
-
-        }
-        $this->set('devicesByYear', $devicesByYear);
-        */
     }
 
     public function getDiscourseHotTopics()

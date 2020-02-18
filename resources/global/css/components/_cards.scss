@@ -53,3 +53,14 @@
     }
   }
 }
+
+.card-info-box {
+  @extend .box-shadow-offset;
+  @extend .rounded-0;
+
+  border: 1px solid $black;
+
+  .card-body {
+    padding: 30px;
+  }
+}

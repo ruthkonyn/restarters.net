@@ -6511,7 +6511,8 @@ button.bg-dark:focus {
 .sort-column::after,
 .nav-tabs-block,
 .nav-tabs-block .nav-item,
-.tab-content {
+.tab-content,
+.hr-dashed {
   border: 0 !important;
 }
 
@@ -6618,6 +6619,7 @@ button.bg-dark:focus {
 .nav-tabs-block .nav-item .nav-link,
 .tab-content,
 .card-summary,
+.card-info-box,
 .tooltip .tooltip-inner {
   border-radius: 0 !important;
 }
@@ -14182,7 +14184,8 @@ a.form-text-corrected:focus {
 }
 
 .box-shadow-offset,
-.card-summary {
+.card-summary,
+.card-info-box {
   -webkit-box-shadow: 6px 6px 0 0 #000;
   box-shadow: 6px 6px 0 0 #000;
 }
@@ -15637,6 +15640,14 @@ label.form-check-label {
   color: #000;
 }
 
+.card-info-box {
+  border: 1px solid #000;
+}
+
+.card-info-box .card-body {
+  padding: 30px;
+}
+
 .collapse-plus-and-minus-controller {
   font-family: Asap;
   font-size: 14px;
@@ -15660,6 +15671,14 @@ label.form-check-label {
   border-top: 5px solid #000;
   margin-top: 50px;
   margin-bottom: 50px;
+}
+
+.hr-dashed {
+  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
+  background-repeat: repeat;
+  background-position: left;
+  height: 3px;
+  background-size: 20px 35px;
 }
 
 .custom-check-tick {

@@ -34,10 +34,8 @@
 
             @if( FixometerHelper::userCanCreateEvents(Auth::user()) )
               <a href="/party/create" class="btn btn-primary ml-auto">
-                @lang('events.create_new_event')
-
-                {{-- <span class="d-none d-lg-block">Create a new group</span>
-                <span class="d-block d-lg-none">Add new</span> --}}
+                <span class="d-none d-lg-block">@lang('events.create_new_event')</span>
+                <span class="d-block d-lg-none">@lang('events.create_new_event_mobile')</span>
               </a>
             @endif
           </div>

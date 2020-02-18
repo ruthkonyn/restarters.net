@@ -4,12 +4,11 @@ namespace App;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
-
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Group extends Model implements Auditable
 {
-    use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable, \App\Traits\GlobalScopes;
 
     protected $table = 'groups';
     protected $primaryKey = 'idgroups';
@@ -437,4 +436,6 @@ class Group extends Model implements Auditable
     {
         return !is_null($this->wordpress_post_id);
     }
+
+
 }

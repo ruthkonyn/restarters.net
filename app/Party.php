@@ -16,6 +16,7 @@ class Party extends Model implements Auditable
 {
     use SoftDeletes;
     use \OwenIt\Auditing\Auditable;
+    use \App\Traits\GlobalScopes;
 
     protected $table = 'events';
     protected $primaryKey = 'idevents';

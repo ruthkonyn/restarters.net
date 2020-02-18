@@ -9,17 +9,7 @@
   <section class="groups">
     <div class="container">
 
-      @if (\Session::has('success'))
-        <div class="alert alert-success">
-          {!! \Session::get('success') !!}
-        </div>
-      @endif
-      @if (\Session::has('warning'))
-        <div class="alert alert-warning">
-          {!! \Session::get('warning') !!}
-        </div>
-      @endif
-
+      @include('partials.alerts')
 
       <div class="row">
         <div class="col-12 col-md-12 mb-50">
