@@ -56,13 +56,20 @@
   text-align: left;
   color: $black !important;
 
+  svg {
+    text {
+      fill: $black !important;
+    }
+  }
+
   &.dropdown-toggle {
     &::after {
       display: none !important;
     }
 
     svg {
-      path {
+      path,
+      text {
         fill: $black !important;
       }
     }
@@ -82,7 +89,8 @@
     color: $white;
 
     svg {
-      path {
+      path,
+      text {
         fill: $white !important;
       }
     }
@@ -93,7 +101,8 @@
     color: $white !important;
 
     svg {
-      path {
+      path,
+      text {
         fill: $white !important;
       }
     }
@@ -101,7 +110,8 @@
 
   &:hover {
     svg {
-      path {
+      path,
+      text {
         fill: $black !important;
       }
     }
@@ -112,7 +122,8 @@
     color: $white !important;
 
     svg {
-      path {
+      path,
+      text {
         fill: $white !important;
       }
     }

@@ -14372,11 +14372,16 @@ a.form-text-corrected:focus {
   color: #000 !important;
 }
 
+.btn-primary svg text {
+  fill: #000 !important;
+}
+
 .btn-primary.dropdown-toggle::after {
   display: none !important;
 }
 
-.btn-primary.dropdown-toggle svg path {
+.btn-primary.dropdown-toggle svg path,
+.btn-primary.dropdown-toggle svg text {
   fill: #000 !important;
 }
 
@@ -14395,7 +14400,9 @@ a.form-text-corrected:focus {
 }
 
 .btn-primary.dropdown-toggle:focus svg path,
-.btn-primary.dropdown-toggle:active svg path {
+.btn-primary.dropdown-toggle:focus svg text,
+.btn-primary.dropdown-toggle:active svg path,
+.btn-primary.dropdown-toggle:active svg text {
   fill: #fff !important;
 }
 
@@ -14404,11 +14411,13 @@ a.form-text-corrected:focus {
   color: #fff !important;
 }
 
-.btn-primary:focus svg path {
+.btn-primary:focus svg path,
+.btn-primary:focus svg text {
   fill: #fff !important;
 }
 
-.btn-primary:hover svg path {
+.btn-primary:hover svg path,
+.btn-primary:hover svg text {
   fill: #000 !important;
 }
 
@@ -14417,7 +14426,8 @@ a.form-text-corrected:focus {
   color: #fff !important;
 }
 
-.btn-primary:active svg path {
+.btn-primary:active svg path,
+.btn-primary:active svg text {
   fill: #fff !important;
 }
 
