@@ -13,8 +13,9 @@
 @import "helpers/box-shadows";
 @import "helpers/hoverable";
 @import "helpers/flex";
+@import "helpers/arbitrary";
 
-// Other
+// Components
 @import "components/alerts";
 @import "components/buttons";
 @import "components/forms";
@@ -30,6 +31,11 @@
 @import "components/row-columns";
 @import "components/tooltip";
 @import "components/modal";
+
+// Pages
+@import "pages/dashboard";
+
+// Plugins
 @import "plugins/select2";
 
 .pagination {

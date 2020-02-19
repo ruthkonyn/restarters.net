@@ -17,13 +17,13 @@
   </td>
 
   {{-- ICON --}}
-  <td class="table-cell-icon" colspan="1">
+  <td class="table-cell-icon text-center" colspan="1">
     @php $event_group = $event->theGroup; @endphp
     @php $group_image = $event_group->groupImage; @endphp
     @if( is_object($group_image) && is_object($group_image->image) )
-      <img src="{{ $group_image->image->asset_path }}" alt="{{{ $event_group->name }}}">
+      <img class="mx-auto" src="{{ $group_image->image->asset_path }}" alt="{{{ $event_group->name }}}">
     @else
-      <img src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event_group->name }}}">
+      <img class="mx-auto" src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event_group->name }}}">
     @endif
   </td>
 

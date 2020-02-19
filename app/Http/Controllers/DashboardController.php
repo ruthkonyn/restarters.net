@@ -127,7 +127,8 @@ class DashboardController extends Controller
 
         // Get events nearest (or not) to you
         // Should the user have location info
-        $upcoming_events = Party::upcomingEvents()
+        $upcoming_events = Party::withAll()
+        ->upcomingEvents()
         ->where('users_groups.user', $user->id)
         ->when($user->hasLocationSet(), function($query) {
             return $query->havingDistanceWithin(40); // 24 miles
@@ -156,17 +157,15 @@ class DashboardController extends Controller
         $devices_gateway = new Device;
         $impact_stats = $devices_gateway->getWeights();
 
-
         // 'Newly added' CTA
         // Logic includes new groups within 20 miles of the user's location
         // (if set) within the last month.
-        $new_groups = collect([]);
-        if ($user->hasLocationSet()) {
-          $new_groups = Group::createdWithinLastMonth()
-          ->havingDistanceWithin(32.1869) // 20 miles
-          ->orderBy('idgroups', 'DESC')
-          ->get();
-        }
+        $new_groups = Group::createdWithinLastMonth()
+        ->when($user->hasLocationSet(), function($query) {
+          return $query->havingDistanceWithin(32.1869); // 20 miles
+        })
+        ->orderBy('idgroups', 'DESC')
+        ->get();
 
         $user_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
         ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')

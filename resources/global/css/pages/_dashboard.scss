@@ -1,0 +1,27 @@
+.dashboard {
+  .table {
+    tbody {
+      tr {
+        &:not(:first-child):not(:last-child) {
+          border-top: 1px solid #000;
+          border-bottom: 1px solid #000;
+        }
+
+        &:first-child {
+          border-top: 1px solid #000;
+        }
+
+        &:last-child {
+          border-bottom: 1px solid #000;
+        }
+
+        td {
+          @extend .border-0;
+
+          vertical-align: middle;
+          height: 70px;
+        }
+      }
+    }
+  }
+}

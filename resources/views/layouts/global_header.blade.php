@@ -139,30 +139,26 @@
             </li>
           @endif
 
-          {{-- TODO --}}
           <li>
-            <a href="#">
+            <a href="https://talk.restarters.net/about">
               About
             </a>
           </li>
 
-          {{-- TODO --}}
           <li>
-            <a href="#">
+            <a href="https://talk.restarters.net/guidelines">
               Guidelines
             </a>
           </li>
 
-          {{-- TODO --}}
           <li>
-            <a href="#">
+            <a href="https://talk.restarters.net/tos">
               Terms of use
             </a>
           </li>
 
-          {{-- TODO --}}
           <li>
-            <a href="#">
+            <a href="https://talk.restarters.net/privacy">
               Privacy
             </a>
           </li>

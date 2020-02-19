@@ -1,10 +1,10 @@
 <tr>
-  <td class="table-cell-icon" colspan="1">
+  <td class="table-cell-icon text-center" colspan="1">
     @php( $group_image = $group->groupImage )
     @if( is_object($group_image) && is_object($group_image->image) )
-      <img src="{{ asset('/uploads/thumbnail_' . $group_image->image->path) }}" alt="{{{ $group->name }}}">
+      <img class="mx-auto" src="{{ asset('/uploads/thumbnail_' . $group_image->image->path) }}" alt="{{{ $group->name }}}">
     @else
-      <img src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $group->name }}}">
+      <img class="mx-auto" src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $group->name }}}">
     @endif
   </td>
   <td colspan="1"><a href="/group/view/{{{ $group->idgroups }}}" title="edit group">{{{ $group->name }}}</a></td>

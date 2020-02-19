@@ -15,12 +15,12 @@
   </td>
 
   {{-- GROUP ICON --}}
-  <td colspan="1" class="table-cell-icon">
+  <td colspan="1" class="table-cell-icon text-center">
     @php( $group_image = $event->theGroup->groupImage )
     @if( is_object($group_image) && is_object($group_image->image) )
-      <img src="{{ asset('/uploads/thumbnail_' . $group_image->image->path) }}" alt="{{{ $event->theGroup->name }}}">
+      <img class="mx-auto" src="{{ asset('/uploads/thumbnail_' . $group_image->image->path) }}" alt="{{{ $event->theGroup->name }}}">
     @else
-      <img src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event->theGroup->name }}}">
+      <img class="mx-auto" src="{{ asset('/images/placeholder-avatar.png') }}" alt="{{{ $event->theGroup->name }}}">
     @endif
   </td>
 
