@@ -18,4 +18,17 @@ $(document).ready(function() {
   });
 
   $('#tesing123').tooltip('show');
+
+  // $("form[id*='-search']").
 });
+
+// Change tab view onload where hash is within URL
+window.onload = function() {
+  var hash = window.location.hash;
+  if(hash != '' || hash != undefined) {
+    var $element = $('a[href="' + hash + '"]');
+    if ($element.length == 1) {
+      $element.tab('show');
+    }
+  }
+}
