@@ -6,7 +6,6 @@
     <script src="{{ asset('global/js/app.js') }}"></script>
 
     {{-- Retrieve User Id within console --}}
-    @include('footer')
     <script src="{{ asset('js/discourse.js') }}"></script>
 
     @yield('scripts')

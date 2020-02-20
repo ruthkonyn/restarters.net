@@ -60,88 +60,17 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(1);
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(14);
-
-function createCookie(name, value, minutes) {
-  if (minutes) {
-    var date = new Date();
-    date.setTime(date.getTime() + minutes * 60 * 1000);
-    var expires = "; expires=" + date.toGMTString();
-  } else {
-    var expires = "";
-  }
-
-  document.cookie = name + "=" + value + expires + "; path=/";
-}
-
-function getCookie(name) {
-  var dc = document.cookie;
-  var prefix = name + "=";
-  var begin = dc.indexOf("; " + prefix);
-  if (begin == -1) {
-    begin = dc.indexOf(prefix);
-    if (begin != 0) return null;
-  } else {
-    begin += 2;
-    var end = document.cookie.indexOf(";", begin);
-    if (end == -1) {
-      end = dc.length;
-    }
-  }
-  // because unescape has been deprecated, replaced with decodeURI
-  //return unescape(dc.substring(begin + prefix.length, end));
-  return decodeURI(dc.substring(begin + prefix.length, end));
-}
-
-function ajaxSearchNotifications() {
-  $.ajax({
-    headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val()
-    },
-    type: 'get',
-    url: '/api/notifications/discourse/james/' + user_id,
-    datatype: 'json',
-    success: function success(data) {
-      var $items = JSON.parse(data);
-
-      if ($items.length > 0) {
-        createCookie('has_notifications', true, 10);
-      }
-    }
-  });
-}
-
-// A $( document ).ready() block.
-$(document).ready(function () {
-  console.log("ready!");
-
-  if (!getCookie('has_notifications')) {
-    ajaxSearchNotifications();
-  }
-});
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(4);
 var isBuffer = __webpack_require__(20);
 
 /*global toString:true*/
@@ -476,7 +405,7 @@ module.exports = {
 
 
 /***/ }),
-/* 3 */
+/* 1 */
 /***/ (function(module, exports) {
 
 var g;
@@ -503,7 +432,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 4 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3041,10 +2970,10 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13649,7 +13578,7 @@ return jQuery;
 
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13667,13 +13596,13 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -13745,7 +13674,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13757,13 +13686,13 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 var normalizeHeaderName = __webpack_require__(26);
 
 var DEFAULT_CONTENT_TYPE = {
@@ -13781,10 +13710,10 @@ function getDefaultAdapter() {
   // Only Node.JS has a process variable that is of [[Class]] process
   if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(10);
+    adapter = __webpack_require__(8);
   } else if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(10);
+    adapter = __webpack_require__(8);
   }
   return adapter;
 }
@@ -13863,18 +13792,18 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(25)))
 
 /***/ }),
-/* 10 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 var settle = __webpack_require__(27);
-var buildURL = __webpack_require__(7);
+var buildURL = __webpack_require__(5);
 var parseHeaders = __webpack_require__(29);
 var isURLSameOrigin = __webpack_require__(30);
-var createError = __webpack_require__(11);
+var createError = __webpack_require__(9);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -14044,7 +13973,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 11 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14069,13 +13998,13 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 12 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 /**
  * Config-specific merge-function which creates a new config-object
@@ -14127,7 +14056,7 @@ module.exports = function mergeConfig(config1, config2) {
 
 
 /***/ }),
-/* 13 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14153,12 +14082,66 @@ module.exports = Cancel;
 
 
 /***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(13);
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(14);
+
+// API call to current site - check for notifications
+function ajaxSearchNotifications() {
+  $.ajax({
+    headers: {
+      'X-CSRF-TOKEN': $("input[name='_token']").val()
+    },
+    type: 'get',
+    url: '/api/notifications/discourse/' + user.username + '/' + user.id,
+    datatype: 'json',
+    success: function success(response) {
+      console.log('Successfully connected to discourse');
+
+      if (response.message == 'cookies_set') {
+        console.log('Notifications cookie is already set');
+
+        return false;
+      }
+
+      // Response failed
+      if (response.message == 'failed') {
+        return false;
+      }
+
+      // If notifications exist then we can create a cookie
+      var $notifications = JSON.parse(response.notifications);
+
+      if ($notifications.length > 0) {
+        console.log('Notifications found on discourse');
+      }
+    }
+  });
+}
+
+$(document).ready(function () {
+  console.log("ready!");
+
+  if (user != 'undefined') {
+    ajaxSearchNotifications();
+  }
+});
+
+/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 window._ = __webpack_require__(15);
-window.Popper = __webpack_require__(4).default;
+window.Popper = __webpack_require__(2).default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -14167,7 +14150,7 @@ window.Popper = __webpack_require__(4).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(5);
+  window.$ = window.jQuery = __webpack_require__(3);
 
   __webpack_require__(17);
 } catch (e) {}
@@ -31331,7 +31314,7 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(16)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(16)(module)))
 
 /***/ }),
 /* 16 */
@@ -31371,7 +31354,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(5), __webpack_require__(4)) :
+   true ? factory(exports, __webpack_require__(3), __webpack_require__(2)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
 }(this, function (exports, $, Popper) { 'use strict';
@@ -35815,11 +35798,11 @@ module.exports = __webpack_require__(19);
 "use strict";
 
 
-var utils = __webpack_require__(2);
-var bind = __webpack_require__(6);
+var utils = __webpack_require__(0);
+var bind = __webpack_require__(4);
 var Axios = __webpack_require__(21);
-var mergeConfig = __webpack_require__(12);
-var defaults = __webpack_require__(9);
+var mergeConfig = __webpack_require__(10);
+var defaults = __webpack_require__(7);
 
 /**
  * Create an instance of Axios
@@ -35852,9 +35835,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(13);
+axios.Cancel = __webpack_require__(11);
 axios.CancelToken = __webpack_require__(34);
-axios.isCancel = __webpack_require__(8);
+axios.isCancel = __webpack_require__(6);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -35892,11 +35875,11 @@ module.exports = function isBuffer (obj) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
-var buildURL = __webpack_require__(7);
+var utils = __webpack_require__(0);
+var buildURL = __webpack_require__(5);
 var InterceptorManager = __webpack_require__(22);
 var dispatchRequest = __webpack_require__(23);
-var mergeConfig = __webpack_require__(12);
+var mergeConfig = __webpack_require__(10);
 
 /**
  * Create a new instance of Axios
@@ -35985,7 +35968,7 @@ module.exports = Axios;
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -36044,10 +36027,10 @@ module.exports = InterceptorManager;
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 var transformData = __webpack_require__(24);
-var isCancel = __webpack_require__(8);
-var defaults = __webpack_require__(9);
+var isCancel = __webpack_require__(6);
+var defaults = __webpack_require__(7);
 var isAbsoluteURL = __webpack_require__(32);
 var combineURLs = __webpack_require__(33);
 
@@ -36137,7 +36120,7 @@ module.exports = function dispatchRequest(config) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 /**
  * Transform the data for a request or a response
@@ -36354,7 +36337,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -36373,7 +36356,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(11);
+var createError = __webpack_require__(9);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -36454,7 +36437,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -36514,7 +36497,7 @@ module.exports = function parseHeaders(headers) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36589,7 +36572,7 @@ module.exports = (
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36691,7 +36674,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(13);
+var Cancel = __webpack_require__(11);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.

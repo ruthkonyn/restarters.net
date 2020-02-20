@@ -19823,7 +19823,7 @@ td.col-device-auto {
 }
 
 .form-control {
-  border: 2px solid #BEC0C0;
+  border: 2px solid #bec0c0;
 }
 
 .form-control:focus {
@@ -19831,7 +19831,7 @@ td.col-device-auto {
 }
 
 .input-group .input-group-append .input-group-text {
-  border: 2px solid #BEC0C0;
+  border: 2px solid #bec0c0;
   border-left: 0 none;
 }
 
@@ -19841,7 +19841,7 @@ td.col-device-auto {
 }
 
 .after-offset {
-  color: #5A5A5A;
+  color: #5a5a5a;
   font-size: 90%;
 }
 
@@ -19908,11 +19908,11 @@ td.col-device-auto {
     z-index: 1000;
     top: 0;
     left: 0;
-    background: #FFF;
+    background: #fff;
     height: 100%;
     overflow: scroll;
     padding: 30px;
-    background-color: #F9F9F9;
+    background-color: #f9f9f9;
   }
 
   .fixed-overlay .block,
@@ -19932,11 +19932,11 @@ td.col-device-auto {
     z-index: 1000;
     top: 0;
     left: 0;
-    background: #FFF;
+    background: #fff;
     height: 100%;
     overflow: scroll;
     padding: 30px;
-    background-color: #F9F9F9;
+    background-color: #f9f9f9;
   }
 
   .fixed-overlay-md .block,

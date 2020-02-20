@@ -11,6 +11,12 @@
 |
 */
 
+// $value = 1;
+// $minutes = 15;
+// // $cookie = \Cookie::make('testing123', $value, $minutes);
+// request()->cookie('testing123', $value, $minutes);
+// dd(Cookie::get('testing123'), request()->cookie('testing123'), 1);
+
 // https://discourse.example.com/user-badges/{username}.json
 
 // $client = new \GuzzleHttp\Client();

@@ -4,7 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\DatabaseNotification;
+use Cookie;
+use Illuminate\Http\Request;
 
 class notificationController extends Controller
 {
@@ -25,15 +28,34 @@ class notificationController extends Controller
         $this->notifications_url = env('DISCOURSE_URL').'/notifications.json';
     }
 
-    public function __invoke($username, $user_id)
+    public function __invoke(Request $request, $username, $user_id)
     {
         $this->username = $username;
 
         $this->user_id = $user_id;
 
+        if($_COOKIE['has_notification_cookies_set']){
+          return response()->json([
+              'message' => 'cookies_set',
+          ]);
+        }
+
         $collection = $this->handleRequest($username);
 
-        return $collection->toJson();
+        setcookie('has_notification_cookies_set', true, time() + (60 * 10), url('/'));
+
+        // Request had failed
+        if ($collection instanceof JsonResponse) {
+            return response()->json([
+                'message' => 'failed',
+            ]);
+        }
+
+        // Return discourse notifications within the console
+        return response()->json([
+            'notifications' => $collection,
+            'message' => 'success',
+        ]);
     }
 
     private function handleRequest(string $username)
@@ -46,10 +68,11 @@ class notificationController extends Controller
             'query' => [
                 'username' => $username,
             ],
+            'http_errors' => false,
         ]);
 
-        if ( ! $response->getStatusCode() == 200 || ! $response->getReasonPhrase() == 'OK') {
-            return false;
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return response()->json(['message' => 'failed']);
         }
 
         $array = json_decode($response->getBody()->getContents(), true);
@@ -86,21 +109,21 @@ class notificationController extends Controller
         if (str_contains($key, 'topic')) {
             $prepend = 't';
             $slug = sprintf(
-              '%s/%s/%s',
-              $discourse_notification['slug'],
-              $discourse_notification['topic_id'],
-              $discourse_notification['post_number']
-          );
+                '%s/%s/%s',
+                $discourse_notification['slug'],
+                $discourse_notification['topic_id'],
+                $discourse_notification['post_number']
+            );
         }
 
         if (str_contains($key, 'badge')) {
             $prepend = 'badges';
             $slug = sprintf(
-              '%s/%s?',
-              $discourse_notification['data']['badge_id'],
-              $discourse_notification['data']['badge_slug'],
-              "username={$this->username}",
-          );
+                '%s/%s?',
+                $discourse_notification['data']['badge_id'],
+                $discourse_notification['data']['badge_slug'],
+                "username={$this->username}",
+            );
         }
 
         $url = sprintf(

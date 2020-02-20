@@ -22,10 +22,6 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        \JavaScript::put([
-            'user_id' => Auth::id(),
-        ]);
-
         $user = User::getProfile(Auth::id());
 
         // Update language every time you go to the dashboard
