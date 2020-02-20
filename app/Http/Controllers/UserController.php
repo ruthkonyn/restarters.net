@@ -124,6 +124,19 @@ class UserController extends Controller
         ->pluck('area')
         ->toArray();
 
+        // $client = app('discourse-client');
+
+        // $response = $client->request('GET', '/users/Dean_Claydon.json');
+
+        // $array = json_decode($response->getBody()->getContents(), true);
+
+        // dd($array['user']['user_option']);
+
+        // email_messages_level: 0 // Send me an email when someone messages me
+        // email_level: 1 // Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
+        // email_previous_replies: 1 // Include previous replies at the bottom of emails
+        // digest_after_minutes: 1440 // When I don’t visit here, send me an email summary of popular topics and replies
+
         return view('user.profile-edit', [
         'user' => $user,
         'skills' => FixometerHelper::allSkills(),
@@ -1246,7 +1259,7 @@ class UserController extends Controller
         // Notify relevant users
         if (! \App::environment('local')) {
           $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
-          
+
           Notification::send($notify_users, new AdminNewUser([
             'id' => $user->id,
             'name' => $user->name,

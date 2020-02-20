@@ -168,6 +168,7 @@ return [
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
         wouterNL\Drip\DripServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
+        App\Providers\DiscourseServiceProvider::class,
     ],
 
     /*

@@ -411,26 +411,48 @@
                   {{ Form::hidden('id', $user->id) }}
 
                   <fieldset class="email-options">
-                      {{-- <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->newsletter == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1">
-                          @endif
-                          <label class="form-check-label" for="newsletter">
-                              @lang('general.email_alerts_pref1')
-                          </label>
-                      </div>--}}
-                      <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->invites == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1">
-                          @endif
-                          <label class="form-check-label" for="invites">
-                          @lang('general.email_alerts_pref2')
+                    <div class="form-check d-flex align-items-center justify-content-start">
+                      <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" @if( $user->invites == 1 ) checked @endif>
+                      <label class="form-check-label" for="invites">
+                        @lang('general.email_alerts_pref2')
                       </label>
-                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="user_role">
+                        Send me an email when someone messages me:
+                      </label>
+                      <select class="form-control col-12 col-lg-6" id="user_role" name="user_role">
+                        <option value="">always</option>
+                        <option value="">only when always</option>
+                        <option value="">never</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="user_role">
+                        Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
+                      </label>
+                      <select class="form-control col-12 col-lg-6" id="user_role" name="user_role">
+                        <option value="">always</option>
+                        <option value="">only when always</option>
+                        <option value="">never</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="user_role">
+                        When I don’t visit here, send me an email summary of popular topics and replies
+                      </label>
+                      <select class="form-control col-12 col-lg-6" id="user_role" name="user_role">
+                        <option value="">every 30 minutes</option>
+                        <option value="">hourly</option>
+                        <option value="">daily</option>
+                        <option value="">weekly</option>
+                        <option value="">every month</option>
+                        <option value="">every six months</option>
+                      </select>
+                    </div>
                   </fieldset>
 
                   <div class="button-group row">
