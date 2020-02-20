@@ -4,12 +4,11 @@ namespace App;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
-
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Group extends Model implements Auditable
 {
-    use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable, \App\Traits\GlobalScopes;
 
     protected $table = 'groups';
     protected $primaryKey = 'idgroups';
@@ -407,10 +406,10 @@ class Group extends Model implements Auditable
 
     public function getNextUpcomingEvent()
     {
-      $event = $this->parties()
-             ->whereNotNull('wordpress_post_id')
-             ->whereDate('event_date', '>=', date('Y-m-d'))
-             ->orderBy('event_date', 'asc');
+      $event = $this->parties
+      ->where('wordpress_post_id', '!=', null)
+      ->where('event_date', '>=', date('Y-m-d'))
+      ->sortBy('event_date');
 
       if ( ! $event->count() ) {
           return null;
@@ -437,4 +436,6 @@ class Group extends Model implements Auditable
     {
         return !is_null($this->wordpress_post_id);
     }
+
+
 }

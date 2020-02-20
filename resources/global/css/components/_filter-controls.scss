@@ -1,0 +1,37 @@
+.collapse-plus-and-minus-controller {
+  font-family: Asap;
+  font-size: 14px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: 2.5px;
+  text-align: center;
+  color: $black;
+  text-transform: uppercase;
+  font-size: 18px;
+}
+
+.hr {
+  &-sm {
+    height: 2px;
+    border-top: 2px
+    solid $black;
+  }
+
+  &-lg {
+    height: 5px;
+    border-top: 5px solid #000;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  &-dashed {
+    @extend .border-0;
+
+    background-image: url('../../svgs/rectangle.svg');
+    background-repeat: repeat;
+    background-position: left;
+    height: 3px;
+    background-size: 20px 35px;
+  }
+}

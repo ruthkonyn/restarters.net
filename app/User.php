@@ -64,7 +64,17 @@ class User extends Authenticatable implements Auditable
         'deleted' => UserDeleted::class,
     ];
 
+    protected $appends = ['UserGroupsIDs'];
+
+    protected $with = ['userGroups'];
+
+
     public function role()
+    {
+        return $this->hasOne('App\Role', 'idroles', 'role');
+    }
+
+    public function userRole()
     {
         return $this->hasOne('App\Role', 'idroles', 'role');
     }
@@ -455,5 +465,20 @@ class User extends Authenticatable implements Auditable
     public function getTalkProfileUrl()
     {
         return env('DISCOURSE_URL').'/u/'.$this->username;
+    }
+
+    public function hasLocationSet()
+    {
+        return ! is_null($this->latitude) && ! is_null($this->longitude);
+    }
+
+    public function userGroups()
+    {
+        return $this->hasMany(UserGroups::class, 'user', 'id');
+    }
+
+    public function getUserGroupsIDsAttribute()
+    {
+        return $this->userGroups->pluck('group')->toArray();
     }
 }

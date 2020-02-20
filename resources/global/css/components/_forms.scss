@@ -1,0 +1,125 @@
+.form-group {
+  &__offset {
+    @include media-breakpoint-up(lg) {
+      padding-right: 210px;
+    }
+  }
+}
+
+.form-check {
+  margin-bottom: 8px;
+}
+
+.form-check-input {
+  margin-top: 0.45rem;
+}
+
+.form-check {
+  padding-left: 0;
+
+  .form-check-input {
+    margin: auto 0;
+    position: relative;
+    margin-right: 10px;
+    z-index: 1;
+  }
+}
+
+label.form-check-label {
+  font-weight: 400;
+  font-family: $font-family-second;
+  font-size: 15px;
+}
+
+.form-control__select {
+  padding: 0 !important;
+  height: auto;
+
+  select {
+    border: 0;
+    background-color: transparent;
+    width: 100%;
+  }
+
+  .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    background-image: url('../svgs/dropdown-arrow.svg');
+    background-repeat: no-repeat;
+  }
+
+  .select2-container--default .select2-selection--single {
+    border: 0;
+  }
+
+  .select2-container {
+    width: 100% !important;
+  }
+
+  .select2-selection {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+
+  .select2-selection__arrow {
+    top: 4px !important;
+
+    b {
+      border: 0;
+      border-color: unset !important;
+      border-style: unset !important;
+      background-image: url('../svgs/dropdown-arrow.svg');
+      width: 14px !important;
+      height: 8px !important;
+      left: 10% !important;
+      background-repeat: no-repeat;
+    }
+  }
+
+
+
+  .select2-selection--multiple {
+    margin-top: 0;
+    margin-bottom: 0;
+    background-image: url('../svgs/dropdown-arrow.svg');
+    background-repeat: no-repeat;
+    background-position: 97% 50%;
+
+    .select2-selection__choice {
+      background-color: $brand;
+      color: $white;
+      font-size: 14px;
+      padding: 5px 12px 5px 10px;
+      border: 0 none;
+      border-bottom: 3px solid #155e67;
+      line-height: 35px;
+
+      .select2-selection__choice__remove {
+        float: left;
+        color: $white;
+        font-size: 19px;
+        font-weight: 400;
+        margin: 0 9px 0 0;
+      }
+    }
+  }
+}
+
+.form-control {
+  border-radius: 0;
+  border: 1px solid $black;
+
+  &:focus {
+    border: 2px solid $black;
+    border-color: $black;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    font-weight: 700;
+  }
+}
+
+.form-text-corrected {
+  @extend .form-text;
+  @extend .text-dark;
+  @extend .mt-0;
+
+  font-size: 14px !important;
+}

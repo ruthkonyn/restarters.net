@@ -8,33 +8,57 @@ use App\Party;
 use App\Device;
 use App\User;
 use App\Helpers\FootprintRatioCalculator;
+use Cache;
 
 class ApiController extends Controller
 {
     public static function homepage_data()
     {
+        if (Cache::has('homepage_data')) {
+            return Cache::get('homepage_data');
+        }
+
         $result = array();
 
         $Party = new Party;
         $Device = new Device;
 
-        $allparties = Party::pastEvents()->get();
+        $allparties = Party::pastEvents()
+        ->withCount('allDevices')
+        ->get();
 
         $participants = 0;
         $hours_volunteered = 0;
+        $waste_prevented = 0;
+        $devices_count = 0;
+
+        $footprintRatioCalculator = new FootprintRatioCalculator();
+        $emissionRatio = $footprintRatioCalculator->calculateRatio();
 
         foreach ($allparties as $i => $party) {
             $participants += $party->pax;
-
             $hours_volunteered += $party->hoursVolunteered();
+
+            $waste = $party->getEventStats($emissionRatio);
+            if (is_array($waste)) {
+              $waste_prevented += round($waste['ewaste'], 2);
+            }
+
+            $devices_count += $party->all_devices_count;
         }
 
         $co2Total = $Device->getWeights();
 
+
+        $result['devices_count'] = $devices_count;
+        $result['waste_prevented'] = number_format($waste_prevented, 0);
+        $result['participants'] = $participants;
         $result['hours_volunteered'] = $hours_volunteered;
         $result['items_fixed'] = $Device->statusCount()[0]->counter;
         $result['weights'] = round($co2Total[0]->total_weights);
         $result['emissions'] = round($co2Total[0]->total_footprints);
+
+        Cache::put('homepage_data', (object) $result, 60);
 
         return response()
             ->json($result, 200);
