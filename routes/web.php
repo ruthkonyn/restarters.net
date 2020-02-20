@@ -11,6 +11,25 @@
 |
 */
 
+// https://discourse.example.com/user-badges/{username}.json
+
+// $client = new \GuzzleHttp\Client();
+// $response = $client->request('GET', env('DISCOURSE_URL').'/admin/badges.json', [
+//     'headers' => [
+//         'Api-Key' => env('DISCOURSE_APIKEY'),
+//         'Api-Username' => env('DISCOURSE_APIUSER'),
+//         'Accept' => 'application/json',
+//     ],
+// ]);
+// //
+// $array = json_decode($response->getBody()->getContents(), true);
+// // $collection = collect($array['notifications']);
+//
+// dd($array);
+//
+// dd($collection->first());
+
+
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');
@@ -234,7 +253,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/export/time-volunteered', 'ExportController@exportTimeVolunteered');
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
-    
+
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');

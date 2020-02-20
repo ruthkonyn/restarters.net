@@ -12,7 +12,7 @@ use App\Party;
 use App\User;
 use App\UserGroups;
 use App\UsersSkills;
-
+use Cookie;
 use Auth;
 use Cache;
 use DB;
@@ -38,6 +38,10 @@ class DashboardController extends Controller
 
     public function index()
     {
+        \JavaScript::put([
+            'user_id' => Auth::id(),
+        ]);
+
         $user = User::getProfile(Auth::id());
 
         // Update language every time you go to the dashboard
