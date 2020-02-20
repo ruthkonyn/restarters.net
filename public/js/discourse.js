@@ -14096,6 +14096,8 @@ __webpack_require__(14);
 
 // API call to current site - check for notifications
 function ajaxSearchNotifications() {
+  // $base_url = window.location.host;
+
   $url = '/notifications/discourse/';
 
   if (user != 'undefined') {
@@ -14110,16 +14112,17 @@ function ajaxSearchNotifications() {
     url: $url,
     datatype: 'json',
     success: function success(response) {
-      console.log('Successfully connected to discourse');
+      console.log('Success: connected to Discourse.');
 
       if (response.message == 'cookies_set') {
-        console.log('Notifications cookie is already set');
+        console.log('Success: notification cookie is currently set.');
 
         return false;
       }
 
       // Response failed
       if (response.message == 'failed') {
+        console.log('Success: failed to find any new notifications.');
         return false;
       }
 
@@ -14127,7 +14130,7 @@ function ajaxSearchNotifications() {
       var $notifications = JSON.parse(response.notifications);
 
       if ($notifications.length > 0) {
-        console.log('Notifications found on discourse');
+        console.log('Success: notifications found on Discourse.');
       }
     }
   });

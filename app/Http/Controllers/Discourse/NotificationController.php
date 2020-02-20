@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Discourse;
 
 use App\Http\Controllers\Controller;
 use Auth;
@@ -60,7 +60,7 @@ class notificationController extends Controller
             $this->user_id = $user_id;
         }
 
-        if ($_COOKIE['has_notification_cookies_set']) {
+        if ($_COOKIE['has_cookie_notifications_set']) {
             return response()->json([
                 'message' => 'cookies_set',
             ]);
@@ -69,7 +69,7 @@ class notificationController extends Controller
         $collection = $this->handleRequest($username);
 
         // 10 Minutes
-        setcookie('has_notification_cookies_set', true, time() + (60 * 10), url('/'));
+        setcookie('has_cookie_notifications_set', true, time() + (60 * 10), url('/'));
 
         // Request had failed
         if ($collection instanceof JsonResponse) {
