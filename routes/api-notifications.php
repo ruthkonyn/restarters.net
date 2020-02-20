@@ -1,6 +1,6 @@
 <?php
 
-Route::get('/discourse/{username}/{user_id}', 'NotificationController');
+Route::get('/discourse/{username?}/{user_id?}', 'NotificationController');
 
 
 

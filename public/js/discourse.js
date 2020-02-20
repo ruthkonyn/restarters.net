@@ -14096,12 +14096,18 @@ __webpack_require__(14);
 
 // API call to current site - check for notifications
 function ajaxSearchNotifications() {
+  $url = '/notifications/discourse/';
+
+  if (user != 'undefined') {
+    $url = $url + user.username + '/' + user.id;
+  }
+
   $.ajax({
     headers: {
       'X-CSRF-TOKEN': $("input[name='_token']").val()
     },
-    type: 'get',
-    url: '/api/notifications/discourse/' + user.username + '/' + user.id,
+    type: 'GET',
+    url: $url,
     datatype: 'json',
     success: function success(response) {
       console.log('Successfully connected to discourse');
@@ -14130,9 +14136,7 @@ function ajaxSearchNotifications() {
 $(document).ready(function () {
   console.log("ready!");
 
-  if (user != 'undefined') {
-    ajaxSearchNotifications();
-  }
+  ajaxSearchNotifications();
 });
 
 /***/ }),
