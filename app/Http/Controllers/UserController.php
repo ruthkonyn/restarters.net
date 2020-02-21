@@ -124,21 +124,9 @@ class UserController extends Controller
         ->pluck('area')
         ->toArray();
 
-        // $client = app('discourse-client');
-
-        // $response = $client->request('GET', '/users/Dean_Claydon.json');
-
-        // $array = json_decode($response->getBody()->getContents(), true);
-
-        // dd($array['user']['user_option']);
-
-        // email_messages_level: 0 // Send me an email when someone messages me
-        // email_level: 1 // Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
-        // email_previous_replies: 1 // Include previous replies at the bottom of emails
-        // digest_after_minutes: 1440 // When I don’t visit here, send me an email summary of popular topics and replies
-
         return view('user.profile-edit', [
         'user' => $user,
+        'user_email_preferences' => $user->DiscourseEmailPreferences,
         'skills' => FixometerHelper::allSkills(),
         'user_skills' => $user_skills,
         'user_groups' => $user_groups,
@@ -279,19 +267,6 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        // Subscriptions only happen at registration.
-        // Unsubscriptions only happen via links in newsletter.
-        /*if ( is_null(request()->input('newsletter')) ) {
-          $user->newsletter = 0;
-          $unsubscribe_user = DripEvent::unsubscribeSubscriberFromNewsletter($user);
-        } else {
-          $drip_subscribe_user = DripEvent::subscribeSubscriberToNewsletter($user);
-          if (!empty((array) $drip_subscribe_user)) {
-            $user->newsletter = 1;
-            $user->drip_subscriber_id = $drip_subscribe_user->id;
-          }
-        }*/
-
         if ($request->input('invites') !== null) :
             $user->invites = 1;
         else :
@@ -300,7 +275,13 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('message', 'User Preferences Updated!');
+        $user->updateDiscourseEmailPreferences($request->only([
+          'email_messages_level',
+          'email_level',
+          'digest_after_minutes',
+        ]));
+
+        return back()->with('message', 'User Preferences Updated!');
     }
 
     public function postProfileTagsEdit(Request $request)

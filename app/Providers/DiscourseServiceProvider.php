@@ -8,9 +8,9 @@ use Illuminate\Support\ServiceProvider;
 class DiscourseServiceProvider extends ServiceProvider
 {
     /**
-     * Register services.
+     * Register Discourse API connection services.
      *
-     * @return void
+     * @return \GuzzleHttp\Client
      */
     public function register()
     {
