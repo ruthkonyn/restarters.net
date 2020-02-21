@@ -3,7 +3,8 @@
 body,
 html {
   background-color: #f5f7fa !important;
-  font-family: "Asap", sans-serif;
+  font-family: "Asap", sans-serif !important;
+  font-size: 18px;
 }
 
 h1 {
@@ -14813,7 +14814,7 @@ label.form-check-label {
   font-size: 15px;
   border: none;
   vertical-align: middle;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Asap", sans-serif;
   padding: 9px 5px 13px;
   border-bottom: 1px solid #000;
 }
@@ -14902,13 +14903,13 @@ label.form-check-label {
 }
 
 .table-row-details td .table label {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: "Asap", sans-serif;
   font-size: 16px;
 }
 
 .table-row-details td .table label.form-check-label {
   font-size: 15px;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Asap", sans-serif;
 }
 
 .table-row-details td .table .form-check {
@@ -15003,7 +15004,7 @@ label.form-check-label {
 
 .table-add tr th {
   padding-left: 10px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: "Asap", sans-serif;
   font-size: 16px;
   border: 0;
 }
@@ -15126,7 +15127,7 @@ label.form-check-label {
 }
 
 .nested-fields label {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: "Asap", sans-serif;
   font-size: 16px;
   margin-bottom: 7px;
   -webkit-box-flex: 1;
@@ -15136,7 +15137,7 @@ label.form-check-label {
 
 .nested-fields label.form-check-label {
   font-size: 15px;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Asap", sans-serif;
 }
 
 .nested-fields > .form-control {
@@ -15520,7 +15521,11 @@ label.form-check-label {
   border-top: 1px solid #000;
 }
 
-.tab-content .tab-pane:not(:last-child) .accordion-tab-header button {
+.tab-content .tab-pane .tab-pane-content {
+  background-color: #fff;
+}
+
+.tab-content .tab-pane .tab-pane-content:not(:last-child) .accordion-tab-header button {
   border-bottom: 0 !important;
 }
 

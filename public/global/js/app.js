@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(4);
+module.exports = __webpack_require__(5);
 
 
 /***/ }),
@@ -79,7 +79,7 @@ $(document).ready(function () {
 
   __webpack_require__(2);
   __webpack_require__(3);
-  __webpack_require__(16);
+  __webpack_require__(4);
 
   console.log('ready!');
 
@@ -149,23 +149,6 @@ $('.entireRowClickable').click(function () {
 /* 4 */
 /***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ (function(module, exports) {
-
 function searchEventsByGroup() {
   $current_group = $(".change-group :selected").val();
 
@@ -183,6 +166,12 @@ $(document).on('change', '.change-group', function () {
 });
 
 searchEventsByGroup();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

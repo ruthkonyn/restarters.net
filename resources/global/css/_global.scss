@@ -1,7 +1,8 @@
 body,
 html {
   background-color: #f5f7fa !important;
-  font-family: $font-family-third;
+  font-family: $font-family-third !important;
+  font-size: 18px;
 }
 
 @mixin font-default {
