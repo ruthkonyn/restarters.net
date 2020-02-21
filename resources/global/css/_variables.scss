@@ -2,12 +2,15 @@
 $focus1 : #0062cc;
 $brand: #0394a6;
 $black: #000;
+
 // Font Variables //
 $font-family-third: 'Asap', sans-serif;
 $font-family-second: 'Open Sans', sans-serif;
 
 $theme-colors: (
-  primary: #4aaebc,
+  primary: $brand,
+  warning: #ffbe5f,
+  info: #d0dae6,
 );
 
 /** Custom spacing properties */

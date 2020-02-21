@@ -60,8 +60,20 @@
 
   border: 1px solid $black;
 
+  .card-img-top {
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid $black;
+  }
+
   .card-body {
     padding: 30px;
+
+    a {
+      @extend .text-dark;
+
+      text-decoration: underline;
+    }
 
     .call_to_action {
       @extend .py-20;
@@ -75,7 +87,7 @@
           display: none !important;
         }
       }
-      
+
       .doodle-icon {
         position: absolute;
         top: 50%;
