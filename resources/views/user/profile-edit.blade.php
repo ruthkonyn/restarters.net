@@ -22,9 +22,7 @@
     </div>
 
     @if(session()->has('message'))
-      <div class="alert alert-success col-lg-12">
-        {{ session()->get('message') }}
-      </div>
+        @include('partials.alerts.alert-success',['text'=> session()->get('message')])
     @endif
 
     @if (session()->has('error'))
