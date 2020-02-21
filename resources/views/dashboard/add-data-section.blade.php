@@ -1,4 +1,4 @@
-<div class="card card-info-box bg-primary">
+<div class="card card-info-box bg-primary mt-auto">
   <div class="card-body text-dark">
     <div class="d-flex flex-column flex-lg-row align-items-center">
       <h2 class="mb-0 mr-30">

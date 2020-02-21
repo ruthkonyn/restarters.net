@@ -31,7 +31,7 @@
       {{-- @include('dashboard.temporary-banner') --}}
 
       <div class="row">
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-8 d-flex flex-column">
           {{-- @if (FixometerHelper::hasRole($user, 'Administrator'))
             @include('dashboard.restarter')
           @endif

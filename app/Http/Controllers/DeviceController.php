@@ -233,11 +233,18 @@ class DeviceController extends Controller
         $impact_data->emissions = round($impact_data->emissions);
         $impact_data->waste_prevented = number_format(round($impact_data->waste_prevented, 2), 0);
 
+        $most_recent_finished_event = Party::with('theGroup')
+        ->hasDevicesRepaired(5)
+        ->eventHasFinished()
+        ->orderBy('event_date', 'DESC')
+        ->first();
+
         return view('device.index', [
             'impact_data' => $impact_data,
             'title' => 'Devices',
             'categories' => $categories,
             'groups' => Group::all(),
+            'most_recent_finished_event' => $most_recent_finished_event,
             'list' => $all_devices_paginated,
             'selected_groups' => $request->input('groups'),
             'selected_categories' => $request->input('categories'),
