@@ -32,4 +32,8 @@ $(document).on('change', '.change-group', function(){
   searchEventsByGroup();
 });
 
+$(document).on('change', '.change-events', function(){
+  $('.change-event-url').attr('href', '/party/view/' + $(this).val());
+});
+
 searchEventsByGroup();

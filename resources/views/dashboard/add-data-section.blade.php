@@ -39,7 +39,7 @@
       </div>
 
       {{-- TODO: Add Data URL --}}
-      <a href="#" class="btn btn-primary btn-sm w-min-auto">
+      <a href="#" class="btn btn-primary btn-sm w-min-auto change-event-url">
         Add
       </a>
     </div>

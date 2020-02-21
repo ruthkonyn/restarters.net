@@ -55,14 +55,6 @@
         </div>
 
         <div class="col-12 col-md-4">
-
-
-
-
-
-
-
-
           <div class="card card-info-box">
             <img src="images/community.jpg" class="card-img-top" alt="...">
             <div class="card-body">
@@ -99,7 +91,6 @@
                 </ul>
             </div>
           </div>
-
         </div>
       </div>
     </div>
