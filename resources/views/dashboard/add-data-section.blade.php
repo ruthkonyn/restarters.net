@@ -16,21 +16,16 @@
 
     <div class="flex-dynamic-row">
       <div class="flex-dynamic">
-        <label for="items_cat" class="sr-only">@lang('devices.category'):</label>
+        <label for="items_cat" class="sr-only">@lang('devices.group'):<</label>
         <div class="form-control form-control__select">
-          <select id="categories" name="categories[]" class="form-control select2-categories" multiple title="Choose categories...">
-            {{-- @if(isset($categories))
-              @foreach($categories as $cluster)
-                <optgroup label="<?php echo $cluster->name; ?>">
-                  @foreach($cluster->categories as $c)
-                    <option value="<?php echo $c->idcategories; ?>" @if (!empty($selected_categories) && in_array($c->idcategories, $selected_categories)) selected @endif>
-                      <?php echo $c->name; ?>
-                    </option>
-                  @endforeach
-                </optgroup>
+          <select id="group" name="group" class="form-control select2-group change-group" title="Choose group...">
+            @if( ! $user_groups->isEmpty() )
+              @foreach($user_groups as $group)
+                <option value="{{ $group->idgroups }}">
+                  {{ $group->name }}
+                </option>
               @endforeach
-            @endif --}}
-            <option value="46">Misc</option>
+            @endif
           </select>
         </div>
       </div>
@@ -38,24 +33,22 @@
       <div class="flex-dynamic">
         <label for="items_cat" class="sr-only">@lang('devices.category'):</label>
         <div class="form-control form-control__select">
-          <select id="categories" name="categories[]" class="form-control select2-categories" multiple title="Choose categories...">
-            {{-- @if(isset($categories))
-              @foreach($categories as $cluster)
-                <optgroup label="<?php echo $cluster->name; ?>">
-                  @foreach($cluster->categories as $c)
-                    <option value="<?php echo $c->idcategories; ?>" @if (!empty($selected_categories) && in_array($c->idcategories, $selected_categories)) selected @endif>
-                      <?php echo $c->name; ?>
-                    </option>
-                  @endforeach
-                </optgroup>
+          <select id="events" name="events" class="form-control select2 change-events" title="Choose event...">
+            @if( ! $user_groups->isEmpty() )
+              @foreach($user_groups as $group)
+                @foreach ($group->parties as $event)
+                  <option data-group-id="{{ $group->idgroups }}" value="{{ $event->idevents }}">
+                    {{ $event->getEventDate('D/M/Y') }} at {{ str_limit($event->location, 15) }}
+                  </option>
+                @endforeach
               @endforeach
-            @endif --}}
-            <option value="46">Misc</option>
+            @endif
           </select>
         </div>
       </div>
 
-      <a href="/party/create" class="btn btn-primary btn-sm w-min-auto">
+      {{-- TODO: Add Data URL --}}
+      <a href="#" class="btn btn-primary btn-sm w-min-auto">
         Add
       </a>
     </div>

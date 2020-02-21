@@ -79,6 +79,7 @@ $(document).ready(function () {
 
   __webpack_require__(2);
   __webpack_require__(3);
+  __webpack_require__(16);
 
   console.log('ready!');
 
@@ -93,13 +94,10 @@ $(document).ready(function () {
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
-
-  $('#tesing123').tooltip('show');
-
-  // $("form[id*='-search']").
 });
 
 // Change tab view onload where hash is within URL
+// TODO: Double check this works...
 window.onload = function () {
   var hash = window.location.hash;
   if (hash != '' || hash != undefined) {
@@ -152,6 +150,39 @@ $('.entireRowClickable').click(function () {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
+/***/ (function(module, exports) {
+
+function searchEventsByGroup() {
+  $current_group = $(".change-group :selected").val();
+
+  $('.change-events option').prop('disabled', true);
+  $group_event_options = $('.change-events option[data-group-id="' + $current_group + '"]');
+  $group_event_options.show();
+  console.log($group_event_options.length);
+
+  console.log('done');
+}
+
+$(document).on('change', '.change-group', function () {
+  // $(".").on('change', function(){
+  searchEventsByGroup();
+});
+
+searchEventsByGroup();
 
 /***/ })
 /******/ ]);

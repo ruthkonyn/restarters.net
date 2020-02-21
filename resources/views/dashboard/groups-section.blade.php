@@ -33,73 +33,108 @@
       </div>
     @endif
 
-    <div class="row">
-      <div class="col-12 col-lg-6 mb-50 mb-md-0 d-flex flex-column">
-        <b>
-          Group chat
-        </b>
+    @if (! $user_groups->isEmpty())
+      <div class="row">
+        <div class="col-12 col-lg-6 mb-50 mb-md-0 d-flex flex-column">
+          <b>
+            Group chat
+          </b>
 
-        <p class="card-text mb-20">
-          Catch up with your groups by clicking below.
-          You can also <a href="#">send an urgent message</a> to groups you host.
-        </p>
+          <p class="card-text mb-20">
+            Catch up with your groups by clicking below.
+            You can also <a href="#">send an urgent message</a> to groups you host.
+          </p>
 
-        @if( ! $user_groups->isEmpty() )
-          <div class="table-responsive mb-0 mt-auto">
-            <table role="table" class="table table-hover mb-0">
-              <tbody>
-                @foreach ($user_groups as $group)
-                  @include('partials.tables.row-group-small')
-                @endforeach
-              </tbody>
-            </table>
-          </div>
+          @if( ! $user_groups->isEmpty() )
+            <div class="table-responsive mb-0 mt-auto">
+              <table role="table" class="table table-hover mb-0">
+                <tbody>
+                  @php $take_3_groups = $user_groups->take(3); @endphp
+                  @foreach ($take_3_groups as $group)
+                    @include('partials.tables.row-group-small')
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
 
-          <a href="#" class="text-dark text-underlined ml-auto">
-            <u>
-              see all
-            </u>
-          </a>
-        @endif
-      </div>
-
-      <div class="col-12 col-lg-6 d-flex flex-column">
-        <div class="d-flex flex-wrap flex-row align-items-center justify-content-between mb-20">
-          <div class="">
-            <b>
-              Upcoming events
-            </b>
-
-            <p class="card-text mb-0">
-              Your groups' upcoming events:
-            </p>
-          </div>
-
-          @if( FixometerHelper::userCanCreateEvents(Auth::user()) )
-            <a href="/party/create" class="btn btn-primary btn-sm w-min-auto">
-              Add
+            <a href="#" class="text-dark text-underlined ml-auto">
+              <u>
+                see all
+              </u>
             </a>
           @endif
         </div>
 
-        @if( ! $upcoming_events->isEmpty() )
-          <div class="table-responsive mb-0 mt-auto">
-            <table role="table" class="table table-hover mb-0">
-              <tbody>
-                @foreach ($upcoming_events as $event)
-                  @include('partials.tables.row-event-small')
-                @endforeach
-              </tbody>
-            </table>
+        <div class="col-12 col-lg-6 d-flex flex-column">
+          <div class="d-flex flex-wrap flex-row align-items-center justify-content-between mb-20">
+            <div class="">
+              <b>
+                Upcoming events
+              </b>
+
+              <p class="card-text mb-0">
+                Your groups' upcoming events:
+              </p>
+            </div>
+
+            @if( FixometerHelper::userCanCreateEvents(Auth::user()) )
+              <a href="/party/create" class="btn btn-primary btn-sm w-min-auto">
+                Add
+              </a>
+            @endif
           </div>
 
-          <a href="#" class="text-dark text-underlined ml-auto">
-            <u>
-              see all
-            </u>
-          </a>
-        @endif
+          @if( ! $upcoming_events->isEmpty() )
+            <div class="table-responsive mb-0 mt-auto">
+              <table role="table" class="table table-hover mb-0">
+                <tbody>
+                  @foreach ($upcoming_events as $event)
+                    @include('partials.tables.row-event-small')
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+
+            <a href="#" class="text-dark text-underlined ml-auto">
+              <u>
+                see all
+              </u>
+            </a>
+          @endif
+        </div>
       </div>
-    </div>
+    @else
+
+      {{-- TODO... --}}
+      <div class="row">
+        <div class="col-12 col-md-6">
+
+        </div>
+
+        <div class="col-12 col-md-6">
+          <p class="font-weight-bold">Interested in starting a community repair group?</p>
+          <p>
+            Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region's Talk group and invite others in your area for a chat! Or view our school programme planning guide. When you're ready to start a group, get in touch.
+          </p>
+
+          <p class="font-weight-bold">
+            Your region's Talk groups:
+          </p>
+
+          @php $talk_groups = collect([]); @endphp
+          @if( ! $talk_groups->isEmpty() )
+            <div class="table-responsive mb-0 mt-auto">
+              <table role="table" class="table table-hover mb-0">
+                <tbody>
+                  @foreach ($talk_groups as $group)
+                    @include('partials.tables.row-group-small')
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          @endif
+        </div>
+      </div>
+    @endif
   </div>
 </div>

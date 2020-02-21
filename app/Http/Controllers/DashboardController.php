@@ -174,8 +174,9 @@ class DashboardController extends Controller
         ->orderBy('groups.name', 'ASC')
         ->groupBy('groups.idgroups')
         ->select('groups.*')
-        ->take(3)
         ->get();
+
+        $user_groups = collect([]);
 
         return view('dashboard.index', [
             'show_getting_started' => ! $userExistsInDiscourse || ! $has_profile_pic || ! $has_skills || ! $in_group || ! $in_event,

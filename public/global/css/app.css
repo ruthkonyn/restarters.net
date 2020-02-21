@@ -16106,7 +16106,7 @@ label.form-check-label {
 }
 
 .select2-search__field {
-  width: auto !important;
+  width: 100% !important;
   padding-left: 7px !important;
 }
 
