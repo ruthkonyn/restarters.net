@@ -49,19 +49,19 @@
         <div class="offset-md-box-shadow no-space-mobile">
           <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
             <li class="nav-item">
-              <a id="tab-A" href="#pane-A" class="nav-link white active" data-toggle="tab" role="tab">
+              <a id="tab-A" href="#pane-A" class="nav-link bg-white active" data-toggle="tab" role="tab">
                 <span class="d-none d-lg-block">@lang('events.upcoming_for_your_groups')</span>
                 <span class="d-block d-lg-none">@lang('events.upcoming_for_your_groups_mobile')</span>
               </a>
             </li>
             <li class="nav-item">
-              <a id="tab-B" href="#pane-B" class="nav-link white " data-toggle="tab" role="tab">
+              <a id="tab-B" href="#pane-B" class="nav-link bg-white" data-toggle="tab" role="tab">
                 <span class="d-none d-lg-block">@lang('events.other_events_near_you')</span>
                 <span class="d-block d-lg-none">@lang('events.other_events_near_you_mobile')</span>
               </a>
             </li>
             <li class="nav-item">
-              <a id="tab-C" href="#pane-C" class="nav-link white" data-toggle="tab" role="tab">
+              <a id="tab-C" href="#pane-C" class="nav-link bg-white" data-toggle="tab" role="tab">
                 <span class="d-none d-lg-block">@lang('events.event_all')</span>
                 <span class="d-block d-lg-none">@lang('events.event_all_mobile')</span>
               </a>
