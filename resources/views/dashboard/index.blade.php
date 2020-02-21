@@ -100,6 +100,117 @@
           </div>
         </div>
       </div>
+
+      <div class="row mt-50">
+        <div class="col">
+          <div class="d-flex align-items-center">
+            <h1 id="dashboard__header" class="mb-0 mr-30">
+              Latest Talk Topics
+            </h1>
+            <div class="mr-auto d-none d-md-block">
+              @include('svgs.dashboard.talk_doodle')
+            </div>
+
+            <a href="#" class="text-dark ml-auto">
+              see all
+            </a>
+          </div>
+
+          <hr class="hr-dashed my-25">
+
+          <table role="table" class="table mb-0">
+            <thead>
+              <tr>
+                <th scope="col">
+                  &nbsp;
+                </th>
+                <th scope="col">
+                  &nbsp;
+                </th>
+                <th scope="col">
+                  @include('svgs.navigation.talk-icon')
+                </th>
+                <th scope="col">
+                  @include('svgs.talk.time_icon')
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="1">
+                  <p>
+                    FaultCat - repair data for the many, not the few - feedback please!
+                  </p>
+
+                  <div class="">
+                    <span class="rectangle-tag">
+                      Repair Data
+                    </span>
+
+                    <span class="tag">
+                      Open Data dive
+                    </span>
+
+                    <span class="tag">
+                      Data
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                  </div>
+                </td>
+
+                <td>
+                  2 @include('svgs.talk.reply_icon')
+                </td>
+
+                <td>
+                  30m
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="1">
+                  <p>
+                    *CLOSED* call for applications: grants to support your regional work in the UK **deadline 7th Oct**
+                  </p>
+
+                  <div class="">
+                    <span class="rectangle-tag">
+                      how to repair In your community
+                    </span>
+
+                    <span class="tag">
+                      Funding
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                    <img src="" alt="">
+                  </div>
+                </td>
+
+                <td>
+                  4 @include('svgs.talk.reply_icon')
+                </td>
+
+                <td>
+                  2h
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
   </section>
