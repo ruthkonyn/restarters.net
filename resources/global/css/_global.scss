@@ -1,4 +1,28 @@
 body,
 html {
   background-color: #f5f7fa !important;
+  font-family: $font-family-third;
+}
+
+@mixin font-default {
+  font-family: $font-family-third;
+  font-weight: 700 !important;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  color: $black;
+}
+
+h1 {
+  @include font-default;
+
+  font-size: 40px;
+  line-height: 45px;
+}
+
+h2 {
+  @include font-default;
+
+  font-size: 28px;
+  line-height: 32px;
 }
