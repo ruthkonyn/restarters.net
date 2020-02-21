@@ -17,13 +17,13 @@ html {
 h1 {
   @include font-default;
 
-  font-size: 40px;
+  font-size: 40px !important;
   line-height: 45px;
 }
 
 h2 {
   @include font-default;
 
-  font-size: 28px;
+  font-size: 28px !important;
   line-height: 32px;
 }

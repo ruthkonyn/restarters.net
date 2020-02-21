@@ -138,7 +138,6 @@
   }
 }
 
-
 .nav-tabs-block {
   @extend .rounded-0;
   @extend .border-0;
@@ -185,8 +184,6 @@
     }
 
     .nav-link {
-      background-color: $white;
-
       &.active {
         border-bottom: 1px solid $black;
       }

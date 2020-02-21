@@ -49,22 +49,22 @@
         <form action="/group/" method="get" id="groups-search">
           <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
           <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
-            <div class="offset-md-box-shadow no-space-mobile">
+            <div class="offset-md-box-shadow no-space-mobile group-tabs">
               <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
                 <li class="nav-item">
-                  <a id="tab-A" href="#pane-A" class="nav-link white active" data-toggle="tab" role="tab">
+                  <a id="tab-A" href="#pane-A" class="nav-link bg-white active" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title1')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title1_mobile')</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a id="tab-B" href="#pane-B" class="nav-link white " data-toggle="tab" role="tab">
+                  <a id="tab-B" href="#pane-B" class="nav-link bg-white" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title2')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title2_mobile')</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a id="tab-C" href="#pane-C" class="nav-link white" data-toggle="tab" role="tab">
+                  <a id="tab-C" href="#pane-C" class="nav-link bg-white" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title3')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title3_mobile')</span>
                   </a>
