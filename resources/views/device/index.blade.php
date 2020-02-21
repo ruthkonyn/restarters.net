@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-  Repairs
+  Fixometer
 @endsection
 
 @section('content')
