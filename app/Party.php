@@ -835,7 +835,8 @@ class Party extends Model implements Auditable
         return round($this->getEventStats($emissionRatio)['ewaste'], 2);
     }
 
-    public function scopeWithAll($query) {
+    public function scopeWithAll($query)
+    {
         return $query->with([
           'allDevices.deviceCategory',
           'allInvited',
@@ -844,5 +845,12 @@ class Party extends Model implements Auditable
           'theGroup.groupImage.image',
           'devices.deviceCategory',
         ])->withCount('allInvited');
+    }
+
+    public function getFriendlyLocationAttribute()
+    {
+        $short_location = str_limit($this->location, 15);
+
+        return "{$this->getEventDate('d/m/Y')} at {$short_location}";
     }
 }

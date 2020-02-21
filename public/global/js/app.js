@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(4);
+module.exports = __webpack_require__(5);
 
 
 /***/ }),
@@ -79,7 +79,7 @@ $(document).ready(function () {
 
   __webpack_require__(2);
   __webpack_require__(3);
-  __webpack_require__(16);
+  __webpack_require__(4);
 
   console.log('ready!');
 
@@ -149,40 +149,46 @@ $('.entireRowClickable').click(function () {
 /* 4 */
 /***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ (function(module, exports) {
-
 function searchEventsByGroup() {
-  $current_group = $(".change-group :selected").val();
+  $group_id = $(".change-group :selected").val();
 
-  $('.change-events option').prop('disabled', true);
-  $group_event_options = $('.change-events option[data-group-id="' + $current_group + '"]');
-  $group_event_options.show();
-  console.log($group_event_options.length);
+  $.ajax({
+    headers: {
+      'X-CSRF-TOKEN': $("input[name='_token']").val()
+    },
+    type: 'GET',
+    url: '/api/events/' + $group_id,
+    datatype: 'json',
+    success: function success(response) {
+      $('.change-events option').remove();
+      $events = JSON.parse(response.events);
 
-  console.log('done');
+      $.each($events, function ($event_id, $event_name) {
+        var data = {
+          id: $event_id,
+          text: $event_name
+        };
+
+        var newOption = new Option(data.text, data.id, false, false);
+        $('.change-events').append(newOption).trigger('change');
+      });
+
+      console.log('Success: Found ' + $('.change-events option').length + ' events.');
+    }
+  });
 }
 
 $(document).on('change', '.change-group', function () {
-  // $(".").on('change', function(){
   searchEventsByGroup();
 });
 
 searchEventsByGroup();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

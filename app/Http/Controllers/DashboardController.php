@@ -176,7 +176,7 @@ class DashboardController extends Controller
         ->select('groups.*')
         ->get();
 
-        $user_groups = collect([]);
+        // dd($user_groups->first()->idgroups);
 
         return view('dashboard.index', [
             'show_getting_started' => ! $userExistsInDiscourse || ! $has_profile_pic || ! $has_skills || ! $in_group || ! $in_event,

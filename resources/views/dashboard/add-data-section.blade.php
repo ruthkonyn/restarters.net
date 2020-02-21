@@ -34,15 +34,6 @@
         <label for="items_cat" class="sr-only">@lang('devices.category'):</label>
         <div class="form-control form-control__select">
           <select id="events" name="events" class="form-control select2 change-events" title="Choose event...">
-            @if( ! $user_groups->isEmpty() )
-              @foreach($user_groups as $group)
-                @foreach ($group->parties as $event)
-                  <option data-group-id="{{ $group->idgroups }}" value="{{ $event->idevents }}">
-                    {{ $event->getEventDate('D/M/Y') }} at {{ str_limit($event->location, 15) }}
-                  </option>
-                @endforeach
-              @endforeach
-            @endif
           </select>
         </div>
       </div>
