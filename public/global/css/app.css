@@ -14,7 +14,7 @@ h1 {
   font-style: normal;
   letter-spacing: normal;
   color: #000;
-  font-size: 40px;
+  font-size: 40px !important;
   line-height: 45px;
 }
 
@@ -25,7 +25,7 @@ h2 {
   font-style: normal;
   letter-spacing: normal;
   color: #000;
-  font-size: 28px;
+  font-size: 28px !important;
   line-height: 32px;
 }
 
@@ -15495,10 +15495,6 @@ label.form-check-label {
   width: 100%;
   height: 5px;
   background: black;
-}
-
-.nav-tabs-block .nav-item .nav-link {
-  background-color: #fff;
 }
 
 .nav-tabs-block .nav-item .nav-link.active {
