@@ -1,11 +1,24 @@
 .alert {
+  &-success {
+    @extend .border-0;
+    @extend .rounded-0;
+
+    p {
+      font-size: 16px;
+      font-family: $font-family-third;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+    }
+  }
+
   &-custom {
     @extend .border-0;
     @extend .rounded-0;
 
     p {
       font-size: 16px;
-      font-family: Asap;
+      font-family: $font-family-third;
       font-weight: bold;
       font-stretch: normal;
       font-style: normal;
