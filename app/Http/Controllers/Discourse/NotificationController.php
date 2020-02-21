@@ -12,19 +12,9 @@ use Illuminate\Notifications\DatabaseNotification;
 class notificationController extends Controller
 {
     /**
-     * @var \GuzzleHttp\Client
-     */
-    private $client;
-
-    /**
      * @var GuzzleHttp\Psr7\Response
      */
     private $response;
-
-    /**
-     * @var string
-     */
-    private $notifications_url;
 
     /**
      * @var string
@@ -38,10 +28,6 @@ class notificationController extends Controller
 
     public function __construct()
     {
-        $this->client = new Client();
-
-        $this->notifications_url = env('DISCOURSE_URL').'/notifications.json';
-
         //check here if the user is authenticated
         if ( ! Auth::check()) {
             return response()->json([
@@ -87,15 +73,12 @@ class notificationController extends Controller
 
     private function handleRequest(string $username = null)
     {
-        $response = $this->client->request('GET', $this->notifications_url, [
-            'headers' => [
-                'Api-Key' => env('DISCOURSE_APIKEY'),
-                'Api-Username' => env('DISCOURSE_APIUSER'),
-            ],
+        $client = app('discourse-client');
+
+        $response = $client->request('GET', '/notifications.json', [
             'query' => [
                 'username' => $username ?? Auth::user()->username,
             ],
-            'http_errors' => false,
         ]);
 
         if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
