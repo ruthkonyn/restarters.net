@@ -46,7 +46,7 @@
     font-size: 15px;
     border: none;
     vertical-align: middle;
-    font-family: $font-family-second;
+    font-family: $font-family-third;
     //padding: 7px 5px 9px;
     padding: 9px 5px 13px;
     border-bottom: 1px solid $black;
@@ -138,12 +138,12 @@
         table-layout: fixed;
 
         label {
-          font-family: $font-family-sans-serif;
+          font-family: $font-family-third;
           font-size: 16px;
 
           &.form-check-label {
             font-size: 15px;
-            font-family: $font-family-second;
+            font-family: $font-family-third;
           }
         }
 
@@ -240,7 +240,7 @@
 
       th {
         padding-left: 10px !important;
-        font-family: $font-family-sans-serif;
+        font-family: $font-family-third;
         font-size: 16px;
         border: 0;
       }
@@ -375,14 +375,14 @@
   }
 
   label {
-    font-family: $font-family-sans-serif;
+    font-family: $font-family-third;
     font-size: 16px;
     margin-bottom: 7px;
     flex: 1;
 
     &.form-check-label {
       font-size: 15px;
-      font-family: $font-family-second;
+      font-family: $font-family-third;
     }
   }
 

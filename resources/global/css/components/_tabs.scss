@@ -19,7 +19,9 @@
         @if $i == $key-index + 1 {
           @if $return == key {
             @return $map-key;
-          } @else {
+          }
+
+          @else {
             @return $map-value;
           }
         }
@@ -28,13 +30,19 @@
           @return $fallback;
         }
       }
+
       @warn 'No next map item for key #{$key}';
+
       @return $fallback;
     }
+
     @warn 'No valid key #{$key} in map';
+
     @return $fallback;
   }
+
   @warn 'No valid map';
+
   @return $fallback;
 }
 
@@ -61,7 +69,6 @@
 }
 
 @each $breakpoint, $value in map-keys(map-remove($grid-breakpoints, xs)) {
-
   .nav-#{$breakpoint}-tabs {
     .nav-tabs {
       display: none;
@@ -216,10 +223,14 @@
   }
 
   .tab-pane {
-    &:not(:last-child) {
-      .accordion-tab-header {
-        button {
-          border-bottom: 0 !important;
+    .tab-pane-content {
+      background-color: $white;
+
+      &:not(:last-child) {
+        .accordion-tab-header {
+          button {
+            border-bottom: 0 !important;
+          }
         }
       }
     }
