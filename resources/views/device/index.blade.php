@@ -109,7 +109,7 @@
                         </th>
                         <th scope="col" class="problem" @if( !FixometerHelper::checkColumn('problem', $user_preferences) ) style="display: none;" @endif>
                           <label for="label-problem" class="sort-column @if( $sort_column == 'problem' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
-                            @include('svgs/fixometer/layer')
+                            @include('svgs.fixometer.problem_icon')
                           </label>
                         </th>
                         <th scope="col" class="group_name" @if( !FixometerHelper::checkColumn('group_name', $user_preferences) ) style="display: none;" @endif>

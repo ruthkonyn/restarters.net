@@ -2,6 +2,7 @@ $(document).ready(function() {
 
   require('./components/dropdown.js');
   require('./components/table.js');
+  require('./components/populate-events-select.js');
 
   console.log('ready!');
 
@@ -16,6 +17,16 @@ $(document).ready(function() {
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
-
-  $('#tesing123').tooltip('show');
 });
+
+// Change tab view onload where hash is within URL
+// TODO: Double check this works...
+window.onload = function() {
+  var hash = window.location.hash;
+  if(hash != '' || hash != undefined) {
+    var $element = $('a[href="' + hash + '"]');
+    if ($element.length == 1) {
+      $element.tab('show');
+    }
+  }
+}

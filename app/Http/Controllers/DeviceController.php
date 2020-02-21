@@ -80,7 +80,6 @@ class DeviceController extends Controller
         ->orderBy('event_date', 'DESC')
         ->first();
 
-
         $global_impact_data = app('App\Http\Controllers\ApiController')
         ->homepage_data();
 

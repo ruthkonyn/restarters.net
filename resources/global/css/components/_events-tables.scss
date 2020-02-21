@@ -14,18 +14,18 @@
     text-transform: uppercase;
 
     &.td-event-day {
-      font-size: 34px;
+      font-size: 24px;
 
       @include media-breakpoint-down(md) {
-        font-size: 28px;
+        font-size: 20px;
       }
     }
 
     &.td-event-month {
-      font-size: 22px;
+      font-size: 18px;
 
       @include media-breakpoint-down(md) {
-        font-size: 20px;
+        font-size: 16px;
       }
     }
   }

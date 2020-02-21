@@ -62,5 +62,26 @@
 
   .card-body {
     padding: 30px;
+
+    .call_to_action {
+      @extend .py-20;
+      @extend .px-30;
+
+      &-sticky-right {
+        right: 0;
+        position: absolute;
+
+        @include media-breakpoint-down(md) {
+          display: none !important;
+        }
+      }
+      
+      .doodle-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+      }
+    }
   }
 }
