@@ -7,7 +7,7 @@
 @section('content')
   <section class="dashboard">
 
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
         <div class="col-12 col-md-12 mb-50">
           <div class="d-none d-lg-block">
@@ -32,22 +32,26 @@
 
       <div class="row">
         <div class="col-12 col-md-8">
-          <div class="row">
-            {{-- @if (FixometerHelper::hasRole($user, 'Administrator'))
-              @include('dashboard.restarter')
-            @endif
-            @if (FixometerHelper::hasRole($user, 'Host'))
-              @include('dashboard.host')
-            @endif
-            @if (FixometerHelper::hasRole($user, 'Restarter'))
-              @include('dashboard.restarter')
-            @endif
-            <div class="col-12">
-              @include('dashboard.blocks.impact')
-            </div> --}}
+          {{-- @if (FixometerHelper::hasRole($user, 'Administrator'))
+            @include('dashboard.restarter')
+          @endif
+          @if (FixometerHelper::hasRole($user, 'Host'))
+            @include('dashboard.host')
+          @endif
+          @if (FixometerHelper::hasRole($user, 'Restarter'))
+            @include('dashboard.restarter')
+          @endif
+          <div class="col-12">
+            @include('dashboard.blocks.impact')
+          </div> --}}
 
-            @include('dashboard.groups-section')
-          </div>
+          @include('partials.alerts.alert-danger', [
+            'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
+          ])
+
+          @include('dashboard.groups-section')
+
+          @include('dashboard.add-data-section')
         </div>
 
         <div class="col-12 col-md-4">

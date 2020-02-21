@@ -1,20 +1,8 @@
 <section class="table-section py-30" id="user-events">
 
-  <div class="alert alert-danger alert-custom alert-dismissible fade show mb-0" role="alert">
-    <div class="d-flex flex-row flex-wrap align-items-center">
-      <div class="mr-3 mb-2 mb-lg-0">
-        @include('svgs.fixometer.alert-doodle')
-      </div>
-
-      <p class="mb-0">
-        You can now add all your upcoming events to your personal calendar!
-      </p>
-    </div>
-
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
+  @include('partials.alerts.alert-danger', [
+    'text' => "You can now add all your upcoming events to your personal calendar!",
+  ])
 
   <div class="row border-between my-40">
     <div class="col-12 col-lg-4">

@@ -5,6 +5,10 @@ $brand: #0394a6;
 $font-family-third: 'Asap', sans-serif;
 $font-family-second: 'Open Sans', sans-serif;
 
+$theme-colors: (
+  primary: #4aaebc,
+);
+
 /** Custom spacing properties */
 $spacers: () !default;
 $spacers: map-merge(
