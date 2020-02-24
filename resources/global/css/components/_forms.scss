@@ -31,6 +31,43 @@ label.form-check-label {
   font-size: 15px;
 }
 
+.input-group-select2 .select2-selection {
+  border-radius: 0;
+  height: 94%;
+  width: 140px;
+  border: 2px solid $black;
+  border-right: none !important;
+
+  .select2-selection__arrow b {
+    background-image: url('../svgs/dropdown-arrow.svg') !important;
+    background-repeat: no-repeat !important;
+    border-width: 0 0 0 0 !important;
+    left: -50%;
+    margin-left: 0;
+    margin-top: 0;
+    position: absolute;
+    top: 40%;
+    border-color: transparent;
+    width: 50px !important;
+    height: 50px !important;
+  }
+}
+
+.select2-container--open {
+  .select2-selection__arrow b {
+    background-image: url('../svgs/dropdown-arrow-up.svg') !important;
+  }
+}
+
+.select2-container--default {
+  text-transform: uppercase;
+  border-radius: 0;
+
+  .select2-results__option--highlighted[aria-selected] {
+    background-color: $black !important;
+  }
+}
+
 .form-control__select {
   padding: 0 !important;
   height: auto;
@@ -39,11 +76,7 @@ label.form-check-label {
     border: 0;
     background-color: transparent;
     width: 100%;
-  }
-
-  .select2-container--default .select2-selection--single .select2-selection__arrow b {
-    background-image: url('../svgs/dropdown-arrow.svg');
-    background-repeat: no-repeat;
+    border-radius: 0;
   }
 
   .select2-container--default .select2-selection--single {
@@ -74,14 +107,13 @@ label.form-check-label {
     }
   }
 
-
-
   .select2-selection--multiple {
     margin-top: 0;
     margin-bottom: 0;
     background-image: url('../svgs/dropdown-arrow.svg');
     background-repeat: no-repeat;
     background-position: 97% 50%;
+    text-transform: uppercase;
 
     .select2-selection__choice {
       background-color: $brand;
