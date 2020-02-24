@@ -10,7 +10,7 @@
         @include('svgs.group.group-doodle')
       </div>
 
-      @if (! $new_groups->isEmpty() && $user_groups->count() == 1)
+      @if (! $new_groups->isEmpty() && $show_new_groups_count)
         <div class="call_to_action call_to_action-sticky-right">
           <div class="doodle-icon">
             @include('svgs.dashboard.arrow-right-doodle')
@@ -23,7 +23,7 @@
 
     <hr class="hr-dashed my-25">
 
-    @if (! $new_groups->isEmpty() && $user_groups->count() == 1)
+    @if (! $new_groups->isEmpty() && $show_new_groups_count)
       <div class="call_to_action d-block d-lg-none mb-25">
         <div class="doodle-icon">
           @include('svgs.dashboard.arrow-right-doodle')

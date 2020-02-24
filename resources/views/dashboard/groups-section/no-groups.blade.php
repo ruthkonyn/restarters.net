@@ -50,6 +50,7 @@
           Your region’s Talk groups:
         </p>
 
+        {{-- TODO: $talk_groups --}}
         @php $talk_groups = collect([]); @endphp
         @if( ! $talk_groups->isEmpty() )
           <div class="table-responsive mb-0 mt-auto">

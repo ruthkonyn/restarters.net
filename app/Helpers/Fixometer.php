@@ -56,8 +56,12 @@ class FixometerHelper
         return Permissions::all();
     }
 
-    /** checks if user has a role **/
-    public static function hasRole($user, $role)
+    /**
+     * Check if user has a role (singular or any role within an array)
+     * @editor Christopher Kelker 24/02/2020
+     * @return boolean
+     */
+    public static function hasRole($user, $roles)
     {
         if (Auth::guest()) {
             return false;
@@ -69,8 +73,16 @@ class FixometerHelper
 
         $usersRole = $user->userRole->role;
 
-        if ($usersRole == 'Root' || $usersRole == ucwords($role)) {
+        if ($usersRole == 'Root') {
             return true;
+        }
+
+        if ( ! is_array($roles)) {
+          $roles = [$roles];
+        }
+
+        if (in_array(strtolower($usersRole), array_map("strtolower", $roles))) {
+          return true;
         }
 
         return false;

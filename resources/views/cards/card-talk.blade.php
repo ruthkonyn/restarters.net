@@ -1,9 +1,13 @@
 <div class="card card-talk">
-  <div class="card-body has-messages d-flex flex-row align-items-start align-items-md-center">
+  <div class="card-body @if( strtotime($hot_topic->created_at) > strtotime('-4 days') ) created-recently @endif d-flex flex-row align-items-start align-items-md-center">
     <div class="mr-auto">
       <h5>
         <a href="{{ env('DISCOURSE_URL') }}/session/sso?return_path={{ env('DISCOURSE_URL') }}/t/{{ $hot_topic->slug }}/{{ $hot_topic->id }}">
-          {{ $hot_topic->title }}
+          @if ($hot_topic->unicode_title)
+            {{ $hot_topic->unicode_title }}
+          @else
+            {{ $hot_topic->title }}
+          @endif
         </a>
       </h5>
 
@@ -15,35 +19,31 @@
           </span>
         @endif
 
-        {{-- TODO: Where do we retrieve these tags from? --}}
-        <span class="tag">
-          Open Data dive
-        </span>
-
-        <span class="tag">
-          Data
-        </span>
+        @if (! empty($hot_topic->tags))
+          @foreach ($hot_topic->tags as $tag)
+            <span class="tag">
+              {{ $tag }}
+            </span>
+          @endforeach
+        @endif
       </div>
     </div>
 
     <div class="d-none d-md-block mr-50">
       <div class="avatar-images-list">
-        <img src="images/dashboard/user_avatar_placeholder.svg" height="25" width="25" alt="">
-        <img src="images/dashboard/user_avatar_placeholder.svg" height="25" width="25" alt="">
-        <img src="images/dashboard/user_avatar_placeholder.svg" height="25" width="25" alt="">
-        <img src="images/dashboard/user_avatar_placeholder.svg" height="25" width="25" alt="">
-        <img src="images/dashboard/user_avatar_placeholder.svg" height="25" width="25" alt="">
+        @foreach ($hot_topic->posters as $user)
+          <img class="rounded-circle" src="{{ $user->avatar_url }}">
+        @endforeach
       </div>
     </div>
 
-    {{-- TODO: Data needs populating --}}
     <div class="d-flex flex-column-reverse flex-md-row align-items-center">
-      <div class="replies mr-0 mr-md-30">
-        2
+      <div class="replies mr-0 mr-md-35">
+        {{ $hot_topic->posts_count }}
       </div>
 
       <div>
-        30m
+        {{ $hot_topic->friendly_date }}
       </div>
     </div>
   </div>

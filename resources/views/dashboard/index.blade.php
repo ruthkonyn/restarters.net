@@ -39,23 +39,19 @@
             'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
           ])
 
-          {{-- @if (FixometerHelper::hasRole($user, 'Administrator'))
-            @include('dashboard.restarter')
-          @endif
-          @if (FixometerHelper::hasRole($user, 'Host'))
-            @include('dashboard.host')
-          @endif
-          @if (FixometerHelper::hasRole($user, 'Restarter'))
-            @include('dashboard.restarter')
-          @endif
-          <div class="col-12">
-            @include('dashboard.blocks.impact')
-          </div> --}}
+          {{-- Host with groups and no events --}}
+          @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0)
 
-          @if (! $user_groups->isEmpty())
-            @include('dashboard.groups-section.user-groups')
+            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false])
+
+          {{-- Host/ Fixer/ All Others with 1 group and upcoming events --}}
+          @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Restarter']) && $user_groups->count() == 1 && $user_upcoming_events->count() >= 1)
+
+            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true])
+
+          {{-- Anyone who hasn’t followed a group --}}
           @else
-            {{-- TODO: $talk_groups --}}
+
             @include('dashboard.groups-section.no-groups')
           @endif
 
@@ -79,13 +75,13 @@
           </div>
 
           <div class="card card-info-box bg-warning">
-            <div class="card-body">
+            <div class="card-body position-relative">
               <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0">
+                <h2 class="mb-0 mr-0 mr-lg-25">
                   Getting the most from Restarters.net
                 </h2>
 
-                <div class="d-none d-xl-block" style="top: -52px; position: relative;">
+                <div class="d-none d-xl-block position-absolute top-0 right-0">
                   @include('svgs.dashboard.hand_doodle')
                 </div>
               </div>
@@ -144,18 +140,21 @@
 
           <hr class="hr-dashed my-25">
 
-          <div class="d-flex flex-row align-items-center justify-content-end mb-25">
-            <div class="mr-40">
-              @include('svgs.navigation.talk-icon')
-            </div>
+          <div class="d-none d-md-block mb-25">
+            <div class="d-flex flex-row align-items-center justify-content-end">
+              <div class="mr-40">
+                @include('svgs.navigation.talk-icon')
+              </div>
 
-            <div class="mr-30">
-              @include('svgs.talk.time_icon')
+              <div class="mr-25">
+                @include('svgs.talk.time_icon')
+              </div>
             </div>
           </div>
 
           <div class="row">
             @php( $count_hot_topics = 1 )
+            {{-- {{ dd($hot_topics) }} --}}
             @foreach( $hot_topics['talk_hot_topics'] as $hot_topic )
               @if ($count_hot_topics > 4)
                 @break

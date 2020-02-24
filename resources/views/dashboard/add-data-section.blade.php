@@ -1,11 +1,11 @@
 <div class="card card-info-box bg-primary mt-auto">
   <div class="card-body text-dark">
-    <div class="d-flex flex-column flex-lg-row align-items-center">
+    <div class="d-flex flex-row align-items-center">
       <h2 class="mb-0 mr-30">
         Add Data
       </h2>
 
-      <div class="mr-auto d-none d-lg-block">
+      <div class="mr-auto">
         @include('svgs.fixometer.fixometer-doodle')
       </div>
     </div>

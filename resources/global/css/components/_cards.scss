@@ -138,7 +138,7 @@
       @extend .border-0;
     }
 
-    &.has-messages {
+    &.created-recently {
       position: relative;
 
       &::before {
@@ -234,8 +234,8 @@
       @extend .justify-content-end;
 
       img {
-        max-height: 25px;
-        max-width: 25px;
+        max-height: 35px;
+        max-width: 35px;
 
         &:not(:last-child) {
           margin-right: 5px;
