@@ -294,11 +294,6 @@ class GroupController extends Controller
 
                     $response['success'] = 'Group created correctly.';
 
-                    if (isset($_FILES) && ! empty($_FILES)) {
-                        $file = new FixometerFile;
-                        $group_avatar = $file->upload('file', 'image', $idGroup, env('TBL_GROUPS'), false, true);
-                    }
-
                     //Associate current logged in user as a host
                     UserGroups::create([
                         'user' => Auth::user()->id,
@@ -313,6 +308,11 @@ class GroupController extends Controller
                         'group_name' => $name,
                         'group_url' => url('/group/edit/'.$idGroup),
                     ]));
+
+                    if (isset($_FILES) && ! empty($_FILES)) {
+                        $file = new FixometerFile;
+                        $file->upload('file', 'image', $idGroup, env('TBL_GROUPS'), false, true);
+                    }
                 } else {
                     $response['danger'] = 'Group could <strong>not</strong> be created. Something went wrong with the database.';
                 }
