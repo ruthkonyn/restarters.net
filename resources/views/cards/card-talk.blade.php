@@ -3,7 +3,11 @@
     <div class="mr-auto">
       <h5>
         <a href="{{ env('DISCOURSE_URL') }}/session/sso?return_path={{ env('DISCOURSE_URL') }}/t/{{ $hot_topic->slug }}/{{ $hot_topic->id }}">
-          {{ $hot_topic->unicode_title }}
+          @if ($hot_topic->unicode_title)
+            {{ $hot_topic->unicode_title }}
+          @else
+            {{ $hot_topic->title }}
+          @endif
         </a>
       </h5>
 
