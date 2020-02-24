@@ -12,11 +12,12 @@ use App\Party;
 use App\User;
 use App\UserGroups;
 use App\UsersSkills;
-
+use Illuminate\Support\Str;
 use Auth;
 use Cache;
 use DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -51,7 +52,6 @@ class DashboardController extends Controller
         // Should the user have location info
         $upcoming_events = Party::withAll()
         ->upcomingEvents()
-        ->where('users_groups.user', $user->id)
         ->where('users_groups.user', $user->id)
         ->when($user->hasLocationSet(), function($query) {
             return $query->havingDistanceWithin(40); // 24 miles
@@ -179,7 +179,17 @@ class DashboardController extends Controller
                 'api_username' => Auth::user()->username,
             ], true);
             if (is_object($talk_hot_topics_json) && isset($talk_hot_topics_json->topic_list->topics)) {
+
+                $users = collect($talk_hot_topics_json->users);
                 $talk_hot_topics = $talk_hot_topics_json->topic_list->topics;
+                foreach ($talk_hot_topics as $talk_topic) {
+                  $talk_topic->friendly_date = $this->formatCarbonDate($talk_topic->last_posted_at);
+                  foreach ($talk_topic->posters as $poster) {
+                    if ($user = $users->where('id', $poster->user_id)->first()) {
+                      $poster->avatar_url = env('DISCOURSE_URL').Str::replaceFirst('{size}', '45', $user->avatar_template);
+                    }
+                  }
+                }
                 Cache::put('talk_hot_topics_'.Auth::user()->username, $talk_hot_topics, 60);
             }
         }
@@ -193,5 +203,21 @@ class DashboardController extends Controller
     public function getHostDash()
     {
         return view('dashboard.host');
+    }
+
+    private function formatCarbonDate($date)
+    {
+        $now = Carbon::now();
+        $date = Carbon::parse($date);
+
+        if ($now->diffInHours($date) <= 1) {
+            return $date->format('i').'m';
+        }
+
+        if ($now->diffInHours($date) <= 24) {
+            return $date->format('H').'h';
+        }
+
+        return $date->diffInDays($now).'d';
     }
 }
