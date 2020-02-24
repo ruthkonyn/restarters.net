@@ -102,7 +102,7 @@
                   Read More
                 </a>
 
-                <hr class="m-0 hr-sm">
+                <hr class="mt-0 mb-30 hr-sm">
               </div>
 
               <div class="d-md-block collapse" id="collapseReadMore">

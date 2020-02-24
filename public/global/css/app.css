@@ -13852,17 +13852,14 @@ a.text-light:focus {
 .nav-sm-tabs .accordion-tab-header button,
 .nav-md-tabs .accordion-tab-header button,
 .nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button,
-.card-info-box .card-body a {
+.nav-xl-tabs .accordion-tab-header button {
   color: #343a40 !important;
 }
 
 a.text-dark:hover,
 a.form-text-corrected:hover,
-.card-info-box .card-body a:hover,
 a.text-dark:focus,
-a.form-text-corrected:focus,
-.card-info-box .card-body a:focus {
+a.form-text-corrected:focus {
   color: #121416 !important;
 }
 
@@ -15741,6 +15738,7 @@ label.form-check-label {
 }
 
 .card-info-box .card-body a {
+  color: #000;
   text-decoration: underline;
 }
 

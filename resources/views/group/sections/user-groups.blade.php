@@ -3,7 +3,7 @@
   <div class="alert alert-danger alert-custom alert-dismissible fade show mb-0" role="alert">
     <div class="d-flex flex-row flex-wrap align-items-center">
       <div class="mr-3 mb-2 mb-lg-0">
-        @include('svgs.fixometer.alert-doodle')
+        @include('svgs.alerts.alert-doodle')
       </div>
 
       <p class="mb-0">
@@ -22,7 +22,7 @@
         We are a network of local repair groups from around the world.
       </b>
     </div>
-    
+
     <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore2">
       <p class="mb-0">Groups you create or follow appear below for quick access.</p>
     </div>
