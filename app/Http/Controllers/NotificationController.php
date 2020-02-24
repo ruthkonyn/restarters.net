@@ -35,10 +35,12 @@ class NotificationController extends Controller
 
         abort_if( ! $notification, 404);
 
+        $redirect = $notification->data['url'];
+
         $notification->markAsRead();
 
-        unset($_COOKIE['has_notification_cookies_set']); 
+        unset($_COOKIE['has_notification_cookies_set']);
 
-        return back()->with('success', 'Notification marked as read');
+        return redirect($redirect);
     }
 }
