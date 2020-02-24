@@ -435,44 +435,60 @@
                           259200 => 'every six months',
                         ];
                       @endphp
-                      <div class="form-group">
-                        <label for="email_messages_level">
-                          Send me an email when someone messages me:
-                        </label>
-                        <select class="form-control col-12 col-lg-6" id="email_messages_level" name="email_messages_level">
-                          @foreach ($basic_email_options as $value => $text)
-                            <option value="{{ $value }}" @if($user_email_preferences['email_messages_level'] == $value) selected @endif>
-                              {{ $text }}
-                            </option>
-                          @endforeach
-                        </select>
+
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="email_messages_level">
+                            Send me an email when someone messages me:
+                          </label>
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="email_messages_level" name="email_messages_level">
+                              @foreach ($basic_email_options as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['email_messages_level'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
                       </div>
 
-                      <div class="form-group">
-                        <label for="email_level">
-                          Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
-                        </label>
-                        <select class="form-control col-12 col-lg-6" id="email_level" name="email_level">
-                          @foreach ($basic_email_options as $value => $text)
-                            <option value="{{ $value }}" @if($user_email_preferences['email_level'] == $value) selected @endif>
-                              {{ $text }}
-                            </option>
-                          @endforeach
-                        </select>
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="email_level">
+                            Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
+                          </label>
+
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="email_level" name="email_level">
+                              @foreach ($basic_email_options as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['email_level'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
                       </div>
 
-                      <div class="form-group">
-                        <label for="digest_after_minutes">
-                          When I don’t visit here, send me an email summary of popular topics and replies
-                        </label>
-                        <select class="form-control col-12 col-lg-6" id="digest_after_minutes" name="digest_after_minutes">
-                          @foreach ($summary_email_times as $value => $text)
-                            <option value="{{ $value }}" @if($user_email_preferences['digest_after_minutes'] == $value) selected @endif>
-                              {{ $text }}
-                            </option>
-                          @endforeach
-                        </select>
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="digest_after_minutes">
+                            When I don’t visit here, send me an email summary of popular topics and replies
+                          </label>
+
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="digest_after_minutes" name="digest_after_minutes">
+                              @foreach ($summary_email_times as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['digest_after_minutes'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
                       </div>
+
                     @endif
                   </fieldset>
 

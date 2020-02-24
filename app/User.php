@@ -487,6 +487,7 @@ class User extends Authenticatable implements Auditable
         $client = app('discourse-client');
 
         // $placeholder = 'Dean_Claydon';
+        // $this->username
 
         $response = $client->request('GET', "/users/{$this->username}.json");
 
@@ -514,6 +515,7 @@ class User extends Authenticatable implements Auditable
         $client = app('discourse-client');
 
         // $placeholder = 'Dean_Claydon';
+        // $this->username
 
         $response = $client->request('PUT', "/users/{$this->username}.json", [
             'query' => $email_preference_options,
