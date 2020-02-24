@@ -6506,12 +6506,14 @@ button.bg-dark:focus {
   background-color: #1d2124 !important;
 }
 
-.bg-white {
+.bg-white,
+.card-talk .card-body {
   background-color: #fff !important;
 }
 
 .bg-transparent,
-.nav-tabs-block .nav-item {
+.nav-tabs-block .nav-item,
+.card-talk .card-body .card-summary {
   background-color: transparent !important;
 }
 
@@ -6542,6 +6544,9 @@ button.bg-dark:focus {
 .nav-tabs-block,
 .nav-tabs-block .nav-item,
 .tab-content,
+.card-talk,
+.card-talk .card-body,
+.card-talk .card-body .card-summary,
 .hr-dashed,
 .dashboard .table tbody tr td {
   border: 0 !important;
@@ -6703,7 +6708,8 @@ button.bg-dark:focus {
 .nav-tab-summary-section,
 .call_to_action,
 .card-summary .card-body,
-.card-summary .card-body .svg-wrapper {
+.card-summary .card-body .svg-wrapper,
+.card-talk .card-body .avatar-images-list {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6974,7 +6980,8 @@ button.bg-dark:focus {
 .nav-wrapper,
 .sort-column,
 .nav-tab-summary-section,
-.call_to_action {
+.call_to_action,
+.card-talk .card-body .avatar-images-list {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: row !important;
@@ -7055,7 +7062,8 @@ button.bg-dark:focus {
           justify-content: flex-start !important;
 }
 
-.justify-content-end {
+.justify-content-end,
+.card-talk .card-body .avatar-images-list {
   -webkit-box-pack: end !important;
       -ms-flex-pack: end !important;
           justify-content: flex-end !important;
@@ -8575,7 +8583,8 @@ button.bg-dark:focus {
   margin-left: 60px !important;
 }
 
-.p-0 {
+.p-0,
+.card-talk .card-body .card-summary {
   padding: 0 !important;
 }
 
@@ -15752,6 +15761,138 @@ label.form-check-label {
   -webkit-transform: translateY(-50%);
           transform: translateY(-50%);
   left: 0;
+}
+
+.card-talk .card-body {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+@media (max-width: 991.98px) {
+  .card-talk .card-body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.card-talk .card-body h5 {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: normal;
+  text-align: left;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+.card-talk .card-body h5 a {
+  color: #000;
+}
+
+.card-talk .card-body.has-messages {
+  position: relative;
+}
+
+.card-talk .card-body.has-messages::before {
+  content: '';
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  top: 7px;
+  left: -7px;
+  -webkit-transform: translateY(-100%);
+          transform: translateY(-100%);
+}
+
+.card-talk .card-body .card-talk-summary .rectangle-tag {
+  font-family: Asap;
+  font-size: 12px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: 0.9px;
+  text-align: left;
+  color: #000;
+  text-transform: uppercase;
+  margin-right: 30px;
+}
+
+.card-talk .card-body .card-talk-summary .rectangle-tag span {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+@media (max-width: 991.98px) {
+  .card-talk .card-body .card-talk-summary .rectangle-tag {
+    margin-right: 20px;
+  }
+}
+
+.card-talk .card-body .card-talk-summary .tag {
+  font-family: Asap;
+  font-size: 10px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: 0.75px;
+  text-align: left;
+  color: #000;
+  background-color: #f5f7fa;
+  text-transform: uppercase;
+  padding: 3px 4px;
+  margin-right: 15px;
+}
+
+.card-talk .card-body .replies {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: normal;
+  color: #000;
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+  padding-right: 30px;
+}
+
+.card-talk .card-body .replies::after {
+  content: "";
+  top: 0;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  background-image: url(/images/reply_icon.svg?cb58dc3498e8cef88121559718481dbf);
+  background-repeat: no-repeat;
+  background-position: center center;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  right: 5px;
+}
+
+.card-talk .card-body .avatar-images-list img {
+  max-height: 25px;
+  max-width: 25px;
+}
+
+.card-talk .card-body .avatar-images-list img:not(:last-child) {
+  margin-right: 5px;
 }
 
 .collapse-plus-and-minus-controller {

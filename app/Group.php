@@ -19,6 +19,7 @@ class Group extends Model implements Auditable
      */
     protected $fillable = [
         'name',
+        'discourse_slug',
         'website',
         'area',
         'location',

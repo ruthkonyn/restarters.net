@@ -30,88 +30,10 @@ class DashboardController extends Controller
         ]);
 
         $in_group = ! empty(UserGroups::where('user', Auth::id())->get()->toArray());
-        $has_skills = ! empty(UsersSkills::where('user', Auth::id())->get()->toArray());
-        $in_event = ! empty(EventsUsers::where('user', Auth::id())->get()->toArray());
-
-        // TODO: move this to it's own class, which caches results (on success).
-        $userExistsInDiscourse = false;
-
-        try {
-            $discourseApiKey = env('DISCOURSE_APIKEY');
-            $discourseApiUser = env('DISCOURSE_APIUSER');
-            $emailToSearchFor = trim($user->email);
-            $discourseQuery = sprintf('%s/admin/users/list/all.json?email=%s&api_key=%s&api_username=%s', env('DISCOURSE_URL'), $emailToSearchFor, $discourseApiKey, $discourseApiUser);
-            $discourseResult = json_decode(file_get_contents($discourseQuery));
-            $userExistsInDiscourse = count($discourseResult) >= 1;
-        } catch (\Exception $ex) {
-            Log::error('Error occurred while searching for user in Discourse');
-        }
-
-        if ( ! is_null($user->idimages) && ! is_null($user->path)) {
-            $has_profile_pic = true;
-        } else {
-            $has_profile_pic = false;
-        }
-
-        //See whether user has any events
-        if ($in_event) {
-            $event_ids = EventsUsers::where('user', Auth::id())->pluck('event')->toArray();
-        }
 
         //See whether user has any groups
         if ($in_group) {
             $group_ids = UserGroups::where('user', Auth::id())->pluck('group')->toArray();
-        }
-
-        //If users has events, let's see whether they have any past events
-        if ($in_event) {
-            $past_events = Party::whereIn('idevents', $event_ids)
-            ->whereDate('event_date', '<', date('Y-m-d'))
-            ->join('groups', 'events.group', '=', 'idGroups')
-            ->select('events.*', 'groups.name')
-            ->orderBy('events.event_date', 'desc')
-            ->take(3)
-            ->get();
-
-            if (empty($past_events->toArray())) {
-                $past_events = null;
-            }
-        } else {
-            $past_events = null;
-        }
-
-        //Host specific queries
-        if (FixometerHelper::hasRole($user, 'Host') && $in_group) {
-            $outdated_groups = Group::join('users_groups', 'groups.idgroups', '=', 'users_groups.group')
-            ->where('users_groups.user', Auth::user()->id)
-            ->where('users_groups.role', 3)
-            ->whereDate('updated_at', '<=', date('Y-m-d', strtotime('-3 Months')))
-            ->select('groups.*')
-            ->take(3)
-            ->get();
-
-            if (empty($outdated_groups->toArray())) {
-                $outdated_groups = null;
-            }
-
-            if ($in_event) {
-                $active_group_ids = Party::whereIn('idevents', $event_ids)
-            ->whereDate('event_date', '>', date('Y-m-d'))
-            ->pluck('events.group')
-            ->toArray();
-
-                $non_active_group_ids = array_diff($group_ids, $active_group_ids);
-                $inactive_groups = Group::whereIn('idgroups', $non_active_group_ids)
-                ->take(3)
-                ->get();
-            }
-
-            if ( ! isset($inactive_groups) || empty($inactive_groups->toArray())) {
-                $inactive_groups = null;
-            }
-        } else {
-            $outdated_groups = null;
-            $inactive_groups = null;
         }
 
         $groupsNearYou = null;
@@ -130,6 +52,7 @@ class DashboardController extends Controller
         $upcoming_events = Party::withAll()
         ->upcomingEvents()
         ->where('users_groups.user', $user->id)
+        ->where('users_groups.user', $user->id)
         ->when($user->hasLocationSet(), function($query) {
             return $query->havingDistanceWithin(40); // 24 miles
         })
@@ -138,6 +61,17 @@ class DashboardController extends Controller
         ->when($user->hasLocationSet(), function($query) {
             return $query->orderBy('distance', 'ASC');
         })
+        ->take(3)
+        ->get();
+
+        $user_upcoming_events = Party::withAll()
+        ->upcomingEvents()
+        ->whereHas('users', function($query) use($user) {
+          return $query->where('user', $user->id);
+        })
+        ->where('users_groups.user', $user->id)
+        ->orderBy('event_date', 'ASC')
+        ->orderBy('start', 'ASC')
         ->take(3)
         ->get();
 
@@ -176,27 +110,32 @@ class DashboardController extends Controller
         ->select('groups.*')
         ->get();
 
-        // dd($user_groups->first()->idgroups);
+        $owned_groups = Group::with('allHosts')
+        ->whereHas('allHosts', function($query) use($user) {
+          return $query->where('user', $user->id);
+        })
+        ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+        ->where('users_groups.user', $user->id)
+        ->orderBy('groups.name', 'ASC')
+        ->groupBy('groups.idgroups')
+        ->select('groups.*')
+        ->get();
 
         return view('dashboard.index', [
-            'show_getting_started' => ! $userExistsInDiscourse || ! $has_profile_pic || ! $has_skills || ! $in_group || ! $in_event,
             'gmaps' => true,
             'user' => $user,
             'header' => true,
-            'user_exists_in_discourse' => $userExistsInDiscourse,
-            'in_group' => $in_group,
             'groupsNearYou' => $groupsNearYou,
-            'has_skills' => $has_skills,
-            'in_event' => $in_event,
-            'has_profile_pic' => $has_profile_pic,
             'past_events' => $past_events,
             'upcoming_events' => $upcoming_events,
+            'user_upcoming_events' => $user_upcoming_events,
             'outdated_groups' => $outdated_groups,
             'inactive_groups' => $inactive_groups,
             'news_feed' => $news_feed,
             'all_groups' => $all_groups,
             'new_groups' => $new_groups,
             'user_groups' => $user_groups,
+            'owned_groups' => $owned_groups,
             'onboarding' => $onboarding,
             'impact_stats' => $impact_stats,
             'wiki_pages' => $wiki_pages,

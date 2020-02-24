@@ -43,6 +43,14 @@
                 </div>
                 <small class="after-offset">@lang('groups.groups_group_small')</small>
 
+                @if( FixometerHelper::hasRole(Auth::user(), 'Administrator') )
+                  <div class="form-group form-group__offset">
+                      <label for="grp_slug">@lang('groups.groups_discourse_slug'):</label>
+                      <input type="text" class="form-control field" id="grp_slug" name="discourse_slug">
+                  </div>
+                  <small class="after-offset">@lang('groups.groups_discourse_slug_helper')</small>
+                @endif
+
                 <div class="form-group form-group__offset">
                     <label for="grp_web">@lang('groups.groups_website'):</label>
                     <input type="url" class="form-control field" id="grp_web" name="website" placeholder="https://">

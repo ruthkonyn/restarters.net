@@ -35,7 +35,7 @@
   </div>
 
   <div class="d-block d-md-none text-right">
-    <a class="collapse-plus-and-minus-controller" data-close-text="Read More" data-open-text="Read Less" data-toggle="collapse" href=".collapseReadMore" aria-expanded="true" aria-controls="collapseReadMore1 collapseReadMore1">
+    <a class="collapse-plus-and-minus-controller" data-close-text="Read More" data-open-text="Read Less" data-toggle="collapse" href=".collapseReadMore" aria-expanded="true" aria-controls="collapseReadMore1 collapseReadMore2">
       Read Less
     </a>
 

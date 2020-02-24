@@ -17,6 +17,13 @@ $(document).ready(function() {
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
+
+  $('.redirectToIntended').click(function() {
+    $prefix = $(this).attr('data-initial-url');
+
+    location.href = $prefix + $('.group_discourse_slug').val();
+  });
+
 });
 
 // Change tab view onload where hash is within URL

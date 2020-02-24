@@ -10,7 +10,7 @@
         @include('svgs.group.group-doodle')
       </div>
 
-      @if (! $new_groups->isEmpty())
+      @if (! $new_groups->isEmpty() && $user_groups->count() == 1)
         <div class="call_to_action call_to_action-sticky-right">
           <div class="doodle-icon">
             @include('svgs.dashboard.arrow-right-doodle')
@@ -23,7 +23,7 @@
 
     <hr class="hr-dashed my-25">
 
-    @if (! $new_groups->isEmpty())
+    @if (! $new_groups->isEmpty() && $user_groups->count() == 1)
       <div class="call_to_action d-block d-lg-none mb-25">
         <div class="doodle-icon">
           @include('svgs.dashboard.arrow-right-doodle')
@@ -42,8 +42,38 @@
 
           <p class="card-text mb-20">
             Catch up with your groups by clicking below.
-            You can also <a href="#">send an urgent message</a> to groups you host.
+            You can also <a href="#sendUrgrentMessageModal" data-toggle="modal" data-target="#sendUrgrentMessageModal">send an urgent message</a> to groups you host.
           </p>
+
+          <!-- Modal -->
+          <div class="modal fade" id="sendUrgrentMessageModal" tabindex="-1" role="dialog" aria-labelledby="sendUrgrentMessageLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="flex-dynamic-row">
+                    <div class="flex-dynamic mb-0">
+                      <label for="user_groups" class="sr-only">@lang('devices.group'):<</label>
+                      <div class="form-control form-control__select">
+                        <select id="user_groups" name="group" class="form-control select2-group group_discourse_slug" title="Choose group...">
+                          @if( ! $owned_groups->isEmpty() )
+                            @foreach($owned_groups as $group)
+                              <option value="{{ $group->discourse_slug }}">
+                                {{ $group->name }}
+                              </option>
+                            @endforeach
+                          @endif
+                        </select>
+                      </div>
+                    </div>
+
+                    <a href="javascript:{}" data-initial-url="{{ env('DISCOURSE_URL')."/g/" }}" class="btn btn-primary w-min-auto redirectToIntended">
+                      Send
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           @if( ! $user_groups->isEmpty() )
             <div class="table-responsive mb-0 mt-auto">
@@ -100,38 +130,6 @@
                 see all
               </u>
             </a>
-          @endif
-        </div>
-      </div>
-    @else
-
-      {{-- TODO... --}}
-      <div class="row">
-        <div class="col-12 col-md-6">
-
-        </div>
-
-        <div class="col-12 col-md-6">
-          <p class="font-weight-bold">Interested in starting a community repair group?</p>
-          <p>
-            Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region's Talk group and invite others in your area for a chat! Or view our school programme planning guide. When you're ready to start a group, get in touch.
-          </p>
-
-          <p class="font-weight-bold">
-            Your region's Talk groups:
-          </p>
-
-          @php $talk_groups = collect([]); @endphp
-          @if( ! $talk_groups->isEmpty() )
-            <div class="table-responsive mb-0 mt-auto">
-              <table role="table" class="table table-hover mb-0">
-                <tbody>
-                  @foreach ($talk_groups as $group)
-                    @include('partials.tables.row-group-small')
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
           @endif
         </div>
       </div>

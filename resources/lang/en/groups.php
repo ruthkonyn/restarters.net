@@ -19,6 +19,8 @@ return array (
     'create_groups' => 'Create a new group',
     'create_groups_mobile' => 'Add new',
     'create_group' => 'Create group',
+    'groups_discourse_slug' => 'Discourse Slug',
+    'groups_discourse_slug_helper' => 'Add discourse slug name here.',
     'groups_title1' => 'Your groups',
     'groups_title1_mobile' => 'Following',
     'groups_title2' => 'Groups nearest to you',

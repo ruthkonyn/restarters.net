@@ -263,9 +263,16 @@ class GroupController extends Controller
                 $country = null;
             }
 
+            $discourse_slug = null;
+            if (request()->has('discourse_slug')) {
+              $discourse_slug = request('discourse_slug');
+            }
+
             if (empty($error)) {
                 // No errors. We can proceed and create the User.
-                $data = array('name' => $name,
+                $data = array(
+                    'name' => $name,
+                    'discourse_slug' => $discourse_slug,
                     'website' => $website,
                     // 'frequency'     => $freq,
                     'location' => $location,
@@ -731,8 +738,14 @@ class GroupController extends Controller
                 return redirect()->back()->with('error', 'Could not find group location - please try again!');
             }
 
+            $discourse_slug = null;
+            if (request()->has('discourse_slug')) {
+              $discourse_slug = request('discourse_slug');
+            }
+
             $update = array(
                 'name' => $data['name'],
+                'discourse_slug' => $discourse_slug,
                 'website' => $data['website'],
                 'free_text' => $data['free_text'],
                 'location' => $data['location'],

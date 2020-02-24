@@ -5,6 +5,7 @@
 @endsection
 
 @section('content')
+
   <section class="dashboard">
 
     <div class="container">
@@ -31,7 +32,13 @@
       {{-- @include('dashboard.temporary-banner') --}}
 
       <div class="row">
-        <div class="col-12 col-lg-8 d-flex flex-column">
+        <div class="col-12 col-lg-8 d-flex flex-column order-2 order-lg-1">
+
+
+          @include('partials.alerts.alert-danger', [
+            'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
+          ])
+
           {{-- @if (FixometerHelper::hasRole($user, 'Administrator'))
             @include('dashboard.restarter')
           @endif
@@ -45,26 +52,29 @@
             @include('dashboard.blocks.impact')
           </div> --}}
 
-          @include('partials.alerts.alert-danger', [
-            'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
-          ])
-
-          @include('dashboard.groups-section')
+          @if (! $user_groups->isEmpty())
+            @include('dashboard.groups-section.user-groups')
+          @else
+            {{-- TODO: $talk_groups --}}
+            @include('dashboard.groups-section.no-groups')
+          @endif
 
           @include('dashboard.add-data-section')
         </div>
 
-        <div class="col-12 col-lg-4">
-          <div class="card card-info-box bg-info">
-            <img src="images/community.jpg" class="card-img-top" alt="...">
-            <div class="card-body">
-              <p class="font-weight-bold">
-                Restarters.net is a free, open source platform for a global community making local repair events happen and campaigning for our right to repair. Check out our <a href="#">free event planning kit!</a>
-              </p>
+        <div class="col-12 col-lg-4 order-1 mb-30 mb-lg-0">
+          <div class="d-none d-lg-block">
+            <div class="card card-info-box bg-info">
+              <img src="images/community.jpg" class="card-img-top" alt="...">
+              <div class="card-body">
+                <p class="font-weight-bold">
+                  Restarters.net is a free, open source platform for a global community making local repair events happen and campaigning for our right to repair. Check out our <a href="#">free event planning kit!</a>
+                </p>
 
-              <p>
-                We’re here to help with all of your hosting questions, or starting a school programme. <a href="#">Just get in touch.</a>
-              </p>
+                <p>
+                  We’re here to help with all of your hosting questions, or starting a school programme. <a href="#">Just get in touch.</a>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -83,6 +93,19 @@
 
               <hr class="hr-dashed my-25">
 
+              <p class="d-block d-lg-none">
+                Read tips for making the best use of this platform.
+              </p>
+
+              <div class="d-block d-md-none text-right">
+                <a class="collapse-plus-and-minus-controller collapsed" data-close-text="Read Less" data-open-text="Read More" data-toggle="collapse" href="#collapseReadMore" aria-expanded="true" aria-controls="collapseReadMore">
+                  Read More
+                </a>
+
+                <hr class="m-0 hr-sm">
+              </div>
+
+              <div class="d-md-block collapse" id="collapseReadMore">
                 <ul class="list-doodle">
                   <li>
                     make sure you’re not missing out on our forum conversations - <a href="#">check your email digest</a> settings and whitelist
@@ -96,6 +119,9 @@
                     if you’ve changed your skillset or role you’d like to play with Restart, <a href="#">update your skills</a> for the best experience here.
                   </li>
                 </ul>
+              </div>
+
+
             </div>
           </div>
         </div>
@@ -105,113 +131,46 @@
         <div class="col">
           <div class="d-flex align-items-center">
             <h1 id="dashboard__header" class="mb-0 mr-30">
-              Latest Talk Topics
+              @lang('partials.hot_topics')
             </h1>
             <div class="mr-auto d-none d-md-block">
               @include('svgs.dashboard.talk_doodle')
             </div>
 
-            <a href="#" class="text-dark ml-auto">
-              see all
+            <a href="{{ env('DISCOURSE_URL')}}/session/sso?return_path=https://talk.restarters.net/top/weekly" class="text-dark ml-auto">
+              @lang('partials.hot_topics_link')
             </a>
           </div>
 
           <hr class="hr-dashed my-25">
 
-          <table role="table" class="table mb-0">
-            <thead>
-              <tr>
-                <th scope="col">
-                  &nbsp;
-                </th>
-                <th scope="col">
-                  &nbsp;
-                </th>
-                <th scope="col">
-                  @include('svgs.navigation.talk-icon')
-                </th>
-                <th scope="col">
-                  @include('svgs.talk.time_icon')
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="1">
-                  <p>
-                    FaultCat - repair data for the many, not the few - feedback please!
-                  </p>
+          <div class="d-flex flex-row align-items-center justify-content-end mb-25">
+            <div class="mr-40">
+              @include('svgs.navigation.talk-icon')
+            </div>
 
-                  <div class="">
-                    <span class="rectangle-tag">
-                      Repair Data
-                    </span>
+            <div class="mr-30">
+              @include('svgs.talk.time_icon')
+            </div>
+          </div>
 
-                    <span class="tag">
-                      Open Data dive
-                    </span>
+          <div class="row">
+            @php( $count_hot_topics = 1 )
+            @foreach( $hot_topics['talk_hot_topics'] as $hot_topic )
+              @if ($count_hot_topics > 4)
+                @break
+              @endif
 
-                    <span class="tag">
-                      Data
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div class="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                  </div>
-                </td>
-
-                <td>
-                  2 @include('svgs.talk.reply_icon')
-                </td>
-
-                <td>
-                  30m
-                </td>
-              </tr>
-
-              <tr>
-                <td colspan="1">
-                  <p>
-                    *CLOSED* call for applications: grants to support your regional work in the UK **deadline 7th Oct**
-                  </p>
-
-                  <div class="">
-                    <span class="rectangle-tag">
-                      how to repair In your community
-                    </span>
-
-                    <span class="tag">
-                      Funding
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div class="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                    <img src="" alt="">
-                  </div>
-                </td>
-
-                <td>
-                  4 @include('svgs.talk.reply_icon')
-                </td>
-
-                <td>
-                  2h
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              <div class="col-12 mb-15">
+                @include('cards.card-talk')
+              </div>
+              @php( $count_hot_topics++ )
+            @endforeach
+          </div>
         </div>
       </div>
     </div>
 
   </section>
+
 @endsection
