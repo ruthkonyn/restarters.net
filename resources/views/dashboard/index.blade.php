@@ -79,13 +79,13 @@
           </div>
 
           <div class="card card-info-box bg-warning">
-            <div class="card-body">
+            <div class="card-body position-relative">
               <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0">
+                <h2 class="mb-0 mr-0 mr-lg-25">
                   Getting the most from Restarters.net
                 </h2>
 
-                <div class="d-none d-xl-block" style="top: -52px; position: relative;">
+                <div class="d-none d-xl-block position-absolute top-0 right-0">
                   @include('svgs.dashboard.hand_doodle')
                 </div>
               </div>

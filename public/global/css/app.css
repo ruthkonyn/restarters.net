@@ -14328,6 +14328,22 @@ a.form-text-corrected:focus {
   min-width: auto !important;
 }
 
+.top-0 {
+  top: 0;
+}
+
+.bottom-0 {
+  bottom: 0;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.right-0 {
+  right: 0;
+}
+
 .alert-success {
   background-color: #3fce97 !important;
 }
