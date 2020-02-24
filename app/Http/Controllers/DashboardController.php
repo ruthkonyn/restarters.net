@@ -210,7 +210,7 @@ class DashboardController extends Controller
         $now = Carbon::now();
         $date = Carbon::parse($date);
 
-        if ($now->diffInHours($date) <= 1) {
+        if ($now->diffInHours($date) < 1) {
             return $date->format('i').'m';
         }
 
@@ -218,6 +218,10 @@ class DashboardController extends Controller
             return $date->format('H').'h';
         }
 
-        return $date->diffInDays($now).'d';
+        if ($now->diffInDays($date) <= 7) {
+          return $date->diffInDays($now).'d';
+        }
+
+        return $date->diffInMonths($now).' months';
     }
 }
