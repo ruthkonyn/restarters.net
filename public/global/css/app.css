@@ -15129,6 +15129,7 @@ label.form-check-label {
   -webkit-box-shadow: 6px 6px 0 0 #000;
           box-shadow: 6px 6px 0 0 #000;
   margin-bottom: 5px;
+  text-transform: none;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
