@@ -77,7 +77,7 @@
 
           @if( ! $user_groups->isEmpty() )
             <div class="table-responsive mb-0 mt-auto">
-              <table role="table" class="table table-hover mb-0">
+              <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @php $take_3_groups = $user_groups->take(3); @endphp
                   @foreach ($take_3_groups as $group)
@@ -116,7 +116,7 @@
 
           @if( ! $upcoming_events->isEmpty() )
             <div class="table-responsive mb-0 mt-auto">
-              <table role="table" class="table table-hover mb-0">
+              <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @foreach ($upcoming_events as $event)
                     @include('partials.tables.row-event-small')

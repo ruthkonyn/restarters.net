@@ -244,3 +244,63 @@
     }
   }
 }
+
+.slick-container {
+  @include media-breakpoint-up(lg) {
+    position: absolute;
+    width: 100%;
+    left: -15px;
+  }
+}
+
+.slick-your-groups {
+  .card-group-slick {
+    .card-img {
+      opacity: 0.75;
+    }
+
+    p {
+      font-family: Asap;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.44;
+      letter-spacing: normal;
+      text-align: left;
+      color: $white;
+      margin-bottom: 0;
+
+      a {
+        color: $white !important;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .slick-dots {
+    bottom: 15px !important;
+
+    li {
+      button {
+        &::before {
+          content: '' !important;
+          border: 1px solid white !important;
+          opacity: 1 !important;
+          height: 15px !important;
+          width: 15px !important;
+        }
+      }
+
+      &.slick-active {
+        button {
+          &::before {
+            background: $white;
+            color: $white;
+            line-height: 0;
+          }
+        }
+      }
+    }
+  }
+}

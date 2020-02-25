@@ -35,6 +35,24 @@
 
     <div class="row">
       <div class="col-12 col-lg-6">
+        <div class="slick-container">
+          <div class="slick-your-groups">
+            @for ($i=0; $i < 3; $i++)
+              <div class="card card-group-slick bg-dark text-white rounded-0">
+                <img class="card-img" src="images/dashboard/your-groups-carousel-placeholder.jpg" alt="Card image">
+                <div class="card-img-overlay">
+                  <p class="font-weight-bold">
+                    You aren’t following any repair groups.
+                  </p>
+
+                  <p>
+                    You’re welcome to <a href="#">follow any group in the world.</a> And new groups pop up all the time, so do check back!
+                  </p>
+                </div>
+              </div>
+            @endfor
+          </div>
+        </div>
       </div>
 
       <div class="col-12 col-lg-6 d-flex flex-column">
@@ -51,12 +69,13 @@
         </p>
 
         {{-- TODO: $talk_groups --}}
-        @php $talk_groups = collect([]); @endphp
-        @if( ! $talk_groups->isEmpty() )
+        {{-- @php $user_groups = collect([]); @endphp --}}
+        @if( ! $user_groups->isEmpty() )
+          @php $take_3_groups = $user_groups->take(2); @endphp
           <div class="table-responsive mb-0 mt-auto">
-            <table role="table" class="table table-hover mb-0">
+            <table role="table" class="table table-hover table-border-rows mb-0">
               <tbody>
-                @foreach ($talk_groups as $group)
+                @foreach ($take_3_groups as $group)
                   @include('partials.tables.row-group-small')
                 @endforeach
               </tbody>

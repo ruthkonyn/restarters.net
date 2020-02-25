@@ -1,3 +1,17 @@
+import 'slick-carousel/slick/slick.min';
+
+$('.slick-your-groups').slick({
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  dots: true,
+  centerMode: true,
+  focusOnSelect: true,
+  arrows: false,
+  // variableWidth: true,
+  infinite: true,
+  centerPadding: '25',
+ });
+
 $(document).ready(function() {
 
   require('./components/dropdown.js');
