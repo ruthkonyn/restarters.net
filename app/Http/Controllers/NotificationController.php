@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use JavaScript;
+use Cookie;
 
 class NotificationController extends Controller
 {
@@ -33,8 +35,12 @@ class NotificationController extends Controller
 
         abort_if( ! $notification, 404);
 
+        $redirect = $notification->data['url'];
+
         $notification->markAsRead();
 
-        return back()->with('success', 'Notification marked as read');
+        unset($_COOKIE['has_notification_cookies_set']);
+
+        return redirect($redirect);
     }
 }

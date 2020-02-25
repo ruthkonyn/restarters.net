@@ -214,7 +214,7 @@
                     </div>
                     <div class="form-row">
                       <div class="form-group col-lg-4">
-                        @php ( $path = $user->getProfile($user->id)->path )
+                        @php $path = $user->getProfile($user->id)->path @endphp
                         @if ( !is_null($path) )
                           <img width="50" src="{{ asset('/uploads/thumbnail_' . $path) }}" alt="{{{ $user->name }}}'s avatar">
                         @endif
@@ -409,26 +409,85 @@
                   {{ Form::hidden('id', $user->id) }}
 
                   <fieldset class="email-options">
-                      {{-- <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->newsletter == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1">
-                          @endif
-                          <label class="form-check-label" for="newsletter">
-                              @lang('general.email_alerts_pref1')
-                          </label>
-                      </div>--}}
-                      <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->invites == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1">
-                          @endif
-                          <label class="form-check-label" for="invites">
-                          @lang('general.email_alerts_pref2')
+                    <div class="form-check d-flex align-items-center justify-content-start">
+                      <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" @if( $user->invites == 1 ) checked @endif>
+                      <label class="form-check-label" for="invites">
+                        @lang('general.email_alerts_pref2')
                       </label>
+                    </div>
+
+                    @if (isset($user_email_preferences) && ! empty($user_email_preferences))
+                      @php
+                        $basic_email_options = [
+                          'always',
+                          'only when away',
+                          'never',
+                        ];
+
+                        $summary_email_times = [
+                          30 => 'every 30 minutes',
+                          60 => 'hourly',
+                          1440 => 'daily',
+                          10080 => 'weekly',
+                          43200 => 'every month',
+                          259200 => 'every six months',
+                        ];
+                      @endphp
+
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="email_messages_level">
+                            Send me an email when someone messages me:
+                          </label>
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="email_messages_level" name="email_messages_level">
+                              @foreach ($basic_email_options as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['email_messages_level'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
                       </div>
+
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="email_level">
+                            Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
+                          </label>
+
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="email_level" name="email_level">
+                              @foreach ($basic_email_options as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['email_level'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row">
+                        <div class="form-group col-12 col-lg-6">
+                          <label for="digest_after_minutes">
+                            When I don’t visit here, send me an email summary of popular topics and replies
+                          </label>
+
+                          <div class="form-control form-control__select">
+                            <select class="field select2" id="digest_after_minutes" name="digest_after_minutes">
+                              @foreach ($summary_email_times as $value => $text)
+                                <option value="{{ $value }}" @if($user_email_preferences['digest_after_minutes'] == $value) selected @endif>
+                                  {{ $text }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                    @endif
                   </fieldset>
 
                   <div class="button-group row">
@@ -439,17 +498,11 @@
                           <button class="btn btn-primary btn-save">@lang('auth.save_preferences')</button>
                       </div>
                   </div>
-
               </form>
-
             </div>
-
           </div>
 
 
-
-
-          {{-- TODO --}}
           <div class="tab-pane fade" id="list-calendar-links" role="tabpanel" aria-labelledby="list-calendar-links-list">
             <div class="edit-panel">
               <div class="form-row">

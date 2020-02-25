@@ -214,12 +214,12 @@
         "version_normalized": "0.11.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/barryvdh/laravel-cors.git",
+            "url": "https://github.com/fruitcake/laravel-cors.git",
             "reference": "7969a52f52d0d9a04b42565d25ac9994b8c83332"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/7969a52f52d0d9a04b42565d25ac9994b8c83332",
+            "url": "https://api.github.com/repos/fruitcake/laravel-cors/zipball/7969a52f52d0d9a04b42565d25ac9994b8c83332",
             "reference": "7969a52f52d0d9a04b42565d25ac9994b8c83332",
             "shasum": ""
         },
@@ -1113,7 +1113,8 @@
             "php",
             "selenium",
             "webdriver"
-        ]
+        ],
+        "abandoned": "php-webdriver/webdriver"
     },
     {
         "name": "fideloper/proxy",
@@ -1860,6 +1861,65 @@
         ]
     },
     {
+        "name": "laracasts/utilities",
+        "version": "3.0.1",
+        "version_normalized": "3.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/laracasts/PHP-Vars-To-Js-Transformer.git",
+            "reference": "490c6cf4d23c26c94e01867265c84921863a5f19"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laracasts/PHP-Vars-To-Js-Transformer/zipball/490c6cf4d23c26c94e01867265c84921863a5f19",
+            "reference": "490c6cf4d23c26c94e01867265c84921863a5f19",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/support": "^5.0|^6.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "phpspec/phpspec": "~2.0"
+        },
+        "time": "2019-09-04T12:55:27+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "Laracasts\\Utilities\\JavaScript\\JavaScriptServiceProvider"
+                ],
+                "aliases": {
+                    "JavaScript": "Laracasts\\Utilities\\JavaScript\\JavaScriptFacade"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/helpers.php"
+            ],
+            "psr-4": {
+                "Laracasts\\Utilities\\JavaScript\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jeffrey Way",
+                "email": "jeffrey@laracasts.com"
+            }
+        ],
+        "description": "Transform your PHP to JavaScript",
+        "keywords": [
+            "javascript",
+            "laravel"
+        ]
+    },
+    {
         "name": "laravel/dusk",
         "version": "v4.0.5",
         "version_normalized": "4.0.5.0",
@@ -2244,8 +2304,7 @@
             "lumen",
             "publish",
             "vendor"
-        ],
-        "abandoned": true
+        ]
     },
     {
         "name": "league/csv",

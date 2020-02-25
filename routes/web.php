@@ -11,10 +11,29 @@
 |
 */
 
+// $value = 1;
+// $minutes = 15;
+// // $cookie = \Cookie::make('testing123', $value, $minutes);
+// request()->cookie('testing123', $value, $minutes);
+// dd(Cookie::get('testing123'), request()->cookie('testing123'), 1);
 
-Route::get('/testing123', function(){
-  return view('testing123', [], ['#' => 'testing123']);
-});
+// https://discourse.example.com/user-badges/{username}.json
+
+// $client = new \GuzzleHttp\Client();
+// $response = $client->request('GET', env('DISCOURSE_URL').'/admin/badges.json', [
+//     'headers' => [
+//         'Api-Key' => env('DISCOURSE_APIKEY'),
+//         'Api-Username' => env('DISCOURSE_APIUSER'),
+//         'Accept' => 'application/json',
+//     ],
+// ]);
+// //
+// $array = json_decode($response->getBody()->getContents(), true);
+// // $collection = collect($array['notifications']);
+//
+// dd($array);
+//
+// dd($collection->first());
 
 
 Route::prefix('user')->group(function () {
@@ -241,8 +260,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
 
-    // Auth API routes
-    Route::get('/api/events/{group}/', 'API\EventController');
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');

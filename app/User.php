@@ -481,4 +481,50 @@ class User extends Authenticatable implements Auditable
     {
         return $this->userGroups->pluck('group')->toArray();
     }
+
+    public function getDiscourseEmailPreferencesAttribute()
+    {
+        $client = app('discourse-client');
+
+        // $placeholder = 'Dean_Claydon';
+        // $this->username
+
+        $response = $client->request('GET', "/users/{$this->username}.json");
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return [];
+        }
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        $user_options = $array['user']['user_option'];
+
+        $email_options = [
+            'email_messages_level',
+            'email_level',
+            'digest_after_minutes',
+        ];
+
+        return array_filter($user_options, function ($user_option) use ($email_options) {
+            return in_array($user_option, $email_options);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public function updateDiscourseEmailPreferences(array $email_preference_options)
+    {
+        $client = app('discourse-client');
+
+        // $placeholder = 'Dean_Claydon';
+        // $this->username
+
+        $response = $client->request('PUT', "/users/{$this->username}.json", [
+            'query' => $email_preference_options,
+        ]);
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return false;
+        }
+
+        return true;
+    }
 }

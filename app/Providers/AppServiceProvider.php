@@ -11,6 +11,7 @@ use FixometerHelper;
 use Illuminate\Support\ServiceProvider;
 use Schema;
 use \OwenIt\Auditing\Models\Audit;
+use JavaScript;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +39,13 @@ class AppServiceProvider extends ServiceProvider
 
         view()->composer('*', function ($view) {
             if (Auth::check()) {
+
+              JavaScript::put([
+                  'user' => [
+                    'id' => Auth::user()->id,
+                    'username' => Auth::user()->username,
+                  ],
+              ]);
 
                 // $notifications = Party::whereDate('events.event_date', '<', date('Y-m-d'))
                 //                   ->whereDate('events.event_date', '>=', date("Y-m-d", strtotime("-6 months")))
