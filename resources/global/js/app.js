@@ -1,4 +1,8 @@
+// Slick Slider js
 import 'slick-carousel/slick/slick.min';
+
+// Bootstrap js
+require('../../assets/js/bootstrap');
 
 $('.slick-your-groups').slick({
   slidesToShow: 1,
@@ -13,10 +17,12 @@ $('.slick-your-groups').slick({
   // rows: 0,
 });
 
+
 $(document).ready(function() {
   require('./components/dropdown.js');
   require('./components/table.js');
   require('./components/populate-events-select.js');
+  require('./components/ajax-search-discourse-notifications.js');
 
   console.log('ready!');
 

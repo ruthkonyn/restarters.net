@@ -11,31 +11,6 @@
 |
 */
 
-// $value = 1;
-// $minutes = 15;
-// // $cookie = \Cookie::make('testing123', $value, $minutes);
-// request()->cookie('testing123', $value, $minutes);
-// dd(Cookie::get('testing123'), request()->cookie('testing123'), 1);
-
-// https://discourse.example.com/user-badges/{username}.json
-
-// $client = new \GuzzleHttp\Client();
-// $response = $client->request('GET', env('DISCOURSE_URL').'/admin/badges.json', [
-//     'headers' => [
-//         'Api-Key' => env('DISCOURSE_APIKEY'),
-//         'Api-Username' => env('DISCOURSE_APIUSER'),
-//         'Accept' => 'application/json',
-//     ],
-// ]);
-// //
-// $array = json_decode($response->getBody()->getContents(), true);
-// // $collection = collect($array['notifications']);
-//
-// dd($array);
-//
-// dd($collection->first());
-
-
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');

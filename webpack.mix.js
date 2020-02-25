@@ -32,7 +32,5 @@ mix.webpackConfig({
 //         proxy: 'fixo.meter:8888'
 //     });
 
-// mix.js('resources/global/js/app.js', 'public/global/js')
-//    .sass('resources/global/css/app.scss', 'public/global/css');
-
-mix.js('resources/discourse/app.js', 'public/js/discourse.js');
+mix.js('resources/global/js/app.js', 'public/global/js')
+   .sass('resources/global/css/app.scss', 'public/global/css');
