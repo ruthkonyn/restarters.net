@@ -203,7 +203,7 @@
         @include('svgs.fixometer.search_ico')
       </button>
 
-      <h2 class="mb-0">{{ isset($list) ? $list->total() : $global_impact_data->devices_count }} results</h2>
+      <h2 class="mb-0">{{ isset($list) ? $list->total() : $impact_data->items_fixed }} results</h2>
     </div>
   </div>
 
