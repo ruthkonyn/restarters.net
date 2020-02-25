@@ -249,31 +249,37 @@
   @include media-breakpoint-up(lg) {
     position: absolute;
     width: 100%;
-    left: -15px;
+    left: -16px;
   }
 }
 
 .slick-your-groups {
+  @extend .mb-0;
+
   .card-group-slick {
     .card-img {
       opacity: 0.75;
     }
 
-    p {
-      font-family: Asap;
-      font-size: 16px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.44;
-      letter-spacing: normal;
-      text-align: left;
-      color: $white;
-      margin-bottom: 0;
+    .card-img-overlay {
+      padding: 25px 30px;
 
-      a {
-        color: $white !important;
-        text-decoration: underline;
+      p {
+        font-family: Asap;
+        font-size: 16px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.44;
+        letter-spacing: normal;
+        text-align: left;
+        color: $white;
+        margin-bottom: 0;
+
+        a {
+          color: $white !important;
+          text-decoration: underline;
+        }
       }
     }
   }

@@ -8,7 +8,7 @@
 
   <section class="dashboard">
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-12 col-md-12 mb-50">
           <div class="d-none d-lg-block">

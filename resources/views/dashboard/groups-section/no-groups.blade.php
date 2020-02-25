@@ -56,7 +56,7 @@
       </div>
 
       <div class="col-12 col-lg-6 d-flex flex-column">
-        <p class="font-weight-bold">
+        <p class="font-weight-bold mb-0">
           Interested in starting a community repair group?
         </p>
 
@@ -64,7 +64,7 @@
           Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region’s Talk group and <a href="#">invite others in your area for a chat!</a> Or view our <a href="#">school programme planning guide.</a> When you’re ready to start a group, <a href="#">get in touch.</a>
         </p>
 
-        <p class="font-weight-bold">
+        <p class="font-weight-bold mb-0">
           Your region’s Talk groups:
         </p>
 
@@ -72,7 +72,7 @@
         {{-- @php $user_groups = collect([]); @endphp --}}
         @if( ! $user_groups->isEmpty() )
           @php $take_3_groups = $user_groups->take(2); @endphp
-          <div class="table-responsive mb-0 mt-auto">
+          <div class="table-responsive mb-0 mt-10">
             <table role="table" class="table table-hover table-border-rows mb-0">
               <tbody>
                 @foreach ($take_3_groups as $group)

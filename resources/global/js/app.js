@@ -10,6 +10,7 @@ $('.slick-your-groups').slick({
   // variableWidth: true,
   infinite: true,
   centerPadding: '25',
+  // rows: 0,
  });
 
 $(document).ready(function() {
