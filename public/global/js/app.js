@@ -10792,6 +10792,10 @@ $('.entireRowClickable').click(function () {
 function searchEventsByGroup() {
   $group_id = $(".change-group :selected").val();
 
+  if ($group_id == null) {
+    return false;
+  }
+
   $.ajax({
     headers: {
       'X-CSRF-TOKEN': $("input[name='_token']").val()

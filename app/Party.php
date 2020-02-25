@@ -844,7 +844,7 @@ class Party extends Model implements Auditable
           'host',
           'theGroup.groupImage.image',
           'devices.deviceCategory',
-        ])->withCount('allInvited');
+        ]);
     }
 
     public function getFriendlyLocationAttribute()
