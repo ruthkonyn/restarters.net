@@ -27,3 +27,16 @@ h2 {
   font-size: 28px !important;
   line-height: 32px;
 }
+
+.link-text {
+  text-decoration: none !important;
+  border-bottom: 1px solid $black;
+
+  &:hover {
+    border-bottom: 2px solid $black;
+  }
+
+  &:focus {
+    border-bottom: 3px solid $black;
+  }
+}
