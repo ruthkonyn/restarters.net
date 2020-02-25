@@ -16099,9 +16099,13 @@ label.form-check-label {
   font-size: 0;
 }
 
-.popover-calendar-feed p,
+.popover-calendar-feed p {
+  color: #000;
+}
+
 .popover-calendar-feed a {
   color: #000;
+  text-decoration: underline;
 }
 
 .card-summary {
