@@ -14606,19 +14606,17 @@ label.form-check-label {
   margin-top: 0;
   margin-bottom: 0;
   text-transform: uppercase;
-  position: relative;
 }
 
-.form-control__select .select2-selection--multiple .select2-search__field {
-  width: 100% !important;
+.form-control__select .select2-selection--multiple .select2-search--inline {
+  width: 100%;
 }
 
-.form-control__select .select2-selection--multiple .select2-search__field:after {
+.form-control__select .select2-selection--multiple .select2-search--inline .select2-search__field {
   background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
   background-repeat: no-repeat;
   background-position: 97% 50%;
-  position: absolute;
-  content: "";
+  width: 100% !important;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice {
