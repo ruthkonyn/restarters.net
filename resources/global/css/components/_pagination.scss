@@ -52,4 +52,10 @@
       font-weight: 700;
     }
   }
+
+  li.page-item {
+    &.disabled {
+      display: none;
+    }
+  }
 }
