@@ -111,6 +111,7 @@ class GroupController extends Controller
             'location' => $request->input('location'),
             'selected_country' => $request->input('country'),
             'selected_tags' => $request->input('tags'),
+            'formHash' => $request->input('formHash')
         ]);
     }
 
@@ -1023,14 +1024,16 @@ class GroupController extends Controller
                 Notification::send($host, new NewGroupMember($arr, $host));
             }
 
-            return redirect()
-                    ->back()
-                    ->with('success', "You are now following {$group->name}!");
+            return FixometerHelper::previousWithHash('#your-groups-pane', [
+              'success' => "You are now following {$group->name}!"
+            ]);
 
         } catch (\Exception $e) {
             $response['danger'] = 'Failed to follow this group';
 
-            return redirect()->back()->with('response', $response)->with('warning', 'Failed to follow this group');
+            return FixometerHelper::previousWithHash('#all-groups-pane', [
+              'warning' => "Failed to follow this group"
+            ]);
         }
     }
 

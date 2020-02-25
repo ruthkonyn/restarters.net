@@ -110,6 +110,7 @@ class PartyController extends Controller
             'location' => $request->input('location'),
             'selected_country' => $request->input('country'),
             'selected_tags' => $request->input('tags'),
+            'formHash' => $request->input('formHash')
         ]);
     }
 
@@ -800,35 +801,37 @@ class PartyController extends Controller
         ->first();
 
         if (empty($not_in_event)) {
-            try {
-                $user_event = EventsUsers::updateOrCreate([
-                    'user' => $user_id,
-                    'event' => $event_id,
-                ], [
-                    'status' => 1,
-                    'role' => 4,
-                ]);
+          try {
+              $user_event = EventsUsers::updateOrCreate([
+                  'user' => $user_id,
+                  'event' => $event_id,
+              ], [
+                  'status' => 1,
+                  'role' => 4,
+              ]);
 
-                $event = Party::find($event_id);
+              $event = Party::find($event_id);
 
-                $event->increment('volunteers');
+              $event->increment('volunteers');
 
-                $flashData = [];
-                if (! Auth::user()->isInGroup($event->theGroup->idgroups)) {
-                    $flashData['prompt-follow-group'] = true;
-                }
+              $flashData = [];
+              if (! Auth::user()->isInGroup($event->theGroup->idgroups)) {
+                  $flashData['prompt-follow-group'] = true;
+              }
 
-                $this->notifyHostsOfRsvp($user_event, $event_id);
+              $this->notifyHostsOfRsvp($user_event, $event_id);
 
-                return redirect()->back()->with($flashData);
-            } catch (\Exception $e) {
-                $flashData['danger'] = 'Failed to join this event';
-                return redirect()->back()->with($flashData);
-            }
-        } else {
-            $flashData['warning'] = 'You are already part of this event';
-            return redirect()->back()->with($flashData);
+              return redirect()->back()->with($flashData);
+          } catch (\Exception $e) {
+              $flashData['danger'] = 'Failed to join this event';
+
+              return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
+          }
         }
+
+        $flashData['warning'] = 'You are already part of this event';
+
+        return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
     }
 
     public function notifyHostsOfRsvp($user_event, $event_id)

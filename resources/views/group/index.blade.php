@@ -47,31 +47,32 @@
         </form>
       @else
         <form action="/group/" method="get" id="groups-search">
+          <input type="hidden" name="formHash" id="formHash" value="{{ $formHash }}">
           <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
           <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
             <div class="offset-md-box-shadow no-space-mobile group-tabs">
               <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
                 <li class="nav-item">
-                  <a id="tab-A" href="#pane-A" class="nav-link bg-white active" data-toggle="tab" role="tab">
+                  <a id="tab-A" href="#your-groups-pane" class="nav-link bg-white active" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title1')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title1_mobile')</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a id="tab-B" href="#pane-B" class="nav-link bg-white" data-toggle="tab" role="tab">
+                  <a id="tab-B" href="#nearest-groups-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title2')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title2_mobile')</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a id="tab-C" href="#pane-C" class="nav-link bg-white" data-toggle="tab" role="tab">
+                  <a id="tab-C" href="#all-groups-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
                     <span class="d-none d-lg-block">@lang('groups.groups_title3')</span>
                     <span class="d-block d-lg-none">@lang('groups.groups_title3_mobile')</span>
                   </a>
                 </li>
               </ul>
               <div class="tab-content" id="content" role="tablist">
-                <div id="pane-A" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                <div id="your-groups-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
                   <div class="tab-pane-content p-30">
                     <div class="row">
                       <div class="col-12 col-md-12 form-group">
@@ -86,7 +87,7 @@
                     </div>
                   </div>
                 </div>
-                <div id="pane-B" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                <div id="nearest-groups-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
                   <div class="tab-pane-content p-30">
                     <div class="row">
                       <div class="col-12 col-md-12 form-group">
@@ -99,7 +100,7 @@
                     </div>
                   </div>
                 </div>
-                <div id="pane-C" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
+                <div id="all-groups-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
                   <div class="tab-pane-content p-30">
                     <div class="row">
                       <div class="col-12 col-md-12 form-group">
