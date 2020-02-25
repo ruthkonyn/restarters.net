@@ -111,10 +111,19 @@ label.form-check-label {
   .select2-selection--multiple {
     margin-top: 0;
     margin-bottom: 0;
-    background-image: url('../svgs/dropdown-arrow.svg');
-    background-repeat: no-repeat;
-    background-position: 97% 50%;
     text-transform: uppercase;
+    position: relative;
+
+    .select2-search__field {
+      &:after {
+        background-image: url('../svgs/dropdown-arrow.svg');
+        background-repeat: no-repeat;
+        background-position: 97% 50%;
+        position: absolute;
+        content: "";
+      }
+      width: 100% !important;
+    }
 
     .select2-selection__choice {
       background-color: $white;

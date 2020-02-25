@@ -15112,10 +15112,20 @@ label.form-check-label {
 .form-control__select .select2-selection--multiple {
   margin-top: 0;
   margin-bottom: 0;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.form-control__select .select2-selection--multiple .select2-search__field {
+  width: 100% !important;
+}
+
+.form-control__select .select2-selection--multiple .select2-search__field:after {
   background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
   background-repeat: no-repeat;
   background-position: 97% 50%;
-  text-transform: uppercase;
+  position: absolute;
+  content: "";
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice {
