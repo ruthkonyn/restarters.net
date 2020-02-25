@@ -15062,7 +15062,8 @@ label.form-check-label {
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: #000 !important;
+  background-color: #f5f7fa !important;
+  color: #000;
 }
 
 .form-control__select {
@@ -15138,8 +15139,7 @@ label.form-check-label {
 }
 
 .form-control:focus {
-  border: 2px solid #000;
-  border-color: #000;
+  border: 3px solid #000 !important;
   -webkit-box-shadow: none;
   box-shadow: none;
   font-weight: 700;
