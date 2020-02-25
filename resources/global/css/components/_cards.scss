@@ -60,6 +60,14 @@
 
   border: 1px solid $black;
 
+  &.card-padding-sm {
+    .card-body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+
+    }
+  }
+
   .card-img-top {
     border: 0;
     border-radius: 0;

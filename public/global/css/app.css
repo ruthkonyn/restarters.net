@@ -16151,6 +16151,11 @@ label.form-check-label {
   border: 1px solid #000;
 }
 
+.card-info-box.card-padding-sm .card-body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
 .card-info-box .card-img-top {
   border: 0;
   border-radius: 0;
