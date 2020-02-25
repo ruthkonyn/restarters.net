@@ -28,7 +28,7 @@
               Events
             </h1>
 
-            <div class="mr-auto d-none d-md-block" style="width: 95px; height: 76px;">
+            <div class="mr-auto d-none d-md-block">
               @include('svgs.fixometer.events-doodle')
             </div>
 

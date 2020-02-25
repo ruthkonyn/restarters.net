@@ -18,20 +18,18 @@
     </div>
 
     <div class="flex-dynamic">
-      @if( FixometerHelper::hasRole(Auth::user(), 'Administrator'))
-        <label for="tags" class="sr-only">@lang('groups.group_tag'):</label>
-        <div class="form-control form-control__select">
-          <select id="tags" name="tags[]" class="form-control select2-tags-placeholder" multiple data-live-search="true" title="Choose group tags...">
-            @foreach ($all_group_tags as $group_tag)
-              @if(isset($selected_tags) && in_array($group_tag->id, $selected_tags))
-                <option value="{{ $group_tag->id }}" selected>{{ $group_tag->tag_name }}</option>
-              @else
-                <option value="{{ $group_tag->id }}">{{ $group_tag->tag_name }}</option>
-              @endif
-            @endforeach
-          </select>
-        </div>
-      @endif
+      <label for="tags" class="sr-only">@lang('groups.group_tag'):</label>
+      <div class="form-control form-control__select">
+        <select id="tags" name="tags[]" class="form-control select2-tags-placeholder" multiple data-live-search="true" title="Choose group tags...">
+          @foreach ($all_group_tags as $group_tag)
+            @if(isset($selected_tags) && in_array($group_tag->id, $selected_tags))
+              <option value="{{ $group_tag->id }}" selected>{{ $group_tag->tag_name }}</option>
+            @else
+              <option value="{{ $group_tag->id }}">{{ $group_tag->tag_name }}</option>
+            @endif
+          @endforeach
+        </select>
+      </div>
     </div>
 
     <div class="flex-dynamic">
