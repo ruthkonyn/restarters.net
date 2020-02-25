@@ -64,7 +64,8 @@ label.form-check-label {
   border-radius: 0;
 
   .select2-results__option--highlighted[aria-selected] {
-    background-color: $black !important;
+    background-color: #f5f7fa !important;
+    color: $black;
   }
 }
 
@@ -140,8 +141,7 @@ label.form-check-label {
   border: 1px solid $black;
 
   &:focus {
-    border: 2px solid $black;
-    border-color: $black;
+    border: 3px solid $black !important;
     -webkit-box-shadow: none;
     box-shadow: none;
     font-weight: 700;
