@@ -160,7 +160,7 @@
                 @break
               @endif
 
-              <div class="col-12 mb-15">
+              <div class="col-12 mb-20">
                 @include('cards.card-talk')
               </div>
               @php( $count_hot_topics++ )

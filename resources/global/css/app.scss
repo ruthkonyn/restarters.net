@@ -10,6 +10,9 @@
 // Navigation
 @import "components/navigation-bar";
 
+// FIX: Extend file within original assets folder
+@import "../../assets/sass/helpers/box-shadows";
+
 // Components
 @import "components/alerts";
 @import "components/buttons";

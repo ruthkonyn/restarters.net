@@ -1,5 +1,10 @@
 .card-talk {
   @extend .border-0;
+  @extend .rounded-0;
+
+  &:hover {
+    @extend .box-shadow-offset;
+  }
 
   .card-body {
     @extend .border-0;

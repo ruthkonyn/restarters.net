@@ -6365,7 +6365,8 @@ button.bg-dark:focus {
 
 .rounded-0,
 .alert-success,
-.alert-custom {
+.alert-custom,
+.card-talk {
   border-radius: 0 !important;
 }
 
@@ -14238,6 +14239,40 @@ a.form-text-corrected:focus {
   line-height: 28px !important;
   text-transform: none !important;
   font-weight: normal !important;
+}
+
+.box-shadow-offset,
+.card-talk:hover {
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
+}
+
+@media (min-width: 576px) {
+  .offset-sm-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 768px) {
+  .offset-md-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 992px) {
+  .offset-lg-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+}
+
+@media (min-width: 1200px) {
+  .offset-xl-box-shadow {
+    -webkit-box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 #000;
+  }
 }
 
 .alert-success {
