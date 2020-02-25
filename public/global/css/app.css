@@ -15135,6 +15135,18 @@ label.form-check-label {
   margin: 0 9px 0 0;
 }
 
+.card .form-control {
+  border-radius: 0;
+  border: 1px solid #000 !important;
+}
+
+.card .form-control:focus {
+  border: 3px solid #000 !important;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  font-weight: 700;
+}
+
 .form-control {
   border-radius: 0;
   border: 1px solid #000;

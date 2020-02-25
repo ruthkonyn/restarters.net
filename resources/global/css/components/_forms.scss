@@ -136,6 +136,20 @@ label.form-check-label {
   }
 }
 
+.card {
+  .form-control {
+    border-radius: 0;
+    border: 1px solid $black !important;
+
+    &:focus {
+      border: 3px solid $black !important;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      font-weight: 700;
+    }
+  }
+}
+
 .form-control {
   border-radius: 0;
   border: 1px solid $black;
