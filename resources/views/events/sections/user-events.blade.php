@@ -93,7 +93,7 @@
     </label>
   </div>
 
-  <div id='collapsePastEvents' class="collapse show">
+  <div id="collapsePastEvents" class="collapse">
     <div class="table-responsive">
       <table role="table" class="table table-striped table-hover mb-0">
         @include('partials.tables.head-events-full')

@@ -60,8 +60,6 @@ class PartyController extends Controller
 
     public function index(Request $request)
     {
-        DB::enableQueryLog();
-
         $moderate_events = collect([]);
         if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
             $moderate_events = Party::withAll()
@@ -92,11 +90,9 @@ class PartyController extends Controller
 
         $past_events = Party::withAll()
         ->usersPastEvents([
-          Auth::id()
-        ])->get();
-
-
-        $log = DB::getQueryLog();
+            auth()->id()
+        ])
+        ->get();
 
         return view('events.index', [
             'moderate_events' => $moderate_events,
