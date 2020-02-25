@@ -45,8 +45,7 @@
             @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false])
 
           {{-- Host/ Fixer/ All Others with 1 group and upcoming events --}}
-          @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Restarter']) && $user_groups->count() == 1 && $user_upcoming_events->count() >= 1)
-
+          @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Administrator', 'Restarter']) && $user_groups->count() >= 1 && $user_upcoming_events->count() >= 1)
             @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true])
 
           {{-- Anyone who hasn’t followed a group --}}

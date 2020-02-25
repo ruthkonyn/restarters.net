@@ -114,11 +114,27 @@
             @endif
           </div>
 
-          @if( ! $upcoming_events->isEmpty() )
+          @if( ! $upcoming_events->isEmpty())
             <div class="table-responsive mb-0 mt-auto">
               <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @foreach ($upcoming_events as $event)
+                    @include('partials.tables.row-event-small')
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+
+            <a href="#" class="text-dark text-underlined ml-auto">
+              <u>
+                see all
+              </u>
+            </a>
+          @elseif ( ! $user_upcoming_events->isEmpty())
+            <div class="table-responsive mb-0 mt-auto">
+              <table role="table" class="table table-hover table-border-rows mb-0">
+                <tbody>
+                  @foreach ($user_upcoming_events as $event)
                     @include('partials.tables.row-event-small')
                   @endforeach
                 </tbody>

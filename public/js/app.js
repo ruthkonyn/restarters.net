@@ -30472,7 +30472,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(175);
+module.exports = __webpack_require__(178);
 
 
 /***/ }),
@@ -32088,6 +32088,8 @@ $(document).on("click", "#btn-copy", function () {
 
   alert("Copied the link: " + $copy_link);
 });
+
+__webpack_require__(175);
 
 /***/ }),
 /* 139 */
@@ -94347,6 +94349,101 @@ function isUndefined(arg) {
 
 /***/ }),
 /* 175 */
+/***/ (function(module, exports, __webpack_require__) {
+
+$('.slick-your-groups').slick({
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  dots: true,
+  centerMode: true,
+  focusOnSelect: true,
+  arrows: false,
+  infinite: true,
+  centerPadding: '25'
+});
+
+$(document).ready(function () {
+  __webpack_require__(176);
+  __webpack_require__(177);
+
+  // Change controller for collapse text
+  $('.collapse-plus-and-minus-controller').click(function () {
+    $(this).text(function (i, old) {
+      return old == $(this).attr('data-close-text') ? $(this).attr('data-open-text') : $(this).attr('data-close-text');
+    });
+  });
+
+  // Initialize tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+  $('.redirectToIntended').click(function () {
+    $prefix = $(this).attr('data-initial-url');
+
+    location.href = $prefix + $('.group_discourse_slug').val();
+  });
+});
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports) {
+
+$('.entireRowClickable').click(function () {
+  window.location = $(this).find('a').attr('href');
+}).hover(function () {
+  $(this).toggleClass('hoverablePointer');
+});
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports) {
+
+function searchEventsByGroup() {
+  $group_id = $(".change-group :selected").val();
+
+  if ($group_id == null) {
+    return false;
+  }
+
+  $.ajax({
+    headers: {
+      'X-CSRF-TOKEN': $("input[name='_token']").val()
+    },
+    type: 'GET',
+    url: '/api/events/' + $group_id,
+    datatype: 'json',
+    success: function success(response) {
+      $('.change-events option').remove();
+      $events = JSON.parse(response.events);
+
+      $.each($events, function ($event_id, $event_name) {
+        var data = {
+          id: $event_id,
+          text: $event_name
+        };
+
+        var newOption = new Option(data.text, data.id, false, false);
+        $('.change-events').append(newOption).trigger('change');
+      });
+
+      console.log('Success: Found ' + $('.change-events option').length + ' events.');
+    }
+  });
+}
+
+$(document).on('change', '.change-group', function () {
+  searchEventsByGroup();
+});
+
+$(document).on('change', '.change-events', function () {
+  $('.change-event-url').attr('href', '/party/view/' + $(this).val());
+});
+
+searchEventsByGroup();
+
+/***/ }),
+/* 178 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

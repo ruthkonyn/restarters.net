@@ -1703,3 +1703,5 @@ function initAutocomplete() {
 
     alert("Copied the link: " + $copy_link);
   });
+
+  require('./changes');

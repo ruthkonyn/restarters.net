@@ -235,6 +235,8 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
 
+    // Auth API routes
+    Route::get('/api/events/{group}/', 'API\EventController');
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');

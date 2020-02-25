@@ -57,7 +57,7 @@ class notificationController extends Controller
         // 10 Minutes
         setcookie('has_cookie_notifications_set', true, time() + (60 * 10), url('/'));
 
-        // Request had failed
+        // Catch: Request had failed
         if ($collection instanceof JsonResponse) {
             return response()->json([
                 'message' => 'failed',
