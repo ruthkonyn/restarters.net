@@ -472,3 +472,15 @@
     }
   }
 }
+
+.table-border-rows {
+  tbody {
+    tr {
+      border-top: 1px solid $black;
+
+      &:last-child {
+        border-bottom: 1px solid $black;
+      }
+    }
+  }
+}

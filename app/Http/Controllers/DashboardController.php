@@ -145,23 +145,23 @@ class DashboardController extends Controller
 
     public function getDiscourseHotTopics()
     {
-
         /**
          * Query Discourse API for current logged in user
          * This retrieves all categories from Discourse
          */
         if (Cache::has('talk_categories_'.Auth::user()->username)) {
-            $talk_categories = Cache::get('talk_categories_'.Auth::user()->username);
+          $talk_categories = Cache::get('talk_categories_'.Auth::user()->username);
         } else {
             $talk_categories = [];
             $talk_categories_json = FixometerHelper::discourseAPICall('site.json', [
-                // 'offset' => '60',
                 'api_username' => env('DISCOURSE_APIUSER'), // Uses default API user to retrieve all categories
             ], true);
+
             if (is_object($talk_categories_json) && isset($talk_categories_json->categories)) {
                 foreach ($talk_categories_json->categories as $category) {
                     $talk_categories[$category->id] = $category;
                 }
+
                 Cache::put('talk_categories_'.Auth::user()->username, $talk_categories, 60 * 24);
             }
         }
@@ -178,10 +178,12 @@ class DashboardController extends Controller
                 // 'offset' => '60',
                 'api_username' => Auth::user()->username,
             ], true);
-            if (is_object($talk_hot_topics_json) && isset($talk_hot_topics_json->topic_list->topics)) {
 
+            if (is_object($talk_hot_topics_json) && isset($talk_hot_topics_json->topic_list->topics)) {
                 $users = collect($talk_hot_topics_json->users);
+
                 $talk_hot_topics = $talk_hot_topics_json->topic_list->topics;
+
                 foreach ($talk_hot_topics as $talk_topic) {
                   $talk_topic->friendly_date = $this->formatCarbonDate($talk_topic->last_posted_at);
                   foreach ($talk_topic->posters as $poster) {
@@ -190,6 +192,8 @@ class DashboardController extends Controller
                     }
                   }
                 }
+
+                $talk_hot_topics = collect($talk_hot_topics)->sortByDesc('last_posted_at');
                 Cache::put('talk_hot_topics_'.Auth::user()->username, $talk_hot_topics, 60);
             }
         }
@@ -215,7 +219,7 @@ class DashboardController extends Controller
         }
 
         if ($now->diffInHours($date) <= 24) {
-            return $date->format('H').'h';
+            return $date->format('G').'h';
         }
 
         if ($now->diffInDays($date) <= 7) {
