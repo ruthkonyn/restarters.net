@@ -14,7 +14,6 @@ $('.slick-your-groups').slick({
  });
 
 $(document).ready(function() {
-
   require('./components/dropdown.js');
   require('./components/table.js');
   require('./components/populate-events-select.js');
