@@ -15119,21 +15119,37 @@ label.form-check-label {
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice {
-  background-color: #0394a6;
-  color: #fff;
+  background-color: #fff;
+  color: #000;
   font-size: 14px;
   padding: 5px 12px 5px 10px;
-  border: 0 none;
-  border-bottom: 3px solid #155e67;
+  border: 2px solid black;
+  border-radius: 0;
   line-height: 35px;
+  -webkit-box-shadow: 6px 6px 0 0 #000;
+          box-shadow: 6px 6px 0 0 #000;
+  margin-bottom: 5px;
+  text-transform: none;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
   float: left;
-  color: #fff;
+  color: #000;
   font-size: 19px;
   font-weight: 400;
   margin: 0 9px 0 0;
+}
+
+.card .form-control {
+  border-radius: 0;
+  border: 1px solid #000 !important;
+}
+
+.card .form-control:focus {
+  border: 3px solid #000 !important;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  font-weight: 700;
 }
 
 .form-control {
