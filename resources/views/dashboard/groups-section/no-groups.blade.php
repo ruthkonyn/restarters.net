@@ -1,5 +1,5 @@
 <div class="card card-info-box mb-30">
-  <div class="card-body">
+  <div class="card-body pt-10">
     <div class="d-flex flex-column flex-lg-row align-items-center">
       <h2 class="mb-0 mr-30">
         <span class="d-none d-lg-block">@lang('dashboard.groups_box')</span>
@@ -21,7 +21,7 @@
       @endif
     </div>
 
-    <hr class="hr-dashed my-25">
+    <hr class="hr-dashed mb-25 mt-10">
 
     @if (! $new_groups->isEmpty())
       <div class="call_to_action d-block d-lg-none mb-25">
@@ -56,7 +56,7 @@
       </div>
 
       <div class="col-12 col-lg-6 d-flex flex-column">
-        <p class="font-weight-bold">
+        <p class="font-weight-bold mb-0">
           Interested in starting a community repair group?
         </p>
 
@@ -64,7 +64,7 @@
           Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region’s Talk group and <a href="#">invite others in your area for a chat!</a> Or view our <a href="#">school programme planning guide.</a> When you’re ready to start a group, <a href="#">get in touch.</a>
         </p>
 
-        <p class="font-weight-bold">
+        <p class="font-weight-bold mb-0">
           Your region’s Talk groups:
         </p>
 
@@ -72,7 +72,7 @@
         {{-- @php $user_groups = collect([]); @endphp --}}
         @if( ! $user_groups->isEmpty() )
           @php $take_3_groups = $user_groups->take(2); @endphp
-          <div class="table-responsive mb-0 mt-auto">
+          <div class="table-responsive mb-0 mt-10">
             <table role="table" class="table table-hover table-border-rows mb-0">
               <tbody>
                 @foreach ($take_3_groups as $group)

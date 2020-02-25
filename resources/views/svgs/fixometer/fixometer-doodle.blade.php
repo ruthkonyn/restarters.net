@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="fixometer_doodle" width="95" height="76" viewBox="0 0 95 76">
+<svg xmlns="http://www.w3.org/2000/svg" id="fixometer_doodle" width="95" height="{{ isset($height) ? $height : 76 }}" viewBox="0 {{ isset($offset_top) ? $offset_top : 0 }} 95 {{ isset($height) ? $height : 76 }}">
     <defs>
         <style>
             .cls-1{fill:#fff;stroke:#707070}.cls-2{clip-path:url(#clip-path)}.cls-3{stroke:#000;stroke-width:.5px}

@@ -8239,6 +8239,7 @@ button.bg-dark:focus {
 .nav-lg-tabs .accordion-tab-header button h5,
 .nav-xl-tabs .accordion-tab-header button h5,
 .card-summary .card-body p,
+.slick-your-groups,
 .my-0 {
   margin-bottom: 0 !important;
 }
@@ -15272,7 +15273,8 @@ label.form-check-label {
 }
 
 .table td img {
-  width: 42px;
+  width: 50px;
+  border: 1px solid #000;
   height: auto;
   display: block;
 }
@@ -16161,6 +16163,11 @@ label.form-check-label {
   border: 1px solid #000;
 }
 
+.card-info-box.card-padding-sm .card-body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
 .card-info-box .card-img-top {
   border: 0;
   border-radius: 0;
@@ -16331,7 +16338,7 @@ label.form-check-label {
   .slick-container {
     position: absolute;
     width: 100%;
-    left: -15px;
+    left: -16px;
   }
 }
 
@@ -16339,7 +16346,11 @@ label.form-check-label {
   opacity: 0.75;
 }
 
-.slick-your-groups .card-group-slick p {
+.slick-your-groups .card-group-slick .card-img-overlay {
+  padding: 25px 30px;
+}
+
+.slick-your-groups .card-group-slick .card-img-overlay p {
   font-family: Asap;
   font-size: 16px;
   font-weight: normal;
@@ -16352,7 +16363,7 @@ label.form-check-label {
   margin-bottom: 0;
 }
 
-.slick-your-groups .card-group-slick p a {
+.slick-your-groups .card-group-slick .card-img-overlay p a {
   color: #fff !important;
   text-decoration: underline;
 }

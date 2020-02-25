@@ -1,5 +1,5 @@
 <div class="card card-info-box mb-30">
-  <div class="card-body">
+  <div class="card-body pt-10">
     <div class="d-flex flex-column flex-lg-row align-items-center">
       <h2 class="mb-0 mr-30">
         <span class="d-none d-lg-block">@lang('dashboard.groups_box')</span>
@@ -21,7 +21,7 @@
       @endif
     </div>
 
-    <hr class="hr-dashed my-25">
+    <hr class="hr-dashed mb-25 mt-10">
 
     @if (! $new_groups->isEmpty() && $show_new_groups_count)
       <div class="call_to_action d-block d-lg-none mb-25">
