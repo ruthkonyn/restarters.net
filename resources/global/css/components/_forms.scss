@@ -117,17 +117,19 @@ label.form-check-label {
     text-transform: uppercase;
 
     .select2-selection__choice {
-      background-color: $brand;
-      color: $white;
+      background-color: $white;
+      color: $black;
       font-size: 14px;
       padding: 5px 12px 5px 10px;
-      border: 0 none;
-      border-bottom: 3px solid #155e67;
+      border: 2px solid black;
+      border-radius: 0;
       line-height: 35px;
+      box-shadow: 6px 6px 0 0 $black;
+      margin-bottom: 5px;
 
       .select2-selection__choice__remove {
         float: left;
-        color: $white;
+        color: $black;
         font-size: 19px;
         font-weight: 400;
         margin: 0 9px 0 0;
