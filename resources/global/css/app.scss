@@ -1,95 +1,24 @@
 // Variables
 @import 'variables';
+
 // global
 @import 'global';
+
 // Bootstrap
 @import "bootstrap/bootstrap";
 
 // Navigation
 @import "components/navigation-bar";
 
-// Helpers
-@import "helpers/box-shadows";
-@import "helpers/hoverable";
-@import "helpers/flex";
-@import "helpers/arbitrary";
-@import "helpers/positioning";
-
 // Components
 @import "components/alerts";
 @import "components/buttons";
 @import "components/forms";
-@import "components/pagination";
+@import "components/modal";
+@import "components/card-talk";
 @import "components/tables";
 @import "components/events-tables";
-@import "components/tabs";
-@import "components/collapse";
-@import "components/popover";
-@import "components/cards";
-@import "components/filter-controls";
 @import "components/custom-check-tick";
-@import "components/row-columns";
-@import "components/tooltip";
-@import "components/modal";
-@import "components/lists";
-
-// Pages
-@import "pages/dashboard";
 
 // Plugins
 @import "plugins/select2";
-@import "~slick-carousel/slick/slick.scss";
-@import "~slick-carousel/slick/slick-theme.scss";
-
-.pagination {
-  li.page-item {
-    &.disabled {
-      display: none;
-    }
-  }
-}
-
-.no-space-mobile {
-  .tab-pane-content {
-    border-left: 1px solid $black;
-    border-right: 1px solid $black;
-    border-bottom: 1px solid $black;
-  }
-
-  .nav-tabs-block {
-    .nav-item {
-      .nav-link {
-        &.active {
-          border-bottom: 0 !important;
-        }
-      }
-    }
-  }
-
-  @include media-breakpoint-down(sm) {
-    position: absolute;
-    left: 0;
-    right: 0;
-
-    .nav-tabs-block {
-      .nav-item {
-        &:first-child {
-          .nav-link {
-            border-left: 0 !important;
-          }
-        }
-
-        &:last-child {
-          .nav-link {
-            border-right: 0 !important;
-          }
-        }
-      }
-    }
-
-    .tab-pane-content {
-      border-left: 0;
-      border-right: 0;
-    }
-  }
-}
