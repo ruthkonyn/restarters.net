@@ -286,6 +286,10 @@ class GroupController extends Controller
 
                 $idGroup = $Group->create($data)->idgroups;
 
+                if ($discourse_slug) {
+                    $Group->createOrUpdateDiscourseGroup();
+                }
+
                 if (is_numeric($idGroup) && $idGroup !== false) {
                     $idGroup = Group::find($idGroup);
                     $lat1 = $idGroup->latitude;
@@ -774,6 +778,10 @@ class GroupController extends Controller
                 echo $response['danger'];
             } else {
                 $response['success'] = 'Group updated!';
+
+                if ($discourse_slug) {
+                    Group::findOrFail($id)->createOrUpdateDiscourseGroup();
+                }
 
                 if (isset($_FILES['file']) && ! empty($_FILES['file']) && $_FILES['file']['error'] != 4) {
                     $existing_image = FixometerHelper::hasImage($id, 'groups', true);

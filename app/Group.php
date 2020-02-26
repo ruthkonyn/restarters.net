@@ -441,5 +441,44 @@ class Group extends Model implements Auditable
         return !is_null($this->wordpress_post_id);
     }
 
+    public function createOrUpdateDiscourseGroup(array $data = null)
+    {
+        $client = app('discourse-client');
 
+        $slug = isset($data['slug']) ? $data['slug'] : $this->discourse_slug;
+
+        if ( ! $slug) {
+            return false;
+        }
+
+        // Attempt retrieve existing Discourse Group
+        $response = $client->request('GET', "/groups/{$slug}.json");
+
+        // Default http method and path
+        $http_method = 'POST';
+        $url = '/admin/groups';
+
+        // Group already exists on Discourse - change conditions to update existing.
+        if ($response->getStatusCode() == 200) {
+            $array = json_decode($response->getBody()->getContents(), true);
+            $discourse_group_id = $array['group']['id'];
+            $http_method = 'PUT';
+            $url = "/groups/{$discourse_group_id}.json";
+        }
+
+        $response = $client->request($http_method, $url, [
+            'form_params' => [
+                'group' => [
+                    'name' => $slug,
+                    'title' => isset($data['name']) ? $data['name'] : $this->name,
+                ],
+            ],
+        ]);
+
+        $response = $client->request('GET', "/groups/{$slug}.json");
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        return (object) $array['group'];
+    }
 }
