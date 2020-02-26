@@ -6,7 +6,7 @@
 
 @section('content')
 
-  <section class="groups">
+  <section class="groups groups-page">
     <div class="container">
 
       @include('partials.alerts')

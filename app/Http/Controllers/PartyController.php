@@ -814,14 +814,15 @@ class PartyController extends Controller
 
               $event->increment('volunteers');
 
-              $flashData = [];
+              $flashData['warning'] = 'You are already part of this event';
+
               if (! Auth::user()->isInGroup($event->theGroup->idgroups)) {
                   $flashData['prompt-follow-group'] = true;
               }
 
               $this->notifyHostsOfRsvp($user_event, $event_id);
 
-              return redirect()->back()->with($flashData);
+              return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
           } catch (\Exception $e) {
               $flashData['danger'] = 'Failed to join this event';
 
