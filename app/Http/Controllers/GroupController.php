@@ -996,7 +996,8 @@ class GroupController extends Controller
 
     public function getJoinGroup($group_id)
     {
-        $user_id = Auth::id();
+        $user = Auth::user();
+        $user_id = $user->id;
         $alreadyInGroup = UserGroups::where('group', $group_id)
         ->where('user', $user_id)
         ->where('status', 1)
@@ -1017,8 +1018,14 @@ class GroupController extends Controller
                 'role' => 4,
             ]);
 
+
             // A new User has joined your group
             $group = Group::find($group_id);
+
+            if ($group->discourse_slug && $user->username) {
+                $group->addUsersToDiscourseGroup($user->username);
+            }
+
             $groupHostLinks = UserGroups::where('group', $group->idgroups)->where('role', 3)->get();
 
             foreach ($groupHostLinks as $groupHostLink) {

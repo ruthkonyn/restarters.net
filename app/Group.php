@@ -441,6 +441,10 @@ class Group extends Model implements Auditable
         return !is_null($this->wordpress_post_id);
     }
 
+    /**
+     * @author Christopher Kelker 26/02/2020
+     * @param  array $data - if null then check current \App\Group object
+     */
     public function createOrUpdateDiscourseGroup(array $data = null)
     {
         $client = app('discourse-client');
@@ -480,5 +484,48 @@ class Group extends Model implements Auditable
         $array = json_decode($response->getBody()->getContents(), true);
 
         return (object) $array['group'];
+    }
+
+    /**
+     * @author Christopher Kelker 26/02/2020
+     * @param  string/array $usernames - accept a string as 1 or array as many.
+     */
+    public function addUsersToDiscourseGroup($usernames)
+    {
+        $client = app('discourse-client');
+
+        if (! is_array($usernames)) {
+            $usernames = explode(',', $usernames);
+        }
+
+        $slug = $this->discourse_slug;
+
+        if ( ! $slug) {
+            return false;
+        }
+
+        // Attempt retrieve existing Discourse Group
+        $response = $client->request('GET', "/groups/{$slug}.json");
+
+        if ($response->getStatusCode() != 200) {
+            return false;
+        }
+
+        $array = json_decode($response->getBody()->getContents(), true);
+        $discourse_group_id = $array['group']['id'];
+
+        $response = $client->request(
+            'PUT',
+            "/groups/{$discourse_group_id}/members.json",
+            [
+                'form_params' => [
+                    'usernames' => implode(',', $usernames),
+                ],
+            ]
+        );
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        return (object) $array;
     }
 }
