@@ -498,14 +498,12 @@ class Group extends Model implements Auditable
             $usernames = explode(',', $usernames);
         }
 
-        $slug = $this->discourse_slug;
-
-        if ( ! $slug) {
+        if ( ! $this->discourse_slug) {
             return false;
         }
 
         // Attempt retrieve existing Discourse Group
-        $response = $client->request('GET', "/groups/{$slug}.json");
+        $response = $client->request('GET', "/groups/{$this->discourse_slug}.json");
 
         if ($response->getStatusCode() != 200) {
             return false;

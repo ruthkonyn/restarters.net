@@ -1022,7 +1022,12 @@ class GroupController extends Controller
             // A new User has joined your group
             $group = Group::find($group_id);
 
-            if ($group->discourse_slug && $user->username) {
+            if (! $user->username) {
+                $user->generateAndSetUsername();
+                $user->save();
+            }
+
+            if ($group->discourse_slug) {
                 $group->addUsersToDiscourseGroup($user->username);
             }
 

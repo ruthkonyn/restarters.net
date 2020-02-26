@@ -11,6 +11,9 @@
 |
 */
 
+// $group = \App\Group::where('idgroups', 115)->first();
+// dd($group->addUsersToDiscourseGroup('Dean_Claydon'));
+
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');
