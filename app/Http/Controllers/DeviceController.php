@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Notification;
 use View;
-use Illuminate\Http\JsonResponse;
 
 class DeviceController extends Controller
 {
@@ -83,9 +82,7 @@ class DeviceController extends Controller
         $global_impact_data = app('App\Http\Controllers\ApiController')
         ->homepage_data();
 
-        if ($global_impact_data instanceof JsonResponse) {
-            $global_impact_data = $global_impact_data->getData();
-        }
+        $global_impact_data = $global_impact_data->getData();
 
         return view('device.index', [
             'title' => 'Devices',

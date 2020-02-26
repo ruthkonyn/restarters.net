@@ -9,7 +9,6 @@ $('.slick-your-groups').slick({
   centerPadding: '25',
 });
 
-
 $(document).ready(function() {
   require('./components/table.js');
   require('./components/populate-events-select.js');

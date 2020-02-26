@@ -14,10 +14,6 @@ class ApiController extends Controller
 {
     public static function homepage_data()
     {
-        if (Cache::has('homepage_data')) {
-            return Cache::get('homepage_data');
-        }
-
         $result = array();
 
         $Party = new Party;
@@ -58,10 +54,7 @@ class ApiController extends Controller
         $result['weights'] = round($co2Total[0]->total_weights);
         $result['emissions'] = round($co2Total[0]->total_footprints);
 
-        Cache::put('homepage_data', (object) $result, 60);
-
-        return response()
-            ->json($result, 200);
+        return response()->json($result, 200);
     }
 
     public static function partyStats($partyId)

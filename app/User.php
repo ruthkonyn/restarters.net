@@ -4,7 +4,6 @@ namespace App;
 
 use App\Events\UserDeleted;
 use App\UserGroups;
-
 use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;

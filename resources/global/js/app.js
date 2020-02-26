@@ -1,6 +1,3 @@
-// Bootstrap js
-require('../../assets/js/bootstrap');
-
 $(document).ready(function() {
   require('./components/dropdown.js');
   require('./components/ajax-search-discourse-notifications.js');
@@ -30,7 +27,6 @@ $(document).ready(function() {
 
 // Change Bootstrap Pane/Tab view onload where hash is within URL
 window.onload = function() {
-
   var hash = window.location.hash;
 
   if ( $('#formHash').length ) {

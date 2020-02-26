@@ -1,4 +1,4 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/global/js/app.js": "/global/js/app.js",
+    "/global/css/app.css": "/global/css/app.css"
 }
