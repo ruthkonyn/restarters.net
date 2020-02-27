@@ -184,32 +184,13 @@
       </li>
 
       <li>
-        <a href="#" class="@if( ! Auth::user()->unReadNotifications->isEmpty() ) toggle-dropdown-menu @endif">
+        <a href="#" class="toggle-dropdown-menu toggle-notifications-menu">
           @include('svgs/navigation/bell-icon')
-
-          @if( ! Auth::user()->unReadNotifications->isEmpty() )
-            <span class="bell-icon-active"></span>
-          @endif
+          <span class="bell-icon-active d-none"></span>
         </a>
 
-        {{-- TODO: bell --}}
-        @if( ! Auth::user()->unReadNotifications->isEmpty() )
-          @php $notifications = Auth::user()->unReadNotifications->sortBy('created_at')->take(10); @endphp
-          <ul class="dropdown-menu-items">
-            @foreach ($notifications as $notification)
-              <li class="notifcation-text">
-                <form action="{{ route('notifications.update', ['id' => $notification->id]) }}" method="POST" id="readnotification-{{ $notification->id }}">
-                  @csrf
-                   {{ method_field('PUT') }}
-                </form>
-
-                <a href="javascript:{}" onclick="document.getElementById('readnotification-{{ $notification->id }}').submit(); return false;">
-                  {{ $notification->data['title'] }}
-                </a>
-              </li>
-            @endforeach
-          </ul>
-        @endif
+        <ul class="dropdown-menu-items notification-menu-items d-none">
+        </ul>
       </li>
 
       <li>
@@ -268,7 +249,6 @@
               </a>
             </li>
 
-            {{-- TODO: Check this works --}}
             @if ( FixometerHelper::hasPermission('verify-translation-access') )
               <li>
                 <a href="{{ url('translations') }}">

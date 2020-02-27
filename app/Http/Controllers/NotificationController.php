@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
-use JavaScript;
 use Cookie;
 
 class NotificationController extends Controller
@@ -16,21 +15,20 @@ class NotificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('update');
+        $this->middleware('auth');
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $notification_id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function __invoke($notification_id)
     {
         $notification = Auth::user()
         ->unreadNotifications
-        ->where('id', $id)
+        ->where('id', $notification_id)
         ->first();
 
         abort_if( ! $notification, 404);

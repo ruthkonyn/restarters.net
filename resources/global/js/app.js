@@ -1,3 +1,8 @@
+import jquery from 'jquery';
+window.$ = window.jQuery=jquery;
+
+window.bootstrap = require('bootstrap');
+
 $(document).ready(function() {
   require('./components/dropdown.js');
   require('./components/ajax-search-discourse-notifications.js');

@@ -2,27 +2,18 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = '/notifications/discourse/';
-
-  if (user != 'undefined') {
-    $url = $url + user.username + '/' + user.id;
-  }
+  $url = 'https://restarters.test/discourse/notifications/';
 
   $.ajax({
     headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val()
+      'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
     type: 'GET',
     url: $url,
     datatype: 'json',
     success: function(response) {
       console.log('Success: connected to Discourse.');
-
-      if (response.message == 'cookies_set') {
-        console.log('Success: notification cookie is currently set.');
-
-        return false;
-      }
 
       // Response failed
       if (response.message == 'failed') {
@@ -31,10 +22,21 @@ function ajaxSearchNotifications() {
       }
 
       // If notifications exist then we can create a cookie
-      var $notifications = JSON.parse(response.notifications);
+      var $notifications = response.notifications;
 
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
+
+        $('.notification-menu-items').removeClass('d-none');
+        $('.toggle-notifications-menu .bell-icon-active').removeClass('d-none');
+
+        $.each($notifications, function(index, $notification) {
+          $('.notification-menu-items').append(
+            $('<li>').append(
+              $('<a>').attr('href','/notifications/' + $notification.id).text($notification.data.title)
+            ).attr('class', 'notifcation-text')
+          );
+        });
       }
     },
   });

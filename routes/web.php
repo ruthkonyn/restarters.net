@@ -11,8 +11,9 @@
 |
 */
 
-// $group = \App\Group::where('idgroups', 115)->first();
-// dd($group->addUsersToDiscourseGroup('Dean_Claydon'));
+Route::get('/header', function () {
+  return view('layouts/global_header');
+});
 
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
@@ -284,9 +285,8 @@ Route::get('markAsRead/{id}', function ($id) {
     return  redirect()->back();
 })->name('markAsRead');
 
-Route::resource('notifications', 'NotificationController')->only([
-    'update'
-]);
+Route::get('/notifications/{notification_id}/', 'NotificationController');
+Route::get('/discourse/notifications', 'DiscourseNotificationController');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
