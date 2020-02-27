@@ -22,6 +22,10 @@
 @import "components/tables";
 @import "components/events-tables";
 @import "components/custom-check-tick";
+@import "components/lists";
 
 // Plugins
 @import "plugins/select2";
+
+// Resolve styling from chameleon theme on wiki
+@import "wiki";

@@ -1,0 +1,95 @@
+.mw-body {
+  padding: 0;
+}
+
+.mw-parser-output {
+  counter-reset: chapter 0 section 0;
+
+  h2 {
+    padding: 0;
+    margin: 0;
+    border-bottom: 0;
+
+    span {
+      font-family: Asap;
+      font-size: 28px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.14;
+      letter-spacing: normal;
+      text-align: left;
+      color: $black;
+    }
+  }
+
+  h3 {
+    line-height: 0;
+    padding: 0;
+    margin-bottom: 5px;
+
+    span {
+      font-family: Asap;
+      font-size: 18px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.44;
+      letter-spacing: normal;
+      text-align: left;
+      color: $black;
+    }
+  }
+
+  & > ul {
+    @extend .list-doodle;
+
+    margin-left: 90px; // Override
+    margin-bottom: 25px;
+
+    li {
+      a {
+        text-decoration: underline !important;
+        color: $black !important;
+      }
+    }
+  }
+
+  & > h2 {
+    counter-reset: section 0;
+    counter-increment: chapter;
+  }
+
+  & > h3 {
+    counter-increment: section;
+  }
+
+  h2 {
+    span:first-child {
+      &::before {
+        content: counter(chapter);
+
+        width: 50px;
+        height: 50px;
+        background: $black;
+        color: $white;
+        text-align: center;
+        font-size: 36px;
+        display: inline-block;
+        padding: 4px;
+        margin-right: 12px;
+      }
+    }
+  }
+
+  h3 {
+    span:first-child {
+      &::before {
+        content: counter(chapter)"." counter(section)" ";
+        margin: 0;
+        display: inline-block;
+        margin-right: 30px;
+      }
+    }
+  }
+}
