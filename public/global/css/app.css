@@ -14747,7 +14747,6 @@ a.form-text-corrected:focus {
   float: right;
   list-style: none;
   background-color: #000;
-  background-clip: padding-box;
   padding: 27px 30px;
   float: left;
   right: 0;
