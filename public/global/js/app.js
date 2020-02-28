@@ -60,162 +60,11 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(1);
-module.exports = __webpack_require__(4);
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-
-window.$ = window.jQuery = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a;
-
-window.bootstrap = __webpack_require__(16);
-
-$(document).ready(function () {
-  __webpack_require__(2);
-  __webpack_require__(3);
-
-  console.log('Global js ready!');
-
-  // Keep hash within URL when toggling between Bootstrap Panes/Tabs
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    window.location.hash = $(this).attr('href');
-  });
-
-  $("form[id$='-search']").submit(function (e) {
-    if ($('#formHash').length) {
-      $('#formHash').val(window.location.hash);
-    } else {
-      $(this).append($('<input>', {
-        type: 'hidden',
-        id: 'formHash',
-        name: 'formHash',
-        val: window.location.hash
-      }));
-    }
-  });
-});
-
-// Change Bootstrap Pane/Tab view onload where hash is within URL
-window.onload = function () {
-  var hash = window.location.hash;
-
-  if ($('#formHash').length) {
-    var hash = $('#formHash').val();
-  }
-
-  if (hash != '' || hash != undefined) {
-    var $element = $('a[href="' + hash + '"]');
-    if ($element.length == 1) {
-      $element.tab('show');
-    }
-  }
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-$('.toggle-dropdown-menu').click(function () {
-
-  // If item is already active then close all.
-  if ($(this).hasClass('dropdown-active')) {
-    $('.toggle-dropdown-menu').each(function () {
-      $(this).removeClass('dropdown-active');
-      $(this).parents().children('.dropdown-menu-items').hide();
-    });
-
-    return false;
-  }
-
-  // Close all existing items except current.
-  $('.toggle-dropdown-menu').not(this).each(function () {
-    $(this).removeClass('dropdown-active');
-    $(this).parents().children('.dropdown-menu-items').hide();
-  });
-
-  // Show items.
-  $(this).toggleClass('dropdown-active');
-  $(this).parents().children('.dropdown-menu-items').toggle();
-});
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-// API call to current site - check for notifications
-function ajaxSearchNotifications() {
-  // $base_url = window.location.host;
-
-  $url = 'https://restarters.test/discourse/notifications/';
-
-  $.ajax({
-    headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    type: 'GET',
-    url: $url,
-    datatype: 'json',
-    success: function success(response) {
-      console.log('Success: connected to Discourse.');
-
-      // Response failed
-      if (response.message == 'failed') {
-        console.log('Success: failed to find any new notifications.');
-        return false;
-      }
-
-      // If notifications exist then we can create a cookie
-      var $notifications = response.notifications;
-
-      if ($notifications.length > 0) {
-        console.log('Success: notifications found on Discourse.');
-
-        $('.notification-menu-items').removeClass('d-none');
-        $('.toggle-notifications-menu .bell-icon-active').removeClass('d-none');
-
-        $.each($notifications, function (index, $notification) {
-          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
-        });
-      }
-    }
-  });
-}
-
-ajaxSearchNotifications();
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10820,7 +10669,69 @@ return jQuery;
 
 
 /***/ }),
-/* 16 */
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(2);
+module.exports = __webpack_require__(8);
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+
+window.$ = window.jQuery = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a;
+
+window.bootstrap = __webpack_require__(3);
+
+$(document).ready(function () {
+  __webpack_require__(6);
+  __webpack_require__(7);
+
+  console.log('Global js ready!');
+
+  // Keep hash within URL when toggling between Bootstrap Panes/Tabs
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    window.location.hash = $(this).attr('href');
+  });
+
+  $("form[id$='-search']").submit(function (e) {
+    if ($('#formHash').length) {
+      $('#formHash').val(window.location.hash);
+    } else {
+      $(this).append($('<input>', {
+        type: 'hidden',
+        id: 'formHash',
+        name: 'formHash',
+        val: window.location.hash
+      }));
+    }
+  });
+});
+
+// Change Bootstrap Pane/Tab view onload where hash is within URL
+window.onload = function () {
+  var hash = window.location.hash;
+
+  if ($('#formHash').length) {
+    var hash = $('#formHash').val();
+  }
+
+  if (hash != '' || hash != undefined) {
+    var $element = $('a[href="' + hash + '"]');
+    if ($element.length == 1) {
+      $element.tab('show');
+    }
+  }
+};
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -10829,7 +10740,7 @@ return jQuery;
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(15), __webpack_require__(17)) :
+   true ? factory(exports, __webpack_require__(0), __webpack_require__(4)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
 }(this, (function (exports, $, Popper) { 'use strict';
@@ -15347,7 +15258,7 @@ return jQuery;
 
 
 /***/ }),
-/* 17 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17885,10 +17796,10 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(5)))
 
 /***/ }),
-/* 18 */
+/* 5 */
 /***/ (function(module, exports) {
 
 var g;
@@ -17913,6 +17824,85 @@ try {
 
 module.exports = g;
 
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+$('.toggle-dropdown-menu').click(function () {
+
+  // If item is already active then close all.
+  if ($(this).hasClass('dropdown-active')) {
+    $('.toggle-dropdown-menu').each(function () {
+      $(this).removeClass('dropdown-active');
+      $(this).parents().children('.dropdown-menu-items').hide();
+    });
+
+    return false;
+  }
+
+  // Close all existing items except current.
+  $('.toggle-dropdown-menu').not(this).each(function () {
+    $(this).removeClass('dropdown-active');
+    $(this).parents().children('.dropdown-menu-items').hide();
+  });
+
+  // Show items.
+  $(this).toggleClass('dropdown-active');
+  $(this).parents().children('.dropdown-menu-items').toggle();
+});
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+// API call to current site - check for notifications
+function ajaxSearchNotifications() {
+  // $base_url = window.location.host;
+
+  $url = 'https://restarters.test/discourse/notifications/';
+
+  $.ajax({
+    headers: {
+      'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    type: 'GET',
+    url: $url,
+    datatype: 'json',
+    success: function success(response) {
+      console.log('Success: connected to Discourse.');
+
+      // Response failed
+      if (response.message == 'failed') {
+        console.log('Success: failed to find any new notifications.');
+        return false;
+      }
+
+      // If notifications exist then we can create a cookie
+      var $notifications = response.notifications;
+
+      if ($notifications.length > 0) {
+        console.log('Success: notifications found on Discourse.');
+
+        $('.notification-menu-items').removeClass('d-none');
+        $('.toggle-notifications-menu .bell-icon-active').removeClass('d-none');
+
+        $.each($notifications, function (index, $notification) {
+          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
+        });
+      }
+    }
+  });
+}
+
+ajaxSearchNotifications();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

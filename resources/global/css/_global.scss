@@ -5,6 +5,10 @@ html {
   font-size: 18px;
 }
 
+body {
+  padding-bottom: 80px;
+}
+
 @mixin font-default {
   font-family: $font-family-third;
   font-weight: 700 !important;

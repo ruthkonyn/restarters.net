@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/header', function () {
-  return view('layouts/global_header');
-});
-
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');

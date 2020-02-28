@@ -7,6 +7,10 @@ html {
   font-size: 18px;
 }
 
+body {
+  padding-bottom: 80px;
+}
+
 h1 {
   font-family: "Asap", sans-serif;
   font-weight: 700 !important;
@@ -3405,7 +3409,15 @@ textarea.form-control.is-invalid {
 }
 
 .btn-group > .btn,
-.btn-group-vertical > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group > button,
+.nav-md-tabs .accordion-tab-header .btn-group > button,
+.nav-lg-tabs .accordion-tab-header .btn-group > button,
+.nav-xl-tabs .accordion-tab-header .btn-group > button,
+.btn-group-vertical > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button {
   position: relative;
   -webkit-box-flex: 1;
       -ms-flex: 1 1 auto;
@@ -3413,16 +3425,48 @@ textarea.form-control.is-invalid {
 }
 
 .btn-group > .btn:hover,
-.btn-group-vertical > .btn:hover {
+.nav-sm-tabs .accordion-tab-header .btn-group > button:hover,
+.nav-md-tabs .accordion-tab-header .btn-group > button:hover,
+.nav-lg-tabs .accordion-tab-header .btn-group > button:hover,
+.nav-xl-tabs .accordion-tab-header .btn-group > button:hover,
+.btn-group-vertical > .btn:hover,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:hover,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:hover,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:hover,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:hover {
   z-index: 1;
 }
 
 .btn-group > .btn:focus,
+.nav-sm-tabs .accordion-tab-header .btn-group > button:focus,
+.nav-md-tabs .accordion-tab-header .btn-group > button:focus,
+.nav-lg-tabs .accordion-tab-header .btn-group > button:focus,
+.nav-xl-tabs .accordion-tab-header .btn-group > button:focus,
 .btn-group > .btn:active,
+.nav-sm-tabs .accordion-tab-header .btn-group > button:active,
+.nav-md-tabs .accordion-tab-header .btn-group > button:active,
+.nav-lg-tabs .accordion-tab-header .btn-group > button:active,
+.nav-xl-tabs .accordion-tab-header .btn-group > button:active,
 .btn-group > .btn.active,
+.nav-sm-tabs .accordion-tab-header .btn-group > button.active,
+.nav-md-tabs .accordion-tab-header .btn-group > button.active,
+.nav-lg-tabs .accordion-tab-header .btn-group > button.active,
+.nav-xl-tabs .accordion-tab-header .btn-group > button.active,
 .btn-group-vertical > .btn:focus,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:focus,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:focus,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:focus,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:focus,
 .btn-group-vertical > .btn:active,
-.btn-group-vertical > .btn.active {
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:active,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:active,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:active,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:active,
+.btn-group-vertical > .btn.active,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button.active,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button.active,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button.active,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button.active {
   z-index: 1;
 }
 
@@ -3442,18 +3486,38 @@ textarea.form-control.is-invalid {
 }
 
 .btn-group > .btn:not(:first-child),
+.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-md-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:first-child),
 .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
 
 .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
-.btn-group > .btn-group:not(:last-child) > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
+.nav-md-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
+.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
+.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
+.btn-group > .btn-group:not(:last-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
+.nav-md-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
+.nav-lg-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
+.nav-xl-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .btn-group > .btn:not(:first-child),
-.btn-group > .btn-group:not(:first-child) > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-md-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:first-child),
+.btn-group > .btn-group:not(:first-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
+.nav-md-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
+.nav-lg-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
+.nav-xl-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -3474,13 +3538,21 @@ textarea.form-control.is-invalid {
 }
 
 .btn-sm + .dropdown-toggle-split,
-.btn-group-sm > .btn + .dropdown-toggle-split {
+.btn-group-sm > .btn + .dropdown-toggle-split,
+.nav-sm-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
+.nav-md-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
+.nav-lg-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
+.nav-xl-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
 
 .btn-lg + .dropdown-toggle-split,
-.btn-group-lg > .btn + .dropdown-toggle-split {
+.btn-group-lg > .btn + .dropdown-toggle-split,
+.nav-sm-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
+.nav-md-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
+.nav-lg-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
+.nav-xl-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
@@ -3499,36 +3571,84 @@ textarea.form-control.is-invalid {
 }
 
 .btn-group-vertical > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button,
 .btn-group-vertical > .btn-group {
   width: 100%;
 }
 
 .btn-group-vertical > .btn:not(:first-child),
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
 .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
 
 .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle),
-.btn-group-vertical > .btn-group:not(:last-child) > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
+.btn-group-vertical > .btn-group:not(:last-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
 .btn-group-vertical > .btn:not(:first-child),
-.btn-group-vertical > .btn-group:not(:first-child) > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
+.btn-group-vertical > .btn-group:not(:first-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
+.nav-md-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
 .btn-group-toggle > .btn,
-.btn-group-toggle > .btn-group > .btn {
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button,
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button,
+.btn-group-toggle > .btn-group > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button {
   margin-bottom: 0;
 }
 
 .btn-group-toggle > .btn input[type="radio"],
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
 .btn-group-toggle > .btn input[type="checkbox"],
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
 .btn-group-toggle > .btn-group > .btn input[type="radio"],
-.btn-group-toggle > .btn-group > .btn input[type="checkbox"] {
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
+.btn-group-toggle > .btn-group > .btn input[type="checkbox"],
+.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
+.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
+.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
+.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"] {
   position: absolute;
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
@@ -3624,24 +3744,136 @@ textarea.form-control.is-invalid {
 }
 
 .input-group-prepend .btn,
-.input-group-append .btn {
+.input-group-prepend .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend button,
+.input-group-prepend .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .input-group-prepend button,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend button,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend button,
+.input-group-append .btn,
+.input-group-append .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .input-group-append button,
+.input-group-append .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .input-group-append button,
+.input-group-append .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .input-group-append button,
+.input-group-append .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .input-group-append button {
   position: relative;
   z-index: 2;
 }
 
 .input-group-prepend .btn:focus,
-.input-group-append .btn:focus {
+.input-group-prepend .nav-sm-tabs .accordion-tab-header button:focus,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend button:focus,
+.input-group-prepend .nav-md-tabs .accordion-tab-header button:focus,
+.nav-md-tabs .accordion-tab-header .input-group-prepend button:focus,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header button:focus,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend button:focus,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header button:focus,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend button:focus,
+.input-group-append .btn:focus,
+.input-group-append .nav-sm-tabs .accordion-tab-header button:focus,
+.nav-sm-tabs .accordion-tab-header .input-group-append button:focus,
+.input-group-append .nav-md-tabs .accordion-tab-header button:focus,
+.nav-md-tabs .accordion-tab-header .input-group-append button:focus,
+.input-group-append .nav-lg-tabs .accordion-tab-header button:focus,
+.nav-lg-tabs .accordion-tab-header .input-group-append button:focus,
+.input-group-append .nav-xl-tabs .accordion-tab-header button:focus,
+.nav-xl-tabs .accordion-tab-header .input-group-append button:focus {
   z-index: 3;
 }
 
 .input-group-prepend .btn + .btn,
+.input-group-prepend .nav-sm-tabs .accordion-tab-header button + .btn,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend button + .btn,
+.input-group-prepend .nav-md-tabs .accordion-tab-header button + .btn,
+.nav-md-tabs .accordion-tab-header .input-group-prepend button + .btn,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header button + .btn,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend button + .btn,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header button + .btn,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend button + .btn,
+.input-group-prepend .nav-sm-tabs .accordion-tab-header .btn + button,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend .btn + button,
+.input-group-prepend .nav-sm-tabs .accordion-tab-header button + button,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend button + button,
+.input-group-prepend .nav-md-tabs .accordion-tab-header .btn + button,
+.nav-md-tabs .accordion-tab-header .input-group-prepend .btn + button,
+.input-group-prepend .nav-md-tabs .accordion-tab-header button + button,
+.nav-md-tabs .accordion-tab-header .input-group-prepend button + button,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header .btn + button,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend .btn + button,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header button + button,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend button + button,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header .btn + button,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend .btn + button,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header button + button,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend button + button,
 .input-group-prepend .btn + .input-group-text,
+.input-group-prepend .nav-sm-tabs .accordion-tab-header button + .input-group-text,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
+.input-group-prepend .nav-md-tabs .accordion-tab-header button + .input-group-text,
+.nav-md-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header button + .input-group-text,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header button + .input-group-text,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
 .input-group-prepend .input-group-text + .input-group-text,
 .input-group-prepend .input-group-text + .btn,
+.input-group-prepend .nav-sm-tabs .accordion-tab-header .input-group-text + button,
+.nav-sm-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
+.input-group-prepend .nav-md-tabs .accordion-tab-header .input-group-text + button,
+.nav-md-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
+.input-group-prepend .nav-lg-tabs .accordion-tab-header .input-group-text + button,
+.nav-lg-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
+.input-group-prepend .nav-xl-tabs .accordion-tab-header .input-group-text + button,
+.nav-xl-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
 .input-group-append .btn + .btn,
+.input-group-append .nav-sm-tabs .accordion-tab-header button + .btn,
+.nav-sm-tabs .accordion-tab-header .input-group-append button + .btn,
+.input-group-append .nav-md-tabs .accordion-tab-header button + .btn,
+.nav-md-tabs .accordion-tab-header .input-group-append button + .btn,
+.input-group-append .nav-lg-tabs .accordion-tab-header button + .btn,
+.nav-lg-tabs .accordion-tab-header .input-group-append button + .btn,
+.input-group-append .nav-xl-tabs .accordion-tab-header button + .btn,
+.nav-xl-tabs .accordion-tab-header .input-group-append button + .btn,
+.input-group-append .nav-sm-tabs .accordion-tab-header .btn + button,
+.nav-sm-tabs .accordion-tab-header .input-group-append .btn + button,
+.input-group-append .nav-sm-tabs .accordion-tab-header button + button,
+.nav-sm-tabs .accordion-tab-header .input-group-append button + button,
+.input-group-append .nav-md-tabs .accordion-tab-header .btn + button,
+.nav-md-tabs .accordion-tab-header .input-group-append .btn + button,
+.input-group-append .nav-md-tabs .accordion-tab-header button + button,
+.nav-md-tabs .accordion-tab-header .input-group-append button + button,
+.input-group-append .nav-lg-tabs .accordion-tab-header .btn + button,
+.nav-lg-tabs .accordion-tab-header .input-group-append .btn + button,
+.input-group-append .nav-lg-tabs .accordion-tab-header button + button,
+.nav-lg-tabs .accordion-tab-header .input-group-append button + button,
+.input-group-append .nav-xl-tabs .accordion-tab-header .btn + button,
+.nav-xl-tabs .accordion-tab-header .input-group-append .btn + button,
+.input-group-append .nav-xl-tabs .accordion-tab-header button + button,
+.nav-xl-tabs .accordion-tab-header .input-group-append button + button,
 .input-group-append .btn + .input-group-text,
+.input-group-append .nav-sm-tabs .accordion-tab-header button + .input-group-text,
+.nav-sm-tabs .accordion-tab-header .input-group-append button + .input-group-text,
+.input-group-append .nav-md-tabs .accordion-tab-header button + .input-group-text,
+.nav-md-tabs .accordion-tab-header .input-group-append button + .input-group-text,
+.input-group-append .nav-lg-tabs .accordion-tab-header button + .input-group-text,
+.nav-lg-tabs .accordion-tab-header .input-group-append button + .input-group-text,
+.input-group-append .nav-xl-tabs .accordion-tab-header button + .input-group-text,
+.nav-xl-tabs .accordion-tab-header .input-group-append button + .input-group-text,
 .input-group-append .input-group-text + .input-group-text,
-.input-group-append .input-group-text + .btn {
+.input-group-append .input-group-text + .btn,
+.input-group-append .nav-sm-tabs .accordion-tab-header .input-group-text + button,
+.nav-sm-tabs .accordion-tab-header .input-group-append .input-group-text + button,
+.input-group-append .nav-md-tabs .accordion-tab-header .input-group-text + button,
+.nav-md-tabs .accordion-tab-header .input-group-append .input-group-text + button,
+.input-group-append .nav-lg-tabs .accordion-tab-header .input-group-text + button,
+.nav-lg-tabs .accordion-tab-header .input-group-append .input-group-text + button,
+.input-group-append .nav-xl-tabs .accordion-tab-header .input-group-text + button,
+.nav-xl-tabs .accordion-tab-header .input-group-append .input-group-text + button {
   margin-left: -1px;
 }
 
@@ -3688,7 +3920,15 @@ textarea.form-control.is-invalid {
 .input-group-lg > .input-group-prepend > .input-group-text,
 .input-group-lg > .input-group-append > .input-group-text,
 .input-group-lg > .input-group-prepend > .btn,
-.input-group-lg > .input-group-append > .btn {
+.nav-sm-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
+.nav-md-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
+.nav-lg-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
+.nav-xl-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
+.input-group-lg > .input-group-append > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
+.nav-md-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
+.nav-lg-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
+.nav-xl-tabs .accordion-tab-header .input-group-lg > .input-group-append > button {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   line-height: 1.5;
@@ -3705,7 +3945,15 @@ textarea.form-control.is-invalid {
 .input-group-sm > .input-group-prepend > .input-group-text,
 .input-group-sm > .input-group-append > .input-group-text,
 .input-group-sm > .input-group-prepend > .btn,
-.input-group-sm > .input-group-append > .btn {
+.nav-sm-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
+.nav-md-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
+.nav-lg-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
+.nav-xl-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
+.input-group-sm > .input-group-append > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
+.nav-md-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
+.nav-lg-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
+.nav-xl-tabs .accordion-tab-header .input-group-sm > .input-group-append > button {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -3718,20 +3966,44 @@ textarea.form-control.is-invalid {
 }
 
 .input-group > .input-group-prepend > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
 .input-group > .input-group-prepend > .input-group-text,
 .input-group > .input-group-append:not(:last-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
 .input-group > .input-group-append:not(:last-child) > .input-group-text,
 .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
 .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .input-group > .input-group-append > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append > button,
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-append > button,
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append > button,
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append > button,
 .input-group > .input-group-append > .input-group-text,
 .input-group > .input-group-prepend:not(:first-child) > .btn,
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
 .input-group > .input-group-prepend:not(:first-child) > .input-group-text,
 .input-group > .input-group-prepend:first-child > .btn:not(:first-child),
+.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
+.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
+.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
+.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
 .input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -4636,7 +4908,11 @@ a.badge:focus {
   display: none;
 }
 
-.btn .badge {
+.btn .badge,
+.nav-sm-tabs .accordion-tab-header button .badge,
+.nav-md-tabs .accordion-tab-header button .badge,
+.nav-lg-tabs .accordion-tab-header button .badge,
+.nav-xl-tabs .accordion-tab-header button .badge {
   position: relative;
   top: -1px;
 }
@@ -6468,7 +6744,8 @@ button.bg-dark:focus {
 }
 
 .bg-transparent,
-.card-talk .card-body .card-summary {
+.card-talk .card-body .card-summary,
+.nav-tabs-block .nav-item {
   background-color: transparent !important;
 }
 
@@ -6498,7 +6775,10 @@ button.bg-dark:focus {
 .card-talk,
 .card-talk .card-body,
 .card-talk .card-body .card-summary,
-.sort-column::after {
+.sort-column::after,
+.nav-tabs-block,
+.nav-tabs-block .nav-item,
+.tab-content {
   border: 0 !important;
 }
 
@@ -6597,7 +6877,15 @@ button.bg-dark:focus {
 .rounded-0,
 .alert-success,
 .alert-custom,
-.card-talk {
+.card-talk,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button,
+.nav-tabs-block,
+.nav-tabs-block .nav-item,
+.nav-tabs-block .nav-item .nav-link,
+.tab-content {
   border-radius: 0 !important;
 }
 
@@ -6644,7 +6932,14 @@ button.bg-dark:focus {
 .nav-wrapper .nav-right > li > a,
 .nav-wrapper,
 .card-talk .card-body .avatar-images-list,
-.sort-column {
+.sort-column,
+.nav-tab-summary-section,
+.call_to_action,
+.list-sm-inline,
+.list-md-inline,
+.list-lg-inline,
+.list-xl-inline,
+.footer-links {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6914,7 +7209,9 @@ button.bg-dark:focus {
 .nav-wrapper .nav-right,
 .nav-wrapper,
 .card-talk .card-body .avatar-images-list,
-.sort-column {
+.sort-column,
+.nav-tab-summary-section,
+.call_to_action {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: row !important;
@@ -6923,7 +7220,8 @@ button.bg-dark:focus {
 
 .flex-column,
 .nav-wrapper .nav-left > li > a,
-.nav-wrapper .nav-right > li > a {
+.nav-wrapper .nav-right > li > a,
+.footer-links {
   -webkit-box-orient: vertical !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: column !important;
@@ -7040,7 +7338,9 @@ button.bg-dark:focus {
 .nav-wrapper .nav-right > li,
 .nav-wrapper .nav-left > li > a,
 .nav-wrapper .nav-right > li > a,
-.sort-column {
+.sort-column,
+.nav-tab-summary-section,
+.call_to_action {
   -webkit-box-align: center !important;
       -ms-flex-align: center !important;
           align-items: center !important;
@@ -7119,7 +7419,8 @@ button.bg-dark:focus {
 }
 
 @media (min-width: 576px) {
-  .flex-sm-row {
+  .flex-sm-row,
+  .list-sm-inline {
     -webkit-box-orient: horizontal !important;
     -webkit-box-direction: normal !important;
         -ms-flex-direction: row !important;
@@ -7311,7 +7612,8 @@ button.bg-dark:focus {
 }
 
 @media (min-width: 768px) {
-  .flex-md-row {
+  .flex-md-row,
+  .list-md-inline {
     -webkit-box-orient: horizontal !important;
     -webkit-box-direction: normal !important;
         -ms-flex-direction: row !important;
@@ -7503,7 +7805,8 @@ button.bg-dark:focus {
 }
 
 @media (min-width: 992px) {
-  .flex-lg-row {
+  .flex-lg-row,
+  .list-lg-inline {
     -webkit-box-orient: horizontal !important;
     -webkit-box-direction: normal !important;
         -ms-flex-direction: row !important;
@@ -7695,7 +7998,8 @@ button.bg-dark:focus {
 }
 
 @media (min-width: 1200px) {
-  .flex-xl-row {
+  .flex-xl-row,
+  .list-xl-inline {
     -webkit-box-orient: horizontal !important;
     -webkit-box-direction: normal !important;
         -ms-flex-direction: row !important;
@@ -7966,7 +8270,16 @@ button.bg-dark:focus {
   position: static !important;
 }
 
-.position-relative {
+.position-relative,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header button h5,
+.nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button h5,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button h5,
+.nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button h5,
+.nav-tabs-block .nav-item {
   position: relative !important;
 }
 
@@ -8062,7 +8375,11 @@ button.bg-dark:focus {
   width: 75% !important;
 }
 
-.w-100 {
+.w-100,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button {
   width: 100% !important;
 }
 
@@ -8126,7 +8443,8 @@ button.bg-dark:focus {
   background-color: rgba(0, 0, 0, 0);
 }
 
-.m-0 {
+.m-0,
+.nav-tabs-block .nav-item {
   margin: 0 !important;
 }
 
@@ -8144,6 +8462,10 @@ button.bg-dark:focus {
 .mb-0,
 .nav-wrapper .nav-left,
 .nav-wrapper .nav-right,
+.nav-sm-tabs .accordion-tab-header button h5,
+.nav-md-tabs .accordion-tab-header button h5,
+.nav-lg-tabs .accordion-tab-header button h5,
+.nav-xl-tabs .accordion-tab-header button h5,
 .my-0 {
   margin-bottom: 0 !important;
 }
@@ -8692,7 +9014,8 @@ button.bg-dark:focus {
 }
 
 .pr-15,
-.px-15 {
+.px-15,
+.call_to_action {
   padding-right: 15px !important;
 }
 
@@ -8702,7 +9025,8 @@ button.bg-dark:focus {
 }
 
 .pl-15,
-.px-15 {
+.px-15,
+.call_to_action {
   padding-left: 15px !important;
 }
 
@@ -8754,7 +9078,8 @@ button.bg-dark:focus {
   padding-left: 25px !important;
 }
 
-.p-30 {
+.p-30,
+.nav-tab-summary-section {
   padding: 30px !important;
 }
 
@@ -13920,7 +14245,11 @@ button.bg-dark:focus {
   white-space: nowrap;
 }
 
-.text-left {
+.text-left,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button {
   text-align: left !important;
 }
 
@@ -13928,7 +14257,11 @@ button.bg-dark:focus {
   text-align: right !important;
 }
 
-.text-center {
+.text-center,
+.nav-sm-tabs .accordion-tab-header button h5,
+.nav-md-tabs .accordion-tab-header button h5,
+.nav-lg-tabs .accordion-tab-header button h5,
+.nav-xl-tabs .accordion-tab-header button h5 {
   text-align: center !important;
 }
 
@@ -14027,7 +14360,9 @@ button.bg-dark:focus {
 .text-white,
 .alert-custom a,
 .alert-danger p,
-.td-event-date.td-event-in-progress span {
+.td-event-date.td-event-in-progress span,
+.nav-tabs-block .nav-item,
+.call_to_action {
   color: #fff !important;
 }
 
@@ -14096,7 +14431,11 @@ a.text-light:focus {
 
 .text-dark,
 .alert-custom .close span,
-.form-text-corrected {
+.form-text-corrected,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button {
   color: #343a40 !important;
 }
 
@@ -14544,7 +14883,11 @@ a.form-text-corrected:focus {
   background-color: #f45b69 !important;
 }
 
-.btn {
+.btn,
+.nav-sm-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header button {
   padding: 13px 25px;
   font-size: 1rem;
   line-height: 1;
@@ -14578,7 +14921,11 @@ a.form-text-corrected:focus {
 }
 
 .btn-sm,
-.btn-group-sm > .btn {
+.btn-group-sm > .btn,
+.nav-sm-tabs .accordion-tab-header .btn-group-sm > button,
+.nav-md-tabs .accordion-tab-header .btn-group-sm > button,
+.nav-lg-tabs .accordion-tab-header .btn-group-sm > button,
+.nav-xl-tabs .accordion-tab-header .btn-group-sm > button {
   padding: 0.8em 0.8em;
   font-size: 0.75rem;
   line-height: 1;
@@ -14599,6 +14946,7 @@ a.form-text-corrected:focus {
           box-shadow: 6px 6px 0 0 #000;
   border: solid 1px #000;
   background-color: #fff;
+  background: #fff;
   border-radius: 0;
   font-size: 16px;
   font-weight: bold;
@@ -14688,22 +15036,54 @@ a.form-text-corrected:focus {
   fill: #fff !important;
 }
 
-.btn-group__duo .btn {
+.btn-group__duo .btn,
+.btn-group__duo .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo button,
+.btn-group__duo .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo button {
   padding-right: 10px;
   padding-left: 10px;
 }
 
-.btn-group__duo .dropdown:first-child .btn {
+.btn-group__duo .dropdown:first-child .btn,
+.btn-group__duo .dropdown:first-child .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
+.btn-group__duo .dropdown:first-child .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button {
   border-radius: 0;
   border-right: 1px solid #155e67;
 }
 
-.btn-group__duo .dropdown:last-child .btn {
+.btn-group__duo .dropdown:last-child .btn,
+.btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
+.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
+.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
+.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+.btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
+.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
   border-radius: 0;
 }
 
 @media (max-width: 991.98px) {
-  .btn-group__duo .dropdown:last-child .btn {
+  .btn-group__duo .dropdown:last-child .btn,
+  .btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
+  .nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
+  .nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
+  .nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
+  .btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
+  .nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
     border-radius: 0;
   }
 }
@@ -15843,6 +16223,326 @@ label.form-check-label {
   left: -35px;
 }
 
+.nav-sm-tabs .nav-tabs {
+  display: none;
+}
+
+.nav-sm-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
+.nav-sm-tabs .accordion-tab-header button {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #0394a6;
+  border: 1px solid #000 !important;
+}
+
+.nav-sm-tabs .accordion-tab-header button h5 {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+}
+
+@media (min-width: 576px) {
+  .nav-sm-tabs .nav-tabs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .nav-sm-tabs .accordion-tab-header {
+    display: none;
+  }
+
+  .nav-sm-tabs .collapse-wrapper {
+    display: block;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .nav-sm-tabs .tab-content > .tab-pane {
+    display: block !important;
+    opacity: 1;
+  }
+}
+
+.nav-md-tabs .nav-tabs {
+  display: none;
+}
+
+.nav-md-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
+.nav-md-tabs .accordion-tab-header button {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #0394a6;
+  border: 1px solid #000 !important;
+}
+
+.nav-md-tabs .accordion-tab-header button h5 {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .nav-md-tabs .nav-tabs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .nav-md-tabs .accordion-tab-header {
+    display: none;
+  }
+
+  .nav-md-tabs .collapse-wrapper {
+    display: block;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .nav-md-tabs .tab-content > .tab-pane {
+    display: block !important;
+    opacity: 1;
+  }
+}
+
+.nav-lg-tabs .nav-tabs {
+  display: none;
+}
+
+.nav-lg-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
+.nav-lg-tabs .accordion-tab-header button {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #0394a6;
+  border: 1px solid #000 !important;
+}
+
+.nav-lg-tabs .accordion-tab-header button h5 {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+}
+
+@media (min-width: 992px) {
+  .nav-lg-tabs .nav-tabs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .nav-lg-tabs .accordion-tab-header {
+    display: none;
+  }
+
+  .nav-lg-tabs .collapse-wrapper {
+    display: block;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .nav-lg-tabs .tab-content > .tab-pane {
+    display: block !important;
+    opacity: 1;
+  }
+}
+
+.nav-xl-tabs .nav-tabs {
+  display: none;
+}
+
+.nav-xl-tabs .accordion-tab-header.white {
+  background-color: #fff;
+}
+
+.nav-xl-tabs .accordion-tab-header button {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #0394a6;
+  border: 1px solid #000 !important;
+}
+
+.nav-xl-tabs .accordion-tab-header button h5 {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1200px) {
+  .nav-xl-tabs .nav-tabs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .nav-xl-tabs .accordion-tab-header {
+    display: none;
+  }
+
+  .nav-xl-tabs .collapse-wrapper {
+    display: block;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .nav-xl-tabs .tab-content > .tab-pane {
+    display: block !important;
+    opacity: 1;
+  }
+}
+
+.nav-tabs-block .nav-item {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  text-align: center;
+}
+
+.nav-tabs-block .nav-item .nav-link {
+  border: 1px solid #000;
+  background-color: #0394a6;
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.nav-tabs-block .nav-item .nav-link.active {
+  border-bottom: 1px solid #0394a6;
+}
+
+.nav-tabs-block .nav-item .nav-link.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: black;
+}
+
+.nav-tabs-block .nav-item .nav-link.active {
+  border-bottom: 1px solid #000;
+}
+
+.nav-tabs-block .nav-item:not(:last-child) .nav-link {
+  border-right: 0;
+}
+
+.tab-content .collapse-wrapper .collapse-content {
+  padding: 30px;
+  border: 1px solid #000;
+  background-color: #0394a6;
+  border-top: 1px solid #0394a6;
+}
+
+.tab-content .collapse-wrapper .collapse-content.white {
+  background-color: #fff;
+  border-top: 1px solid #000;
+}
+
+.tab-content .tab-pane .tab-pane-content {
+  background-color: #fff;
+}
+
+.tab-content .tab-pane .tab-pane-content:not(:last-child) .accordion-tab-header button {
+  border-bottom: 0 !important;
+}
+
+.nav-tab-summary-section {
+  border: 1px solid #000;
+  border-top: 1px solid #0394a6;
+  background-color: #0394a6;
+}
+
+.call_to_action {
+  background-color: #000;
+  font-family: Asap;
+  font-size: 18px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: normal;
+  text-align: left;
+  color: #fff;
+}
+
+.no-space-mobile .tab-pane-content {
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
+  border-bottom: 0 !important;
+}
+
+@media (max-width: 575.98px) {
+  .no-space-mobile {
+    position: relative;
+    left: 0;
+    right: 0;
+  }
+
+  .no-space-mobile .nav-tabs-block .nav-item:first-child .nav-link {
+    border-left: 0 !important;
+  }
+
+  .no-space-mobile .nav-tabs-block .nav-item:last-child .nav-link {
+    border-right: 0 !important;
+  }
+
+  .no-space-mobile .tab-pane-content {
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
 .select2-search__field {
   width: 100% !important;
   padding-left: 7px !important;
@@ -15850,6 +16550,19 @@ label.form-check-label {
 
 .mw-body {
   padding: 0;
+}
+
+.toc,
+#toc {
+  display: none;
+}
+
+:target {
+  padding-top: 0 !important;
+}
+
+:target::before {
+  content: none !important;
 }
 
 .mw-parser-output {
@@ -15929,5 +16642,165 @@ label.form-check-label {
   margin: 0;
   display: inline-block;
   margin-right: 30px;
+}
+
+@media (min-width: 576px) {
+  .list-sm-inline div {
+    display: inline-block;
+  }
+
+  .list-sm-inline div:not(:last-of-type) {
+    margin-right: 16px;
+    position: relative;
+  }
+
+  .list-sm-inline div:not(:last-of-type)::after {
+    content: '';
+    display: inline-block;
+    height: 15px;
+    width: 2px;
+    background: black;
+    top: 50%;
+    right: -10px;
+    position: absolute;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 768px) {
+  .list-md-inline div {
+    display: inline-block;
+  }
+
+  .list-md-inline div:not(:last-of-type) {
+    margin-right: 16px;
+    position: relative;
+  }
+
+  .list-md-inline div:not(:last-of-type)::after {
+    content: '';
+    display: inline-block;
+    height: 15px;
+    width: 2px;
+    background: black;
+    top: 50%;
+    right: -10px;
+    position: absolute;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 992px) {
+  .list-lg-inline div {
+    display: inline-block;
+  }
+
+  .list-lg-inline div:not(:last-of-type) {
+    margin-right: 16px;
+    position: relative;
+  }
+
+  .list-lg-inline div:not(:last-of-type)::after {
+    content: '';
+    display: inline-block;
+    height: 15px;
+    width: 2px;
+    background: black;
+    top: 50%;
+    right: -10px;
+    position: absolute;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 1200px) {
+  .list-xl-inline div {
+    display: inline-block;
+  }
+
+  .list-xl-inline div:not(:last-of-type) {
+    margin-right: 16px;
+    position: relative;
+  }
+
+  .list-xl-inline div:not(:last-of-type)::after {
+    content: '';
+    display: inline-block;
+    height: 15px;
+    width: 2px;
+    background: black;
+    top: 50%;
+    right: -10px;
+    position: absolute;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+}
+
+.footer-links div a {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: 1.05px;
+  color: #000;
+}
+
+.footer-description {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.44;
+  letter-spacing: normal;
+  color: #000;
+}
+
+.firstHeading {
+  padding: 0;
+  margin: 0;
+  border: 0 !important;
+}
+
+#p-search #searchform .input-group {
+  height: 50px;
+}
+
+#p-search #searchform .input-group .form-control {
+  border-right: 0 !important;
+  height: 50px;
+}
+
+#p-search #searchform .input-group .form-control:focus + .input-group-append button {
+  border: 3px solid #000;
+}
+
+#p-search #searchform .input-group .input-group-append button {
+  background: white;
+  border-radius: 0;
+  border: 2px solid #000;
+  padding: 20px 25px;
+  border-left: 0 !important;
+}
+
+#p-search #searchform .input-group .input-group-append button::before {
+  content: '';
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-image: url(/images/search_icon.svg?eba94aec2b58dd7610417a73e056ba8f);
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 

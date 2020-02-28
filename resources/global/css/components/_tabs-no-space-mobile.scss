@@ -15,8 +15,8 @@
     }
   }
 
-  @include media-breakpoint-down(sm) {
-    position: absolute;
+  @include media-breakpoint-down(xs) {
+    position: relative;
     left: 0;
     right: 0;
 
