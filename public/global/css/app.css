@@ -16448,6 +16448,8 @@ label.form-check-label {
   text-transform: uppercase;
   padding-top: 18px;
   padding-bottom: 18px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .nav-tabs-block .nav-item .nav-link.active {
@@ -16470,6 +16472,33 @@ label.form-check-label {
 
 .nav-tabs-block .nav-item:not(:last-child) .nav-link {
   border-right: 0;
+}
+
+.nav-tabs-block .nav-item.dropdown .nav-link {
+  background-color: #fff !important;
+  border: 1px solid #000 !important;
+}
+
+.nav-tabs-block .nav-item.dropdown .nav-link::after {
+  content: '';
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  width: 15px;
+  height: 8px;
+  background-image: url(/images/dropdown-arrow-up.svg?fe8917247edccb861690d176b5361105) !important;
+  position: absolute;
+  top: 50%;
+  border: 0;
+  margin-left: 8px;
+  -webkit-transform: rotate(181deg) translateY(50%);
+          transform: rotate(181deg) translateY(50%);
+}
+
+.nav-tabs-block .nav-item.dropdown.show .nav-link::after {
+  -webkit-transform: rotate(0deg) translateY(-50%);
+          transform: rotate(0deg) translateY(-50%);
 }
 
 .tab-content .collapse-wrapper .collapse-content {
@@ -16515,6 +16544,13 @@ label.form-check-label {
   border-left: 1px solid #000;
   border-right: 1px solid #000;
   border-bottom: 1px solid #000;
+}
+
+@media (max-width: 991.98px) {
+  .no-space-mobile .nav-tabs-block .nav-item {
+    -ms-flex-preferred-size: auto;
+        flex-basis: auto;
+  }
 }
 
 .no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
@@ -16801,5 +16837,27 @@ label.form-check-label {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+
+.navbar-tool-link {
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.navbar-tool-link::before {
+  content: '';
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-image: url(/images/edit_icon.svg?7fe39a2f9d06b9415a50b1df9b9bfeb9);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
