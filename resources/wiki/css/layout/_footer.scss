@@ -1,0 +1,28 @@
+.footer-links {
+  @extend .d-flex;
+  @extend .flex-column;
+
+  div {
+    a {
+      font-family: Asap;
+      font-size: 16px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.14;
+      letter-spacing: 1.05px;
+      color: $black;
+    }
+  }
+}
+
+.footer-description {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.44;
+  letter-spacing: normal;
+  color: $black;
+}

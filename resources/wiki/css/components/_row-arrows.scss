@@ -1,0 +1,17 @@
+.row-arrows {
+  p {
+    &::before {
+      content: '';
+      margin-right: 5px;
+      font-size: 14px;
+      height: 14px;
+      width: 23px;
+      color: white;
+      font-weight: bold;
+      background-image: url('../../global/svgs/arrow-right-doodle.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+      display: inline-block;
+    }
+  }
+}
