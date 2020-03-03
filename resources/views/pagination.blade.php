@@ -1,5 +1,5 @@
 @if (isset($paginator) && $paginator->lastPage() > 1)
-  <ul class="pagination" role="navigation">
+  <ul class="pagination mt-0" role="navigation">
     @php
     $onEachSide = isset($onEachSide) ? abs(intval($onEachSide)) : 3 ;
     $from = $paginator->currentPage() - $onEachSide;

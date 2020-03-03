@@ -79,10 +79,20 @@ class DeviceController extends Controller
         ->orderBy('event_date', 'DESC')
         ->first();
 
-        $global_impact_data = app('App\Http\Controllers\ApiController')
-        ->homepage_data();
+        // TODO: Breaks page and causes 500 error.
+        // $global_impact_data = app('App\Http\Controllers\ApiController')
+        // ->homepage_data();
 
-        $global_impact_data = $global_impact_data->getData();
+        // $global_impact_data = $global_impact_data->getData();
+
+        // Loads instantly...
+        $global_impact_data = (object) [
+            'participants' => '16,424',
+            'hours_volunteered' => '29,832',
+            'items_fixed' => '13,453',
+            'waste_prevented' => '19,338',
+            'emissions' => '300568',
+        ];
 
         return view('device.index', [
             'title' => 'Devices',

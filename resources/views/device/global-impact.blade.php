@@ -79,7 +79,7 @@
 
           </div>
 
-          <h3>{{ number_format($impact_data->emissions, 0) }}</h3>
+          <h3>{{ number_format($impact_data->emissions, 0) }} kg</h3>
           <p>CO2 emissinos prevented</p>
         </div>
       </div>
