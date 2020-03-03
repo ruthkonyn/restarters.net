@@ -14307,6 +14307,8 @@ a.text-dark:focus {
 #p-search #searchform .input-group .form-control {
   border-right: 0 !important;
   height: 50px;
+  border: 2px solid #000;
+  border-radius: 0;
 }
 
 #p-search #searchform .input-group .form-control:focus + .input-group-append button {
@@ -14356,6 +14358,31 @@ a.text-dark:focus {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+}
+
+.row-heading h2 {
+  margin-bottom: 25px !important;
+  position: relative;
+}
+
+.row-heading h2 span:first-child::before {
+  content: none !important;
+}
+
+.row-heading h2::after {
+  content: '';
+  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
+  background-repeat: repeat;
+  background-position: left;
+  height: 3px;
+  background-size: 20px 35px;
+  display: inherit;
+  width: 100%;
+  margin-top: 25px;
+}
+
+.row-heading p {
+  margin-bottom: 25px;
 }
 
 .row-arrows p::before {

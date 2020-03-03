@@ -3108,11 +3108,7 @@ textarea.form-control.is-invalid {
   }
 }
 
-.btn,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button {
+.btn {
   display: inline-block;
   font-weight: 400;
   color: #212529;
@@ -3136,50 +3132,26 @@ textarea.form-control.is-invalid {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn,
-  .nav-sm-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header button {
+  .btn {
     -webkit-transition: none;
     transition: none;
   }
 }
 
-.btn:hover,
-.nav-sm-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header button:hover {
+.btn:hover {
   color: #212529;
   text-decoration: none;
 }
 
 .btn:focus,
-.nav-sm-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header button:focus,
-.btn.focus,
-.nav-sm-tabs .accordion-tab-header button.focus,
-.nav-md-tabs .accordion-tab-header button.focus,
-.nav-lg-tabs .accordion-tab-header button.focus,
-.nav-xl-tabs .accordion-tab-header button.focus {
+.btn.focus {
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(3, 148, 166, 0.25);
           box-shadow: 0 0 0 0.2rem rgba(3, 148, 166, 0.25);
 }
 
 .btn.disabled,
-.nav-sm-tabs .accordion-tab-header button.disabled,
-.nav-md-tabs .accordion-tab-header button.disabled,
-.nav-lg-tabs .accordion-tab-header button.disabled,
-.nav-xl-tabs .accordion-tab-header button.disabled,
-.btn:disabled,
-.nav-sm-tabs .accordion-tab-header button:disabled,
-.nav-md-tabs .accordion-tab-header button:disabled,
-.nav-lg-tabs .accordion-tab-header button:disabled,
-.nav-xl-tabs .accordion-tab-header button:disabled {
+.btn:disabled {
   opacity: 0.65;
 }
 
@@ -3861,11 +3833,7 @@ fieldset:disabled a.btn {
 }
 
 .btn-lg,
-.btn-group-lg > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-lg > button,
-.nav-md-tabs .accordion-tab-header .btn-group-lg > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-lg > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-lg > button {
+.btn-group-lg > .btn {
   padding: 0.5rem 1rem;
   font-size: 1.125rem;
   line-height: 1.5;
@@ -3873,11 +3841,7 @@ fieldset:disabled a.btn {
 }
 
 .btn-sm,
-.btn-group-sm > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-sm > button,
-.nav-md-tabs .accordion-tab-header .btn-group-sm > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-sm > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-sm > button {
+.btn-group-sm > .btn {
   padding: 0.25rem 0.5rem;
   font-size: 0.7875rem;
   line-height: 1.5;
@@ -4202,15 +4166,7 @@ input[type="button"].btn-block {
 }
 
 .btn-group > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group > button,
-.nav-md-tabs .accordion-tab-header .btn-group > button,
-.nav-lg-tabs .accordion-tab-header .btn-group > button,
-.nav-xl-tabs .accordion-tab-header .btn-group > button,
-.btn-group-vertical > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button {
+.btn-group-vertical > .btn {
   position: relative;
   -webkit-box-flex: 1;
       -ms-flex: 1 1 auto;
@@ -4218,48 +4174,16 @@ input[type="button"].btn-block {
 }
 
 .btn-group > .btn:hover,
-.nav-sm-tabs .accordion-tab-header .btn-group > button:hover,
-.nav-md-tabs .accordion-tab-header .btn-group > button:hover,
-.nav-lg-tabs .accordion-tab-header .btn-group > button:hover,
-.nav-xl-tabs .accordion-tab-header .btn-group > button:hover,
-.btn-group-vertical > .btn:hover,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:hover,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:hover,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:hover,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:hover {
+.btn-group-vertical > .btn:hover {
   z-index: 1;
 }
 
 .btn-group > .btn:focus,
-.nav-sm-tabs .accordion-tab-header .btn-group > button:focus,
-.nav-md-tabs .accordion-tab-header .btn-group > button:focus,
-.nav-lg-tabs .accordion-tab-header .btn-group > button:focus,
-.nav-xl-tabs .accordion-tab-header .btn-group > button:focus,
 .btn-group > .btn:active,
-.nav-sm-tabs .accordion-tab-header .btn-group > button:active,
-.nav-md-tabs .accordion-tab-header .btn-group > button:active,
-.nav-lg-tabs .accordion-tab-header .btn-group > button:active,
-.nav-xl-tabs .accordion-tab-header .btn-group > button:active,
 .btn-group > .btn.active,
-.nav-sm-tabs .accordion-tab-header .btn-group > button.active,
-.nav-md-tabs .accordion-tab-header .btn-group > button.active,
-.nav-lg-tabs .accordion-tab-header .btn-group > button.active,
-.nav-xl-tabs .accordion-tab-header .btn-group > button.active,
 .btn-group-vertical > .btn:focus,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:focus,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:focus,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:focus,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:focus,
 .btn-group-vertical > .btn:active,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:active,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:active,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:active,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:active,
-.btn-group-vertical > .btn.active,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button.active,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button.active,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button.active,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button.active {
+.btn-group-vertical > .btn.active {
   z-index: 1;
 }
 
@@ -4279,38 +4203,18 @@ input[type="button"].btn-block {
 }
 
 .btn-group > .btn:not(:first-child),
-.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-md-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:first-child),
 .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
 
 .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
-.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
-.nav-md-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
-.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
-.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:last-child):not(.dropdown-toggle),
-.btn-group > .btn-group:not(:last-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
-.nav-md-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
-.nav-lg-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button,
-.nav-xl-tabs .accordion-tab-header .btn-group > .btn-group:not(:last-child) > button {
+.btn-group > .btn-group:not(:last-child) > .btn {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .btn-group > .btn:not(:first-child),
-.nav-sm-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-md-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-lg-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.nav-xl-tabs .accordion-tab-header .btn-group > button:not(:first-child),
-.btn-group > .btn-group:not(:first-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
-.nav-md-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
-.nav-lg-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button,
-.nav-xl-tabs .accordion-tab-header .btn-group > .btn-group:not(:first-child) > button {
+.btn-group > .btn-group:not(:first-child) > .btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -4331,21 +4235,13 @@ input[type="button"].btn-block {
 }
 
 .btn-sm + .dropdown-toggle-split,
-.btn-group-sm > .btn + .dropdown-toggle-split,
-.nav-sm-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
-.nav-md-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
-.nav-lg-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split,
-.nav-xl-tabs .accordion-tab-header .btn-group-sm > button + .dropdown-toggle-split {
+.btn-group-sm > .btn + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
 
 .btn-lg + .dropdown-toggle-split,
-.btn-group-lg > .btn + .dropdown-toggle-split,
-.nav-sm-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
-.nav-md-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
-.nav-lg-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split,
-.nav-xl-tabs .accordion-tab-header .btn-group-lg > button + .dropdown-toggle-split {
+.btn-group-lg > .btn + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
@@ -4364,84 +4260,36 @@ input[type="button"].btn-block {
 }
 
 .btn-group-vertical > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button,
 .btn-group-vertical > .btn-group {
   width: 100%;
 }
 
 .btn-group-vertical > .btn:not(:first-child),
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
 .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
 
 .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle),
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
-.btn-group-vertical > .btn-group:not(:last-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:last-child) > button {
+.btn-group-vertical > .btn-group:not(:last-child) > .btn {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
 .btn-group-vertical > .btn:not(:first-child),
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > button:not(:first-child),
-.btn-group-vertical > .btn-group:not(:first-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
-.nav-md-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-vertical > .btn-group:not(:first-child) > button {
+.btn-group-vertical > .btn-group:not(:first-child) > .btn {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
 .btn-group-toggle > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button,
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button,
-.btn-group-toggle > .btn-group > .btn,
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button,
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button {
+.btn-group-toggle > .btn-group > .btn {
   margin-bottom: 0;
 }
 
 .btn-group-toggle > .btn input[type="radio"],
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button input[type="radio"],
 .btn-group-toggle > .btn input[type="checkbox"],
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > button input[type="checkbox"],
 .btn-group-toggle > .btn-group > .btn input[type="radio"],
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="radio"],
-.btn-group-toggle > .btn-group > .btn input[type="checkbox"],
-.nav-sm-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
-.nav-md-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
-.nav-lg-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"],
-.nav-xl-tabs .accordion-tab-header .btn-group-toggle > .btn-group > button input[type="checkbox"] {
+.btn-group-toggle > .btn-group > .btn input[type="checkbox"] {
   position: absolute;
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
@@ -4537,136 +4385,24 @@ input[type="button"].btn-block {
 }
 
 .input-group-prepend .btn,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend button,
-.input-group-prepend .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .input-group-prepend button,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend button,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend button,
-.input-group-append .btn,
-.input-group-append .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .input-group-append button,
-.input-group-append .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .input-group-append button,
-.input-group-append .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .input-group-append button,
-.input-group-append .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .input-group-append button {
+.input-group-append .btn {
   position: relative;
   z-index: 2;
 }
 
 .input-group-prepend .btn:focus,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend button:focus,
-.input-group-prepend .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .input-group-prepend button:focus,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend button:focus,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend button:focus,
-.input-group-append .btn:focus,
-.input-group-append .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .input-group-append button:focus,
-.input-group-append .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .input-group-append button:focus,
-.input-group-append .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .input-group-append button:focus,
-.input-group-append .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .input-group-append button:focus {
+.input-group-append .btn:focus {
   z-index: 3;
 }
 
 .input-group-prepend .btn + .btn,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header button + .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend button + .btn,
-.input-group-prepend .nav-md-tabs .accordion-tab-header button + .btn,
-.nav-md-tabs .accordion-tab-header .input-group-prepend button + .btn,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header button + .btn,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend button + .btn,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header button + .btn,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend button + .btn,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header .btn + button,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend .btn + button,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header button + button,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend button + button,
-.input-group-prepend .nav-md-tabs .accordion-tab-header .btn + button,
-.nav-md-tabs .accordion-tab-header .input-group-prepend .btn + button,
-.input-group-prepend .nav-md-tabs .accordion-tab-header button + button,
-.nav-md-tabs .accordion-tab-header .input-group-prepend button + button,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header .btn + button,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend .btn + button,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header button + button,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend button + button,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header .btn + button,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend .btn + button,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header button + button,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend button + button,
 .input-group-prepend .btn + .input-group-text,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header button + .input-group-text,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
-.input-group-prepend .nav-md-tabs .accordion-tab-header button + .input-group-text,
-.nav-md-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header button + .input-group-text,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header button + .input-group-text,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend button + .input-group-text,
 .input-group-prepend .input-group-text + .input-group-text,
 .input-group-prepend .input-group-text + .btn,
-.input-group-prepend .nav-sm-tabs .accordion-tab-header .input-group-text + button,
-.nav-sm-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
-.input-group-prepend .nav-md-tabs .accordion-tab-header .input-group-text + button,
-.nav-md-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
-.input-group-prepend .nav-lg-tabs .accordion-tab-header .input-group-text + button,
-.nav-lg-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
-.input-group-prepend .nav-xl-tabs .accordion-tab-header .input-group-text + button,
-.nav-xl-tabs .accordion-tab-header .input-group-prepend .input-group-text + button,
 .input-group-append .btn + .btn,
-.input-group-append .nav-sm-tabs .accordion-tab-header button + .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-append button + .btn,
-.input-group-append .nav-md-tabs .accordion-tab-header button + .btn,
-.nav-md-tabs .accordion-tab-header .input-group-append button + .btn,
-.input-group-append .nav-lg-tabs .accordion-tab-header button + .btn,
-.nav-lg-tabs .accordion-tab-header .input-group-append button + .btn,
-.input-group-append .nav-xl-tabs .accordion-tab-header button + .btn,
-.nav-xl-tabs .accordion-tab-header .input-group-append button + .btn,
-.input-group-append .nav-sm-tabs .accordion-tab-header .btn + button,
-.nav-sm-tabs .accordion-tab-header .input-group-append .btn + button,
-.input-group-append .nav-sm-tabs .accordion-tab-header button + button,
-.nav-sm-tabs .accordion-tab-header .input-group-append button + button,
-.input-group-append .nav-md-tabs .accordion-tab-header .btn + button,
-.nav-md-tabs .accordion-tab-header .input-group-append .btn + button,
-.input-group-append .nav-md-tabs .accordion-tab-header button + button,
-.nav-md-tabs .accordion-tab-header .input-group-append button + button,
-.input-group-append .nav-lg-tabs .accordion-tab-header .btn + button,
-.nav-lg-tabs .accordion-tab-header .input-group-append .btn + button,
-.input-group-append .nav-lg-tabs .accordion-tab-header button + button,
-.nav-lg-tabs .accordion-tab-header .input-group-append button + button,
-.input-group-append .nav-xl-tabs .accordion-tab-header .btn + button,
-.nav-xl-tabs .accordion-tab-header .input-group-append .btn + button,
-.input-group-append .nav-xl-tabs .accordion-tab-header button + button,
-.nav-xl-tabs .accordion-tab-header .input-group-append button + button,
 .input-group-append .btn + .input-group-text,
-.input-group-append .nav-sm-tabs .accordion-tab-header button + .input-group-text,
-.nav-sm-tabs .accordion-tab-header .input-group-append button + .input-group-text,
-.input-group-append .nav-md-tabs .accordion-tab-header button + .input-group-text,
-.nav-md-tabs .accordion-tab-header .input-group-append button + .input-group-text,
-.input-group-append .nav-lg-tabs .accordion-tab-header button + .input-group-text,
-.nav-lg-tabs .accordion-tab-header .input-group-append button + .input-group-text,
-.input-group-append .nav-xl-tabs .accordion-tab-header button + .input-group-text,
-.nav-xl-tabs .accordion-tab-header .input-group-append button + .input-group-text,
 .input-group-append .input-group-text + .input-group-text,
-.input-group-append .input-group-text + .btn,
-.input-group-append .nav-sm-tabs .accordion-tab-header .input-group-text + button,
-.nav-sm-tabs .accordion-tab-header .input-group-append .input-group-text + button,
-.input-group-append .nav-md-tabs .accordion-tab-header .input-group-text + button,
-.nav-md-tabs .accordion-tab-header .input-group-append .input-group-text + button,
-.input-group-append .nav-lg-tabs .accordion-tab-header .input-group-text + button,
-.nav-lg-tabs .accordion-tab-header .input-group-append .input-group-text + button,
-.input-group-append .nav-xl-tabs .accordion-tab-header .input-group-text + button,
-.nav-xl-tabs .accordion-tab-header .input-group-append .input-group-text + button {
+.input-group-append .input-group-text + .btn {
   margin-left: -1px;
 }
 
@@ -4713,15 +4449,7 @@ input[type="button"].btn-block {
 .input-group-lg > .input-group-prepend > .input-group-text,
 .input-group-lg > .input-group-append > .input-group-text,
 .input-group-lg > .input-group-prepend > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
-.nav-md-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
-.nav-lg-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
-.nav-xl-tabs .accordion-tab-header .input-group-lg > .input-group-prepend > button,
-.input-group-lg > .input-group-append > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
-.nav-md-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
-.nav-lg-tabs .accordion-tab-header .input-group-lg > .input-group-append > button,
-.nav-xl-tabs .accordion-tab-header .input-group-lg > .input-group-append > button {
+.input-group-lg > .input-group-append > .btn {
   padding: 0.5rem 1rem;
   font-size: 1.125rem;
   line-height: 1.5;
@@ -4738,15 +4466,7 @@ input[type="button"].btn-block {
 .input-group-sm > .input-group-prepend > .input-group-text,
 .input-group-sm > .input-group-append > .input-group-text,
 .input-group-sm > .input-group-prepend > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
-.nav-md-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
-.nav-lg-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
-.nav-xl-tabs .accordion-tab-header .input-group-sm > .input-group-prepend > button,
-.input-group-sm > .input-group-append > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
-.nav-md-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
-.nav-lg-tabs .accordion-tab-header .input-group-sm > .input-group-append > button,
-.nav-xl-tabs .accordion-tab-header .input-group-sm > .input-group-append > button {
+.input-group-sm > .input-group-append > .btn {
   padding: 0.25rem 0.5rem;
   font-size: 0.7875rem;
   line-height: 1.5;
@@ -4759,44 +4479,20 @@ input[type="button"].btn-block {
 }
 
 .input-group > .input-group-prepend > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend > button,
 .input-group > .input-group-prepend > .input-group-text,
 .input-group > .input-group-append:not(:last-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append:not(:last-child) > button,
 .input-group > .input-group-append:not(:last-child) > .input-group-text,
 .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
 .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .input-group > .input-group-append > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-append > button,
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-append > button,
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-append > button,
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-append > button,
 .input-group > .input-group-append > .input-group-text,
 .input-group > .input-group-prepend:not(:first-child) > .btn,
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend:not(:first-child) > button,
 .input-group > .input-group-prepend:not(:first-child) > .input-group-text,
 .input-group > .input-group-prepend:first-child > .btn:not(:first-child),
-.nav-sm-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
-.nav-md-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
-.nav-lg-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
-.nav-xl-tabs .accordion-tab-header .input-group > .input-group-prepend:first-child > button:not(:first-child),
 .input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -6322,11 +6018,7 @@ a.badge:focus {
   display: none;
 }
 
-.btn .badge,
-.nav-sm-tabs .accordion-tab-header button .badge,
-.nav-md-tabs .accordion-tab-header button .badge,
-.nav-lg-tabs .accordion-tab-header button .badge,
-.nav-xl-tabs .accordion-tab-header button .badge {
+.btn .badge {
   position: relative;
   top: -1px;
 }
@@ -8156,8 +7848,7 @@ button.bg-dark:focus {
   background-color: #fff !important;
 }
 
-.bg-transparent,
-.nav-tabs-block .nav-item {
+.bg-transparent {
   background-color: transparent !important;
 }
 
@@ -8182,10 +7873,6 @@ button.bg-dark:focus {
 }
 
 .border-0,
-.nav-tabs-block,
-.nav-tabs-block .nav-item,
-.tab-content,
-.hr-dashed,
 .dashboard .table tbody tr td {
   border: 0 !important;
 }
@@ -8283,14 +7970,6 @@ button.bg-dark:focus {
 }
 
 .rounded-0,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button,
-.nav-tabs-block,
-.nav-tabs-block .nav-item,
-.nav-tabs-block .nav-item .nav-link,
-.tab-content,
 .card-summary,
 .card-info-box,
 .tooltip .tooltip-inner {
@@ -8333,8 +8012,6 @@ button.bg-dark:focus {
 
 .d-flex,
 .flex-dynamic-row,
-.nav-tab-summary-section,
-.call_to_action,
 .card-summary .card-body,
 .card-summary .card-body .svg-wrapper {
   display: -webkit-box !important;
@@ -8601,9 +8278,7 @@ button.bg-dark:focus {
   padding-top: 100%;
 }
 
-.flex-row,
-.nav-tab-summary-section,
-.call_to_action {
+.flex-row {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: row !important;
@@ -8718,8 +8393,6 @@ button.bg-dark:focus {
 }
 
 .align-items-center,
-.nav-tab-summary-section,
-.call_to_action,
 .card-summary .card-body,
 .card-summary .card-body .svg-wrapper {
   -webkit-box-align: center !important;
@@ -9648,16 +9321,7 @@ button.bg-dark:focus {
   position: static !important;
 }
 
-.position-relative,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header button h5,
-.nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button h5,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button h5,
-.nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button h5,
-.nav-tabs-block .nav-item {
+.position-relative {
   position: relative !important;
 }
 
@@ -9754,11 +9418,7 @@ button.bg-dark:focus {
   width: 75% !important;
 }
 
-.w-100,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button {
+.w-100 {
   width: 100% !important;
 }
 
@@ -9823,8 +9483,7 @@ button.bg-dark:focus {
   background-color: rgba(0, 0, 0, 0);
 }
 
-.m-0,
-.nav-tabs-block .nav-item {
+.m-0 {
   margin: 0 !important;
 }
 
@@ -9839,10 +9498,6 @@ button.bg-dark:focus {
 }
 
 .mb-0,
-.nav-sm-tabs .accordion-tab-header button h5,
-.nav-md-tabs .accordion-tab-header button h5,
-.nav-lg-tabs .accordion-tab-header button h5,
-.nav-xl-tabs .accordion-tab-header button h5,
 .card-summary .card-body p,
 .slick-your-groups,
 .my-0 {
@@ -10394,8 +10049,7 @@ button.bg-dark:focus {
 }
 
 .pr-15,
-.px-15,
-.call_to_action {
+.px-15 {
   padding-right: 15px !important;
 }
 
@@ -10405,8 +10059,7 @@ button.bg-dark:focus {
 }
 
 .pl-15,
-.px-15,
-.call_to_action {
+.px-15 {
   padding-left: 15px !important;
 }
 
@@ -10460,8 +10113,7 @@ button.bg-dark:focus {
   padding-left: 25px !important;
 }
 
-.p-30,
-.nav-tab-summary-section {
+.p-30 {
   padding: 30px !important;
 }
 
@@ -15629,11 +15281,7 @@ button.bg-dark:focus {
   white-space: nowrap;
 }
 
-.text-left,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button {
+.text-left {
   text-align: left !important;
 }
 
@@ -15641,11 +15289,7 @@ button.bg-dark:focus {
   text-align: right !important;
 }
 
-.text-center,
-.nav-sm-tabs .accordion-tab-header button h5,
-.nav-md-tabs .accordion-tab-header button h5,
-.nav-lg-tabs .accordion-tab-header button h5,
-.nav-xl-tabs .accordion-tab-header button h5 {
+.text-center {
   text-align: center !important;
 }
 
@@ -15741,9 +15385,7 @@ button.bg-dark:focus {
   font-style: italic !important;
 }
 
-.text-white,
-.nav-tabs-block .nav-item,
-.call_to_action {
+.text-white {
   color: #fff !important;
 }
 
@@ -15810,11 +15452,7 @@ a.text-light:focus {
   color: #cbd3da !important;
 }
 
-.text-dark,
-.nav-sm-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header button {
+.text-dark {
   color: #343a40 !important;
 }
 
@@ -19282,86 +18920,14 @@ fieldset[disabled] .tokenfield.tokenfield-mode-tokens {
 .sr-only,
 .styled-checkbox,
 .bootstrap-datetimepicker-widget .btn[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
 .bootstrap-datetimepicker-widget .btn[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
 .bootstrap-datetimepicker-widget .picker-switch::after,
 .bootstrap-datetimepicker-widget table th.prev::after,
 .bootstrap-datetimepicker-widget table th.next::after {
@@ -19486,111 +19052,39 @@ fieldset[disabled] .tokenfield.tokenfield-mode-tokens {
   padding: 6px;
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="incrementHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementHours"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="incrementHours"]::after {
   content: "Increment Hours";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="incrementMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="incrementMinutes"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="incrementMinutes"]::after {
   content: "Increment Minutes";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="decrementHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementHours"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="decrementHours"]::after {
   content: "Decrement Hours";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="decrementMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="decrementMinutes"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="decrementMinutes"]::after {
   content: "Decrement Minutes";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="showHours"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showHours"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="showHours"]::after {
   content: "Show Hours";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="showMinutes"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="showMinutes"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="showMinutes"]::after {
   content: "Show Minutes";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="togglePeriod"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="togglePeriod"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="togglePeriod"]::after {
   content: "Toggle AM/PM";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="clear"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="clear"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="clear"]::after {
   content: "Clear the picker";
 }
 
-.bootstrap-datetimepicker-widget .btn[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-sm-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-sm-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-md-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-md-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-lg-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-lg-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after,
-.bootstrap-datetimepicker-widget .nav-xl-tabs .accordion-tab-header button[data-action="today"]::after,
-.nav-xl-tabs .accordion-tab-header .bootstrap-datetimepicker-widget button[data-action="today"]::after {
+.bootstrap-datetimepicker-widget .btn[data-action="today"]::after {
   content: "Set the date to today";
 }
 
@@ -20810,8 +20304,6 @@ body > .container {
 
 .d-flex .form-check-input,
 .flex-dynamic-row .form-check-input,
-.nav-tab-summary-section .form-check-input,
-.call_to_action .form-check-input,
 .card-summary .card-body .form-check-input {
   -webkit-box-flex: 0;
       -ms-flex: none;
@@ -21193,15 +20685,7 @@ h2 sup a:hover {
   font-family: "Patua One", sans-serif;
 }
 
-.accordion__share .card-header .btn,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button {
+.accordion__share .card-header .btn {
   color: #000;
   font-size: 16px;
   padding: 8px 15px 10px;
@@ -21210,64 +20694,24 @@ h2 sup a:hover {
   text-decoration: none;
 }
 
-.accordion__share .card-header .btn:hover,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button:hover,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button:hover,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button:hover,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button:hover {
+.accordion__share .card-header .btn:hover {
   text-decoration: underline;
 }
 
 .accordion__share .card-header .btn:active,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button:active,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button:active,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button:active,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button:active,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button:active,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button:active,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button:active,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button:active,
-.accordion__share .card-header .btn:focus,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button:focus,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button:focus,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button:focus,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button:focus {
+.accordion__share .card-header .btn:focus {
   text-decoration: none;
   outline: 2px solid rgba(3, 148, 166, 0.5);
 }
 
-.accordion__share .card-header .btn .accordion-arrow,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button .accordion-arrow,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button .accordion-arrow,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button .accordion-arrow,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button .accordion-arrow,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button .accordion-arrow,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button .accordion-arrow,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button .accordion-arrow,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button .accordion-arrow {
+.accordion__share .card-header .btn .accordion-arrow {
   float: right;
   margin-top: 6px;
   -webkit-transform: rotate(180deg);
           transform: rotate(180deg);
 }
 
-.accordion__share .card-header .btn.collapsed .accordion-arrow,
-.accordion__share .card-header .nav-sm-tabs .accordion-tab-header button.collapsed .accordion-arrow,
-.nav-sm-tabs .accordion-tab-header .accordion__share .card-header button.collapsed .accordion-arrow,
-.accordion__share .card-header .nav-md-tabs .accordion-tab-header button.collapsed .accordion-arrow,
-.nav-md-tabs .accordion-tab-header .accordion__share .card-header button.collapsed .accordion-arrow,
-.accordion__share .card-header .nav-lg-tabs .accordion-tab-header button.collapsed .accordion-arrow,
-.nav-lg-tabs .accordion-tab-header .accordion__share .card-header button.collapsed .accordion-arrow,
-.accordion__share .card-header .nav-xl-tabs .accordion-tab-header button.collapsed .accordion-arrow,
-.nav-xl-tabs .accordion-tab-header .accordion__share .card-header button.collapsed .accordion-arrow {
+.accordion__share .card-header .btn.collapsed .accordion-arrow {
   -webkit-transform: rotate(0deg);
           transform: rotate(0deg);
 }
@@ -21294,15 +20738,7 @@ h2 sup a:hover {
   padding: 0;
 }
 
-.accordion__grps .card-header .btn,
-.accordion__grps .card-header .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .accordion__grps .card-header button,
-.accordion__grps .card-header .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .accordion__grps .card-header button,
-.accordion__grps .card-header .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .accordion__grps .card-header button,
-.accordion__grps .card-header .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .accordion__grps .card-header button {
+.accordion__grps .card-header .btn {
   position: relative;
   z-index: 1;
 }
@@ -21313,15 +20749,7 @@ h2 sup a:hover {
   z-index: 1;
 }
 
-#accordion-log .card .btn,
-#accordion-log .card .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header #accordion-log .card button,
-#accordion-log .card .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header #accordion-log .card button,
-#accordion-log .card .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header #accordion-log .card button,
-#accordion-log .card .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header #accordion-log .card button {
+#accordion-log .card .btn {
   font-family: "Open Sans", sans-serif;
   font-size: 15px;
   line-height: 19px;
@@ -21384,50 +20812,10 @@ h2 sup a:hover {
 }
 
 .alert-danger .btn,
-.alert-danger .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-danger button,
 .alert-primary .btn,
-.alert-primary .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-primary button,
 .alert-warning .btn,
-.alert-warning .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-warning button,
 .alert-success .btn,
-.alert-success .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-success button,
-.alert-delete .btn,
-.alert-delete .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-delete button {
+.alert-delete .btn {
   font-family: "Patua One", sans-serif;
   padding: 7px 15px;
   line-height: 1.2;
@@ -21444,147 +20832,27 @@ h2 sup a:hover {
 
 @media (min-width: 768px) {
   .alert-danger .btn,
-  .alert-danger .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .alert-danger button,
-  .alert-danger .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .alert-danger button,
-  .alert-danger .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .alert-danger button,
-  .alert-danger .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .alert-danger button,
   .alert-primary .btn,
-  .alert-primary .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .alert-primary button,
-  .alert-primary .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .alert-primary button,
-  .alert-primary .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .alert-primary button,
-  .alert-primary .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .alert-primary button,
   .alert-warning .btn,
-  .alert-warning .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .alert-warning button,
-  .alert-warning .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .alert-warning button,
-  .alert-warning .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .alert-warning button,
-  .alert-warning .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .alert-warning button,
   .alert-success .btn,
-  .alert-success .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .alert-success button,
-  .alert-success .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .alert-success button,
-  .alert-success .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .alert-success button,
-  .alert-success .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .alert-success button,
-  .alert-delete .btn,
-  .alert-delete .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .alert-delete button,
-  .alert-delete .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .alert-delete button,
-  .alert-delete .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .alert-delete button,
-  .alert-delete .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .alert-delete button {
+  .alert-delete .btn {
     margin: auto;
   }
 }
 
 .alert-danger .btn:hover,
-.alert-danger .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-danger button:hover,
 .alert-primary .btn:hover,
-.alert-primary .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-primary button:hover,
 .alert-warning .btn:hover,
-.alert-warning .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-warning button:hover,
 .alert-success .btn:hover,
-.alert-success .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-success button:hover,
-.alert-success .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-success button:hover,
-.alert-success .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-success button:hover,
-.alert-success .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-success button:hover,
-.alert-delete .btn:hover,
-.alert-delete .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-delete button:hover {
+.alert-delete .btn:hover {
   background-color: rgba(0, 0, 0, 0);
 }
 
 .alert-danger .btn:focus,
-.alert-danger .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-danger button:focus,
 .alert-primary .btn:focus,
-.alert-primary .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-primary button:focus,
 .alert-warning .btn:focus,
-.alert-warning .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-warning button:focus,
 .alert-success .btn:focus,
-.alert-success .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-success button:focus,
-.alert-success .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-success button:focus,
-.alert-success .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-success button:focus,
-.alert-success .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-success button:focus,
-.alert-delete .btn:focus,
-.alert-delete .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-delete button:focus {
+.alert-delete .btn:focus {
   text-decoration: underline;
   background-color: rgba(0, 0, 0, 0);
 }
@@ -21597,15 +20865,7 @@ h2 sup a:hover {
   background-color: #4AC54B;
 }
 
-.alert-success .btn,
-.alert-success .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-success button,
-.alert-success .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-success button {
+.alert-success .btn {
   background-color: #009400;
   border: 1px solid #007C00;
   border-bottom-width: 2px;
@@ -21615,47 +20875,15 @@ h2 sup a:hover {
   background-color: #D23714;
 }
 
-.alert-danger .btn,
-.alert-danger .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-danger button,
-.alert-danger .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-danger button {
+.alert-danger .btn {
   background-color: #BD3112;
   border: 1px solid #9D290F;
   border-bottom-width: 2px;
 }
 
 .alert-danger .btn:hover,
-.alert-danger .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-danger button:hover,
-.alert-danger .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-danger button:hover,
 .alert-danger .btn:focus,
-.alert-danger .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-danger button:focus,
-.alert-danger .btn:active,
-.alert-danger .nav-sm-tabs .accordion-tab-header button:active,
-.nav-sm-tabs .accordion-tab-header .alert-danger button:active,
-.alert-danger .nav-md-tabs .accordion-tab-header button:active,
-.nav-md-tabs .accordion-tab-header .alert-danger button:active,
-.alert-danger .nav-lg-tabs .accordion-tab-header button:active,
-.nav-lg-tabs .accordion-tab-header .alert-danger button:active,
-.alert-danger .nav-xl-tabs .accordion-tab-header button:active,
-.nav-xl-tabs .accordion-tab-header .alert-danger button:active {
+.alert-danger .btn:active {
   border-color: #9D290F;
 }
 
@@ -21663,47 +20891,15 @@ h2 sup a:hover {
   background-color: #0394a6;
 }
 
-.alert-primary .btn,
-.alert-primary .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-primary button,
-.alert-primary .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-primary button {
+.alert-primary .btn {
   background-color: #008B9D;
   border: 1px solid #007483;
   border-bottom-width: 2px;
 }
 
 .alert-primary .btn:hover,
-.alert-primary .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-primary button:hover,
-.alert-primary .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-primary button:hover,
 .alert-primary .btn:focus,
-.alert-primary .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-primary button:focus,
-.alert-primary .btn:active,
-.alert-primary .nav-sm-tabs .accordion-tab-header button:active,
-.nav-sm-tabs .accordion-tab-header .alert-primary button:active,
-.alert-primary .nav-md-tabs .accordion-tab-header button:active,
-.nav-md-tabs .accordion-tab-header .alert-primary button:active,
-.alert-primary .nav-lg-tabs .accordion-tab-header button:active,
-.nav-lg-tabs .accordion-tab-header .alert-primary button:active,
-.alert-primary .nav-xl-tabs .accordion-tab-header button:active,
-.nav-xl-tabs .accordion-tab-header .alert-primary button:active {
+.alert-primary .btn:active {
   border-color: #007483;
 }
 
@@ -21713,64 +20909,16 @@ h2 sup a:hover {
 }
 
 .alert-warning .btn,
-.alert-warning .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-warning button,
-.alert-warning .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-warning button,
-.alert-delete .btn,
-.alert-delete .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .alert-delete button,
-.alert-delete .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .alert-delete button {
+.alert-delete .btn {
   background-color: #C76A00;
   border: 1px solid #A65800;
   border-bottom-width: 2px;
 }
 
 .alert-warning .btn:hover,
-.alert-warning .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-warning button:hover,
-.alert-warning .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-warning button:hover,
 .alert-warning .btn:focus,
-.alert-warning .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-warning button:focus,
-.alert-warning .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-warning button:focus,
 .alert-delete .btn:hover,
-.alert-delete .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .alert-delete button:hover,
-.alert-delete .btn:focus,
-.alert-delete .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .alert-delete button:focus,
-.alert-delete .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .alert-delete button:focus {
+.alert-delete .btn:focus {
   border-color: #A65800;
 }
 
@@ -22102,15 +21250,7 @@ h2 sup a:hover {
 }
 
 .btn-save,
-.button-group .btn.btn-save,
-.button-group .nav-sm-tabs .accordion-tab-header button.btn-save,
-.nav-sm-tabs .accordion-tab-header .button-group button.btn-save,
-.button-group .nav-md-tabs .accordion-tab-header button.btn-save,
-.nav-md-tabs .accordion-tab-header .button-group button.btn-save,
-.button-group .nav-lg-tabs .accordion-tab-header button.btn-save,
-.nav-lg-tabs .accordion-tab-header .button-group button.btn-save,
-.button-group .nav-xl-tabs .accordion-tab-header button.btn-save,
-.nav-xl-tabs .accordion-tab-header .button-group button.btn-save {
+.button-group .btn.btn-save {
   margin: auto 0;
   min-width: 170px;
 }
@@ -22210,15 +21350,7 @@ h2 sup a:hover {
   float: right;
 }
 
-.button-group__r .btn,
-.button-group__r .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .button-group__r button,
-.button-group__r .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .button-group__r button,
-.button-group__r .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .button-group__r button,
-.button-group__r .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .button-group__r button {
+.button-group__r .btn {
   margin-bottom: 5px;
 }
 
@@ -22327,54 +21459,22 @@ h2 sup a:hover {
   display: block;
 }
 
-.btn-group__duo .btn,
-.btn-group__duo .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .btn-group__duo button,
-.btn-group__duo .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .btn-group__duo button,
-.btn-group__duo .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .btn-group__duo button,
-.btn-group__duo .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .btn-group__duo button {
+.btn-group__duo .btn {
   padding-right: 10px;
   padding-left: 14px;
 }
 
-.btn-group__duo .dropdown:first-child .btn,
-.btn-group__duo .dropdown:first-child .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
-.btn-group__duo .dropdown:first-child .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
-.btn-group__duo .dropdown:first-child .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button,
-.btn-group__duo .dropdown:first-child .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:first-child button {
+.btn-group__duo .dropdown:first-child .btn {
   border-radius: 3px 0 0 3px;
   border-right: 1px solid #155e67;
 }
 
-.btn-group__duo .dropdown:last-child .btn,
-.btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-.btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-.btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-.btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
+.btn-group__duo .dropdown:last-child .btn {
   border-radius: 3px;
 }
 
 @media (max-width: 991.98px) {
-  .btn-group__duo .dropdown:last-child .btn,
-  .btn-group__duo .dropdown:last-child .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-  .btn-group__duo .dropdown:last-child .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-  .btn-group__duo .dropdown:last-child .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button,
-  .btn-group__duo .dropdown:last-child .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .btn-group__duo .dropdown:last-child button {
+  .btn-group__duo .dropdown:last-child .btn {
     border-radius: 0 3px 3px 0;
   }
 }
@@ -22415,29 +21515,13 @@ h2 sup a:hover {
     padding-bottom: 10px;
   }
 
-  .button-group-filters .btn,
-  .button-group-filters .nav-sm-tabs .accordion-tab-header button,
-  .nav-sm-tabs .accordion-tab-header .button-group-filters button,
-  .button-group-filters .nav-md-tabs .accordion-tab-header button,
-  .nav-md-tabs .accordion-tab-header .button-group-filters button,
-  .button-group-filters .nav-lg-tabs .accordion-tab-header button,
-  .nav-lg-tabs .accordion-tab-header .button-group-filters button,
-  .button-group-filters .nav-xl-tabs .accordion-tab-header button,
-  .nav-xl-tabs .accordion-tab-header .button-group-filters button {
+  .button-group-filters .btn {
     margin: auto 0;
     margin-top: 5px;
     border-radius: 3px !important;
   }
 
-  .button-group-filters .btn:first-child,
-  .button-group-filters .nav-sm-tabs .accordion-tab-header button:first-child,
-  .nav-sm-tabs .accordion-tab-header .button-group-filters button:first-child,
-  .button-group-filters .nav-md-tabs .accordion-tab-header button:first-child,
-  .nav-md-tabs .accordion-tab-header .button-group-filters button:first-child,
-  .button-group-filters .nav-lg-tabs .accordion-tab-header button:first-child,
-  .nav-lg-tabs .accordion-tab-header .button-group-filters button:first-child,
-  .button-group-filters .nav-xl-tabs .accordion-tab-header button:first-child,
-  .nav-xl-tabs .accordion-tab-header .button-group-filters button:first-child {
+  .button-group-filters .btn:first-child {
     margin-right: 10px;
   }
 }
@@ -22456,19 +21540,11 @@ h2 sup a:hover {
   display: block;
 }
 
-.btn.collapsed .btn-state-1,
-.nav-sm-tabs .accordion-tab-header button.collapsed .btn-state-1,
-.nav-md-tabs .accordion-tab-header button.collapsed .btn-state-1,
-.nav-lg-tabs .accordion-tab-header button.collapsed .btn-state-1,
-.nav-xl-tabs .accordion-tab-header button.collapsed .btn-state-1 {
+.btn.collapsed .btn-state-1 {
   display: block;
 }
 
-.btn.collapsed .btn-state-2,
-.nav-sm-tabs .accordion-tab-header button.collapsed .btn-state-2,
-.nav-md-tabs .accordion-tab-header button.collapsed .btn-state-2,
-.nav-lg-tabs .accordion-tab-header button.collapsed .btn-state-2,
-.nav-xl-tabs .accordion-tab-header button.collapsed .btn-state-2 {
+.btn.collapsed .btn-state-2 {
   display: none;
 }
 
@@ -24272,15 +23348,7 @@ td.col-device-auto {
   font-size: 16px;
 }
 
-.card .btn,
-.card .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .card button,
-.card .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .card button,
-.card .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .card button,
-.card .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .card button {
+.card .btn {
   min-width: 100px;
   font-size: 20px;
 }
@@ -24337,23 +23405,7 @@ td.col-device-auto {
 }
 
 .features header .btn,
-.features header .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .features header button,
-.features header .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .features header button,
-.features header .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .features header button,
-.features header .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .features header button,
-.features__end .btn,
-.features__end .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .features__end button,
-.features__end .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .features__end button,
-.features__end .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .features__end button,
-.features__end .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .features__end button {
+.features__end .btn {
   display: table;
   margin-left: auto;
   margin-right: auto;
@@ -24365,15 +23417,7 @@ td.col-device-auto {
   padding-top: 22px;
 }
 
-.features__end .btn,
-.features__end .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .features__end button,
-.features__end .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .features__end button,
-.features__end .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .features__end button,
-.features__end .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .features__end button {
+.features__end .btn {
   margin: 0 10px;
 }
 
@@ -24399,15 +23443,7 @@ td.col-device-auto {
   font-size: 24px;
 }
 
-.features .btn,
-.features .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .features button,
-.features .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .features button,
-.features .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .features button,
-.features .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .features button {
+.features .btn {
   font-style: normal;
   font-weight: 500;
   border: .1875rem solid #151d1e;
@@ -24925,8 +23961,6 @@ td.col-device-auto {
 
 .d-flex .edit-panel,
 .flex-dynamic-row .edit-panel,
-.nav-tab-summary-section .edit-panel,
-.call_to_action .edit-panel,
 .card-summary .card-body .edit-panel {
   margin-bottom: 0;
   -webkit-box-flex: 1;
@@ -25612,15 +24646,7 @@ td.col-device-auto {
   margin: 0 0 20px;
 }
 
-.modal-intro .btn,
-.modal-intro .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .modal-intro button,
-.modal-intro .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .modal-intro button,
-.modal-intro .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .modal-intro button,
-.modal-intro .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .modal-intro button {
+.modal-intro .btn {
   width: 200px;
   margin: 0 auto 20px auto;
 }
@@ -25720,15 +24746,7 @@ td.col-device-auto {
   font-size: 13px;
 }
 
-.popover-calendar-feed .card .btn,
-.popover-calendar-feed .card .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .popover-calendar-feed .card button {
+.popover-calendar-feed .card .btn {
   min-width: 0px;
   font-size: 0px;
 }
@@ -25963,15 +24981,7 @@ td.col-device-auto {
   border: 1px solid #ced4da;
 }
 
-.note-editor.note-frame .btn,
-.note-editor.note-frame .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .note-editor.note-frame button,
-.note-editor.note-frame .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .note-editor.note-frame button,
-.note-editor.note-frame .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .note-editor.note-frame button,
-.note-editor.note-frame .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .note-editor.note-frame button {
+.note-editor.note-frame .btn {
   padding: 0.375rem 0.75rem;
   font-size: 12px;
   line-height: 1;
@@ -25980,23 +24990,7 @@ td.col-device-auto {
 }
 
 .note-editor.note-frame .btn:hover,
-.note-editor.note-frame .nav-sm-tabs .accordion-tab-header button:hover,
-.nav-sm-tabs .accordion-tab-header .note-editor.note-frame button:hover,
-.note-editor.note-frame .nav-md-tabs .accordion-tab-header button:hover,
-.nav-md-tabs .accordion-tab-header .note-editor.note-frame button:hover,
-.note-editor.note-frame .nav-lg-tabs .accordion-tab-header button:hover,
-.nav-lg-tabs .accordion-tab-header .note-editor.note-frame button:hover,
-.note-editor.note-frame .nav-xl-tabs .accordion-tab-header button:hover,
-.nav-xl-tabs .accordion-tab-header .note-editor.note-frame button:hover,
-.note-editor.note-frame .btn:focus,
-.note-editor.note-frame .nav-sm-tabs .accordion-tab-header button:focus,
-.nav-sm-tabs .accordion-tab-header .note-editor.note-frame button:focus,
-.note-editor.note-frame .nav-md-tabs .accordion-tab-header button:focus,
-.nav-md-tabs .accordion-tab-header .note-editor.note-frame button:focus,
-.note-editor.note-frame .nav-lg-tabs .accordion-tab-header button:focus,
-.nav-lg-tabs .accordion-tab-header .note-editor.note-frame button:focus,
-.note-editor.note-frame .nav-xl-tabs .accordion-tab-header button:focus,
-.nav-xl-tabs .accordion-tab-header .note-editor.note-frame button:focus {
+.note-editor.note-frame .btn:focus {
   background-color: #ced4da;
 }
 
@@ -26254,15 +25248,7 @@ td.col-device-auto {
   padding-left: 0;
 }
 
-.card .table-events .btn,
-.card .table-events .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .card .table-events button,
-.card .table-events .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .card .table-events button,
-.card .table-events .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .card .table-events button,
-.card .table-events .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .card .table-events button {
+.card .table-events .btn {
   width: auto;
   min-width: auto;
 }
@@ -27365,15 +26351,7 @@ h5 {
   height: 95%;
 }
 
-.input-group-select2 .input-group-append .btn,
-.input-group-select2 .input-group-append .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .input-group-select2 .input-group-append button,
-.input-group-select2 .input-group-append .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .input-group-select2 .input-group-append button,
-.input-group-select2 .input-group-append .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .input-group-select2 .input-group-append button,
-.input-group-select2 .input-group-append .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .input-group-select2 .input-group-append button {
+.input-group-select2 .input-group-append .btn {
   height: 94%;
 }
 
@@ -27552,326 +26530,6 @@ h5 {
   display: none;
 }
 
-.nav-sm-tabs .nav-tabs {
-  display: none;
-}
-
-.nav-sm-tabs .accordion-tab-header.white {
-  background-color: #fff;
-}
-
-.nav-sm-tabs .accordion-tab-header button {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #0394a6;
-  border: 1px solid #000 !important;
-}
-
-.nav-sm-tabs .accordion-tab-header button h5 {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: 1.2px;
-  text-align: center;
-  color: #000;
-  text-transform: uppercase;
-}
-
-@media (min-width: 576px) {
-  .nav-sm-tabs .nav-tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-
-  .nav-sm-tabs .accordion-tab-header {
-    display: none;
-  }
-
-  .nav-sm-tabs .collapse-wrapper {
-    display: block;
-  }
-}
-
-@media (max-width: 575.98px) {
-  .nav-sm-tabs .tab-content > .tab-pane {
-    display: block !important;
-    opacity: 1;
-  }
-}
-
-.nav-md-tabs .nav-tabs {
-  display: none;
-}
-
-.nav-md-tabs .accordion-tab-header.white {
-  background-color: #fff;
-}
-
-.nav-md-tabs .accordion-tab-header button {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #0394a6;
-  border: 1px solid #000 !important;
-}
-
-.nav-md-tabs .accordion-tab-header button h5 {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: 1.2px;
-  text-align: center;
-  color: #000;
-  text-transform: uppercase;
-}
-
-@media (min-width: 768px) {
-  .nav-md-tabs .nav-tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-
-  .nav-md-tabs .accordion-tab-header {
-    display: none;
-  }
-
-  .nav-md-tabs .collapse-wrapper {
-    display: block;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .nav-md-tabs .tab-content > .tab-pane {
-    display: block !important;
-    opacity: 1;
-  }
-}
-
-.nav-lg-tabs .nav-tabs {
-  display: none;
-}
-
-.nav-lg-tabs .accordion-tab-header.white {
-  background-color: #fff;
-}
-
-.nav-lg-tabs .accordion-tab-header button {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #0394a6;
-  border: 1px solid #000 !important;
-}
-
-.nav-lg-tabs .accordion-tab-header button h5 {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: 1.2px;
-  text-align: center;
-  color: #000;
-  text-transform: uppercase;
-}
-
-@media (min-width: 992px) {
-  .nav-lg-tabs .nav-tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-
-  .nav-lg-tabs .accordion-tab-header {
-    display: none;
-  }
-
-  .nav-lg-tabs .collapse-wrapper {
-    display: block;
-  }
-}
-
-@media (max-width: 991.98px) {
-  .nav-lg-tabs .tab-content > .tab-pane {
-    display: block !important;
-    opacity: 1;
-  }
-}
-
-.nav-xl-tabs .nav-tabs {
-  display: none;
-}
-
-.nav-xl-tabs .accordion-tab-header.white {
-  background-color: #fff;
-}
-
-.nav-xl-tabs .accordion-tab-header button {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #0394a6;
-  border: 1px solid #000 !important;
-}
-
-.nav-xl-tabs .accordion-tab-header button h5 {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: 1.2px;
-  text-align: center;
-  color: #000;
-  text-transform: uppercase;
-}
-
-@media (min-width: 1200px) {
-  .nav-xl-tabs .nav-tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-
-  .nav-xl-tabs .accordion-tab-header {
-    display: none;
-  }
-
-  .nav-xl-tabs .collapse-wrapper {
-    display: block;
-  }
-}
-
-@media (max-width: 1199.98px) {
-  .nav-xl-tabs .tab-content > .tab-pane {
-    display: block !important;
-    opacity: 1;
-  }
-}
-
-.nav-tabs-block .nav-item {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  text-align: center;
-}
-
-.nav-tabs-block .nav-item .nav-link {
-  border: 1px solid #000;
-  background-color: #0394a6;
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.13;
-  letter-spacing: 1.2px;
-  text-align: center;
-  color: #000;
-  text-transform: uppercase;
-  padding-top: 18px;
-  padding-bottom: 18px;
-}
-
-.nav-tabs-block .nav-item .nav-link.active {
-  border-bottom: 1px solid #0394a6;
-}
-
-.nav-tabs-block .nav-item .nav-link.active::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: black;
-}
-
-.nav-tabs-block .nav-item .nav-link.active {
-  border-bottom: 1px solid #000;
-}
-
-.nav-tabs-block .nav-item:not(:last-child) .nav-link {
-  border-right: 0;
-}
-
-.tab-content .collapse-wrapper .collapse-content {
-  padding: 30px;
-  border: 1px solid #000;
-  background-color: #0394a6;
-  border-top: 1px solid #0394a6;
-}
-
-.tab-content .collapse-wrapper .collapse-content.white {
-  background-color: #fff;
-  border-top: 1px solid #000;
-}
-
-.tab-content .tab-pane .tab-pane-content {
-  background-color: #fff;
-}
-
-.tab-content .tab-pane .tab-pane-content:not(:last-child) .accordion-tab-header button {
-  border-bottom: 0 !important;
-}
-
-.nav-tab-summary-section {
-  border: 1px solid #000;
-  border-top: 1px solid #0394a6;
-  background-color: #0394a6;
-}
-
-.call_to_action {
-  background-color: #000;
-  font-family: Asap;
-  font-size: 18px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.17;
-  letter-spacing: normal;
-  text-align: left;
-  color: #fff;
-}
-
-.no-space-mobile .tab-pane-content {
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-}
-
-.no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
-  border-bottom: 0 !important;
-}
-
-@media (max-width: 767.98px) {
-  .no-space-mobile {
-    position: absolute;
-    left: 0;
-    right: 0;
-  }
-
-  .no-space-mobile .nav-tabs-block .nav-item:first-child .nav-link {
-    border-left: 0 !important;
-  }
-
-  .no-space-mobile .nav-tabs-block .nav-item:last-child .nav-link {
-    border-right: 0 !important;
-  }
-
-  .no-space-mobile .tab-pane-content {
-    border-left: 0;
-    border-right: 0;
-  }
-}
-
 .collapse-plus-and-minus button h5::after {
   content: '';
   background-image: url(/images/add-icon.svg?f5a190c237d0f98948fad43c556e50c1);
@@ -27966,15 +26624,7 @@ h5 {
   font-size: 13px;
 }
 
-.popover-calendar-feed .card .btn,
-.popover-calendar-feed .card .nav-sm-tabs .accordion-tab-header button,
-.nav-sm-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-md-tabs .accordion-tab-header button,
-.nav-md-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-lg-tabs .accordion-tab-header button,
-.nav-lg-tabs .accordion-tab-header .popover-calendar-feed .card button,
-.popover-calendar-feed .card .nav-xl-tabs .accordion-tab-header button,
-.nav-xl-tabs .accordion-tab-header .popover-calendar-feed .card button {
+.popover-calendar-feed .card .btn {
   min-width: 0;
   font-size: 0;
 }
@@ -28133,26 +26783,6 @@ h5 {
   font-size: 18px;
 }
 
-.hr-sm {
-  height: 2px;
-  border-top: 2px solid #000;
-}
-
-.hr-lg {
-  height: 5px;
-  border-top: 5px solid #000;
-  margin-top: 50px;
-  margin-bottom: 50px;
-}
-
-.hr-dashed {
-  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
-  background-repeat: repeat;
-  background-position: left;
-  height: 3px;
-  background-size: 20px 35px;
-}
-
 .border-between > [class*='col-']::before {
   content: "";
   position: absolute;
@@ -28171,14 +26801,12 @@ h5 {
   padding-bottom: 15px;
 }
 
-@media (max-width: 575.98px) {
-  .border-between > [class*='col-'][class*='col-sm-']::before {
-    left: 0;
-    background-position: center;
-    height: 3px;
-    width: 100%;
-    background-size: 20px 35px;
-  }
+.border-between > [class*='col-'][class*='col-sm-']::before {
+  left: 0;
+  background-position: center;
+  height: 3px;
+  width: 100%;
+  background-size: 20px 35px;
 }
 
 .border-between > [class*='col-'][class*='col-md-'] {
@@ -28186,14 +26814,12 @@ h5 {
   padding-bottom: 15px;
 }
 
-@media (max-width: 767.98px) {
-  .border-between > [class*='col-'][class*='col-md-']::before {
-    left: 0;
-    background-position: center;
-    height: 3px;
-    width: 100%;
-    background-size: 20px 35px;
-  }
+.border-between > [class*='col-'][class*='col-md-']::before {
+  left: 0;
+  background-position: center;
+  height: 3px;
+  width: 100%;
+  background-size: 20px 35px;
 }
 
 .border-between > [class*='col-'][class*='col-lg-'] {
@@ -28201,14 +26827,12 @@ h5 {
   padding-bottom: 15px;
 }
 
-@media (max-width: 991.98px) {
-  .border-between > [class*='col-'][class*='col-lg-']::before {
-    left: 0;
-    background-position: center;
-    height: 3px;
-    width: 100%;
-    background-size: 20px 35px;
-  }
+.border-between > [class*='col-'][class*='col-lg-']::before {
+  left: 0;
+  background-position: center;
+  height: 3px;
+  width: 100%;
+  background-size: 20px 35px;
 }
 
 .border-between > [class*='col-'][class*='col-xl-'] {
@@ -28216,14 +26840,12 @@ h5 {
   padding-bottom: 15px;
 }
 
-@media (max-width: 1199.98px) {
-  .border-between > [class*='col-'][class*='col-xl-']::before {
-    left: 0;
-    background-position: center;
-    height: 3px;
-    width: 100%;
-    background-size: 20px 35px;
-  }
+.border-between > [class*='col-'][class*='col-xl-']::before {
+  left: 0;
+  background-position: center;
+  height: 3px;
+  width: 100%;
+  background-size: 20px 35px;
 }
 
 .border-between > [class*='col-']:first-child::before {
@@ -28252,33 +26874,6 @@ h5 {
   text-align: center;
   color: #fff;
   max-width: none;
-}
-
-.list-doodle {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  margin-left: 35px;
-}
-
-.list-doodle li {
-  position: relative;
-}
-
-.list-doodle li::before {
-  content: '';
-  margin-right: 5px;
-  font-size: 14px;
-  height: 14px;
-  width: 23px;
-  color: white;
-  font-weight: bold;
-  background-image: url(/images/arrow-right-doodle.svg?6e5b65bfc0ea23699e8c95f456d69ce8);
-  background-repeat: no-repeat;
-  background-position: center;
-  position: absolute;
-  top: 5px;
-  left: -35px;
 }
 
 .dashboard .table tbody tr:not(:first-child):not(:last-child) {

@@ -6778,7 +6778,8 @@ button.bg-dark:focus {
 .sort-column::after,
 .nav-tabs-block,
 .nav-tabs-block .nav-item,
-.tab-content {
+.tab-content,
+.hr-dashed {
   border: 0 !important;
 }
 
@@ -15693,7 +15694,7 @@ label.form-check-label {
 }
 
 .table td {
-  font-size: 15px;
+  font-size: 14px;
   border: none;
   vertical-align: middle;
   font-family: "Asap", sans-serif;
@@ -16563,6 +16564,27 @@ label.form-check-label {
     border-left: 0;
     border-right: 0;
   }
+}
+
+.hr-sm {
+  height: 2px;
+  border-top: 2px solid #000;
+}
+
+.hr-lg {
+  height: 5px;
+  border-top: 5px solid #000;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.hr-dashed {
+  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
+  background-color: transparent;
+  background-repeat: repeat;
+  background-position: left;
+  height: 3px;
+  background-size: 20px 35px;
 }
 
 .select2-search__field {
