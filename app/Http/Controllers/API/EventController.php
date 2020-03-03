@@ -13,8 +13,15 @@ class EventController extends Controller
     {
         $group = $group->load('parties');
 
+        $events = $group->parties->sortByDesc('event_date')->map(function($event) {
+            return (object) [
+              'id' => $event->idevents,
+              'location' => $event->FriendlyLocation,
+            ];
+        })->values()->toJson();
+
         return response()->json([
-            'events' => $group->parties->pluck('FriendlyLocation', 'idevents')->toJson(),
+            'events' => $events,
         ]);
     }
 }

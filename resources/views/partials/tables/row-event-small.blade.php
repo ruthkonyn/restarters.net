@@ -1,6 +1,6 @@
 <tr>
   {{-- EVENT DATE --}}
-  <td colspan="1" width="70" class="text-center td-event-date @if($event->isInProgress()) td-event-in-progress @endif">
+  <td colspan="1" width="50" class="text-center td-event-date @if($event->isInProgress()) td-event-in-progress @endif">
     <span class="td-event-day">{{ $event->getEventDate('d') }}</span>
     <br>
     <span class="td-event-month">{{ $event->getEventDate('M') }}</span>
