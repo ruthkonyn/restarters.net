@@ -6575,7 +6575,8 @@ button.bg-dark:focus {
 .list-md-inline,
 .list-lg-inline,
 .list-xl-inline,
-.footer-links {
+.footer-links,
+.mw-parser-output .mw-collapsible div:first-of-type {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6953,7 +6954,8 @@ button.bg-dark:focus {
           align-items: flex-end !important;
 }
 
-.align-items-center {
+.align-items-center,
+.mw-parser-output .mw-collapsible div:first-of-type {
   -webkit-box-align: center !important;
       -ms-flex-align: center !important;
           align-items: center !important;
@@ -14158,7 +14160,7 @@ a.text-dark:focus {
 }
 
 .list-doodle,
-.mw-parser-output > ul {
+.mw-parser-output .mw-collapsible .mw-collapsible-content ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -14166,12 +14168,12 @@ a.text-dark:focus {
 }
 
 .list-doodle li,
-.mw-parser-output > ul li {
+.mw-parser-output .mw-collapsible .mw-collapsible-content ul li {
   position: relative;
 }
 
 .list-doodle li::before,
-.mw-parser-output > ul li::before {
+.mw-parser-output .mw-collapsible .mw-collapsible-content ul li::before {
   content: '';
   margin-right: 5px;
   font-size: 14px;
@@ -14297,6 +14299,12 @@ a.text-dark:focus {
     position: absolute;
     -webkit-transform: translateY(-50%);
             transform: translateY(-50%);
+  }
+}
+
+@media (max-width: 991.98px) {
+  #p-search {
+    width: 55%;
   }
 }
 
@@ -14461,26 +14469,79 @@ a.text-dark:focus {
   color: #000;
 }
 
-.mw-parser-output > ul {
-  margin-left: 90px;
-  margin-bottom: 25px;
+.mw-parser-output .mw-collapsible {
+  position: relative;
+  padding: 0;
+  min-height: 70px;
+  border: 0;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  background-color: transparent;
 }
 
-.mw-parser-output > ul li a {
-  text-decoration: underline !important;
-  color: #000 !important;
+.mw-parser-output .mw-collapsible:first-child {
+  border-top: 2px solid #000 !important;
 }
 
-.mw-parser-output > h2 {
+.mw-parser-output .mw-collapsible:last-child {
+  border-bottom: 2px solid #000 !important;
+}
+
+.mw-parser-output .mw-collapsible h2 {
   counter-reset: section 0;
   counter-increment: chapter;
 }
 
-.mw-parser-output > h3 {
+.mw-parser-output .mw-collapsible h3 {
   counter-increment: section;
 }
 
-.mw-parser-output h2 span:first-child::before {
+.mw-parser-output .mw-collapsible .mw-collapsible-toggle {
+  position: absolute;
+  width: 100%;
+  height: 70px;
+  cursor: pointer;
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-toggle::before {
+  content: none !important;
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-toggle::after {
+  content: '';
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 15px;
+  height: 8px;
+  background-image: url(/images/dropdown-arrow-up.svg?fe8917247edccb861690d176b5361105) !important;
+  border: 0;
+  margin-left: 8px;
+  -webkit-transform: rotate(181deg) translateY(50%);
+          transform: rotate(181deg) translateY(50%);
+  display: inline-block;
+  vertical-align: middle;
+  position: absolute;
+  right: 0;
+  top: 35px;
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-toggle-collapsed::after {
+  -webkit-transform: rotate(0deg) translateY(-50%);
+          transform: rotate(0deg) translateY(-50%);
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-toggle a {
+  line-height: 0;
+  font-size: 0;
+  color: transparent;
+}
+
+.mw-parser-output .mw-collapsible div:first-of-type {
+  height: 70px;
+}
+
+.mw-parser-output .mw-collapsible div:first-of-type h2 span:first-child::before {
   content: counter(chapter);
   width: 50px;
   height: 50px;
@@ -14493,11 +14554,21 @@ a.text-dark:focus {
   margin-right: 12px;
 }
 
-.mw-parser-output h3 span:first-child::before {
+.mw-parser-output .mw-collapsible .mw-collapsible-content h3 span:first-child::before {
   content: counter(chapter) "." counter(section) " ";
   margin: 0;
   display: inline-block;
-  margin-right: 30px;
+  margin-right: 40px;
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-content ul {
+  margin-left: 100px;
+  margin-bottom: 25px;
+}
+
+.mw-parser-output .mw-collapsible .mw-collapsible-content ul li a {
+  text-decoration: underline !important;
+  color: #000 !important;
 }
 
 .firstHeading {

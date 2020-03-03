@@ -16472,16 +16472,17 @@ label.form-check-label {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  position: absolute;
   width: 15px;
   height: 8px;
   background-image: url(/images/dropdown-arrow-up.svg?fe8917247edccb861690d176b5361105) !important;
-  position: absolute;
-  top: 50%;
   border: 0;
   margin-left: 8px;
   -webkit-transform: rotate(181deg) translateY(50%);
           transform: rotate(181deg) translateY(50%);
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 5px;
+  right: 0;
 }
 
 .nav-tabs-block .nav-item.dropdown.show .nav-link::after {
@@ -16564,6 +16565,65 @@ label.form-check-label {
     border-left: 0;
     border-right: 0;
   }
+}
+
+.pagination {
+  margin: 30px 0 0 0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px;
+}
+
+.pagination a,
+.pagination .page-link {
+  color: #000;
+  border: 0;
+  text-decoration: none;
+  border-width: 2px;
+  border-radius: 3px;
+  padding: 0.5rem 0.375rem;
+  background-color: transparent !important;
+}
+
+.pagination a:focus,
+.pagination .page-link:focus {
+  background-color: transparent;
+  color: #000;
+}
+
+.pagination a:hover,
+.pagination .page-link:hover {
+  text-decoration: underline;
+  color: #000;
+  font-weight: 700;
+  background-color: transparent;
+}
+
+.pagination .active a.page-link {
+  border: 1px solid red;
+  text-decoration: none;
+  color: #000;
+  border-radius: 3px;
+  border-bottom: 2px solid #155e67;
+}
+
+.pagination .active a.page-link:focus {
+  background-color: #00b0c6;
+}
+
+.pagination .active a.page-link:hover {
+  background-color: #00b0c6;
+  border-color: #00b0c6;
+  text-decoration: underline;
+}
+
+.pagination .active .page-link {
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.pagination li.page-item.disabled {
+  display: none;
 }
 
 .hr-sm {

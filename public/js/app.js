@@ -34999,9 +34999,9 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(139);
+__webpack_require__(177);
 __webpack_require__(178);
-__webpack_require__(179);
-module.exports = __webpack_require__(180);
+module.exports = __webpack_require__(179);
 
 
 /***/ }),
@@ -36068,6 +36068,7 @@ $(document).ready(function () {
 
   $current_column = $('input[name=sort_column]:checked').val();
 
+  console.log('HelloThisIsWorking!');
   $('input[name=sort_column]').on('click', function (e) {
     $form = $('#device-search');
     $sort_direction = $form.find('input[name=sort_direction]');
@@ -94534,7 +94535,12 @@ $('.entireRowClickable').click(function () {
 });
 
 /***/ }),
-/* 177 */,
+/* 177 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
 /* 178 */
 /***/ (function(module, exports) {
 
@@ -94542,12 +94548,6 @@ $('.entireRowClickable').click(function () {
 
 /***/ }),
 /* 179 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 180 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

@@ -1,4 +1,8 @@
 #p-search {
+  @include media-breakpoint-down(md) {
+    width: 55%;
+  }
+  
   #searchform {
     .input-group {
       height: 50px;
