@@ -121,6 +121,22 @@ class DashboardController extends Controller
         ->select('groups.*')
         ->get();
 
+        $talk_groups = Group::whereHas('allVolunteers', function($query) use($user) {
+            return $query->where('user', $user->id);
+        })
+        ->when($user->hasLocationSet(), function($query) {
+          return $query->havingDistanceWithin(32.1869); // 20 miles
+        })
+        ->whereNotNull('discourse_slug')
+        ->orderBy('idgroups', 'DESC')
+        ->get();
+
+        if ($talk_groups->isEmpty()) {
+            $talk_groups = Group::whereNotNull('discourse_slug')
+            ->orderBy('idgroups', 'DESC')
+            ->get();
+        }
+
         return view('dashboard.index', [
             'gmaps' => true,
             'user' => $user,
@@ -134,6 +150,7 @@ class DashboardController extends Controller
             'news_feed' => $news_feed,
             'all_groups' => $all_groups,
             'new_groups' => $new_groups,
+            'talk_groups' => $talk_groups,
             'user_groups' => $user_groups,
             'owned_groups' => $owned_groups,
             'onboarding' => $onboarding,

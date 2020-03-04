@@ -68,14 +68,17 @@
           Your region’s Talk groups:
         </p>
 
-        {{-- TODO: $talk_groups --}}
-        {{-- @php $user_groups = collect([]); @endphp --}}
-        @if( ! $user_groups->isEmpty() )
-          @php $take_3_groups = $user_groups->take(2); @endphp
+        @if( ! $user_groups->isEmpty())
+          @php $displayed_groups = $user_groups->take(2); @endphp
+        @else
+          @php $displayed_groups = $talk_groups->take(2); @endphp
+        @endif
+
+        @if ( ! $displayed_groups->isEmpty())
           <div class="table-responsive mb-0 mt-10">
             <table role="table" class="table table-hover table-border-rows mb-0">
               <tbody>
-                @foreach ($take_3_groups as $group)
+                @foreach ($displayed_groups as $group)
                   @include('partials.tables.row-group-small')
                 @endforeach
               </tbody>
