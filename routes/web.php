@@ -278,7 +278,7 @@ Route::get('/party/stats/{id}/wide', function ($id) {
 Route::get('markAsRead/{id}', function ($id) {
     auth()->user()->unReadNotifications->where('id', $id)->markAsRead();
 
-    return  redirect()->back();
+    return redirect()->back();
 })->name('markAsRead');
 
 Route::get('/notifications/{notification_id}/', 'NotificationController');
@@ -289,3 +289,9 @@ Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::post('/set-cookie', 'InformationAlertCookieController');
+
+Route::get('/check-auth', function() {
+    return response()->json([
+        'authenticated' => \Auth::check(),
+    ]);
+});

@@ -30,6 +30,13 @@ class DiscourseNotificationController extends Controller
         setcookie('has_cookie_notifications_set', true, time() + (60 * 10), url('/'));
 
         $user_notitifications = Auth::user()->unReadNotifications;
+
+        if (is_null($user_notitifications)) {
+            return response()->json([
+                'message' => 'failed',
+            ]);
+        }
+
         if ( ! $user_notitifications->isEmpty()) {
             $user_notitifications = $user_notitifications->sortBy('created_at')->take(10);
         }

@@ -1,11 +1,12 @@
-import jquery from 'jquery';
-window.$ = window.jQuery=jquery;
+// import jquery from 'jquery';
+// window.$ = window.jQuery=jquery;
 
-window.bootstrap = require('bootstrap');
+// window.bootstrap = require('bootstrap');
 
 $(document).ready(function() {
   require('./components/dropdown.js');
   require('./components/ajax-search-discourse-notifications.js');
+  require('./components/check-auth.js');
 
   console.log('Global js ready!');
 
