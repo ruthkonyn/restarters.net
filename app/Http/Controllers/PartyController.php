@@ -822,17 +822,19 @@ class PartyController extends Controller
 
               $this->notifyHostsOfRsvp($user_event, $event_id);
 
-              return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
+              return redirect()->back()
+              ->with($flashData)
+              ->with('formHash', '#your-events-pane');
           } catch (\Exception $e) {
-              $flashData['danger'] = 'Failed to join this event';
-
-              return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
+              return redirect()->back()
+              ->with('danger', 'Failed to join this event')
+              ->with('formHash', '#your-events-pane');
           }
         }
 
-        $flashData['warning'] = 'You are already part of this event';
-
-        return FixometerHelper::previousWithHash('#your-events-pane', $flashData);
+        return redirect()->back()
+        ->with('warning', 'You are already part of this event')
+        ->with('formHash', '#your-events-pane');
     }
 
     public function notifyHostsOfRsvp($user_event, $event_id)

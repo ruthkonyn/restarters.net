@@ -1,9 +1,11 @@
 <section class="table-section py-30" id="user-groups">
-  
-  @include('partials.alerts.alert-danger', [
-    'text' => "You are now folling Restart HQ! Space for message or notifications also in Groups near you and All groups.",
-    'class' => 'mb-40'
-  ])
+
+  @if (\Session::has('success'))
+    @include('partials.alerts.alert-danger', [
+      'text' => \Session::get('success'),
+      'class' => 'mb-40'
+    ])
+  @endif
 
   <div class="row border-between mt-0 mb-40">
     <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore1">

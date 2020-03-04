@@ -1044,16 +1044,13 @@ class GroupController extends Controller
                 Notification::send($host, new NewGroupMember($arr, $host));
             }
 
-            return FixometerHelper::previousWithHash('#your-groups-pane', [
-              'success' => "You are now following {$group->name}!"
-            ]);
-
+            return redirect()->back()
+            ->with('success', "You are now following {$group->name}! Space for message or notifications also in Group near you and All groups.")
+            ->with('formHash', '#your-groups-pane');
         } catch (\Exception $e) {
-            $response['danger'] = 'Failed to follow this group';
-
-            return FixometerHelper::previousWithHash('#all-groups-pane', [
-              'warning' => "Failed to follow this group"
-            ]);
+            return redirect()->back()
+            ->with('warning', "Failed to follow this group")
+            ->with('formHash', '#your-groups-pane');
         }
     }
 

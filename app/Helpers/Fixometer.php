@@ -16,8 +16,6 @@ use Auth;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\URL;
 use Request;
 
 class FixometerHelper
@@ -1075,6 +1073,8 @@ class FixometerHelper
 
     public static function previousWithHash(string $hash = null, $with_data)
     {
-        return Redirect::to(URL::previous() . $hash)->with($flashData);
+        return redirect()->back()
+        ->with($flashData)
+        ->with('formHash', $hash);
     }
 }
