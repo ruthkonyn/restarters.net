@@ -186,3 +186,15 @@
   margin: 0;
   border: 0 !important;
 }
+
+.no-space-mobile {
+  .nav-tabs-block {
+    .nav-item {
+      // FIX: Tab Controls do not span across entire width properly
+      @include media-breakpoint-down(md) {
+        // NOTE: Resolve dynamic width for mobile (important).
+        flex-basis: auto;
+      }
+    }
+  }
+}

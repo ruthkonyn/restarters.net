@@ -14577,3 +14577,10 @@ a.text-dark:focus {
   border: 0 !important;
 }
 
+@media (max-width: 991.98px) {
+  .no-space-mobile .nav-tabs-block .nav-item {
+    -ms-flex-preferred-size: auto;
+        flex-basis: auto;
+  }
+}
+
