@@ -161,7 +161,7 @@ $('.toggle-dropdown-menu').click(function () {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = 'https://restarters.test/discourse/notifications/';
+  $url = window.location.origin + '/discourse/notifications/';
 
   $.ajax({
     headers: {
@@ -206,7 +206,7 @@ ajaxSearchNotifications();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = 'https://restarters.test/check-auth';
+  $url = window.location.origin + '/check-auth';
 
   $.ajax({
     headers: {
@@ -230,7 +230,7 @@ function checkAuth() {
           $auth_menu_items.removeClass('d-none');
         }
       } else {
-        $auth_list_item.find('a').attr('href', 'https://restarters.test/');
+        $auth_list_item.find('a').attr('href', window.location.origin + '/');
       }
     }
   });

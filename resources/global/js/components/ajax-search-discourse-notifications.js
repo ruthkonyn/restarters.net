@@ -2,7 +2,7 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = 'https://restarters.test/discourse/notifications/';
+  $url = window.location.origin + '/discourse/notifications/';
 
   $.ajax({
     headers: {
