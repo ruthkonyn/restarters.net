@@ -16535,13 +16535,6 @@ label.form-check-label {
   border-bottom: 1px solid #000;
 }
 
-@media (max-width: 991.98px) {
-  .no-space-mobile .nav-tabs-block .nav-item {
-    -ms-flex-preferred-size: auto;
-        flex-basis: auto;
-  }
-}
-
 .no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
   border-bottom: 0 !important;
 }
@@ -16623,6 +16616,83 @@ label.form-check-label {
 }
 
 .pagination li.page-item.disabled {
+  display: none;
+}
+
+.border-between > [class*='col-']::before {
+  content: "";
+  position: absolute;
+  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
+  left: -3px;
+  top: 0;
+  background-position: top;
+  width: 3px;
+  background-size: 3px 20px;
+  height: 100%;
+  background-repeat: repeat;
+}
+
+@media (max-width: 575.98px) {
+  .border-between > [class*='col-'][class*='col-sm-'] {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .border-between > [class*='col-'][class*='col-sm-']::before {
+    left: 0;
+    background-position: center;
+    height: 3px;
+    width: 100%;
+    background-size: 20px 35px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .border-between > [class*='col-'][class*='col-md-'] {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .border-between > [class*='col-'][class*='col-md-']::before {
+    left: 0;
+    background-position: center;
+    height: 3px;
+    width: 100%;
+    background-size: 20px 35px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .border-between > [class*='col-'][class*='col-lg-'] {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .border-between > [class*='col-'][class*='col-lg-']::before {
+    left: 0;
+    background-position: center;
+    height: 3px;
+    width: 100%;
+    background-size: 20px 35px;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .border-between > [class*='col-'][class*='col-xl-'] {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .border-between > [class*='col-'][class*='col-xl-']::before {
+    left: 0;
+    background-position: center;
+    height: 3px;
+    width: 100%;
+    background-size: 20px 35px;
+  }
+}
+
+.border-between > [class*='col-']:first-child::before {
   display: none;
 }
 

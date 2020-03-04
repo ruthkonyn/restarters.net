@@ -7,12 +7,13 @@
 
   .nav-tabs-block {
     .nav-item {
-      // FIX: Tab Controls do not span across entire width properly
-      @include media-breakpoint-down(md) {
-        // NOTE: Resolve dynamic width for mobile (important).
-        flex-basis: auto;
-      }
-      
+      // TODO: For Wiki only!
+      // // FIX: Tab Controls do not span across entire width properly
+      // @include media-breakpoint-down(md) {
+      //   // NOTE: Resolve dynamic width for mobile (important).
+      //   flex-basis: auto;
+      // }
+
       .nav-link {
         &.active {
           border-bottom: 0 !important;

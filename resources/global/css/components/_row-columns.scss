@@ -14,10 +14,10 @@
 
   @each $breakpoint, $value in map-keys(map-remove($grid-breakpoints, xs)) {
     &[class*='col-#{$breakpoint}-'] {
-      padding-top: 15px;
-      padding-bottom: 15px;
-
       @include media-breakpoint-down(map-previous-key($grid-breakpoints, $breakpoint)) {
+        padding-top: 15px;
+        padding-bottom: 15px;
+
         &::before {
           left: 0;
           background-position: center;

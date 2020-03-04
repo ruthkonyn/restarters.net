@@ -48,15 +48,15 @@
   @if( $event->requiresModerationByAdmin() )
 
     @if( FixometerHelper::hasRole(Auth::user(), 'Administrator') )
-      <td class="text-center">Event requires <a href="/party/edit/{{ $event->idevents }}">moderation</a> by an admin</td>
+      <td class="text-right">Event requires <a href="/party/edit/{{ $event->idevents }}">moderation</a> by an admin</td>
     @else
-      <td class="text-center">@lang('partials.event_requires_moderation_by_an_admin')</td>
+      <td class="text-right">@lang('partials.event_requires_moderation_by_an_admin')</td>
     @endif
 
   @elseif ( $event->isUpcoming() && ! $event->isStartingSoon() )
 
     @if ( $event->isVolunteer() )
-      <td class="text-center">
+      <td class="text-right">
         <span class="font-weight-bold mr-2 d-none d-md-inline">You're going!</span>
         @if ( Auth::check() )
           @php( $user = auth()->user() )
@@ -72,7 +72,7 @@
         @endif
       </td>
     @else
-      <td class="text-center">
+      <td class="text-right">
         <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
@@ -82,7 +82,7 @@
   @elseif( $event->isStartingSoon() )
 
     @if ( $event->isVolunteer() )
-      <td colspan="1" class="text-center">
+      <td colspan="1" class="text-right">
         <span class="font-weight-bold mr-2 d-none d-md-inline">You're going!</span>
         @if ( Auth::check() )
           @php( $user = auth()->user() )
@@ -98,7 +98,7 @@
         @endif
       </td>
     @else
-      <td colspan="1" class="text-center">
+      <td colspan="1" class="text-right">
         <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
@@ -108,13 +108,13 @@
   @elseif( $event->isInProgress() )
 
     @if ( $event->isVolunteer() )
-      <td colspan="1" class="text-center">
+      <td colspan="1" class="text-right">
         <a href="/party/view/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           Add a device
         </a>
       </td>
     @else
-      <td colspan="1" class="text-center">
+      <td colspan="1" class="text-right">
         <a href="/party/join/{{ $event->idevents }}" class="btn btn-primary btn-sm">
           RSVP
         </a>
@@ -122,7 +122,7 @@
     @endif
 
   @elseif( $event->hasFinished() )
-    <td colspan="1" class="text-center">
+    <td colspan="1" class="text-right">
       {{-- TODO: What button needs to be displayed here? --}}
       @if ( $event->checkForMissingData()['devices_count'] != 0  )
         @php( $stats = $event->getEventStats($EmissionRatio) )

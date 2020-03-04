@@ -2,9 +2,10 @@
 
   @include('partials.alerts.alert-danger', [
     'text' => "You can now add all your upcoming events to your personal calendar!",
+    'class' => 'mb-40'
   ])
 
-  <div class="row border-between my-40">
+  <div class="row border-between mt-0 mb-40">
     <div class="col-12 col-lg-4">
       <b>
         Repair events are a great way to learn and share repair skills and do our bit for the planet by giving our broken stuff a new lease of life.

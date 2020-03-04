@@ -1129,7 +1129,6 @@ function initAutocomplete() {
 
     $current_column = $('input[name=sort_column]:checked').val();
 
-    console.log('HelloThisIsWorking!');
     $('input[name=sort_column]').on('click', function(e) {
         $form = $('#device-search');
         $sort_direction = $form.find('input[name=sort_direction]');

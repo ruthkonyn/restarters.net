@@ -1,22 +1,11 @@
 <section class="table-section py-30" id="user-groups">
+  
+  @include('partials.alerts.alert-danger', [
+    'text' => "You are now folling Restart HQ! Space for message or notifications also in Groups near you and All groups.",
+    'class' => 'mb-40'
+  ])
 
-  <div class="alert alert-danger alert-custom alert-dismissible fade show mb-0" role="alert">
-    <div class="d-flex flex-row flex-wrap align-items-center">
-      <div class="mr-3 mb-2 mb-lg-0">
-        @include('svgs.alerts.alert-doodle')
-      </div>
-
-      <p class="mb-0">
-        You are now folling Restart HQ! Space for message or notifications also in Groups near you and All groups.
-      </p>
-    </div>
-
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-
-  <div class="row border-between my-40">
+  <div class="row border-between mt-0 mb-40">
     <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore1">
       <b>
         We are a network of local repair groups from around the world.

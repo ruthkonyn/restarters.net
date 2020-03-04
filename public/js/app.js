@@ -36068,7 +36068,6 @@ $(document).ready(function () {
 
   $current_column = $('input[name=sort_column]:checked').val();
 
-  console.log('HelloThisIsWorking!');
   $('input[name=sort_column]').on('click', function (e) {
     $form = $('#device-search');
     $sort_direction = $form.find('input[name=sort_direction]');
@@ -94514,14 +94513,14 @@ $(document).ready(function () {
 
     location.href = $prefix + $('.group_discourse_slug').val();
   });
-});
 
-$('.change-group').on('change', function () {
-  searchEventsByGroup();
-});
+  $('.change-group').on('change', function () {
+    searchEventsByGroup();
+  });
 
-$('.change-eventsgroup').on('change', function () {
-  $('.change-event-url').attr('href', '/party/view/' + $(this).val());
+  $('.change-events').on('change', function () {
+    $('.change-event-url').attr('href', '/party/view/' + $(this).val() + '#devicesSection');
+  });
 });
 
 /***/ }),

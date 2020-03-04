@@ -35,18 +35,20 @@
 
     @if (! $user_groups->isEmpty())
       <div class="row">
-        <div class="col-12 col-lg-6 mb-50 mb-md-0 d-flex flex-column">
-          <b>
-            Group chat
-          </b>
+        <div class="col-12 col-lg-6 mb-40 mb-lg-0 d-flex flex-column">
+          <div class="fixed-height-100 mb-20">
+            <b>
+              Group chat
+            </b>
 
-          <p class="card-text mb-20">
-            Catch up with your groups by clicking below.
-            You can also <a href="#sendUrgrentMessageModal" data-toggle="modal" data-target="#sendUrgrentMessageModal">send an urgent message</a> to groups you host.
-          </p>
+            <p class="card-text mb-0">
+              Catch up with your groups by clicking below.
+              You can also <a href="#sendUrgrentMessageModal" data-toggle="modal" data-target="#sendUrgrentMessageModal">send an urgent message</a> to groups you host.
+            </p>
+          </div>
 
           @if( ! $user_groups->isEmpty() )
-            <div class="table-responsive mb-0 mt-auto">
+            <div class="table-responsive mb-0">
               <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @php $take_3_groups = $user_groups->take(3); @endphp
@@ -66,7 +68,7 @@
         </div>
 
         <div class="col-12 col-lg-6 d-flex flex-column">
-          <div class="d-flex flex-wrap flex-row align-items-center justify-content-between mb-20">
+          <div class="fixed-height-100 mb-20 d-flex flex-wrap flex-row align-items-start justify-content-between">
             <div class="">
               <b>
                 Upcoming events
@@ -85,7 +87,7 @@
           </div>
 
           @if( ! $upcoming_events->isEmpty())
-            <div class="table-responsive mb-0 mt-auto">
+            <div class="table-responsive mb-0">
               <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @foreach ($upcoming_events as $event)
@@ -101,7 +103,7 @@
               </u>
             </a>
           @elseif ( ! $user_upcoming_events->isEmpty())
-            <div class="table-responsive mb-0 mt-auto">
+            <div class="table-responsive mb-0">
               <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
                   @php $user_upcoming_events = $user_upcoming_events->take(2); @endphp
@@ -139,7 +141,7 @@
                     @if ($group->discourse_slug == '')
                       @continue
                     @endif
-                    
+
                     <option value="{{ $group->discourse_slug }}">
                       {{ $group->name }}
                     </option>
@@ -149,7 +151,7 @@
             </div>
           </div>
 
-          <a href="javascript:{}" data-initial-url="{{ env('DISCOURSE_URL')."/g" }}" class="btn btn-primary w-min-auto redirectToIntended">
+          <a href="javascript:{}" data-initial-url="{{ env('DISCOURSE_URL')."g/" }}" class="btn btn-primary w-min-auto redirectToIntended">
             Send
           </a>
         </div>

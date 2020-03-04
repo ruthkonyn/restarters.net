@@ -32,75 +32,80 @@
         </div>
       </div>
 
-      <form action="/party/" method="get" id="events-search">
-        <input type="hidden" name="formHash" id="formHash" value="{{ $formHash }}">
-        <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
-        <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
+      <div class="row">
+        <div class="col-12 col-md-12 p-0 p-md-15">
+          <form action="/party/" method="get" id="events-search">
+            <input type="hidden" name="formHash" id="formHash" value="{{ $formHash }}">
+            <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
+            <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
 
-        <div class="offset-md-box-shadow no-space-mobile">
-          <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
-            <li class="nav-item">
-              <a id="tab-A" href="#your-events-pane" class="nav-link bg-white active" data-toggle="tab" role="tab">
-                <span class="d-none d-lg-block">@lang('events.upcoming_for_your_groups')</span>
-                <span class="d-block d-lg-none">@lang('events.upcoming_for_your_groups_mobile')</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a id="tab-B" href="#nearest-events-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
-                <span class="d-none d-lg-block">@lang('events.other_events_near_you')</span>
-                <span class="d-block d-lg-none">@lang('events.other_events_near_you_mobile')</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a id="tab-C" href="#all-events-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
-                <span class="d-none d-lg-block">@lang('events.event_all')</span>
-                <span class="d-block d-lg-none">@lang('events.event_all_mobile')</span>
-              </a>
-            </li>
-          </ul>
-          <div class="tab-content" id="content" role="tablist">
-            <div id="your-events-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
-              <div class="tab-pane-content p-30">
-                <div class="row">
-                  <div class="col-12 col-md-12 form-group">
+            <div class="offset-md-box-shadow no-space-mobile">
+              <ul id="tabs" class="nav nav-tabs nav-tabs-block" role="tablist">
+                <li class="nav-item">
+                  <a id="tab-A" href="#your-events-pane" class="nav-link bg-white active" data-toggle="tab" role="tab">
+                    <span class="d-none d-lg-block">@lang('events.upcoming_for_your_groups')</span>
+                    <span class="d-block d-lg-none">@lang('events.upcoming_for_your_groups_mobile')</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a id="tab-B" href="#nearest-events-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
+                    <span class="d-none d-lg-block">@lang('events.other_events_near_you')</span>
+                    <span class="d-block d-lg-none">@lang('events.other_events_near_you_mobile')</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a id="tab-C" href="#all-events-pane" class="nav-link bg-white" data-toggle="tab" role="tab">
+                    <span class="d-none d-lg-block">@lang('events.event_all')</span>
+                    <span class="d-block d-lg-none">@lang('events.event_all_mobile')</span>
+                  </a>
+                </li>
+              </ul>
+              <div class="tab-content" id="content" role="tablist">
+                <div id="your-events-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                  <div class="tab-pane-content p-30">
                     <div class="row">
-                      <div class="col">
-                        @include('events.sections.user-events')
+                      <div class="col-12 col-md-12 form-group">
+                        <div class="row">
+                          <div class="col">
+                            @include('events.sections.user-events')
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="nearest-events-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                  <div class="tab-pane-content p-30">
+                    <div class="row">
+                      <div class="col-12 col-md-12 form-group">
+                        <div class="row">
+                          <div class="col">
+                            @include('events.sections.nearby-events')
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="all-events-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
+                  <div class="tab-pane-content p-30">
+                    <div class="row">
+                      <div class="col-12 col-md-12 form-group">
+                        <div class="row">
+                          <div class="col">
+                            @include('events.sections.all-events')
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div id="nearest-events-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
-              <div class="tab-pane-content p-30">
-                <div class="row">
-                  <div class="col-12 col-md-12 form-group">
-                    <div class="row">
-                      <div class="col">
-                        @include('events.sections.nearby-events')
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="all-events-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
-              <div class="tab-pane-content p-30">
-                <div class="row">
-                  <div class="col-12 col-md-12 form-group">
-                    <div class="row">
-                      <div class="col">
-                        @include('events.sections.all-events')
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
-      </form>
+      </div>
+
       @php( $user_preferences = session('column_preferences') )
     </div>
   </section>

@@ -72,12 +72,12 @@ $(document).ready(function() {
 
     location.href = $prefix + $('.group_discourse_slug').val();
   });
-});
 
-$('.change-group').on('change', function() {
-  searchEventsByGroup();
-});
+  $('.change-group').on('change', function() {
+    searchEventsByGroup();
+  });
 
-$('.change-eventsgroup').on('change', function() {
-  $('.change-event-url').attr('href', '/party/view/' + $(this).val());
+  $('.change-events').on('change', function() {
+    $('.change-event-url').attr('href', '/party/view/' + $(this).val() + '#devicesSection');
+  });
 });
