@@ -29,15 +29,18 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-12 col-md-12">
+          @include('partials.alerts.alert-danger', [
+            'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
+          ])
+        </div>
+      </div>
+
       {{-- @include('dashboard.temporary-banner') --}}
 
       <div class="row">
         <div class="col-12 col-lg-8 d-flex flex-column order-2 order-lg-1">
-
-
-          @include('partials.alerts.alert-danger', [
-            'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
-          ])
 
           {{-- Host with groups and no events --}}
           @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0)

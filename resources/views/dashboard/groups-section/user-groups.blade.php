@@ -106,7 +106,6 @@
             <div class="table-responsive mb-0">
               <table role="table" class="table table-hover table-border-rows mb-0">
                 <tbody>
-                  @php $user_upcoming_events = $user_upcoming_events->take(2); @endphp
                   @foreach ($user_upcoming_events as $event)
                     @include('partials.tables.row-event-small')
                   @endforeach
