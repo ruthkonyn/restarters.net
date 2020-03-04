@@ -98,6 +98,7 @@
                   <button id="deleteEvent" class="dropdown-item" data-party-id="{{$formdata->id}}" data-count-attended="{{count($attended)}}" data-count-invited="{{count($invited)}}" data-count-volunteers="{{$event->volunteers}}">Delete event</button>
                 </form>
                 @endif
+                
                 @if( $event->hasFinished() )
                   <a href="#" class="btn dropdown-item" data-toggle="modal" data-target="#event-request-review">Request review</a>
                   <button data-toggle="modal" data-target="#event-share-stats" class="btn dropdown-item">Share event stats</button>
