@@ -123,16 +123,12 @@ footer {
 
 .button-group {
   padding-top: 15px;
-
-  // .btn {
-  //   min-width: 120px;
-  // }
 }
 
 .form-group {
   &__offset {
     @include media-breakpoint-up(lg) {
-      padding-right: 210px;
+      padding-right: 140px;
     }
   }
 }
@@ -226,6 +222,29 @@ label.form-check-label {
   &:focus {
     border: 2px solid $black;
     border-color: $black;
+  }
+}
+
+.listed-calendar-links {
+  .input-group {
+    .select2-selection {
+      height: 50px;
+
+      .select2-selection__rendered {
+        line-height: 45px;
+      }
+    }
+
+    .form-control,
+    .input-group-append {
+      height: 50px;
+
+      button {
+        height: 50px;
+        border: 2px solid $black;
+        border-left: 1px solid $black;
+      }
+    }
   }
 }
 

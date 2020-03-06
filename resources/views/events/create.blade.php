@@ -21,7 +21,7 @@
       <div class="col-lg-12">
 
         @if(isset($response))
-          @php( FixometerHelper::printResponse($response) )
+          @php FixometerHelper::printResponse($response) @endphp
         @endif
 
         <div class="edit-panel">
@@ -47,34 +47,22 @@
               </div>
 
               @if ( count($user_groups) > 1 || FixometerHelper::hasRole($user, 'Administrator') )
+                @php $select_group_options = $user_groups; @endphp
+                @if( FixometerHelper::hasRole($user, 'Administrator') )
+                  @php $select_group_options = $group_list; @endphp
+                @endif
+
                 <div class="form-group form-group__offset">
                   <label for="event_group">@lang('events.field_event_group'):</label>
                   <div class="form-control form-control__select">
                     <select name="group" id="event_group" class="field field select2" required>
                       <option></option>
 
-                      @if( FixometerHelper::hasRole($user, 'Administrator') )
-
-                        @foreach($group_list as $group)
-                          @if( $group->id == $selected_group_id )
-                            <option selected value="{{{ $group->id }}}">{{{ $group->name }}}</option>
-                          @else
-                            <option value="{{{ $group->id }}}">{{{ $group->name }}}</option>
-                          @endif
-                        @endforeach
-
-                      @else
-
-                        @foreach($user_groups as $group)
-                          @if( $group->id == $selected_group_id )
-                            <option selected value="{{{ $group->id }}}">{{{ $group->name }}}</option>
-                          @else
-                            <option value="{{{ $group->id }}}">{{{ $group->name }}}</option>
-                          @endif
-                        @endforeach
-
-                      @endif
-
+                      @foreach($select_group_options as $group)
+                        <option @if( $group->id == $selected_group_id ) selected @endif value="{{{ $group->id }}}">
+                          {{{ $group->name }}}
+                        </option>
+                      @endforeach
                     </select>
                   </div>
                 </div>
@@ -153,13 +141,13 @@
             </div>
           </div>
 
-          <div class="button-group row">
-              <div class="offset-lg-3 col-lg-7 d-flex align-items-right justify-content-end text-right">
-                  <span class="button-group__notice">@lang('events.before_submit_text')</span>
-              </div>
-              <div class="col-lg-2 d-flex align-items-center justify-content-end">
-                  <input type="submit" class="btn btn-primary btn-block btn-create" id="create-event" value="@lang('events.create_event')">
-              </div>
+          <div class="d-flex flex-column flex-lg-row align-items-end justify-content-end">
+            <span class="button-group__notice text-right mb-20 mb-lg-auto mr-lg-20">
+              @lang('events.before_submit_text')
+            </span>
+            <button type="submit" name="button" class="btn btn-primary btn-block btn-create float-right" id="create-event">
+              @lang('events.create_event')
+            </button>
           </div>
 
         </form>

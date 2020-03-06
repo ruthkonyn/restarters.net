@@ -1,7 +1,7 @@
 .form-group {
   &__offset {
     @include media-breakpoint-up(lg) {
-      padding-right: 210px;
+      padding-right: 140px;
     }
   }
 }
@@ -171,6 +171,25 @@ label.form-check-label {
     box-shadow: none;
     font-weight: 700;
   }
+
+  &[type="file"] {
+    height: 50px;
+  }
+}
+
+// Resolving non-select2 styling for .form-control elements
+select.form-control:not([class*="select2"]) {
+  border-radius: unset !important;
+  border-radius: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-position: 96% 50%;
+  background-repeat: no-repeat;
+  background-image: url('../svgs/dropdown-arrow.svg') !important;
+}
+
+.custom-file-input ~ .custom-file-label::after {
+    content: "Button Text";
 }
 
 .form-text-corrected {

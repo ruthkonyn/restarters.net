@@ -6,7 +6,7 @@
             @include('includes.logo')
            </div>
 
-            <div class="entry-panel card card__login col-12 mt-5 text-left">
+            <div class="entry-panel card card__login card-info-box col-12 mt-5 text-left">
 
                 @if(isset($response))
                   @php( FixometerHelper::printResponse($response) )
@@ -39,5 +39,5 @@
         </div>
  @include('partials.languages')
     </section>
-   
+
 @include('layouts.footer')

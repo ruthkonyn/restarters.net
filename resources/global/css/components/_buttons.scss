@@ -42,7 +42,6 @@
 
 .btn-primary {
   width: auto;
-  height: 50px;
   box-shadow: 6px 6px 0 0 $black;
   border: solid 1px $black;
   background-color: $white;
@@ -139,6 +138,15 @@
     background-color: $white;
     color: $black;
   }
+}
+
+.btn-outline-primary {
+  @extend .btn-primary;
+
+  box-shadow: unset !important;
+  color: $white !important;
+  background-color: $black !important;
+  border-color: $black !important;
 }
 
 .show {

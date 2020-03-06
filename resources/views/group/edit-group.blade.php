@@ -190,12 +190,12 @@
 
 
           </div>
-          <div class="button-group row row-compressed-xs">
-            <div class="col-lg-12 d-flex align-items-center justify-content-end">
-              <button type="submit" class="btn btn-primary btn-create">@lang('groups.edit_group_save_changes')</button>
-            </div>
-          </div>
 
+          <div class="d-flex flex-column flex-lg-row align-items-end justify-content-end">
+            <button type="submit" name="button" class="btn btn-primary btn-block btn-create float-right">
+              @lang('groups.edit_group_save_changes')
+            </button>
+          </div>
         </div>
       </div>
     </form>

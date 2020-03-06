@@ -213,15 +213,18 @@
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-lg-4">
-                        @php $path = $user->getProfile($user->id)->path @endphp
-                        @if ( !is_null($path) )
+                      @php $path = $user->getProfile($user->id)->path; @endphp
+                      @if ( !is_null($path) )
+                        <div class="form-group col-lg-4">
                           <img width="50" src="{{ asset('/uploads/thumbnail_' . $path) }}" alt="{{{ $user->name }}}'s avatar">
-                        @endif
-                      </div>
-                      <div class="form-group col-lg-8">
+                        </div>
+                      @endif
+
+                      <div class="form-group col-lg-12">
                         <div class="d-flex justify-content-end">
-                          <button type="submit" class="btn btn-primary">@lang('general.change_photo')</button>
+                          <button type="submit" class="btn btn-primary">
+                            @lang('general.change_photo')
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -248,7 +251,7 @@
 
                 {{ Form::hidden('id', $user->id) }}
 
-                <fieldset class="registration__offset2">
+                <fieldset>
                   <div class="form-row">
                     <div class="form-group col-lg-6">
                       <label for="current-password">@lang('auth.current_password'):</label>
@@ -260,6 +263,7 @@
                       <label for="new-password">@lang('auth.new_password'):</label>
                       <input type="password" class="form-control" id="new-password" name="new-password">
                     </div>
+
                     <div class="form-group col-lg-6">
                       <label for="new-password-repeat">@lang('auth.new_repeat_password'):</label>
                       <input type="password" class="form-control" id="new-password-repeat" name="new-password-repeat">
