@@ -112,16 +112,19 @@ label.form-check-label {
     margin-top: 0;
     margin-bottom: 0;
     text-transform: uppercase;
+    height: 46px;
 
     .select2-search--inline {
       width: 100%;
 
-      .select2-search__field {
-        background-image: url('../svgs/dropdown-arrow.svg');
-        background-repeat: no-repeat;
-        background-position: 97% 50%;
-        width: 100% !important;
-      }
+      // TODO: Check this is working across multiple inputs still
+      // NOTE: Commented out code for now
+      // .select2-search__field {
+      //   background-image: url('../svgs/dropdown-arrow.svg');
+      //   background-repeat: no-repeat;
+      //   background-position: 97% 50%;
+      //   width: 100% !important;
+      // }
     }
 
     .select2-selection__choice {

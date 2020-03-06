@@ -26392,6 +26392,10 @@ h5 {
   }
 }
 
+.flex-dynamic-row .btn.btn-primary {
+  height: 50px;
+}
+
 .w-min-auto {
   min-width: auto !important;
 }

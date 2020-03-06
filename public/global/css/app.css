@@ -14965,6 +14965,8 @@ a.form-text-corrected:focus {
   letter-spacing: 1.2px;
   text-align: left;
   color: #000 !important;
+  -webkit-transition: none;
+  transition: none;
 }
 
 .btn-primary svg text,
@@ -15015,6 +15017,9 @@ a.form-text-corrected:focus {
 .btn-outline-primary:focus {
   background-color: #000;
   color: #fff !important;
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
+          box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
+  border-color: #000 !important;
 }
 
 .btn-primary:focus svg path,
@@ -15053,6 +15058,7 @@ a.form-text-corrected:focus {
   outline: 2px solid #000;
   background-color: #fff;
   color: #000;
+  border-color: #000;
 }
 
 .btn-outline-primary {
@@ -15289,17 +15295,11 @@ label.form-check-label {
   margin-top: 0;
   margin-bottom: 0;
   text-transform: uppercase;
+  height: 46px;
 }
 
 .form-control__select .select2-selection--multiple .select2-search--inline {
   width: 100%;
-}
-
-.form-control__select .select2-selection--multiple .select2-search--inline .select2-search__field {
-  background-image: url(/images/dropdown-arrow.svg?86fc29ef5a85954edb837cea322f4149);
-  background-repeat: no-repeat;
-  background-position: 97% 50%;
-  width: 100% !important;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice {
@@ -16602,7 +16602,7 @@ select.form-control:not([class*="select2"]) {
 }
 
 .no-space-mobile .nav-tabs-block .nav-item .nav-link.active {
-  border-bottom: 0 !important;
+  border-bottom: 1px solid #fff !important;
 }
 
 @media (max-width: 575.98px) {
