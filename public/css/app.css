@@ -25193,6 +25193,26 @@ td.col-device-auto {
   padding-left: 0;
 }
 
+.events .table-add td:not(:last-child) {
+  padding-right: 8px;
+}
+
+.events .table-add td .form-control {
+  height: 50px;
+}
+
+.events .table-add td .form-control .select2-selection__rendered {
+  line-height: 40px !important;
+}
+
+.events .table-add td .form-control .select2-selection__arrow {
+  top: 8px !important;
+}
+
+.events .table-add td button {
+  height: 50px;
+}
+
 .card .table-events .btn {
   width: auto;
   min-width: auto;

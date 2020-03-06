@@ -98,7 +98,9 @@
                   </div>
                 </td>
                 <td class="d-table-cell d-sm-table-cell">
-                  <input type="submit" class="btn btn-primary btn-add" value="Add">
+                  <button type="submit" name="button" class="btn btn-primary btn-add">
+                    Add
+                  </button>
                 </td>
                 <td class="d-none d-sm-table-cell">
                   <div class="form-control form-control__select">
