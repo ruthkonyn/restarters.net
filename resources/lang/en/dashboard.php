@@ -16,7 +16,7 @@ return array (
   'join_discussion' => 'Join the discussion',
   'log_devices' => 'Log devices',
   'title' => 'Welcome to Restarters Global Community',
-  'title_mobile' => 'Global Community',
+  'title_mobile' => 'Welcome',
   'subtitle' => 'Keep up to date with the latest activity in the Restarters community.',
   'groups_near_you_header' => 'Groups near you',
   'groups_near_you_text' => 'Follow a repair group to find out more about community repair in your area.',
