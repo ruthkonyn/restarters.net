@@ -36,3 +36,5 @@ mix.js('resources/global/js/app.js', 'public/global/js')
    .sass('resources/global/css/app.scss', 'public/global/css');
 
 mix.sass('resources/wiki/css/app.scss', 'public/css/wiki.css');
+
+mix.js('resources/talk/js/app.js', 'public/js/talk.js')
