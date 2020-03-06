@@ -74,9 +74,8 @@ module.exports = __webpack_require__(181);
 /***/ }),
 
 /***/ 181:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
 // import jquery from 'jquery';
 // window.$ = window.jQuery=jquery;
 
@@ -85,7 +84,7 @@ module.exports = __webpack_require__(181);
 $(document).ready(function () {
   __webpack_require__(182);
   __webpack_require__(183);
-  __webpack_require__(224);
+  __webpack_require__(184);
 
   console.log('Global js ready!');
 
@@ -201,7 +200,7 @@ ajaxSearchNotifications();
 
 /***/ }),
 
-/***/ 224:
+/***/ 184:
 /***/ (function(module, exports) {
 
 // API call to current site - check for user authenticated

@@ -60,9 +60,8 @@
     <div class="col mb-30">
       <div class="card card-summary">
         <div class="card-body">
-          {{-- TODO --}}
           <div class="svg-wrapper">
-
+            @include('svgs.fixometer.trash_doodle')
           </div>
 
           <h3>{{ $impact_data->waste_prevented }}</h3>
@@ -74,9 +73,8 @@
     <div class="col mb-30">
       <div class="card card-summary">
         <div class="card-body">
-          {{-- TODO --}}
           <div class="svg-wrapper">
-
+            @include('svgs.fixometer.cloud_doodle')
           </div>
 
           <h3>{{ number_format($impact_data->emissions, 0) }} kg</h3>
