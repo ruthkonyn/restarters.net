@@ -21368,21 +21368,22 @@ h2 sup a:hover {
   padding: 0;
   min-width: 100%;
   top: -1px !important;
-  background-color: #0394a6;
-  border-bottom: 3px solid #155e67;
+  background-color: #000;
+  border-bottom: 3px solid #000;
 }
 
 .button-group .dropdown-item {
   padding: 5px 10px;
-  background-color: #0394a6;
-  color: #fff;
+  background-color: #fff;
+  color: #000;
   font-family: "Asap", sans-serif;
   font-size: 16px;
 }
 
 .button-group .dropdown-item:hover,
 .button-group .dropdown-item:focus {
-  background-color: #0062cc;
+  background-color: #000;
+  color: #fff;
 }
 
 .dropdown-menu__titles {

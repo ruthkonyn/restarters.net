@@ -259,20 +259,21 @@
     padding: 0;
     min-width: 100%;
     top: -1px !important;
-    background-color: $brand;
-    border-bottom: 3px solid #155e67;
+    background-color: $black;
+    border-bottom: 3px solid $black;
   }
 
   .dropdown-item {
     padding: 5px 10px;
-    background-color: $brand;
-    color: #fff;
+    background-color: $white;
+    color: $black;
     font-family: $font-family-sans-serif;
     font-size: 16px;
 
     &:hover,
     &:focus {
-      background-color: $focus1;
+      background-color: $black;
+      color: $white;
     }
   }
 }
