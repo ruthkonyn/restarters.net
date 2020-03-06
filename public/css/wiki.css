@@ -14429,6 +14429,11 @@ a.text-dark:focus {
   color: #000;
 }
 
+html,
+body {
+  font-family: "Asap", sans-serif;
+}
+
 .mw-parser-output {
   counter-reset: chapter 0 section 0;
 }
