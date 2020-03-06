@@ -160,7 +160,7 @@ $('.toggle-dropdown-menu').click(function () {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = window.location.origin + '/discourse/notifications/';
+  $url = 'https://test-restarters.rstrt.org' + '/discourse/notifications/';
 
   $.ajax({
     headers: {
@@ -205,7 +205,7 @@ ajaxSearchNotifications();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = window.location.origin + '/check-auth';
+  $url = 'https://test-restarters.rstrt.org' + '/check-auth';
 
   $.ajax({
     headers: {

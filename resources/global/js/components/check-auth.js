@@ -1,6 +1,6 @@
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = window.location.origin + '/check-auth';
+  $url = 'https://test-restarters.rstrt.org' + '/check-auth';
 
   $.ajax({
     headers: {
