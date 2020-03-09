@@ -1,5 +1,5 @@
 Header always set Access-Control-Allow-Origin "https://therestartproject.org"
-Header always set Access-Control-Allow-Origin "https://test-wiki.rstrt.org"
+Header always set Access-Control-Allow-Origin "https://test-wiki.rstrt.org, *"
 
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
