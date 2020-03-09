@@ -1,22 +1,19 @@
-function messagesViewChange() {
-
-  url = document.getElementById("messages-dropdown").value;
-
-  if (url) {
-      // require a URL
-      window.location = document.location.origin + url; // redirect
+function navigateUrl(item) {
+  if(item.value) {
+    location.href = document.location.origin + item.value;
   }
-  return false;
 }
 
-$("select[name=messages]").change(function() {
-    window.location.href = $(this).val();
-  });
-
-$(function(){  //on document ready
-    $("select[name=messages] option")  //get the options
-        .filter( function () { //find the one that has the value that matches the url
-             return window.location.href.indexOf(this.value)>-1; //return true if it is a match
-        })
-        .prop("selected",true);  //select it
-});
+setTimeout(function() {
+  var options = document.querySelectorAll(".messages-dropdown-123 option");
+  console.log(options);
+  for(const option of options) {
+    const url = option.dataset.url;
+    const location = window.location.href;
+    const lastPart = location.substr(location.lastIndexOf('/') + 1);
+    if (lastPart == url) {
+      option.setAttribute("selected", "");
+      break;
+    }
+  }
+}, 600);
