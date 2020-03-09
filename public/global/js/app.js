@@ -74,9 +74,8 @@ module.exports = __webpack_require__(181);
 /***/ }),
 
 /***/ 181:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
 // import jquery from 'jquery';
 // window.$ = window.jQuery=jquery;
 
@@ -161,12 +160,12 @@ $('.toggle-dropdown-menu').click(function () {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = 'https://test-restarters.rstrt.org' + '/discourse/notifications/';
+  $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications/';
 
   $.ajax({
     headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      // 'Content-Type': 'application/x-www-form-urlencoded'
     },
     type: 'GET',
     url: $url,
@@ -206,12 +205,12 @@ ajaxSearchNotifications();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = 'https://test-restarters.rstrt.org' + '/check-auth';
+  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $.ajax({
     headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      // 'Content-Type': 'application/x-www-form-urlencoded'
     },
     type: 'GET',
     url: $url,

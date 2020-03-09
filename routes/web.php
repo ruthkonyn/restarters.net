@@ -282,7 +282,7 @@ Route::get('markAsRead/{id}', function ($id) {
 })->name('markAsRead');
 
 Route::get('/notifications/{notification_id}/', 'NotificationController');
-Route::get('/discourse/notifications', 'DiscourseNotificationController')->middleware('cors');
+Route::get('/test/discourse/notifications', 'DiscourseNotificationController');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
@@ -290,8 +290,8 @@ Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::post('/set-cookie', 'InformationAlertCookieController');
 
-Route::get('/check-auth', function() {
+Route::get('/test/check-auth', function() {
     return response()->json([
         'authenticated' => \Auth::check(),
     ]);
-})->middleware('cors');
+});

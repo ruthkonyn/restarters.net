@@ -2,12 +2,12 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  $url = 'https://test-restarters.rstrt.org' + '/discourse/notifications/';
+  $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications/';
 
   $.ajax({
     headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      // 'Content-Type': 'application/x-www-form-urlencoded'
     },
     type: 'GET',
     url: $url,

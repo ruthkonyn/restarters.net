@@ -1,11 +1,11 @@
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = 'https://test-restarters.rstrt.org' + '/check-auth';
+  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $.ajax({
     headers: {
-      'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      // 'Content-Type': 'application/x-www-form-urlencoded'
     },
     type: 'GET',
     url: $url,
