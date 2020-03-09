@@ -294,4 +294,4 @@ Route::get('/test/check-auth', function() {
     return response()->json([
         'authenticated' => \Auth::check(),
     ]);
-})
+});
