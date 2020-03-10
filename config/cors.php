@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'supportsCredentials' => false,
+    'supportsCredentials' => true,
     'allowedOrigins' => [
         'https://www.test-cors.org',
         'https://therestartproject.org',
