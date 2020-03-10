@@ -33,8 +33,6 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
-require('./notifications.js');
-
 setTimeout(function() {
   ajaxSearchNotifications();
 }, 300);
