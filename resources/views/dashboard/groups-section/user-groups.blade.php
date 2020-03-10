@@ -38,12 +38,11 @@
         <div class="col-12 col-lg-6 mb-40 mb-lg-0 d-flex flex-column">
           <div class="fixed-height-100 mb-20">
             <b>
-              Group chat
+              @lang('dashboard.groups_group_chat_title')
             </b>
 
             <p class="card-text mb-0">
-              Catch up with your groups by clicking below.
-              You can also <a href="#sendUrgrentMessageModal" data-toggle="modal" data-target="#sendUrgrentMessageModal">send an urgent message</a> to groups you host.
+              @lang('dashboard.groups_group_chat_description')
             </p>
           </div>
 
@@ -71,11 +70,11 @@
           <div class="fixed-height-100 mb-20 d-flex flex-wrap flex-row align-items-start justify-content-between">
             <div class="">
               <b>
-                Upcoming events
+                @lang('dashboard.events_upcoming_title')
               </b>
 
               <p class="card-text mb-0">
-                Your groups' upcoming events:
+                @lang('dashboard.events_upcoming_description')
               </p>
             </div>
 
