@@ -6927,8 +6927,8 @@ button.bg-dark:focus {
 }
 
 .d-flex,
-.nav-wrapper .nav-left > li,
-.nav-wrapper .nav-right > li,
+.nav-wrapper .nav-left,
+.nav-wrapper .nav-right,
 .nav-wrapper .nav-left > li > a,
 .nav-wrapper .nav-right > li > a,
 .nav-wrapper,
@@ -14596,15 +14596,11 @@ a.form-text-corrected:focus {
   }
 }
 
-.nav-wrapper .nav-left,
-.nav-wrapper .nav-right {
+.nav-wrapper .nav-left > li,
+.nav-wrapper .nav-right > li {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-}
-
-.nav-wrapper .nav-left > li,
-.nav-wrapper .nav-right > li {
   position: relative;
   height: 60px;
   width: 60px;

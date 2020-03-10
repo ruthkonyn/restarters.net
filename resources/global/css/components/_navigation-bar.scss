@@ -1,17 +1,17 @@
 %nav-items-shared {
   @extend .list-unstyled;
+  @extend .d-flex;
   @extend .flex-row;
   @extend .mb-0;
   @extend .align-items-center;
 
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-
   > li {
-    @extend .d-flex;
     @extend .align-items-center;
     @extend .justify-content-center;
+
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 
     position: relative;
     height: 60px;
