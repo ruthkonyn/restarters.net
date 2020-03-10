@@ -291,6 +291,8 @@ Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 Route::post('/set-cookie', 'InformationAlertCookieController');
 
 Route::get('/test/check-auth', function() {
+    dd(\Cookie::get('authenticated'), $_COOKIE);
+    
     return response()->json([
         'authenticated' => \Auth::check(),
     ]);

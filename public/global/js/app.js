@@ -170,6 +170,9 @@ function ajaxSearchNotifications() {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
       'Content-Type': 'application/x-www-form-urlencoded'
     },
+    xhrFields: {
+      withCredentials: true
+    },
     type: 'GET',
     url: $url,
     datatype: 'json',
@@ -217,6 +220,9 @@ function checkAuth() {
     headers: {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
       'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    xhrFields: {
+      withCredentials: true
     },
     type: 'GET',
     url: $url,
