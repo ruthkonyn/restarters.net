@@ -19,7 +19,7 @@ function checkAuth() {
     success: function(response) {
       $auth_list_item = $('.auth-list-item');
 
-      if (response.authenticated == true) {
+      if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
           $notifications_list_item.show();
         }
