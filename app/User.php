@@ -526,4 +526,21 @@ class User extends Authenticatable implements Auditable
 
         return true;
     }
+
+    public function logoutOfDiscourse()
+    {
+        $client = app('discourse-client');
+
+        $response = $client->request('GET', "/users/{$this->username}.json");
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return false;
+        }
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        $user_id = $array['user']['id'];
+        
+        $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
+    }
 }

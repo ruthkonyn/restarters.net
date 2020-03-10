@@ -1079,13 +1079,9 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
+        $user->logoutOfDiscourse();
+
         Auth::logout();
-
-        \Cookie::queue(\Cookie::forget('authenticated'));
-
-        $client = app('discourse-client');
-
-        $response = $client->request('POST', "/admin/users/{$user->username}/log_out");
 
         return redirect('/login');
     }
