@@ -41,4 +41,4 @@ setTimeout(function() {
       ).attr('class', 'notifcation-text')
     )
   );
-})
+}, 300);
