@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 
 class DiscourseNotificationController extends Controller
 {
+    private $user;
+
     public function __construct()
     {
-        header('Access-Control-Allow-Origin: *');
-
         // Check here if the user is authenticated
-        if ( ! Auth::check()) {
+        if (\Cookie::get('authenticated')) {
             return response()->json([
                 'message' => 'failed',
             ]);
@@ -29,7 +29,15 @@ class DiscourseNotificationController extends Controller
         // 10 Minutes
         setcookie('has_cookie_notifications_set', true, time() + (60 * 10), url('/'));
 
-        $user_notitifications = Auth::user()->unReadNotifications;
+        $this->user = User::where('email', \Cookie::get('authenticated'))->first();
+
+        if (! $this->user) {
+            return response()->json([
+                'message' => 'failed',
+            ]);
+        }
+
+        $user_notitifications = $this->user->unReadNotifications;
 
         if (is_null($user_notitifications)) {
             return response()->json([
@@ -50,11 +58,11 @@ class DiscourseNotificationController extends Controller
 
     private function handleRequest()
     {
-        $client = app('discourse-client', ['username' => Auth::user()->username]);
+        $client = app('discourse-client', ['username' => $this->user->username]);
 
         $response = $client->request('GET', '/notifications.json', [
             'query' => [
-                'username' => Auth::user()->username,
+                'username' => $this->user->username,
             ],
         ]);
 
@@ -76,7 +84,7 @@ class DiscourseNotificationController extends Controller
                 [
                     'type' => '',
                     'notifiable_type' => 'App\User',
-                    'notifiable_id' => $this->user_id ?? Auth::user()->id,
+                    'notifiable_id' => $this->user_id ?? $this->user->id,
                     'data' => [
                         'title' => $discourse_notification['fancy_title'],
                         'name' => $discourse_notification['name'],
@@ -92,7 +100,7 @@ class DiscourseNotificationController extends Controller
     {
         $key = array_key_first($discourse_notification['data']);
 
-        $username = Auth::user()->username;
+        $username = $this->user->username;
         if ($this->username) {
             $username = $this->username;
         }

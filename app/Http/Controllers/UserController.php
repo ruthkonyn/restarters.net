@@ -1079,6 +1079,9 @@ class UserController extends Controller
     {
 
         Auth::logout();
+
+        \Cookie::queue(\Cookie::forget('authenticated'));
+
         return redirect('/login');
     }
 
