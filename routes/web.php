@@ -291,7 +291,14 @@ Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 Route::post('/set-cookie', 'InformationAlertCookieController');
 
 Route::get('/test/check-auth', function() {
+    $authenticated = null;
+    if ($email = \Cookie::get('authenticated')) {
+        $authenticated = true;
+        $user = App\User::where('email', $email)->first();
+    }
+
     return response()->json([
-        'authenticated' => \Cookie::get('authenticated'),
+        'authenticated' => $authenticated,
+        'edit_profile_link' => 'https://test-restarters.rstrt.org/profile/edit/'.$user->id,
     ]);
 });

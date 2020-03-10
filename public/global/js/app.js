@@ -215,6 +215,7 @@ function checkAuth() {
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.auth-menu-items').hide();
+  $auth_menu_items.removeClass('dropdown-menu-items');
 
   $.ajax({
     headers: {
@@ -236,10 +237,15 @@ function checkAuth() {
         }
 
         if ($auth_list_item.length) {
+          $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.show();
         }
+
+        if ($('.my-profile-url').length) {
+          $('.my-profile-url').attr('href', response.edit_profile_link);
+        }
       } else {
-        $auth_list_item.find('a').attr('href', window.location.origin + '/');
+        $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
     }
   });
