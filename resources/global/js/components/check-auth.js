@@ -2,6 +2,9 @@
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
+  $notifications_list_item = $('.notifications-list-item').hide();
+  $auth_menu_items = $('.auth-menu-items').hide();
+
   $.ajax({
     headers: {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
@@ -11,17 +14,15 @@ function checkAuth() {
     url: $url,
     datatype: 'json',
     success: function(response) {
-      $notifications_list_item = $('.notifications-list-item');
       $auth_list_item = $('.auth-list-item');
-      $auth_menu_items = $('.auth-menu-items');
 
       if (response.authenticated == true) {
         if ($notifications_list_item.length) {
-          $notifications_list_item.removeClass('d-none')
+          $notifications_list_item.show();
         }
 
         if ($auth_list_item.length) {
-          $auth_menu_items.removeClass('d-none')
+          $auth_menu_items.show();
         }
       } else {
         $auth_list_item.find('a').attr('href', window.location.origin + '/');

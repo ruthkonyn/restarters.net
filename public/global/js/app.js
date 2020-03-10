@@ -160,6 +160,9 @@ $('.toggle-dropdown-menu').click(function () {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
+  $('.notification-menu-items').hide();
+  $('.toggle-notifications-menu .bell-icon-active').hide();
+
   $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications';
 
   $.ajax({
@@ -185,8 +188,8 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').removeClass('d-none');
-        $('.toggle-notifications-menu .bell-icon-active').removeClass('d-none');
+        $('.notification-menu-items').show();
+        $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function (index, $notification) {
           $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
@@ -207,6 +210,9 @@ ajaxSearchNotifications();
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
+  $notifications_list_item = $('.notifications-list-item').hide();
+  $auth_menu_items = $('.auth-menu-items').hide();
+
   $.ajax({
     headers: {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
@@ -216,17 +222,15 @@ function checkAuth() {
     url: $url,
     datatype: 'json',
     success: function success(response) {
-      $notifications_list_item = $('.notifications-list-item');
       $auth_list_item = $('.auth-list-item');
-      $auth_menu_items = $('.auth-menu-items');
 
       if (response.authenticated == true) {
         if ($notifications_list_item.length) {
-          $notifications_list_item.removeClass('d-none');
+          $notifications_list_item.show();
         }
 
         if ($auth_list_item.length) {
-          $auth_menu_items.removeClass('d-none');
+          $auth_menu_items.show();
         }
       } else {
         $auth_list_item.find('a').attr('href', window.location.origin + '/');

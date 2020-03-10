@@ -2,6 +2,9 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
+  $('.notification-menu-items').hide();
+  $('.toggle-notifications-menu .bell-icon-active').hide();
+
   $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications';
 
   $.ajax({
@@ -27,8 +30,8 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').removeClass('d-none');
-        $('.toggle-notifications-menu .bell-icon-active').removeClass('d-none');
+        $('.notification-menu-items').show();
+        $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
