@@ -6927,8 +6927,6 @@ button.bg-dark:focus {
 }
 
 .d-flex,
-.nav-wrapper .nav-left,
-.nav-wrapper .nav-right,
 .nav-wrapper .nav-left > li,
 .nav-wrapper .nav-right > li,
 .nav-wrapper .nav-left > li > a,
@@ -14596,6 +14594,13 @@ a.form-text-corrected:focus {
     color: inherit;
     border-color: #dee2e6;
   }
+}
+
+.nav-wrapper .nav-left,
+.nav-wrapper .nav-right {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 
 .nav-wrapper .nav-left > li,
