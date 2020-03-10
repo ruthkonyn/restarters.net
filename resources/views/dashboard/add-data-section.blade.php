@@ -2,7 +2,7 @@
   <div class="card-body text-dark pt-0">
     <div class="d-flex flex-row align-items-center">
       <h2 class="mb-0 mr-30 mt-10">
-        Add Data
+        @lang('dashboard.add_data_title')
       </h2>
 
       <div class="mr-auto">
@@ -16,7 +16,7 @@
     <hr class="hr-dashed mb-25 mt-10">
 
     <p>
-      And see your impact in the Fixometer:
+      @lang('dashboard.add_data_description')
     </p>
 
     <div class="flex-dynamic-row">

@@ -66,11 +66,11 @@
               <img src="images/community.jpg" class="card-img-top" alt="...">
               <div class="card-body">
                 <p class="font-weight-bold">
-                  Restarters.net is a free, open source platform for a global community making local repair events happen and campaigning for our right to repair. Check out our <a href="#">free event planning kit!</a>
+                  @lang('dashboard.first_card_title_bold')
                 </p>
 
                 <p>
-                  We’re here to help with all of your hosting questions, or starting a school programme. <a href="#">Just get in touch.</a>
+                  @lang('dashboard.first_card_title_description')
                 </p>
               </div>
             </div>
@@ -92,7 +92,7 @@
               <hr class="hr-dashed my-25">
 
               <p class="d-block d-lg-none">
-                Read tips for making the best use of this platform.
+                @lang('dashboard.second_card_title')
               </p>
 
               <div class="d-block d-md-none text-right">
@@ -118,8 +118,6 @@
                   </li>
                 </ul>
               </div>
-
-
             </div>
           </div>
         </div>

@@ -1077,10 +1077,11 @@ class UserController extends Controller
 
     public function logout()
     {
+        $user = Auth::user();
+
+        $user->logoutOfDiscourse();
 
         Auth::logout();
-
-        \Cookie::queue(\Cookie::forget('authenticated'));
 
         return redirect('/login');
     }
