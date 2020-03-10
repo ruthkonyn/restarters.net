@@ -15,7 +15,7 @@ setTimeout(function() {
       break;
     }
   }
-}, 600);
+}, 1000);
 
 setTimeout(function() {
   if (window.location.href.indexOf("messages") > -1) {
@@ -33,12 +33,8 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
+require('./notifications.js');
+
 setTimeout(function() {
-  $('.toggle-dropdown-menu').append(
-    $('<ul>').append(
-      $('<li>').append(
-        $('<a>').attr('href','/notifications/').text('test')
-      ).attr('class', 'notifcation-text')
-    )
-  );
+  ajaxSearchNotifications();
 }, 300);
