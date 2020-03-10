@@ -32,3 +32,13 @@ function addActive(tab) {
   alreadyActive.classList.remove('active');
   tab.classList.add('active');
 }
+
+setTimeout(function() {
+  $('.toggle-dropdown-menu').append(
+    $('<ul>').append(
+      $('<li>').append(
+        $('<a>').attr('href','/notifications/').text('test')
+      ).attr('class', 'notifcation-text')
+    )
+  );
+})
