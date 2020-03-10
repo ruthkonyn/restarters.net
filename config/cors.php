@@ -11,9 +11,13 @@ return [
     | to accept any value.
     |
     */
-   
+
     'supportsCredentials' => false,
-    'allowedOrigins' => ['*'],
+    'allowedOrigins' => [
+        'https://www.test-cors.org',
+        'https://therestartproject.org',
+        'https://test-wiki.rstrt.org'
+    ],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],
     'allowedMethods' => ['*'],
