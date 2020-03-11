@@ -11,13 +11,14 @@
 @import 'miscellaneous';
 
 // Layout
+@import 'layout/fonts';
+@import 'layout/footer';
+
+// Components
 @import 'components/lists';
 @import 'components/search-button';
 @import 'components/edit-page-button';
 @import 'components/row-arrows';
-
-// Components
-@import 'layout/footer';
 
 html,
 body {

@@ -19,4 +19,13 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  &:hover,
+  &:active {
+    background: #000 !important;
+
+    &::before {
+      background-image: url('../../global/svgs/edit_icon_hover.svg');
+    }
+  }
 }
