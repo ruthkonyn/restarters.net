@@ -16,18 +16,19 @@ class DiscourseNotificationController extends Controller
     public function __invoke(Request $request)
     {
         // Check here if the user is authenticated
-        if (\Cookie::get('authenticated')) {
+        if ( ! \Cookie::get('authenticated')) {
             return response()->json([
                 'message' => 'failed',
             ]);
         }
 
-        if ( ! $_COOKIE['has_cookie_notifications_set']) {
+
+        if ( ! \Cookie::get('has_cookie_notifications_set')) {
             $this->handleRequest();
         }
 
         // 10 Minutes
-        setcookie('has_cookie_notifications_set', true, time() + (60 * 10), url('/'));
+        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, config('session.lifetime'), null, '.rstrt.org'));
 
         $this->user = User::where('email', \Cookie::get('authenticated'))->first();
 
