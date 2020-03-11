@@ -59,13 +59,14 @@ function toggleNotifications() {
 }
 
 setTimeout(function() {
+  toggleNotifications();
   ajaxSearchNotifications();
 }, 300);
 
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu" onclick="toggleNotifications()">' +
+  var html = '<a href="#" class="toggle-notifications-menu">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul>';
 
   $('.notification-icon').append(html);

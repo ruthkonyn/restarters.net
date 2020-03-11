@@ -59,5 +59,6 @@ function toggleNotifications() {
 }
 
 setTimeout(function() {
+  toggleNotifications();
   ajaxSearchNotifications();
 }, 300);
