@@ -544,5 +544,7 @@ class User extends Authenticatable implements Auditable
         $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
 
         \Cookie::queue(\Cookie::forget('authenticated'));
+        
+        \Cookie::queue(\Cookie::forget('has_cookie_notifications_set'));
     }
 }

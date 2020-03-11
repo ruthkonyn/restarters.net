@@ -1079,8 +1079,6 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $user->logoutOfDiscourse();
-
         Auth::logout();
 
         return redirect('/login');

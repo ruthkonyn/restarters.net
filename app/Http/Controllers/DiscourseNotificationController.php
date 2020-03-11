@@ -22,21 +22,24 @@ class DiscourseNotificationController extends Controller
             ]);
         }
 
-
-        if ( ! \Cookie::get('has_cookie_notifications_set')) {
-            $this->handleRequest();
-        }
-
-        // 10 Minutes
-        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, config('session.lifetime'), null, '.rstrt.org'));
-
-        $this->user = User::where('email', \Cookie::get('authenticated'))->first();
-
-        if (! $this->user) {
+        if (\Cookie::get('has_cookie_notifications_set')) {
             return response()->json([
                 'message' => 'failed',
             ]);
         }
+
+        $this->user = User::where('email', \Cookie::get('authenticated'))->first();
+
+        if ( ! $this->user) {
+            return response()->json([
+                'message' => 'failed',
+            ]);
+        }
+
+        $this->handleRequest();
+
+        // 10 Minutes
+        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, config('session.lifetime'), null, '.rstrt.org'));
 
         $user_notitifications = $this->user->unReadNotifications;
 
@@ -59,7 +62,7 @@ class DiscourseNotificationController extends Controller
 
     private function handleRequest()
     {
-        $client = app('discourse-client', ['username' => $this->user->username]);
+        $client = app('discourse-client');
 
         $response = $client->request('GET', '/notifications.json', [
             'query' => [
@@ -96,7 +99,6 @@ class DiscourseNotificationController extends Controller
             );
         });
     }
-
     private function generateUrl(array $discourse_notification)
     {
         $key = array_key_first($discourse_notification['data']);
