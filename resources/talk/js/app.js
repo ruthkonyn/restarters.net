@@ -33,11 +33,6 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
-setTimeout(function() {
-  toggleNav();
-  ajaxSearchNotifications();
-}, 300);
-
 function toggleNav() {
   $('.toggle-dropdown-menu').click(function(e) {
     e.preventDefault();
@@ -62,3 +57,8 @@ function toggleNav() {
     $(this).parents().children('.dropdown-menu-items').toggle();
   });
 }
+
+setTimeout(function() {
+  toggleNav();
+  ajaxSearchNotifications();
+}, 300);
