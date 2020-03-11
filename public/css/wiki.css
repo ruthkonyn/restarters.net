@@ -14339,7 +14339,7 @@ a.text-dark:focus {
   position: absolute;
   width: 30px;
   height: 30px;
-  background-image: url(/images/search_icon.svg?eba94aec2b58dd7610417a73e056ba8f);
+  background-image: url(/images/search_icon.svg?ad5bd2c348be6c3fd071e73b53ba50c6);
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
@@ -14366,6 +14366,16 @@ a.text-dark:focus {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+}
+
+.navbar-tool-link:hover,
+.navbar-tool-link:active {
+  background: #000 !important;
+}
+
+.navbar-tool-link:hover::before,
+.navbar-tool-link:active::before {
+  background-image: url(/images/edit_icon_hover.svg?aef2a35cbb5d093d02801e98d36cfed8);
 }
 
 .row-heading h2 {
