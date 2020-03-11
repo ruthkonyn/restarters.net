@@ -15336,6 +15336,9 @@ label.form-check-label {
           box-shadow: 6px 6px 0 0 #000;
   margin-bottom: 5px;
   text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .form-control__select .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {

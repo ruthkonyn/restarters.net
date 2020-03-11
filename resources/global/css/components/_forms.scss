@@ -116,15 +116,6 @@ label.form-check-label {
 
     .select2-search--inline {
       width: 100%;
-
-      // TODO: Check this is working across multiple inputs still
-      // NOTE: Commented out code for now
-      // .select2-search__field {
-      //   background-image: url('../svgs/dropdown-arrow.svg');
-      //   background-repeat: no-repeat;
-      //   background-position: 97% 50%;
-      //   width: 100% !important;
-      // }
     }
 
     .select2-selection__choice {
@@ -138,6 +129,11 @@ label.form-check-label {
       box-shadow: 6px 6px 0 0 $black;
       margin-bottom: 5px;
       text-transform: none;
+
+      // FIX: Resolved text wrapping ellipsis
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       .select2-selection__choice__remove {
         float: left;

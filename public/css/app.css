@@ -21931,7 +21931,7 @@ a.text-dark:focus {
 }
 
 .useful-repair-urls .input-group .form-control {
-  border-radius: 0.25rem;
+  border-radius: 0;
 }
 
 .useful-repair-urls .input-group .form-control.error {
