@@ -14677,6 +14677,10 @@ body {
   margin-right: 12px;
 }
 
+.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-editsection-bracket {
+  display: none;
+}
+
 .mw-parser-output .mw-collapsible .mw-collapsible-content h3 span:first-child::before {
   content: counter(chapter) "." counter(section) " ";
   margin: 0;
