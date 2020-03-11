@@ -8,9 +8,12 @@ use Illuminate\Notifications\DatabaseNotification;
 
 class DiscourseNotificationController extends Controller
 {
+    /**
+     * @var \App\User
+     */
     private $user;
 
-    public function __construct()
+    public function __invoke(Request $request)
     {
         // Check here if the user is authenticated
         if (\Cookie::get('authenticated')) {
@@ -18,10 +21,7 @@ class DiscourseNotificationController extends Controller
                 'message' => 'failed',
             ]);
         }
-    }
 
-    public function __invoke(Request $request)
-    {
         if ( ! $_COOKIE['has_cookie_notifications_set']) {
             $this->handleRequest();
         }
@@ -84,7 +84,7 @@ class DiscourseNotificationController extends Controller
                 [
                     'type' => '',
                     'notifiable_type' => 'App\User',
-                    'notifiable_id' => $this->user_id ?? $this->user->id,
+                    'notifiable_id' => $this->user->id,
                     'data' => [
                         'title' => $discourse_notification['fancy_title'],
                         'name' => $discourse_notification['name'],
