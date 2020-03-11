@@ -6571,11 +6571,11 @@ button.bg-dark:focus {
 }
 
 .d-flex,
+.footer-links,
 .list-sm-inline,
 .list-md-inline,
 .list-lg-inline,
 .list-xl-inline,
-.footer-links,
 .mw-parser-output .mw-collapsible div:first-of-type {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
@@ -14206,6 +14206,136 @@ a.text-dark:focus {
   content: none !important;
 }
 
+h1 {
+  font-family: Asap;
+  font-size: 40px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: normal;
+  text-align: center;
+  color: #000;
+}
+
+h2 {
+  font-family: Asap;
+  font-size: 28px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: normal;
+  text-align: left;
+  color: #000;
+}
+
+body {
+  font-family: Asap;
+  font-size: 18px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.44;
+  letter-spacing: normal;
+  text-align: left;
+  color: #000;
+}
+
+.SECOND-LEVEL-MENU-BUTTONS-DROP-DOWN {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.13;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #000;
+}
+
+.dashboard-tables-body {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.63;
+  letter-spacing: normal;
+  text-align: left;
+  color: #000;
+}
+
+.THIRD-LEVEL-LINKS {
+  font-family: Asap;
+  font-size: 14px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: 1.05px;
+  text-align: left;
+  color: #000;
+}
+
+.FORUM-CATEGORY {
+  font-family: Asap;
+  font-size: 12px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: 0.9px;
+  text-align: left;
+  color: #000;
+}
+
+.TOP-MENU {
+  font-family: Asap;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.17;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #000;
+}
+
+.FORUM-TAG {
+  font-family: Asap;
+  font-size: 10px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: 0.75px;
+  text-align: left;
+  color: #000;
+}
+
+.footer-links div a {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: 1.05px;
+  color: #000;
+}
+
+.footer-description {
+  font-family: Asap;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.44;
+  letter-spacing: normal;
+  color: #000;
+}
+
 @media (min-width: 576px) {
   .list-sm-inline div {
     display: inline-block;
@@ -14415,28 +14545,6 @@ a.text-dark:focus {
   background-repeat: no-repeat;
   background-position: center;
   display: inline-block;
-}
-
-.footer-links div a {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.14;
-  letter-spacing: 1.05px;
-  color: #000;
-}
-
-.footer-description {
-  font-family: Asap;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.44;
-  letter-spacing: normal;
-  color: #000;
 }
 
 html,
