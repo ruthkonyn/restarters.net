@@ -299,29 +299,6 @@ Route::get('/test/check-auth', function() {
 
     return response()->json([
         'authenticated' => $authenticated,
-        'edit_profile_link' => 'https://test-restarters.rstrt.org/profile/edit/'.$user->id,
+        'edit_profile_link' => env('APP_URL')."/profile/edit/{$user->id}",
     ]);
-});
-
-Route::get('/testing123', function() {
-  $user = auth()->user();
-
-  $params = [
-    'external_id' => $user->id,
-    'email' => $user->email,
-    'username' => $user->username,
-  ];
-
-  $client = app('discourse-client');
-
-  $response = $client->request('POST', "/admin/users/sync_sso", [
-    'form_params' => [
-      'sso' => $payload,
-      'sig' => '12349W38KuiOB6oZQGZ3',
-    ],
-  ]);
-
-  $array = json_decode($response->getBody()->getContents(), true);
-
-  dd($array);
 });
