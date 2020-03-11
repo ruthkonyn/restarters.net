@@ -14949,7 +14949,8 @@ a.form-text-corrected:focus {
 }
 
 .btn-primary,
-.btn-outline-primary {
+.btn-outline-primary,
+.btn-checkbox {
   width: auto;
   -webkit-box-shadow: 6px 6px 0 0 #000;
           box-shadow: 6px 6px 0 0 #000;
@@ -14971,26 +14972,32 @@ a.form-text-corrected:focus {
 }
 
 .btn-primary svg text,
-.btn-outline-primary svg text {
+.btn-outline-primary svg text,
+.btn-checkbox svg text {
   fill: #000 !important;
 }
 
 .btn-primary.dropdown-toggle::after,
-.dropdown-toggle.btn-outline-primary::after {
+.dropdown-toggle.btn-outline-primary::after,
+.dropdown-toggle.btn-checkbox::after {
   display: none !important;
 }
 
 .btn-primary.dropdown-toggle svg path,
 .dropdown-toggle.btn-outline-primary svg path,
+.dropdown-toggle.btn-checkbox svg path,
 .btn-primary.dropdown-toggle svg text,
-.dropdown-toggle.btn-outline-primary svg text {
+.dropdown-toggle.btn-outline-primary svg text,
+.dropdown-toggle.btn-checkbox svg text {
   fill: #000 !important;
 }
 
 .btn-primary.dropdown-toggle:focus,
 .dropdown-toggle.btn-outline-primary:focus,
+.dropdown-toggle.btn-checkbox:focus,
 .btn-primary.dropdown-toggle:active,
-.dropdown-toggle.btn-outline-primary:active {
+.dropdown-toggle.btn-outline-primary:active,
+.dropdown-toggle.btn-checkbox:active {
   border: solid 1px #000;
   background-color: #000 !important;
   font-size: 16px;
@@ -15005,17 +15012,22 @@ a.form-text-corrected:focus {
 
 .btn-primary.dropdown-toggle:focus svg path,
 .dropdown-toggle.btn-outline-primary:focus svg path,
+.dropdown-toggle.btn-checkbox:focus svg path,
 .btn-primary.dropdown-toggle:focus svg text,
 .dropdown-toggle.btn-outline-primary:focus svg text,
+.dropdown-toggle.btn-checkbox:focus svg text,
 .btn-primary.dropdown-toggle:active svg path,
 .dropdown-toggle.btn-outline-primary:active svg path,
+.dropdown-toggle.btn-checkbox:active svg path,
 .btn-primary.dropdown-toggle:active svg text,
-.dropdown-toggle.btn-outline-primary:active svg text {
+.dropdown-toggle.btn-outline-primary:active svg text,
+.dropdown-toggle.btn-checkbox:active svg text {
   fill: #fff !important;
 }
 
 .btn-primary:focus,
-.btn-outline-primary:focus {
+.btn-outline-primary:focus,
+.btn-checkbox:focus {
   background-color: #000;
   color: #fff !important;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
@@ -15025,35 +15037,44 @@ a.form-text-corrected:focus {
 
 .btn-primary:focus svg path,
 .btn-outline-primary:focus svg path,
+.btn-checkbox:focus svg path,
 .btn-primary:focus svg text,
-.btn-outline-primary:focus svg text {
+.btn-outline-primary:focus svg text,
+.btn-checkbox:focus svg text {
   fill: #fff !important;
 }
 
 .btn-primary:hover svg path,
 .btn-outline-primary:hover svg path,
+.btn-checkbox:hover svg path,
 .btn-primary:hover svg text,
-.btn-outline-primary:hover svg text {
+.btn-outline-primary:hover svg text,
+.btn-checkbox:hover svg text {
   fill: #000 !important;
 }
 
 .btn-primary:active,
-.btn-outline-primary:active {
+.btn-outline-primary:active,
+.btn-checkbox:active {
   background-color: #000 !important;
   color: #fff !important;
 }
 
 .btn-primary:active svg path,
 .btn-outline-primary:active svg path,
+.btn-checkbox:active svg path,
 .btn-primary:active svg text,
-.btn-outline-primary:active svg text {
+.btn-outline-primary:active svg text,
+.btn-checkbox:active svg text {
   fill: #fff !important;
 }
 
 .btn-primary:hover,
 .btn-outline-primary:hover,
+.btn-checkbox:hover,
 .btn-primary.dropdown-toggle:hover,
-.dropdown-toggle.btn-outline-primary:hover {
+.dropdown-toggle.btn-outline-primary:hover,
+.dropdown-toggle.btn-checkbox:hover {
   -webkit-box-shadow: 5px 5px 0 0 #000;
   box-shadow: 6px 6px 0 0 #000;
   outline: 2px solid #000;
@@ -15459,7 +15480,8 @@ select.form-control:not([class*="select2"]) {
 }
 
 .modal-form .btn-primary,
-.modal-form .btn-outline-primary {
+.modal-form .btn-outline-primary,
+.modal-form .btn-checkbox {
   margin: auto 0 !important;
 }
 
@@ -15925,7 +15947,8 @@ select.form-control:not([class*="select2"]) {
 
 @media (max-width: 767.98px) {
   .table .table-cell-upload .btn-primary,
-  .table .table-cell-upload .btn-outline-primary {
+  .table .table-cell-upload .btn-outline-primary,
+  .table .table-cell-upload .btn-checkbox {
     width: 100%;
   }
 }
@@ -16920,5 +16943,12 @@ select.form-control:not([class*="select2"]) {
 .select2-search__field {
   width: 100% !important;
   padding-left: 7px !important;
+}
+
+[type="checkbox"]:checked + label.btn-checkbox {
+  background-color: #000 !important;
+  border-radius: 0;
+  border: 0 !important;
+  color: #fff !important;
 }
 

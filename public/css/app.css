@@ -22097,7 +22097,6 @@ td.col-device-auto {
   color: #757575;
   font-size: 14px;
   margin: 0 0 20px 0;
-  font-family: "Open Sans", sans-serif;
 }
 
 @media (min-width: 992px) {
@@ -22140,12 +22139,10 @@ td.col-device-auto {
   line-height: 1;
   font-weight: 500;
   margin-bottom: 15px;
-  font-family: "Open Sans", sans-serif;
 }
 
 .registration .form-control {
   font-size: 15px;
-  font-family: "Open Sans", sans-serif;
   border-width: 2px;
 }
 
@@ -22155,7 +22152,6 @@ td.col-device-auto {
 }
 
 .registration .form-check label {
-  font-family: "Open Sans", sans-serif;
   font-size: 15px;
   line-height: 1.4;
 }

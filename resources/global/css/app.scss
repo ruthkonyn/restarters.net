@@ -37,3 +37,14 @@
 
 // Plugins
 @import "plugins/select2";
+
+.btn-checkbox {
+  @extend .btn-primary;
+}
+
+[type="checkbox"]:checked + label.btn-checkbox {
+  background-color: $black !important;
+  border-radius: 0;
+  border: 0 !important;
+  color: $white !important;
+}
