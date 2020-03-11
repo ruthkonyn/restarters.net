@@ -22,12 +22,12 @@ function checkAuth() {
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
-          $notifications_list_item.show();
+          $notifications_list_item.css('display','');
         }
 
         if ($auth_list_item.length) {
           $auth_menu_items.addClass('dropdown-menu-items');
-          $auth_menu_items.show();
+          $auth_menu_items.css('display','');
         }
 
         if ($('.my-profile-url').length) {

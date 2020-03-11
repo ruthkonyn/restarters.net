@@ -12,7 +12,7 @@ function ajaxSearchNotifications() {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    xhrFields: { 
+    xhrFields: {
       withCredentials: true
     },
     type: 'GET',
@@ -33,8 +33,8 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').show();
-        $('.toggle-notifications-menu .bell-icon-active').show();
+        $('.notification-menu-items').css('display','');
+        $('.toggle-notifications-menu .bell-icon-active').css('display','');
 
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(

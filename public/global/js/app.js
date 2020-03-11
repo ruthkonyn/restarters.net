@@ -191,8 +191,8 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').show();
-        $('.toggle-notifications-menu .bell-icon-active').show();
+        $('.notification-menu-items').css('display', '');
+        $('.toggle-notifications-menu .bell-icon-active').css('display', '');
 
         $.each($notifications, function (index, $notification) {
           $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
@@ -233,12 +233,12 @@ function checkAuth() {
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
-          $notifications_list_item.show();
+          $notifications_list_item.css('display', '');
         }
 
         if ($auth_list_item.length) {
           $auth_menu_items.addClass('dropdown-menu-items');
-          $auth_menu_items.show();
+          $auth_menu_items.css('display', '');
         }
 
         if ($('.my-profile-url').length) {
