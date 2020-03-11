@@ -55,7 +55,12 @@ class EventServiceProvider extends ServiceProvider
 
         EventImagesUploaded::class => [
             SendAdminModerateEventPhotosNotification::class,
-        ]
+        ],
+
+        \Illuminate\Auth\Events\Logout::class => [
+            \Spinen\Discourse\Listeners\LogoutDiscourseUser::class,
+            \App\Listeners\ClearAuthenticatedCookies::class,
+        ],
     ];
 
     /**
