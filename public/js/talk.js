@@ -71,12 +71,6 @@ function ajaxSearchNotifications() {
 
   $('.notification-icon').append(html);
 
-  $('.notification-menu-items').append(
-    $('<li>').append(
-      $('<a>').attr('href','/notifications/').text('test')
-    ).attr('class', 'notifcation-text')
-  );
-
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
