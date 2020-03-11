@@ -36,7 +36,6 @@ function addActive(tab) {
 function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
-console.log('clicked');
     // If item is already active then close all.
     if ( $(this).hasClass('dropdown-active')) {
       $('.notification-icon').each(function() {

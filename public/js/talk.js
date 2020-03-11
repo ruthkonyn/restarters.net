@@ -36,7 +36,6 @@ function addActive(tab) {
 function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
-console.log('clicked');
     // If item is already active then close all.
     if ( $(this).hasClass('dropdown-active')) {
       $('.notification-icon').each(function() {
@@ -103,8 +102,7 @@ function ajaxSearchNotifications() {
 
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
-            $('<li>').append(
-              $('<a>').attr('href','/notifications/' + $notification.id).text($notification.data.title)
+            $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });
