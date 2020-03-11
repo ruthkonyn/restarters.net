@@ -33,7 +33,7 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
-(function() {
+function toggleNotifications() {
   $('.toggle-notifications-menu').click(function(e) {
     e.preventDefault();
     // If item is already active then close all.
@@ -56,7 +56,7 @@ function addActive(tab) {
     $(this).toggleClass('dropdown-active');
     $(this).parents().children('.dropdown-menu-items').toggle();
   });
-});
+}
 
 setTimeout(function() {
   ajaxSearchNotifications();

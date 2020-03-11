@@ -33,7 +33,7 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
-(function() {
+function toggleNotifications() {
   $('.toggle-notifications-menu').click(function(e) {
     e.preventDefault();
     // If item is already active then close all.
@@ -56,7 +56,7 @@ function addActive(tab) {
     $(this).toggleClass('dropdown-active');
     $(this).parents().children('.dropdown-menu-items').toggle();
   });
-});
+}
 
 setTimeout(function() {
   ajaxSearchNotifications();
@@ -65,7 +65,7 @@ setTimeout(function() {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu">' +
+  var html = '<a href="#" class="toggle-notifications-menu" onclick="toggleNotifications()">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul>';
 
   $('.notification-icon').append(html);
