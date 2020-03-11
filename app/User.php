@@ -540,7 +540,9 @@ class User extends Authenticatable implements Auditable
         $array = json_decode($response->getBody()->getContents(), true);
 
         $user_id = $array['user']['id'];
-        
+
         $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
+
+        \Cookie::queue(\Cookie::forget('authenticated'));
     }
 }
