@@ -86,7 +86,7 @@ class DiscourseNotificationController extends Controller
                     'notifiable_type' => 'App\User',
                     'notifiable_id' => $this->user->id,
                     'data' => [
-                        'title' => $discourse_notification['fancy_title'],
+                        'title' => $discourse_notification['fancy_title'] ?? 'No Title',
                         'name' => $discourse_notification['name'],
                         'url' => $this->generateUrl($discourse_notification),
                     ],
