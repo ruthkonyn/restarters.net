@@ -14,8 +14,8 @@ class ClearAuthenticatedCookies
      */
     public function handle(Logout $event)
     {
-        dd($event);
-        
-        $user->logoutOfDiscourse();
+        if ($user = $event->user) {
+            $user->logoutOfDiscourse();
+        }
     }
 }

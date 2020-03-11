@@ -58,7 +58,6 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         \Illuminate\Auth\Events\Logout::class => [
-            \Spinen\Discourse\Listeners\LogoutDiscourseUser::class,
             \App\Listeners\ClearAuthenticatedCookies::class,
         ],
     ];
