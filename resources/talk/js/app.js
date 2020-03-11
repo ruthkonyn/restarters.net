@@ -39,8 +39,8 @@ setTimeout(function() {
 }, 300);
 
 function toggleNav() {
-  $('.toggle-dropdown-menu').click(function() {
-
+  $('.toggle-dropdown-menu').click(function(e) {
+    e.preventDefault();
     // If item is already active then close all.
     if ( $(this).hasClass('dropdown-active')) {
       $('.toggle-dropdown-menu').each(function() {
