@@ -186,10 +186,10 @@
       <li>
         <a href="#" class="toggle-dropdown-menu toggle-notifications-menu">
           @include('svgs/navigation/bell-icon')
-          <span class="bell-icon-active d-none"></span>
+          <span class="bell-icon-active"></span>
         </a>
 
-        <ul class="dropdown-menu-items notification-menu-items d-none">
+        <ul class="dropdown-menu-items notification-menu-items">
         </ul>
       </li>
 
