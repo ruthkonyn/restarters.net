@@ -34,7 +34,7 @@ function addActive(tab) {
 }
 
 (function() {
-  $('.toggle-dropdown-menu').click(function(e) {
+  $('.toggle-notifications-menu').click(function(e) {
     e.preventDefault();
     // If item is already active then close all.
     if ( $(this).hasClass('dropdown-active')) {
@@ -65,7 +65,7 @@ setTimeout(function() {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-dropdown-menu toggle-notifications-menu">' +
+  var html = '<a href="#" class="toggle-notifications-menu">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul>';
 
   $('.notification-icon').append(html);
