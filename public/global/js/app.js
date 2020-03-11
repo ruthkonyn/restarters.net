@@ -148,7 +148,7 @@ $('.toggle-dropdown-menu').click(function () {
 
   // Show items.
   $(this).toggleClass('dropdown-active');
-  $(this).parents().children('.dropdown-menu-items').toggle();
+  $(this).parents().children('.dropdown-menu-items').show();
 });
 
 /***/ }),

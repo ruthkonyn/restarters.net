@@ -22,12 +22,6 @@ class DiscourseNotificationController extends Controller
             ]);
         }
 
-        if (\Cookie::get('has_cookie_notifications_set')) {
-            return response()->json([
-                'message' => 'failed',
-            ]);
-        }
-
         $this->user = User::where('email', \Cookie::get('authenticated'))->first();
 
         if ( ! $this->user) {
@@ -36,7 +30,9 @@ class DiscourseNotificationController extends Controller
             ]);
         }
 
-        $this->handleRequest();
+        if ( ! \Cookie::get('has_cookie_notifications_set')) {
+            $this->handleRequest();
+        }
 
         // 10 Minutes
         \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, config('session.lifetime'), null, '.rstrt.org'));
