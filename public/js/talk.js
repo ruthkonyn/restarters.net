@@ -34,11 +34,12 @@ function addActive(tab) {
 }
 
 function toggleNotifications() {
-  $('.toggle-notifications-menu').click(function(e) {
+  $('.notification-icon').click(function(e) {
     e.preventDefault();
+console.log('clicked');
     // If item is already active then close all.
     if ( $(this).hasClass('dropdown-active')) {
-      $('.toggle-dropdown-menu').each(function() {
+      $('.notification-icon').each(function() {
         $(this).removeClass('dropdown-active');
         $(this).parents().children('.dropdown-menu-items').hide();
       });
@@ -46,17 +47,12 @@ function toggleNotifications() {
       return false;
     }
 
-    // Close all existing items except current.
-    $('.toggle-dropdown-menu').not(this).each(function() {
-      $(this).removeClass('dropdown-active');
-      $(this).parents().children('.dropdown-menu-items').hide();
-    });
-
     // Show items.
-    $(this).toggleClass('dropdown-active');
-    $(this).parents().children('.dropdown-menu-items').toggle();
+    $('.toggle-notifications-menu').toggleClass('dropdown-active');
+    $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
   });
 }
+
 
 setTimeout(function() {
   toggleNotifications();
@@ -66,7 +62,7 @@ setTimeout(function() {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu">' +
+  var html = '<a href="#" class="toggle-notifications-menu dropdown-active">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul>';
 
   $('.notification-icon').append(html);
