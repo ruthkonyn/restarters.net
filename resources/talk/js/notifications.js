@@ -4,13 +4,7 @@ function ajaxSearchNotifications() {
   var html = '<a href="#" class="toggle-dropdown-menu toggle-notifications-menu">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items d-none"></ul>';
 
-    $('.notification-icon').append(html);
-    $('.notification-menu-items').append(
-      $('<li>').append(
-        $('<a>').attr('href','/notifications/').text('test')
-      ).attr('class', 'notifcation-text')
-    );
-
+  $('.notification-icon').append(html);
 
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
