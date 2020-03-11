@@ -1,10 +1,16 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="dropdown-menu-items notification-menu-items notification">' +
-  '<svg class="notification-bell"></svg></a>';
+  var html = '<a href="#" class="toggle-dropdown-menu toggle-notifications-menu dropdown-active">' +
+  '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items d-none"></ul>';
 
-  $('.notification-icon').append(html);
+    $('.notification-icon').append(html);
+    $('.notification-menu-items').append(
+      $('<li>').append(
+        $('<a>').attr('href','/notifications/').text('test')
+      ).attr('class', 'notifcation-text')
+    );
+
 
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
