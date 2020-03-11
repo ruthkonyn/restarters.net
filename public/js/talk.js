@@ -61,7 +61,7 @@ setTimeout(function() {
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu dropdown-active">' +
+  var html = '<a href="#" class="toggle-notifications-menu">' +
   '<svg class="notification-bell"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul>';
 
   $('.notification-icon').append(html);
