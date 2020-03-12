@@ -53,7 +53,7 @@ function toggleNotifications() {
 }
 
 function hamburgerMenu() {
-  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></div>";
+  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-hamburger-toggle').click(function(e) {
@@ -63,7 +63,7 @@ function hamburgerMenu() {
 }
 
 function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></div>";
+  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='dropdown-menu-items' style='display: block;'><li><a href='https://test-restarters.rstrt.org/profile/edit/1218'>My profile &amp; settings</a></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-user-toggle').click(function(e) {
