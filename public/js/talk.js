@@ -62,9 +62,20 @@ function hamburgerMenu() {
   });
 }
 
+function userMenu() {
+  var html = "<div class='user-dropdown-menu-items' style='display: none;'><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></div>";
+  $(html).insertAfter('.d-header-icons');
+
+  $('.restarters-user-toggle').click(function(e) {
+    $('.toggle-user-menu').toggleClass('dropdown-active');
+    $('.user-dropdown-menu-items').toggle();
+  });
+}
+
 
 setTimeout(function() {
   hamburgerMenu();
+  userMenu();
   toggleNotifications();
   ajaxSearchNotifications();
 }, 300);
