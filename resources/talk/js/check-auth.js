@@ -34,6 +34,11 @@ function checkAuth() {
           $('.my-profile-url').attr('href', response.edit_profile_link);
         }
 
+        if(response.is_admin) {
+          var html =  "<ul><li>user menu for admin</li></ul>";
+          $(html).insertAfter('.user-menu')
+        }
+
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }

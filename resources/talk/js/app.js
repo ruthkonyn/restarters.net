@@ -61,7 +61,7 @@ function hamburgerMenu() {
 }
 
 function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
+  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-menu'><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-user-toggle').click(function(e) {
