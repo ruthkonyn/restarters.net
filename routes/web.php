@@ -297,8 +297,8 @@ Route::get('/test/check-auth', function() {
     if ($email = \Cookie::get('authenticated')) {
         $authenticated = true;
         $user = App\User::where('email', $email)->first();
-        $edit_profile_link = $edit_profile_link.$user->id;
-        $is_admin = FixometerHelper::hasRole($user, 'Administrator');
+
+        dd($user->getUserFromDiscourse());
     }
 
     return response()->json([

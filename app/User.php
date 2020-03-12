@@ -483,20 +483,13 @@ class User extends Authenticatable implements Auditable
 
     public function getDiscourseEmailPreferencesAttribute()
     {
-        $client = app('discourse-client');
+        $discourse_user = $this->getUserFromDiscourse();
 
-        // $placeholder = 'Dean_Claydon';
-        // $this->username
-
-        $response = $client->request('GET', "/users/{$this->username}.json");
-
-        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
-            return [];
+        if ( ! $discourse_user) {
+            return false;
         }
 
-        $array = json_decode($response->getBody()->getContents(), true);
-
-        $user_options = $array['user']['user_option'];
+        $user_options = $discourse_user['user']['user_option'];
 
         $email_options = [
             'email_messages_level',
@@ -529,6 +522,23 @@ class User extends Authenticatable implements Auditable
 
     public function logoutOfDiscourse()
     {
+        $discourse_user = $this->getUserFromDiscourse();
+
+        if ( ! $discourse_user) {
+            return false;
+        }
+
+        $user_id = $discourse_user['user']['id'];
+
+        $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
+
+        \Cookie::queue(\Cookie::forget('authenticated'));
+
+        \Cookie::queue(\Cookie::forget('has_cookie_notifications_set'));
+    }
+
+    public function getUserFromDiscourse()
+    {
         $client = app('discourse-client');
 
         $response = $client->request('GET', "/users/{$this->username}.json");
@@ -539,12 +549,6 @@ class User extends Authenticatable implements Auditable
 
         $array = json_decode($response->getBody()->getContents(), true);
 
-        $user_id = $array['user']['id'];
-
-        $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
-
-        \Cookie::queue(\Cookie::forget('authenticated'));
-        
-        \Cookie::queue(\Cookie::forget('has_cookie_notifications_set'));
+        return $array;
     }
 }
