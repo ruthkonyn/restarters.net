@@ -1,7 +1,7 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu">' +
+  var html = '<a href="#" class="toggle-notifications-menu dropdown-active">' +
   '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul></span>';
 
   $('.notification-icon').append(html);
@@ -42,7 +42,9 @@ function ajaxSearchNotifications() {
 
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
-            $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title).attr('class', 'notifcation-text')
+            $('<li>').attr('class', 'notifcation-text').append(
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
+            );
           );
         });
       }
