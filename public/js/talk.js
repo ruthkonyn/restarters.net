@@ -57,6 +57,14 @@ function hamburgerMenu() {
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-hamburger-toggle').click(function(e) {
+    if ( $(this).hasClass('dropdown-active')) {
+      $('.notification-icon').each(function() {
+        $(this).removeClass('dropdown-active');
+        $(this).parents().children('.dropdown-menu-items').hide();
+      });
+
+      return false;
+    }
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
   });
@@ -67,6 +75,15 @@ function userMenu() {
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-user-toggle').click(function(e) {
+    if ( $(this).hasClass('dropdown-active')) {
+      $('.notification-icon').each(function() {
+        $(this).removeClass('dropdown-active');
+        $(this).parents().children('.dropdown-menu-items').hide();
+      });
+
+      return false;
+    }
+    
     $('.toggle-user-menu').toggleClass('dropdown-active');
     $('.user-dropdown-menu-items').toggle();
   });
