@@ -52,6 +52,12 @@ function toggleNotifications() {
   });
 }
 
+function hamburgerMenu() {
+  $('.restarters-hamburger').click(function(e) {
+    alert('clicked')
+  });
+}
+
 
 setTimeout(function() {
   toggleNotifications();
