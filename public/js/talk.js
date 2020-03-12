@@ -53,13 +53,18 @@ function toggleNotifications() {
 }
 
 function hamburgerMenu() {
-  $('.restarters-hamburger').click(function(e) {
-    alert('clicked')
+  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></div>";
+  $(html).insertAfter('.d-header-icons');
+
+  $('.restarters-hamburger-toggle').click(function(e) {
+    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').toggle();
   });
 }
 
 
 setTimeout(function() {
+  hamburgerMenu();
   toggleNotifications();
   ajaxSearchNotifications();
 }, 300);
