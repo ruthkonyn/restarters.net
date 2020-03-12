@@ -61,7 +61,7 @@ function hamburgerMenu() {
 }
 
 function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-menu'><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
+  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' display='none'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-user-toggle').click(function(e) {
@@ -174,8 +174,9 @@ function checkAuth() {
         }
 
         if(response.is_admin) {
-          var html =  "<ul><li>user menu for admin</li></ul>";
-          $(html).insertAfter('.user-menu')
+          $('.admin-dropdown-spacer').show();
+          var html =  "<p>Administrator</p><ul><li><a href=''>Brands</a></li><li><a href=''>Skills</a></li><li><a href='/g'>Groups</a></li><li><a href='/tags'>Tags</a></li><li><a href='/categories'>Categories</a></li><li><a href='/u'>Users</a></li><li><a href=''>Roles</a></li><li><a href=''>Translations</a></li><li><a href='/admin'>Talk Admin Panel</a></li><li><a href='/admin/site_settings/category/required'>Talk Site Settings</a></li><li><a href=''>Repair Directory</a></li></ul>";
+          $(html).insertAfter('.admin-dropdown-spacer');
         }
 
       } else {
