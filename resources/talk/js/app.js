@@ -38,6 +38,8 @@ function toggleNotifications() {
     e.preventDefault();
     // If item is already active then close all.
     $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
+    $('.user-dropdown-menu-items').hide();
+    $('.hamburger-dropdown-menu-items').hide();
     // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
     $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
@@ -51,6 +53,8 @@ function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
+    $('.user-dropdown-menu-items').hide();
+    $('.toggle-notifications-menu').hide();
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
   });
@@ -63,7 +67,8 @@ function userMenu() {
   $('.restarters-user-toggle').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
-
+    $('.hamburger-dropdown-menu-items').hide();
+    $('.toggle-notifications-menu').hide();
     $('.toggle-user-menu').toggleClass('dropdown-active');
     $('.user-dropdown-menu-items').toggle();
   });
