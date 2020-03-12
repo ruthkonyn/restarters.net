@@ -292,13 +292,18 @@ Route::post('/set-cookie', 'InformationAlertCookieController');
 
 Route::get('/test/check-auth', function() {
     $authenticated = null;
+    $edit_profile_link = env('APP_URL')."/profile/edit/";
+    $is_admin = null;
     if ($email = \Cookie::get('authenticated')) {
         $authenticated = true;
         $user = App\User::where('email', $email)->first();
+        $edit_profile_link = $edit_profile_link.$user->id;
+        $is_admin = FixometerHelper::hasRole($user, 'Administrator');
     }
 
     return response()->json([
         'authenticated' => $authenticated,
-        'edit_profile_link' => env('APP_URL')."/profile/edit/{$user->id}",
+        'edit_profile_link' => $edit_profile_link,
+        'is_admin' => $is_admin,
     ]);
 });
