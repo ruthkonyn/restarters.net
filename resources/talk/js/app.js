@@ -47,6 +47,7 @@ function toggleNotifications() {
     }
 
     // Show items.
+    $('.bell-icon-active').hide();
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
     $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
   });
