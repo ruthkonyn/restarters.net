@@ -1,7 +1,7 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
-  var html = '<a href="#" class="toggle-notifications-menu dropdown-active">' +
+  var html = '<a href="#" class="toggle-notifications-menu">' +
   '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul></span>';
 
   $('.notification-icon').append(html);
