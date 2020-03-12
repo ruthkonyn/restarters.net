@@ -47,6 +47,10 @@ function ajaxSearchNotifications() {
             ).attr('class', 'notifcation-text')
           );
         });
+      } else {
+        $('.notification-menu-items').append(
+          $('<p class="admin-menu-header">').text('No notifications')
+        );
       }
     },
   });
