@@ -37,7 +37,15 @@ function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
     // If item is already active then close all.
-    $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
+    if ( $(this).hasClass('dropdown-active')) {
+      $('.notification-icon').each(function() {
+        $(this).removeClass('dropdown-active');
+        $(this).parents().children('.dropdown-menu-items').hide();
+      });
+
+      return false;
+    }
+    
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
     // Show items.
