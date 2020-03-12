@@ -297,8 +297,7 @@ Route::get('/test/check-auth', function() {
     if ($email = \Cookie::get('authenticated')) {
         $authenticated = true;
         $user = App\User::where('email', $email)->first();
-
-        dd($user->getUserFromDiscourse());
+        $is_admin = $user->getUserFromDiscourse()['user']['admin'];
     }
 
     return response()->json([
