@@ -45,7 +45,7 @@ function toggleNotifications() {
 
       return false;
     }
-    
+
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
     // Show items.
@@ -62,7 +62,7 @@ function hamburgerMenu() {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
     $('.user-dropdown-menu-items').hide();
-    $('.toggle-notifications-menu').hide();
+    $('.notification-menu-items').hide();
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
   });
@@ -76,7 +76,7 @@ function userMenu() {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').hide();
-    $('.toggle-notifications-menu').hide();
+    $('.notification-menu-items').hide();
     $('.toggle-user-menu').toggleClass('dropdown-active');
     $('.user-dropdown-menu-items').toggle();
   });
