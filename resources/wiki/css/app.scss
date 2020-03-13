@@ -86,6 +86,9 @@ body {
     h2 {
       counter-reset: section 0;
       counter-increment: chapter;
+
+      @extend .d-flex;
+      @extend .flex-row;
     }
 
     h3 {
@@ -137,7 +140,7 @@ body {
       @extend .d-flex;
       @extend .align-items-center;
 
-      height: 70px;
+      min-height: 70px;
 
       h2 {
         span:first-child {

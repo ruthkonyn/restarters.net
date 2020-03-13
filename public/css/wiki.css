@@ -6576,6 +6576,7 @@ button.bg-dark:focus {
 .list-md-inline,
 .list-lg-inline,
 .list-xl-inline,
+.mw-parser-output .mw-collapsible h2,
 .mw-parser-output .mw-collapsible div:first-of-type {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
@@ -6841,7 +6842,8 @@ button.bg-dark:focus {
   padding-top: 100%;
 }
 
-.flex-row {
+.flex-row,
+.mw-parser-output .mw-collapsible h2 {
   -webkit-box-orient: horizontal !important;
   -webkit-box-direction: normal !important;
       -ms-flex-direction: row !important;
@@ -14666,7 +14668,7 @@ body {
 }
 
 .mw-parser-output .mw-collapsible div:first-of-type {
-  height: 70px;
+  min-height: 70px;
 }
 
 .mw-parser-output .mw-collapsible div:first-of-type h2 span:first-child::before {
