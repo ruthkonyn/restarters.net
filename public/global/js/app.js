@@ -126,6 +126,10 @@ window.onload = function () {
         $element.tab('show');
       }
     }
+
+    if (window.location.origin == 'https://test-wiki.rstrt.org') {
+      $('.wiki-nav-item').addClass('active');
+    }
   })(jQuery, window, document);
 };
 
