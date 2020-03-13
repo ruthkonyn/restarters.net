@@ -112,7 +112,7 @@ body {
         background-image: url('../../global/svgs/dropdown-arrow-up.svg') !important;
         border: 0;
         margin-left: 8px;
-        transform: rotate(181deg) translateY(50%);
+        transform: rotate(0deg) translateY(-50%);
         display: inline-block;
         vertical-align: middle;
         position: absolute;
@@ -122,7 +122,7 @@ body {
 
       &-collapsed {
         &::after {
-          transform: rotate(0deg) translateY(-50%);
+          transform: rotate(181deg) translateY(50%);
         }
       }
 

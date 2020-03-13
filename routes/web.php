@@ -306,3 +306,95 @@ Route::get('/test/check-auth', function() {
         'is_admin' => $is_admin,
     ]);
 });
+
+use Cviebrock\DiscoursePHP\SSOHelper;
+
+function parseUserValue($property, $user)
+{
+    if (! is_string($property)) {
+        return $property;
+    }
+
+    return $user->{$property};
+}
+
+Route::get('/testing123', function(SSOHelper $sso) {
+  // Create an array of SSO parameters.
+  $sso_params = array(
+      'external_id' => 1,
+      'email' => 'bob@example.com',
+      'username' => 'bob',
+      'add_groups' => 'eurorack',
+      'require_activation' => 'true',
+  );
+
+
+  // Convert the SSO parameters into the SSO payload and generate the SSO signature.
+  $sso_payload = base64_encode( http_build_query( $sso_params ) );
+  $sig = hash_hmac( 'sha256', $sso_payload, $sso_secret );
+
+  if (! ($sso->validatePayload($payload = $sso_payload, $sig))) {
+      abort(403); //Forbidden
+  }
+
+  $query = $sso->getSignInString(
+      $sso->getNonce('bm9uY2U9ZmE5YWZkMzc5YmQwZmFiM2VjMjM0MDk0MDY4N2JiZWEmcmV0dXJuX3Nzb191cmw9aHR0cHMlM0ElMkYlMkZ0ZXN0LXRhbGsucnN0cnQub3JnJTJGc2Vzc2lvbiUyRnNzb19sb2dpbg=='),
+      parseUserValue($user->id, $user),
+      parseUserValue($user->email, $user),
+      []
+  );
+
+  return redirect(str_finish(env('DISCOURSE_URL'), '/').'session/sso_login?'.$query);
+});
+
+Route::get('/testing12345', function() {
+
+  // Create an array of SSO parameters.
+  $sso_params = array(
+    'external_id' => 1216,
+    'email' => 'chris@wecreatedigital.co.uk',
+    'username' => 'Chris_1216',
+    // 'add_groups' => 'eurorack',
+    // 'require_activation' => 'true',
+  );
+
+  // Convert the SSO parameters into the SSO payload and generate the SSO signature.
+  $sso_payload = base64_encode( http_build_query( $sso_params ) );
+  $sig = hash_hmac( 'sha256', $sso_payload, $sso_secret );
+
+  $url = env('DISCOURSE_URL').'/admin/users/sync_sso';
+  $post_fields = array(
+    'sso' => $sso_payload,
+    'sig' => $sig,
+  );
+
+  $api_key = config('discourse-api.api_key');
+  $api_username = config('discourse-api.api_username');
+
+  $headers = array("Content-Type: multipart/form-data;","Api-Key: $api_key","Api-Username: $api_username",);
+
+  $ch = curl_init();
+  curl_setopt( $ch, CURLOPT_URL, $url );
+  curl_setopt( $ch, CURLOPT_POST, 1 );
+  curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+  curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+  curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $post_fields ) );
+
+  $result = curl_exec( $ch );
+
+  if ( curl_errno( $ch ) !== 0 ) {
+    // Handle error, call curl_close( $ch ) and return.
+  }
+
+  curl_close( $ch );
+
+  $discourse_user = json_decode( $result );
+
+  $query = http_build_query( $post_fields );
+
+  $client = app('discourse-client');
+
+  $response = $client->request('POST', "/admin/users/sync_sso?{$query}");
+
+  dd($discourse_user, $response);
+});

@@ -14640,8 +14640,8 @@ body {
   background-image: url(/images/dropdown-arrow-up.svg?fe8917247edccb861690d176b5361105) !important;
   border: 0;
   margin-left: 8px;
-  -webkit-transform: rotate(181deg) translateY(50%);
-          transform: rotate(181deg) translateY(50%);
+  -webkit-transform: rotate(0deg) translateY(-50%);
+          transform: rotate(0deg) translateY(-50%);
   display: inline-block;
   vertical-align: middle;
   position: absolute;
@@ -14650,8 +14650,8 @@ body {
 }
 
 .mw-parser-output .mw-collapsible .mw-collapsible-toggle-collapsed::after {
-  -webkit-transform: rotate(0deg) translateY(-50%);
-          transform: rotate(0deg) translateY(-50%);
+  -webkit-transform: rotate(181deg) translateY(50%);
+          transform: rotate(181deg) translateY(50%);
 }
 
 .mw-parser-output .mw-collapsible .mw-collapsible-toggle a {
