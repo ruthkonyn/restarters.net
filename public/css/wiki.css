@@ -14325,6 +14325,10 @@ body {
   color: #000;
 }
 
+.footer-links div a::before {
+  content: none !important;
+}
+
 .footer-description {
   font-family: Asap;
   font-size: 16px;

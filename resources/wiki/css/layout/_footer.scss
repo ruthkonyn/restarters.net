@@ -12,6 +12,10 @@
       line-height: 1.14;
       letter-spacing: 1.05px;
       color: $black;
+
+      &::before {
+        content: none !important;
+      }
     }
   }
 }
