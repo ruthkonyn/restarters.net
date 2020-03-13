@@ -161,6 +161,9 @@ body {
         }
 
         .mw-headline {
+          @extend .d-flex;
+          @extend .align-items-center;
+          
           @include media-breakpoint-down(md) {
             font-size: 18px;
             font-weight: bold;

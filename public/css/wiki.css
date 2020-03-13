@@ -6577,7 +6577,8 @@ button.bg-dark:focus {
 .list-lg-inline,
 .list-xl-inline,
 .mw-parser-output .mw-collapsible div:first-of-type,
-.mw-parser-output .mw-collapsible div:first-of-type h2 {
+.mw-parser-output .mw-collapsible div:first-of-type h2,
+.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-headline {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6958,7 +6959,8 @@ button.bg-dark:focus {
 
 .align-items-center,
 .mw-parser-output .mw-collapsible div:first-of-type,
-.mw-parser-output .mw-collapsible div:first-of-type h2 {
+.mw-parser-output .mw-collapsible div:first-of-type h2,
+.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-headline {
   -webkit-box-align: center !important;
       -ms-flex-align: center !important;
           align-items: center !important;
