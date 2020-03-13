@@ -81,11 +81,12 @@ module.exports = __webpack_require__(181);
 
 // window.bootstrap = require('bootstrap');
 
-(function ($, window, document) {
-  // Use strict mode to reduce development errors.
-  "use strict";
+window.onload = function () {
 
-  window.onload = function () {
+  (function ($, window, document) {
+    // Use strict mode to reduce development errors.
+    "use strict";
+
     $(document).ready(function () {
       __webpack_require__(182);
       __webpack_require__(183);
@@ -125,8 +126,8 @@ module.exports = __webpack_require__(181);
         $element.tab('show');
       }
     }
-  };
-})(jQuery, window, document);
+  })(jQuery, window, document);
+};
 
 /***/ }),
 

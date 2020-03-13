@@ -3,11 +3,12 @@
 
 // window.bootstrap = require('bootstrap');
 
-(function($, window, document) {
-  // Use strict mode to reduce development errors.
-  "use strict";
+window.onload = function() {
 
-  window.onload = function() {
+  (function($, window, document) {
+    // Use strict mode to reduce development errors.
+    "use strict";
+
     $(document).ready(function() {
       require('./components/dropdown.js');
       require('./components/ajax-search-discourse-notifications.js');
@@ -49,6 +50,6 @@
         $element.tab('show');
       }
     }
-  }
 
-})(jQuery, window, document);
+  })(jQuery, window, document);
+}
