@@ -14316,13 +14316,14 @@ body {
 
 .footer-links div a {
   font-family: Asap;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.14;
   letter-spacing: 1.05px;
   color: #000;
+  text-transform: uppercase;
 }
 
 .footer-links div a::before {
