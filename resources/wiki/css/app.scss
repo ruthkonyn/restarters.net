@@ -86,9 +86,6 @@ body {
     h2 {
       counter-reset: section 0;
       counter-increment: chapter;
-
-      @extend .d-flex;
-      @extend .flex-row;
     }
 
     h3 {
@@ -143,6 +140,10 @@ body {
       min-height: 70px;
 
       h2 {
+        @extend .d-flex;
+        @extend .flex-row;
+        @extend .align-items-center;
+
         span:first-child {
           &::before {
             content: counter(chapter);
@@ -156,6 +157,18 @@ body {
             display: inline-block;
             padding: 4px;
             margin-right: 12px;
+          }
+        }
+
+        .mw-headline {
+          @include media-breakpoint-down(md) {
+            font-size: 18px;
+            font-weight: bold;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.17;
+            letter-spacing: normal;
+            text-align: left;
           }
         }
 
