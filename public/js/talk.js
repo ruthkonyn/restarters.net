@@ -189,6 +189,9 @@ function checkAuth() {
           $(html).insertAfter('.admin-dropdown-spacer');
         }
 
+        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+        $(html).insertAfter('.d-header-icons');
+
         if(response.menu) {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
@@ -196,17 +199,14 @@ function checkAuth() {
           $('.about-item').prepend(menu_line);
         }
 
-        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-        $(html).insertAfter('.d-header-icons');
-
         $.each(response.menu.reporting, function(key, value) {
           var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu').prepend(admin_links);
+          $('.hamburger-dropdown-menu').append(admin_links);
         });
 
         $.each(response.menu.general, function(key, value) {
           var general_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu').prepend(general_links);
+          $('.hamburger-dropdown-menu').append(general_links);
         });
 
 
