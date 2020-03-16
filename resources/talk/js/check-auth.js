@@ -50,6 +50,8 @@ function checkAuth() {
 
         $.each(response.menu.reporting, function(key, value) {
           console.log(key + ": " + value);
+          admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          $('.hamburger-dropdown-menu-items ul').prepend(admin_links);
         });
 
       } else {
