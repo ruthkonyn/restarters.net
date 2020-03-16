@@ -294,7 +294,7 @@ Route::get('/test/check-auth', function() {
     $authenticated = null;
     $edit_profile_link = env('APP_URL')."/profile/edit/";
     $menu = collect([
-      'Reporting' => collect([])
+      'reporting' => collect([])
     ]);
     $is_admin = null;
     if ($email = \Cookie::get('authenticated')) {
@@ -306,10 +306,10 @@ Route::get('/test/check-auth', function() {
 
     if ($is_host || $is_admin) {
       if ($is_admin) {
-        $menu['Reporting']->put(strtolower(str_replace(' ', '_', Lang::get('general.time_reporting'))), url('reporting/time-volunteered?a'));
+        $menu['reporting']->put(strtolower(str_replace(' ', '_', Lang::get('general.time_reporting'))), url('reporting/time-volunteered?a'));
       }
 
-      $menu['Reporting']->put(strtolower(str_replace(' ', '_', Lang::get('general.party_reporting'))), url('search'));
+      $menu['reporting']->put(strtolower(str_replace(' ', '_', Lang::get('general.party_reporting'))), url('search'));
     }
 
     return response()->json([
