@@ -49,7 +49,7 @@ function toggleNotifications() {
 }
 
 function hamburgerMenu() {
-  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></ul></div>";
+  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'><li><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-hamburger-toggle').click(function(e) {
@@ -192,10 +192,14 @@ function checkAuth() {
           $(html).insertAfter('.admin-dropdown-spacer');
         }
 
+        if(response.menu) {
+          var menu_text = "<p class='admin-menu-header'>Reporting</p>";
+          $('.hamburger-dropdown-menu-items').prepend(menu_text);
+        }
+
         $.each(response.menu.reporting, function(key, value) {
-          console.log(key + ": " + value);
-          admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu-items ul').prepend(admin_links);
+          var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          $('.hamburger-dropdown-menu').prepend(admin_links);
         });
 
       } else {

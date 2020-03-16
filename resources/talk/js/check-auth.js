@@ -48,10 +48,14 @@ function checkAuth() {
           $(html).insertAfter('.admin-dropdown-spacer');
         }
 
+        if(response.menu) {
+          var menu_text = "<p class='admin-menu-header'>Reporting</p>";
+          $('.hamburger-dropdown-menu-items').prepend(menu_text);
+        }
+
         $.each(response.menu.reporting, function(key, value) {
-          console.log(key + ": " + value);
-          admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu-items ul').prepend(admin_links);
+          var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          $('.hamburger-dropdown-menu').prepend(admin_links);
         });
 
       } else {
