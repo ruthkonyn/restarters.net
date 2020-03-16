@@ -176,7 +176,7 @@ function checkAuth() {
         }
 
         if ($('.my-profile-url').length) {
-          $('.my-profile-url').attr('href', response.edit_profile_link);
+          $('.my-profile-url').attr('href', '/my/preferences/account');
         }
 
         if(response.is_admin) {
