@@ -25,6 +25,8 @@ setTimeout(function() {
     var forum_tab = document.querySelector('.forum');
     forum_tab.classList.add('active');
   }
+
+  $('.custom-header-links .talk').addClass('active');
 }, 300);
 
 function addActive(tab) {
