@@ -195,22 +195,20 @@ function checkAuth() {
         if(response.menu) {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
+          
+          $.each(response.menu.reporting, function(key, value) {
+            var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
+            $('.hamburger-dropdown-menu').append(admin_links);
+          });
+
+          $.each(response.menu.general, function(key, value) {
+            var general_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
+            $('.hamburger-dropdown-menu').append(general_links);
+          });
+
           var menu_line = "<li class='admin-dropdown-spacer'></li>"
           $('.About').prepend(menu_line);
         }
-
-        $.each(response.menu.reporting, function(key, value) {
-          var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu').append(admin_links);
-        });
-
-        $.each(response.menu.general, function(key, value) {
-          var general_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-          $('.hamburger-dropdown-menu').append(general_links);
-        });
-
-
-
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
         $('.d-header-icons').attr('style', 'display:none');
