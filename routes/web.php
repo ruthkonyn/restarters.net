@@ -316,7 +316,7 @@ Route::get('/test/check-auth', function() {
     $menu['general']->put(Lang::get('general.about_page'), Lang::get('general.about_page_url'));
     $menu['general']->put(Lang::get('general.guidelines_page'), Lang::get('general.guidelines_page_url'));
     $menu['general']->put(Lang::get('general.privacy_page'), Lang::get('general.privacy_page_url'));
-    $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url')));
+    $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url'));
     $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url'));
     $menu['general']->put(Lang::get('general.menu_faq'), Lang::get('general.faq_url'));
     $menu['general']->put(Lang::get('general.therestartproject'), Lang::get('general.restartproject_url'));
