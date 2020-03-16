@@ -55,10 +55,20 @@ function checkAuth() {
           $('.about-item').prepend(menu_line);
         }
 
+        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+        $(html).insertAfter('.d-header-icons');
+
         $.each(response.menu.reporting, function(key, value) {
           var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
           $('.hamburger-dropdown-menu').prepend(admin_links);
         });
+
+        $.each(response.menu.general, function(key, value) {
+          var general_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          $('.hamburger-dropdown-menu').prepend(general_links);
+        });
+
+
 
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');

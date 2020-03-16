@@ -49,9 +49,6 @@ function toggleNotifications() {
 }
 
 function hamburgerMenu() {
-  var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'><li class='about-item'><a href='https://talk.restarters.net/about'> About</a></li><li><a href='https://talk.restarters.net/guidelines'>Guidelines</a></li><li><a href='https://talk.restarters.net/tos'>Terms of use</a></li><li><a href='https://talk.restarters.net/privacy'>Privacy</a></li><li><a href='https://talk.restarters.net/c/help' target='_blank' rel='noopener noreferrer'>Help &amp; Feedback</a></li><li><a href='https://therestartproject.org/faq' target='_blank' rel='noopener noreferrer'>FAQs</a></li><li><a href='https://therestartproject.org' target='_blank' rel='noopener noreferrer'>therestartproject.org</a></li></ul></div>";
-  $(html).insertAfter('.d-header-icons');
-
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
@@ -199,10 +196,20 @@ function checkAuth() {
           $('.about-item').prepend(menu_line);
         }
 
+        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+        $(html).insertAfter('.d-header-icons');
+
         $.each(response.menu.reporting, function(key, value) {
           var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
           $('.hamburger-dropdown-menu').prepend(admin_links);
         });
+
+        $.each(response.menu.general, function(key, value) {
+          var general_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          $('.hamburger-dropdown-menu').prepend(general_links);
+        });
+
+
 
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
