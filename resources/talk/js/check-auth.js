@@ -34,6 +34,8 @@ function checkAuth() {
           $('.my-profile-url').attr('href', '/my/preferences/account');
         }
 
+        $('.d-header-icons').attr('style', 'display:block');
+
         userMenu();
 
         if(response.is_admin) {
