@@ -294,7 +294,6 @@ Route::get('/test/check-auth', function() {
     $authenticated = null;
     $edit_profile_link = env('APP_URL')."/profile/edit/";
     $menu = collect([
-      'general' => [],
       'reporting' => collect([])
     ]);
     $is_admin = null;
@@ -323,13 +322,12 @@ Route::get('/test/check-auth', function() {
       Lang::get('general.therestartproject') => Lang::get('general.restartproject_url')
     ];
 
-    $menu['general'] = $general_menu;
-
 
     return response()->json([
         'authenticated' => $authenticated,
         'edit_profile_link' => $edit_profile_link,
         'is_admin' => $is_admin,
         'menu' => $menu->toArray(),
+        'general_menu' => $general_menu,
     ]);
 });
