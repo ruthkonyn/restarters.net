@@ -525,10 +525,12 @@ class User extends Authenticatable implements Auditable
         $discourse_user = $this->getUserFromDiscourse();
 
         if ( ! $discourse_user) {
-            return false;
+            return;
         }
 
         $user_id = $discourse_user['user']['id'];
+
+        $client = app('discourse-client');
 
         $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
 
