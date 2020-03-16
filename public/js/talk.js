@@ -192,7 +192,7 @@ function checkAuth() {
           $(html).insertAfter('.admin-dropdown-spacer');
         }
 
-        $.each(response.menu, function(key, value) {
+        $.each(response.menu.reporting, function(key, value) {
           console.log(key + ": " + value);
         });
 
