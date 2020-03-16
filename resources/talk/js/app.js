@@ -80,7 +80,6 @@ function userMenu() {
 setTimeout(function() {
   checkAuth();
   hamburgerMenu();
-  userMenu();
   toggleNotifications();
   ajaxSearchNotifications();
 }, 300);

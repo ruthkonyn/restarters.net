@@ -33,6 +33,8 @@ function checkAuth() {
         if ($('.my-profile-url').length) {
           $('.my-profile-url').attr('href', '/my/preferences/account');
         }
+        
+        userMenu();
 
         if(response.is_admin) {
           $('.admin-dropdown-spacer').show();
