@@ -62,4 +62,13 @@ return array (
   'discourse_url' => 'https://talk.restarters.net',
   'please_select' => 'Please select',
   'calendar_feed_help_url' => '/t/fixometer-how-to-subscribe-to-a-calendar',
+
+  'about_page' => 'About',
+  'about_page_url' => 'https://talk.restarters.net/about',
+  'guidelines_page' => 'Guidelines',
+  'guidelines_page_url' => 'https://talk.restarters.net/guidelines',
+  'terms_of_use_page' => 'Terms of use',
+  'terms_of_use_page_url' => 'https://talk.restarters.net/tos',
+  'privacy_page' => 'Privacy',
+  'privacy_page_url' => 'https://talk.restarters.net/privacy',
 );

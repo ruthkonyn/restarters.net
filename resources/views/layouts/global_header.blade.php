@@ -140,26 +140,26 @@
           @endif
 
           <li>
-            <a href="https://talk.restarters.net/about">
-              About
+            <a href="@lang('general.about_page')">
+              @lang('general.about_page_url')
             </a>
           </li>
 
           <li>
-            <a href="https://talk.restarters.net/guidelines">
-              Guidelines
+            <a href="@lang('general.guidelines_page')">
+              @lang('general.guidelines_page_url')
             </a>
           </li>
 
           <li>
-            <a href="https://talk.restarters.net/tos">
-              Terms of use
+            <a href="@lang('general.terms_of_use_page')">
+              @lang('general.terms_of_use_page_url')
             </a>
           </li>
 
           <li>
-            <a href="https://talk.restarters.net/privacy">
-              Privacy
+            <a href="@lang('general.privacy_page')">
+              @lang('general.privacy_page_url')
             </a>
           </li>
 
