@@ -55,11 +55,11 @@ function checkAuth() {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
           var menu_line = "<li class='admin-dropdown-spacer'></li>"
-          $('.about-item').prepend(menu_line);
+          $('.About').prepend(menu_line);
         }
 
         $.each(response.menu.reporting, function(key, value) {
-          var admin_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
           $('.hamburger-dropdown-menu').append(admin_links);
         });
 
