@@ -51,6 +51,8 @@ function checkAuth() {
         if(response.menu) {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
+          var menu_line = "<li class='admin-dropdown-spacer'></li>"
+          $('.about-item').prepend(menu_line);
         }
 
         $.each(response.menu.reporting, function(key, value) {
