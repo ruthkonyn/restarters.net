@@ -205,7 +205,7 @@ function checkAuth() {
         });
 
         $.each(response.menu.general, function(key, value) {
-          var general_links = "<li><a href='"+ value +"'>"+ key +"</a></li>";
+          var general_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
           $('.hamburger-dropdown-menu').append(general_links);
         });
 
