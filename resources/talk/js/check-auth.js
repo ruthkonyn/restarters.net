@@ -40,7 +40,6 @@ function checkAuth() {
         userMenu();
 
         if(response.is_admin) {
-          // Change SVG to admin svg
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
           $('.admin-dropdown-spacer').show();
