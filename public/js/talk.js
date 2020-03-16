@@ -163,6 +163,7 @@ function checkAuth() {
     datatype: 'json',
     success: function(response) {
       $auth_list_item = $('.auth-list-item');
+      console.log(response);
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
@@ -183,6 +184,9 @@ function checkAuth() {
         userMenu();
 
         if(response.is_admin) {
+          // Change SVG to admin svg
+          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
+          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
           $('.admin-dropdown-spacer').show();
           var html =  "<p class='admin-menu-header'>Administrator</p><ul><li><a href=''>Brands</a></li><li><a href=''>Skills</a></li><li><a href='/g'>Groups</a></li><li><a href='/tags'>Tags</a></li><li><a href='/categories'>Categories</a></li><li><a href='/u'>Users</a></li><li><a href=''>Roles</a></li><li><a href=''>Translations</a></li><li><a href='/admin'>Talk Admin Panel</a></li><li><a href='/admin/site_settings/category/required'>Talk Site Settings</a></li><li><a href=''>Repair Directory</a></li></ul>";
           $(html).insertAfter('.admin-dropdown-spacer');
