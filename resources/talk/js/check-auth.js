@@ -33,7 +33,7 @@ function checkAuth() {
         if ($('.my-profile-url').length) {
           $('.my-profile-url').attr('href', '/my/preferences/account');
         }
-        
+
         userMenu();
 
         if(response.is_admin) {
@@ -44,6 +44,7 @@ function checkAuth() {
 
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
+        $('.d-header-icons').attr('style', 'display:none');
       }
     },
   });
