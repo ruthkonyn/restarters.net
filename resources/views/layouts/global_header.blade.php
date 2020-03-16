@@ -140,26 +140,26 @@
           @endif
 
           <li>
-            <a href="@lang('general.about_page')">
-              @lang('general.about_page_url')
+            <a href="@lang('general.about_page_url')">
+              @lang('general.about_page')
             </a>
           </li>
 
           <li>
-            <a href="@lang('general.guidelines_page')">
-              @lang('general.guidelines_page_url')
+            <a href="@lang('general.guidelines_page_url')">
+              @lang('general.guidelines_page')
             </a>
           </li>
 
           <li>
-            <a href="@lang('general.terms_of_use_page')">
-              @lang('general.terms_of_use_page_url')
+            <a href="@lang('general.terms_of_use_page_url')">
+              @lang('general.terms_of_use_page')
             </a>
           </li>
 
           <li>
-            <a href="@lang('general.privacy_page')">
-              @lang('general.privacy_page_url')
+            <a href="@lang('general.privacy_page_url')">
+              @lang('general.privacy_page')
             </a>
           </li>
 
