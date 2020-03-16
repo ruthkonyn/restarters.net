@@ -306,10 +306,12 @@ Route::get('/test/check-auth', function() {
 
     if ($is_host || $is_admin) {
       if ($is_admin) {
-        $menu['Reporting']->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
+        $menu->get('Reporting')
+        ->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
       }
 
-      $menu['Reporting']->put(Lang::get('general.party_reporting'), url('search'));
+      $menu->get('Reporting')
+      ->put(Lang::get('general.party_reporting'), url('search'));
     }
 
     return response()->json([
