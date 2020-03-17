@@ -23,12 +23,10 @@ Route::prefix('user')->group(function () {
 });
 
 Route::get('/testing123', function () {
-  $user = auth()->user();
-  dd($user->createUserOnDiscourse([
-      'password' => 'Account1',
-  ]));
-
-  dd($user->getUserFromDiscourse());
+    $user = auth()->user();
+    dd($user->createUserOnDiscourse([
+      'password' => 'newpassword123',
+    ]));
 });
 
 Route::get('/user/forbidden', function () {
