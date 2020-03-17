@@ -87,9 +87,11 @@ function categoriesDropdown() {
 
   $(categories).insertAfter('.select-kit-filter');
 
+  $('.select-kit-collection').attr('style', 'display: none');
+
   $('.topic_categories').click(function(e) {
     e.preventDefault();
-    $('.select-kit-collection').show();
+      $('.select-kit-collection').attr('style', 'display: block');
   })
 }
 
