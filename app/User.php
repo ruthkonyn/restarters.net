@@ -572,6 +572,10 @@ class User extends Authenticatable implements Auditable
                 'username' => isset($data['username']) ? $data['username'] : $this->username,
                 'password' => $data['password'],
             ],
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'multipart/form-data',
+            ],
         ]);
 
         if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
