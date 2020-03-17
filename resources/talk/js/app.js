@@ -86,12 +86,11 @@ function categoriesDropdown() {
   var categories = "<ul class='additional_options'><li><a href='#' class='topic_categories'>Topic Categories <svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/c/local-chat' class='group_chat'>Group Chat <svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/c/local-chat' class='all_groups'>All groups <svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg></a></li><li><a href='#' class='help'>Help & Feedback</a></li><li><a href='#' class='guides'>User Guides</a></li><li><a href='#' class='requests'>Feature Requests</a></li><li><a href='#' class='bug'>Bug Reports</a></li></ul>";
 
   $(categories).insertAfter('.select-kit-filter');
+  var back = "<a class='back' href='#'><svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg> All forum options</a>";
   $('.select-kit-collection').prepend(back);
 
   $('.topic_categories').click(function(e) {
     e.preventDefault();
-      var back = "<a class='back' href='#'><svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg> All forum options</a>";
-
       $('.additional_options').addClass('display-none');
       $('.select-kit-collection').toggleClass('display-block');
   })
