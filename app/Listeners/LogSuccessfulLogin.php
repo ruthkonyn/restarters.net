@@ -38,7 +38,7 @@ class LogSuccessfulLogin
 
         // Sync user with Groups on Discourse
         if ( ! $user->groups->isEmpty()) {
-            $user->groups->each(function ($group, $key) {
+            $user->groups->each(function ($group, $key) use ($user) {
                 $group->addUsersToDiscourseGroup($user->username);
             });
         }
