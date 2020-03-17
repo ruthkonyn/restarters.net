@@ -73,8 +73,16 @@ function userMenu() {
   });
 }
 
+function changeForumNavigation() {
+  $('#create-topic').addClass('d-none');
+  $('#create-topic .d-button-label').text('New Topic');
+  $('#create-topic').removeClass('d-none');
+
+}
+
 
 setTimeout(function() {
+  changeForumNavigation();
   checkAuth();
   hamburgerMenu();
   toggleNotifications();
