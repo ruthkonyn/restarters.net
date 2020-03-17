@@ -22,6 +22,15 @@ Route::prefix('user')->group(function () {
     Route::post('register/{hash?}', 'UserController@postRegister');
 });
 
+Route::get('/testing123', function () {
+  $user = auth()->user();
+  // dd($user->createUserOnDiscourse([
+  //     'password' => 'Account1',
+  // ]));
+
+  dd($user->getUserFromDiscourse());
+});
+
 Route::get('/user/forbidden', function () {
     return view('user.forbidden', [
         'title' => 'Oops',

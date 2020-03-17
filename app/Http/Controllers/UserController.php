@@ -1241,6 +1241,10 @@ class UserController extends Controller
 
         $user->save();
 
+        $user->createUserOnDiscourse([
+            'password' => $request->input('password'),
+        ]);
+
         // Notify relevant users
         if (! \App::environment('local')) {
           $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
