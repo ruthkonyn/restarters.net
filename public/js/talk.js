@@ -82,9 +82,16 @@ function changeForumNavigation() {
   $(text).insertAfter("#create-topic");
 }
 
+function categoriesDropdown() {
+  var categories = "<ul><li><a href='#' class='topic_categories'>Topic Categories</a></li></ul>";
+
+  $(categories).insertAfter('.select-kit-filter');
+}
+
 
 setTimeout(function() {
   changeForumNavigation();
+  categoriesDropdown();
   checkAuth();
   hamburgerMenu();
   toggleNotifications();
