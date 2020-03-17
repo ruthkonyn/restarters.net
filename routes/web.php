@@ -23,10 +23,27 @@ Route::prefix('user')->group(function () {
 });
 
 Route::get('/testing123', function () {
-    $user = auth()->user();
-    dd($user->createUserOnDiscourse([
-      'password' => 'newpassword123',
-    ]));
+    $client = app('discourse-client');
+
+    // Attempt retrieve existing Discourse Group
+    $response = $client->request('GET', "/groups/{$this->discourse_slug}.json");
+
+    if ($response->getStatusCode() != 200) {
+        return false;
+    }
+
+    $array = json_decode($response->getBody()->getContents(), true);
+    $discourse_group_id = $array['group']['id'];
+
+    $response = $client->request(
+          'DELETE',
+        "/groups/{$discourse_group_id}/members.json",
+        [
+            'form_params' => [
+                'username' => 'Chris_1216',
+            ],
+        ]
+    );
 });
 
 Route::get('/user/forbidden', function () {
