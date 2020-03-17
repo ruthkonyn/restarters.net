@@ -55,7 +55,7 @@ window.onload = function() {
         $('.wiki-nav-item').addClass('active');
     }
 
-    if (window.location.origin == 'https://test-wiki.rstrt.org/Special:RecentChanges') {
+    if (window.location.pathname == '/Special:RecentChanges') {
       $('.nav-tabs-block li a').removeClass('active');
 
       $('.nav-tabs-block li a[href*="'+ window.location.pathname +'"]').each(function() {
