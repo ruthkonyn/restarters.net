@@ -566,16 +566,16 @@ class User extends Authenticatable implements Auditable
         $client = app('discourse-client');
 
         $response = $client->request('POST', '/users', [
-            'form_params' => [
+            // 'form_params' => [
                 'name' => isset($data['name']) ? $data['name'] : $this->name,
                 'email' => isset($data['email']) ? $data['email'] : $this->email,
                 'username' => isset($data['username']) ? $data['username'] : $this->username,
                 'password' => $data['password'],
-            ],
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'multipart/form-data',
-            ],
+            // ],
+            // 'headers' => [
+            //     'Accept' => 'application/json',
+            //     'Content-Type' => 'multipart/form-data',
+            // ],
         ]);
 
         if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
