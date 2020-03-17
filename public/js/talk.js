@@ -79,7 +79,7 @@ function changeForumNavigation() {
   $('#create-topic').removeClass('d-none');
 
   var text = "test";
-  $("#create-topic").append(text);
+  $("#create-topic").insertAfter(text);
 }
 
 
