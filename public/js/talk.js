@@ -100,7 +100,7 @@ function categoriesDropdown() {
     e.preventDefault();
     $('.topic_categories').removeClass('display-none');
     $('.select-kit-collection').toggleClass('display-block');
-  }
+  });
 
 }
 
