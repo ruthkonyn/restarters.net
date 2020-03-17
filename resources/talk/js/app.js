@@ -78,8 +78,8 @@ function changeForumNavigation() {
   $('#create-topic .d-button-label').text('New Topic');
   $('#create-topic').removeClass('d-none');
 
-  var text = "test";
-  $("#create-topic").insertAfter(text);
+  var text = "<strong>A place to discuss all things repair: advice, activism, and more.</strong> Join in! Anyone can post a topic.";
+  $(text).insertAfter("#create-topic");
 }
 
 
