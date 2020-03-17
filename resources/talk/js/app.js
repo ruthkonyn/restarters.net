@@ -98,7 +98,9 @@ function categoriesDropdown() {
 
   $('.back').click(function(e) {
     e.preventDefault();
-    $('.additional_options').removeClass('display-none');
+    $( ".additional_options" ).remove();
+    $(categories).insertAfter('.select-kit-filter');
+    $('.additional_options').addClass('display-block');
     $('.select-kit-collection').toggleClass('display-block');
   });
 
