@@ -22,30 +22,6 @@ Route::prefix('user')->group(function () {
     Route::post('register/{hash?}', 'UserController@postRegister');
 });
 
-Route::get('/testing123', function () {
-    $client = app('discourse-client');
-
-    // Attempt retrieve existing Discourse Group
-    $response = $client->request('GET', "/groups/{$this->discourse_slug}.json");
-
-    if ($response->getStatusCode() != 200) {
-        return false;
-    }
-
-    $array = json_decode($response->getBody()->getContents(), true);
-    $discourse_group_id = $array['group']['id'];
-
-    $response = $client->request(
-          'DELETE',
-        "/groups/{$discourse_group_id}/members.json",
-        [
-            'form_params' => [
-                'username' => 'Chris_1216',
-            ],
-        ]
-    );
-});
-
 Route::get('/user/forbidden', function () {
     return view('user.forbidden', [
         'title' => 'Oops',
@@ -318,23 +294,25 @@ Route::get('/test/check-auth', function() {
     $authenticated = null;
     $edit_profile_link = env('APP_URL')."/profile/edit/";
     $menu = collect([
-      'general' => collect([]),
-      'reporting' => collect([])
+        'general' => collect([]),
+        'reporting' => collect([])
     ]);
     $is_admin = null;
+
     if ($email = \Cookie::get('authenticated')) {
         $authenticated = true;
         $user = App\User::where('email', $email)->first();
         $is_admin = $user->getUserFromDiscourse()['user']['admin'];
         $is_host = $user->getUserFromDiscourse()['user']['moderator'];
+        $edit_profile_link = $edit_profile_link.$user->id;
     }
 
     if ($is_host || $is_admin) {
-      if ($is_admin) {
-        $menu['reporting']->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
-      }
+        if ($is_admin) {
+            $menu['reporting']->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
+        }
 
-      $menu['reporting']->put(Lang::get('general.party_reporting'), url('search'));
+        $menu['reporting']->put(Lang::get('general.party_reporting'), url('search'));
     }
 
     $menu['general']->put(Lang::get('general.about_page'), Lang::get('general.about_page_url'));
@@ -344,7 +322,6 @@ Route::get('/test/check-auth', function() {
     $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url'));
     $menu['general']->put(Lang::get('general.menu_faq'), Lang::get('general.faq_url'));
     $menu['general']->put(Lang::get('general.therestartproject'), Lang::get('general.restartproject_url'));
-
 
     return response()->json([
         'authenticated' => $authenticated,
