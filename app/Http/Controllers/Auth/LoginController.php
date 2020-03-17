@@ -73,18 +73,6 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             \Cookie::queue(\Cookie::make('authenticated', $request->email, config('session.lifetime'), null, '.rstrt.org'));
 
-            // Create User on Discourse if does not already exist
-            $user->createUserOnDiscourse([
-                'password' => $request->input('password'),
-            ]);
-
-            // Sync user with Groups on Discourse
-            if ( ! $user->groups->isEmpty()) {
-                $user->groups->each(function ($group, $key) {
-                    $group->addUsersToDiscourseGroup($user->username);
-                });
-            }
-
             return $this->sendLoginResponse($request);
         }
 

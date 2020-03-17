@@ -554,21 +554,6 @@ class User extends Authenticatable implements Auditable
         return $array;
     }
 
-    public function getUserFromDiscourse()
-    {
-        $client = app('discourse-client');
-
-        $response = $client->request('GET', "/users/{$this->username}.json");
-
-        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
-            return false;
-        }
-
-        $array = json_decode($response->getBody()->getContents(), true);
-
-        return $array;
-    }
-
     public function createUserOnDiscourse(array $data)
     {
         $attempt_retrieval_of_user = $this->getUserFromDiscourse();
