@@ -86,6 +86,11 @@ function categoriesDropdown() {
   var categories = "<ul><li><a href='#' class='topic_categories'>Topic Categories</a></li></ul>";
 
   $(categories).insertAfter('.select-kit-filter');
+
+  $('.topic_categories').click(function(e) {
+    e.preventDefault();
+    $('.select-kit-collection').show();
+  })
 }
 
 
