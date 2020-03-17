@@ -93,14 +93,13 @@ function categoriesDropdown() {
       $(categories).insertAfter('.select-kit-filter');
       var back = "<a class='back' href='#'><svg xmlns='http://www.w3.org/2000/svg' width='14.9' height='8.146' viewBox='0 0 14.9 8.146'><path d='M6.726 7.738a1.567 1.567 0 0 0 2.1 0l5.7-5.427A1.3 1.3 0 1 0 12.687.485L7.934 4.966a.324.324 0 0 1-.427 0L2.154.321a1.3 1.3 0 0 0-1.71 1.956z' data-name='Path 125'/></svg> All forum options</a>";
       $('.select-kit-collection').prepend(back);
-
-      $('.back').click(function(e) {
-        e.preventDefault();
-        $('.additional_options').removeClass('display-none');
-        $('.select-kit-collection').toggleClass('display-block');
-      });
   });
 
+  $('.back').click(function(e) {
+    e.preventDefault();
+    $('.additional_options').removeClass('display-none');
+    $('.select-kit-collection').toggleClass('display-block');
+  });
 }
 
 
