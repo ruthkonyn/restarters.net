@@ -60,7 +60,7 @@ function hamburgerMenu() {
 }
 
 function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' display='none'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
+  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' style='display: none;'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
   $(html).insertAfter('.d-header-icons');
 
   $('.restarters-user-toggle').click(function(e) {
@@ -120,7 +120,7 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').show();
+        // $('.notification-menu-items').show();
         $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function(index, $notification) {
@@ -160,7 +160,6 @@ function checkAuth() {
     datatype: 'json',
     success: function(response) {
       $auth_list_item = $('.auth-list-item');
-      console.log(response);
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
@@ -195,7 +194,7 @@ function checkAuth() {
         if(response.menu) {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
-          
+
           $.each(response.menu.reporting, function(key, value) {
             var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
             $('.hamburger-dropdown-menu').append(admin_links);

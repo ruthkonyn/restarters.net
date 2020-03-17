@@ -37,7 +37,7 @@ function ajaxSearchNotifications() {
       if ($notifications.length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').show();
+        // $('.notification-menu-items').show();
         $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function(index, $notification) {

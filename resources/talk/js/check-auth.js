@@ -19,7 +19,6 @@ function checkAuth() {
     datatype: 'json',
     success: function(response) {
       $auth_list_item = $('.auth-list-item');
-      console.log(response);
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
@@ -54,7 +53,7 @@ function checkAuth() {
         if(response.menu) {
           var menu_text = "<p class='admin-menu-header'>Reporting</p>";
           $('.hamburger-dropdown-menu-items').prepend(menu_text);
-          
+
           $.each(response.menu.reporting, function(key, value) {
             var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
             $('.hamburger-dropdown-menu').append(admin_links);
