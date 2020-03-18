@@ -290,43 +290,7 @@ Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::post('/set-cookie', 'InformationAlertCookieController');
 
-Route::get('/test/check-auth', function() {
-    $authenticated = null;
-    $edit_profile_link = env('APP_URL')."/profile/edit/";
-    $menu = collect([
-        'general' => collect([]),
-        'reporting' => collect([])
-    ]);
-    $is_admin = null;
 
-    if ($email = \Cookie::get('authenticated')) {
-        $authenticated = true;
-        $user = App\User::where('email', $email)->first();
-        $is_admin = $user->getUserFromDiscourse()['user']['admin'];
-        $is_host = $user->getUserFromDiscourse()['user']['moderator'];
-        $edit_profile_link = $edit_profile_link.$user->id;
-    }
-
-    if ($is_host || $is_admin) {
-        if ($is_admin) {
-            $menu['reporting']->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
-        }
-
-        $menu['reporting']->put(Lang::get('general.party_reporting'), url('search'));
-    }
-
-    $menu['general']->put(Lang::get('general.about_page'), Lang::get('general.about_page_url'));
-    $menu['general']->put(Lang::get('general.guidelines_page'), Lang::get('general.guidelines_page_url'));
-    $menu['general']->put(Lang::get('general.privacy_page'), Lang::get('general.privacy_page_url'));
-    $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url'));
-    $menu['general']->put(Lang::get('general.menu_help_feedback'), Lang::get('general.help_feedback_url'));
-    $menu['general']->put(Lang::get('general.menu_faq'), Lang::get('general.faq_url'));
-    $menu['general']->put(Lang::get('general.therestartproject'), Lang::get('general.restartproject_url'));
-
-    return response()->json([
-        'authenticated' => $authenticated,
-        'edit_profile_link' => $edit_profile_link,
-        'is_admin' => $is_admin,
-        'menu' => $menu->toArray(),
-    ]);
+Route::get('/test/check-auth', function () {
+    return new \App\Services\CheckAuthService;
 });
