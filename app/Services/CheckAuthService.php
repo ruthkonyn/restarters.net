@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\User;
-use Lang;
 use Cookie;
 use FixometerHelper;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Lang;
 
 class CheckAuthService extends JsonResource
 {
@@ -42,7 +42,7 @@ class CheckAuthService extends JsonResource
 
     public function __construct()
     {
-        $this->edit_profile_link = env('APP_URL')."/profile/edit/";
+        $this->edit_profile_link = env('APP_URL').'/profile/edit/';
 
         $this->menu = collect([
             'general' => collect([]),
@@ -80,7 +80,6 @@ class CheckAuthService extends JsonResource
         $this->is_host = $this->user->getUserFromDiscourse()['user']['moderator'];
         $this->edit_profile_link = $this->edit_profile_link.$this->user->id;
 
-
         if ($this->is_host || $this->is_admin) {
             if ($this->is_admin) {
                 $this->menu->get('reporting')->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
@@ -88,35 +87,35 @@ class CheckAuthService extends JsonResource
 
             $this->menu->get('reporting')->put(Lang::get('general.party_reporting'), url('search'));
 
-            $this->menu->get('reporting')->put('spacer', '');
+            $this->menu->get('reporting')->put('reporting_spacer', 'spacer');
         }
     }
 
-   /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
+    /**
+      * Transform the resource into an array.
+      *
+      * @param  \Illuminate\Http\Request  $request
+      * @return array
+      */
     public function toArray($request)
     {
-      return [
-          'authenticated' => $this->authenticated,
-          'edit_profile_link' => $this->edit_profile_link,
-          'is_admin' => $this->is_admin,
-          'menu' => $this->menu->toArray(),
-      ];
+        return [
+            'authenticated' => $this->authenticated,
+            'edit_profile_link' => $this->edit_profile_link,
+            'is_admin' => $this->is_admin,
+            'menu' => $this->menu->toArray(),
+        ];
     }
 
     private function populateUserDropdownItems($user)
     {
-          $user_menu = $this->menu->get('user');
+        $user_menu = $this->menu->get('user');
 
-          $user_menu->put(Lang::get('general.profile'), url('profile/edit/'.$user->id));
+        $user_menu->put(Lang::get('general.profile'), url('profile/edit/'.$user->id));
 
         if (FixometerHelper::hasRole($user, 'Administrator')) {
-            $user_menu->put('spacer', '');
-            $user_menu->put('header', 'Administrator'));
+            $user_menu->put('profile_spacer', 'spacer');
+            $user_menu->put('header', 'Administrator');
             $user_menu->put('Brands', route('brands'));
             $user_menu->put('Skills', route('skills'));
             $user_menu->put('Group tags', route('tags'));
@@ -133,7 +132,7 @@ class CheckAuthService extends JsonResource
             $user_menu->put('Repair Directory', config('restarters.repairdirectory.base_url').'/admin');
         }
 
-        $user_menu->put('spacer', '');
+        $user_menu->put('logout_spacer', 'spacer');
 
         $user_menu->put(Lang::get('general.logout'), url('logout'));
     }

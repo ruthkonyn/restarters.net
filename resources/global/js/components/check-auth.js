@@ -50,8 +50,21 @@ function checkAuth() {
 
         // IS ADMIN - User Toggler dropdown menu
         if (response.is_admin) {
-          console.log(true, 1);
-          // TODO
+          $.each( response.menu.user, function( key, value ) {
+            var spacer_condition = key.includes('spacer');
+
+            if (spacer_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $auth_menu_items.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
+          });
         }
 
         if ($notifications_list_item.length) {
@@ -62,11 +75,6 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
-
-        if ($('.my-profile-url').length) {
-          $('.my-profile-url').attr('href', response.edit_profile_link);
-        }
-
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
