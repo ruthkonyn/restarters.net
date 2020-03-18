@@ -860,19 +860,23 @@ class FixometerHelper
     }
 
     /** checks if user has preference **/
-    public static function hasPermission($slug)
+    public static function hasPermission($slug, $user = null)
     {
-
-      // Check if guest
-        if (Auth::guest()) {
+        // Check if guest
+        if (Auth::guest() || is_null($user)) {
             return false;
+        }
+
+        $user_id = Auth::user();
+        if ($user) {
+            $user_id = $user->id;
         }
 
         // Check if Permission Exists
         $has_permission = UsersPermissions::join('permissions', 'permissions.idpermissions', '=', 'users_permissions.permission_id')
-                                      ->where('users_permissions.user_id', Auth::user()->id)
-                                        ->where('permissions.slug', $slug)
-                                          ->first();
+        ->where('users_permissions.user_id', $user_id)
+        ->where('permissions.slug', $slug)
+        ->first();
 
         // Does user have it?
         if (empty($has_permission)) {
