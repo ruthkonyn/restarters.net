@@ -86,6 +86,10 @@ function activateSearch() {
   $('#search-button-123').click(function() {
     $('#search-button').trigger('click');
   });
+
+  $(document).click(function() {
+    $('.search-menu .drop-down').hide();
+});
 }
 
 setTimeout(function() {
