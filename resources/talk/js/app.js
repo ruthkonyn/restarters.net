@@ -87,13 +87,12 @@ function activateSearch() {
     $('#search-button').trigger('click');
   });
 
-  $( document ).bind(
-		"mouseDownOutside",
-		function( event ){
-			console.log( "Click Outside" );
-      $('.search-menu .drop-down').hide();
-		}
-	);
+  $(document).click(function() {
+    if($('.search-menu').length) {
+      $('.search-menu').remove();
+    }
+  });
+
 }
 
 setTimeout(function() {
