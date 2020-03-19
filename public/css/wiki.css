@@ -14319,6 +14319,13 @@ body {
   color: #000;
 }
 
+.footer-links div {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .footer-links div a {
   font-family: Asap;
   font-size: 14px;
