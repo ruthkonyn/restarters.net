@@ -14557,6 +14557,32 @@ body {
   display: inline-block;
 }
 
+.mw-notification {
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  padding-right: 4rem;
+  background-color: #f45b69 !important;
+}
+
+.mw-notification .postedit-icon,
+.mw-notification .postedit-icon-checkmark,
+.mw-notification .postedit-content {
+  font-size: 18px;
+  font-family: "Asap", sans-serif;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  color: white;
+  padding-left: 0;
+  background-image: none;
+}
+
+.mw-notification .postedit-icon::after,
+.mw-notification .postedit-icon-checkmark::after,
+.mw-notification .postedit-content::after {
+  background-size: 15px 15px !important;
+}
+
 html,
 body {
   font-family: "Asap", sans-serif;
