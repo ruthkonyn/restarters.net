@@ -35,7 +35,7 @@ class DiscourseNotificationController extends Controller
         }
 
         // 10 Minutes
-        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, config('session.lifetime'), null, '.rstrt.org'));
+        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, env('NOTIFICATION_COOKIE_LIFETIME', 5), null, '.rstrt.org'));
 
         $user_notitifications = $this->user->unReadNotifications;
 
