@@ -569,15 +569,13 @@ class User extends Authenticatable implements Auditable
             'form_params' => [
                 'name' => isset($data['name']) ? $data['name'] : $this->name,
                 'email' => isset($data['email']) ? $data['email'] : $this->email,
+                'password' => \Hash::make(str_random(20)),
                 'username' => isset($data['username']) ? $data['username'] : $this->username,
-                'password' => $data['password'],
-                'active' => true,
-                'approved' => true,
-                'user_fields[1]' => '',
-                'user_fields[2]' => '',
-                'user_fields[3]' => '',
-                'user_fields[4]' => '',
-                'user_fields[5]' => '',
+                'user_fields[1]' => '1',
+                'user_fields[2]' => '2',
+                'user_fields[3]' => '3',
+                'user_fields[4]' => '4',
+                'user_fields[5]' => '5',
             ],
         ]);
 
