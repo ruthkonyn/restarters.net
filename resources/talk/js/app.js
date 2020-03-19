@@ -15,7 +15,7 @@ setTimeout(function() {
       break;
     }
   }
-}, 1000);
+}, 500);
 
 setTimeout(function() {
   if (window.location.href.indexOf("messages") > -1) {
@@ -87,24 +87,28 @@ function activateSearch() {
     $('#search-button').trigger('click');
   });
 
-  $(document).mouseup(function(e) 
+  $(document).mouseup(function(e)
   {
       var container = $(".search-menu");
-
-      // if the target of the click isn't the container nor a descendant of the container
       if (!container.is(e.target) && container.has(e.target).length === 0)
       {
           container.hide();
       }
   });
+}
 
+function categoriesMenu() {
+  $('.category-breadcrumb').remove();
+  var dropdown = "test";
+  $('.navigation-bar').prepend(dropdown);
 }
 
 setTimeout(function() {
   checkAuth();
-  activateSearch();
-  hamburgerMenu();
   changeForumNavigation();
-  toggleNotifications();
+  hamburgerMenu();
+  categoriesMenu();
+  activateSearch();
   ajaxSearchNotifications();
+  toggleNotifications();
 }, 150);
