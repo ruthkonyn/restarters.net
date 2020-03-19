@@ -28,21 +28,27 @@ function checkAuth() {
 
         // IS ADMIN - Toggler dropdown menu
         if (response.is_admin) {
-          $main_navigation_dropdown.append(
-            $('<li>').attr('class', 'dropdown-menu-header').text('Reporting')
-          );
-
           $.each( response.menu.reporting, function( key, value ) {
-            $main_navigation_dropdown.append(
-              $('<li>').append(
-                $('<a>').attr('href', value).text(key)
-              )
-            );
-          });
+            var spacer_condition = key.includes('spacer');
 
-          $main_navigation_dropdown.append(
-            $('<li>').attr('class', 'dropdown-spacer')
-          );
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $main_navigation_dropdown.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
+          });
 
           $('.regular-user-svg').addClass('d-none');
           $('.authenticated-user-svg').removeClass('d-none');
@@ -53,7 +59,13 @@ function checkAuth() {
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
 
-            if (spacer_condition) {
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
               $auth_menu_items.append(
                 $('<li>').attr('class', 'dropdown-spacer')
               );

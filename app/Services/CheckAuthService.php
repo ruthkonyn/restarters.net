@@ -81,6 +81,8 @@ class CheckAuthService extends JsonResource
         $this->edit_profile_link = $this->edit_profile_link.$this->user->id;
 
         if ($this->is_host || $this->is_admin) {
+            $this->menu->get('reporting')->put('header', 'Reporting');
+
             if ($this->is_admin) {
                 $this->menu->get('reporting')->put(Lang::get('general.time_reporting'), url('reporting/time-volunteered?a'));
             }
