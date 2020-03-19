@@ -14335,6 +14335,16 @@ body {
   content: none !important;
 }
 
+.footer-links::before {
+  content: '';
+  background-image: url(/images/rectangle.svg?29118d1980cac534b24f4919103d1fba);
+  background-color: transparent;
+  background-repeat: repeat;
+  background-position: left;
+  height: 3px;
+  background-size: 20px 35px;
+}
+
 .footer-description {
   font-family: Asap;
   font-size: 16px;

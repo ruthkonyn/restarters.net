@@ -19,6 +19,16 @@
       }
     }
   }
+
+  &::before {
+    content: '';
+    background-image: url('../../global/svgs/rectangle.svg');
+    background-color: transparent;
+    background-repeat: repeat;
+    background-position: left;
+    height: 3px;
+    background-size: 20px 35px;
+  }
 }
 
 .footer-description {
