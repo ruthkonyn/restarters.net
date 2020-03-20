@@ -34,7 +34,7 @@ function ajaxSearchNotifications() {
       // If notifications exist then we can create a cookie
       var $notifications = response.notifications;
 
-      if ($notifications.length > 0) {
+      if (Object.keys($notifications).length > 0) {
         console.log('Success: notifications found on Discourse.');
 
         // $('.notification-menu-items').show();
