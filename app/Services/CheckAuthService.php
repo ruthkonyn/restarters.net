@@ -126,7 +126,7 @@ class CheckAuthService extends JsonResource
             $user_menu->put('Roles', route('roles'));
 
             if (FixometerHelper::hasPermission('verify-translation-access', $user)) {
-                $user_menu->put('Translations', route('translations'));
+                $user_menu->put('Translations', url('translations'));
             }
         }
 
