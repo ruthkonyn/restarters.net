@@ -3,6 +3,7 @@
 // Body
 $body-bg: #f5f8fa;
 $brand: #4aaebc;
+$apricot: #ffbe5f;
 
 // Typography
 $font-family-sans-serif: 'Asap', sans-serif;
@@ -13,7 +14,6 @@ $font-family-second: 'Open Sans', sans-serif;
 $font-family-third: 'Asap', sans-serif;
 
 $focus1 : #0062cc;
-$brand: #4aaebc;
 $black: #000;
 
 .clear {
@@ -27,7 +27,7 @@ $black: #000;
 
 $theme-colors: (
   primary: $brand,
-  warning: #ffbe5f,
+  warning: $apricot,
   info: #d0dae6,
   success: #3fce97,
 );
