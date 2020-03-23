@@ -52,6 +52,10 @@
 
     &__stat {
         border-right: 1px solid black;
+
+        &:last-child {
+            border-right: none;
+        }
     }
 
     .stat-text {
@@ -62,10 +66,8 @@
         line-height: 1;
     }
     .stat-figure {
-        font-family: 'Patua One';
         font-weight: normal;
         font-size: 34px;
         line-height: 1;
-        //white-space: nowrap;
     }
 }

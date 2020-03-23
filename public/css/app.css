@@ -23093,7 +23093,7 @@ td.col-device-auto {
 }
 
 .features__link a {
-  color: #fff;
+  color: #000;
   text-decoration: underline;
   font-weight: 600;
 }
@@ -23376,6 +23376,10 @@ td.col-device-auto {
 
 .stats__stat {
   border-right: 1px solid black;
+}
+
+.stats__stat:last-child {
+  border-right: none;
 }
 
 .stats .stat-text {
