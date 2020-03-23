@@ -23008,6 +23008,7 @@ td.col-device-auto {
 }
 
 .card__login a:hover {
+  color: #000;
   text-decoration: none;
 }
 
