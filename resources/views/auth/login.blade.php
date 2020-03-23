@@ -10,7 +10,7 @@
     <div class="row row-expanded pb-3">
       <div class="col-lg-6 d-flex">
 
-        <form action="{{ route('login') }}" method="post" class="card card__login card-info-box mb-30 mb-lg-0 col-12">
+        <form action="{{ route('login') }}" method="post" class="card card__login card-info-box mb-30 mb-lg-0">
           @csrf
 
           @if (\Session::has('success'))
@@ -64,7 +64,7 @@
       </div>
       <div class="col-lg-6">
 
-        <div class="card card__content card-info-box bg-primary col-12">
+        <div class="card card__content card-info-box bg-primary">
           <h3>@lang('login.whatis')</h3>
           @lang('login.whatis_content')
 
