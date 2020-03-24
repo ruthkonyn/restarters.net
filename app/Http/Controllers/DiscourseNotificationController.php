@@ -76,18 +76,18 @@ class DiscourseNotificationController extends Controller
 
         $accepted_notification_types = array(1, 2, 3, 4, 5, 6, 7);
 
-        return collect($array['notifications'])->reject(function ($discourse_notification) {
+        return collect($array['notifications'])->reject(function ($discourse_notification) use($accepted_notification_types) {
             return $discourse_notification['read'] || ! in_array($discourse_notification['notification_type'], $accepted_notification_types);
         })->each(function ($discourse_notification) {
             DatabaseNotification::firstOrCreate(
                 [
-                    'id' => 'dicsourse-'.$discourse_notification['id'],
+                    'id' => $discourse_notification['id'],
                 ],
                 [
                     'type' => '',
                     'notifiable_type' => 'App\User',
                     'notifiable_id' => $this->user->id,
-                    'data' => new \App\Services\TransformDiscourseNotification($notification),
+                    'data' => new \App\Services\TransformDiscourseNotification($discourse_notification),
                     'read_at' => null,
                 ]
             );
