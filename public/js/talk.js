@@ -48,6 +48,12 @@ function toggleNotifications() {
   });
 }
 
+function goToNotification() {
+  $(".notifcation-link").click(function(){
+    window.location = $(this).attr('href');
+  });
+}
+
 function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
@@ -101,6 +107,7 @@ setTimeout(function() {
   activateSearch();
   ajaxSearchNotifications();
   toggleNotifications();
+  goToNotification();
 }, 300);
 
 function ajaxSearchNotifications() {
@@ -148,7 +155,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notifcation-link').text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });

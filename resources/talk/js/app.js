@@ -48,6 +48,12 @@ function toggleNotifications() {
   });
 }
 
+function goToNotification() {
+  $(".notifcation-link").click(function(){
+    window.location = $(this).attr('href');
+  });
+}
+
 function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
@@ -101,4 +107,5 @@ setTimeout(function() {
   activateSearch();
   ajaxSearchNotifications();
   toggleNotifications();
+  goToNotification();
 }, 300);
