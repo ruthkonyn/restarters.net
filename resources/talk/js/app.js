@@ -44,7 +44,7 @@ function toggleNotifications() {
     $('.hamburger-dropdown-menu-items').hide();
     // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
-    $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
+    $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').show();
   });
 }
 
@@ -100,6 +100,9 @@ setTimeout(function() {
   categoriesMenu();
   activateSearch();
   ajaxSearchNotifications();
-  goToNotification();
   toggleNotifications();
 }, 300);
+
+setTimeout(function() {
+  goToNotification();
+}, 500);
