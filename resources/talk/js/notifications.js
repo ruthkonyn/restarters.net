@@ -43,7 +43,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notifcation-link').text($notification.data.title)
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });
@@ -57,10 +57,7 @@ function ajaxSearchNotifications() {
 }
 
 function goToNotification() {
-  $(".notifcation-link").click(function(){
-    alert("notification clicked");
-    var link = $(this).attr('href');
-    console.log(link);
-    window.location = link;
+  $(".notification-link").click(function(){
+    document.location.href= $(this).attr('href');
   });
 }
