@@ -34,46 +34,79 @@ function checkAuth() {
 
         $('.d-header-icons').attr('style', 'display:block');
 
-        userMenu();
-
         if(response.is_admin) {
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
-          $('.admin-dropdown-spacer').show();
-          var html =  "<p class='admin-menu-header'>Administrator</p><ul><li><a href=''>Brands</a></li><li><a href=''>Skills</a></li><li><a href='/g'>Groups</a></li><li><a href='/tags'>Tags</a></li><li><a href='/categories'>Categories</a></li><li><a href='/u'>Users</a></li><li><a href=''>Roles</a></li><li><a href=''>Translations</a></li><li><a href='/admin'>Talk Admin Panel</a></li><li><a href='/admin/site_settings/category/required'>Talk Site Settings</a></li><li><a href=''>Repair Directory</a></li></ul>";
-          $(html).insertAfter('.admin-dropdown-spacer');
-        }
+          $.each( response.menu.reporting, function( key, value ) {
+            var spacer_condition = key.includes('spacer');
 
-        if ($('.my-profile-url').length) {
-          $('.my-profile-url').attr('href', '/my/preferences/account');
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $main_navigation_dropdown.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
+          });
         }
 
         var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
         $(html).insertAfter('.d-header-icons');
 
         if(response.menu) {
-          var menu_text = "<p class='admin-menu-header'>Reporting</p>";
-          $('.hamburger-dropdown-menu-items').prepend(menu_text);
+          $.each( response.menu.user, function( key, value ) {
+            var spacer_condition = key.includes('spacer');
 
-          $.each(response.menu.reporting, function(key, value) {
-            var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-            $('.hamburger-dropdown-menu').append(admin_links);
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $auth_menu_items.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
           });
+        }
+        if ($notifications_list_item.length) {
+          $notifications_list_item.css('display','');
+        }
 
-          $.each(response.menu.general, function(key, value) {
-            var general_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-            $('.hamburger-dropdown-menu').append(general_links);
-          });
-
-          var menu_line = "<li class='admin-dropdown-spacer'></li>"
-          $('.About').prepend(menu_line);
+        if ($auth_list_item.length) {
+          $auth_menu_items.addClass('dropdown-menu-items');
+          $auth_menu_items.css('display','');
         }
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
-
-        $('.d-header-icons').attr('style', 'display:none');
       }
+
+      // Amend Main navigation dropdown links
+      $.each( response.menu.general, function( key, value ) {
+        $main_navigation_dropdown.append(
+          $('<li>').append(
+            $('<a>').attr('href', value).text(key)
+          )
+        );
+      });
     },
   });
 }

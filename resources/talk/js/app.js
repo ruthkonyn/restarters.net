@@ -109,6 +109,7 @@ function categoriesMenu() {
 
 setTimeout(function() {
   checkAuth();
+  userMenu();
   changeForumNavigation();
   hamburgerMenu();
   categoriesMenu();
