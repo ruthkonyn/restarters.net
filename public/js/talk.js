@@ -51,10 +51,10 @@ function toggleNotifications() {
 function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
-    $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
+    $('a.dropdown-active').not('.toggle-dropdown-menu').removeClass('dropdown-active');
     $('.user-dropdown-menu-items').hide();
     $('.notification-menu-items').hide();
-    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
+    $('.toggle-dropdown-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
   });
 }
