@@ -41,7 +41,7 @@ class TransformDiscourseNotification extends JsonResource
 
     private function constructBasicNotificationURL()
     {
-        $this->notification_url = env('DISCOURSE_URL')."t/{$this->notification->slug}/{$this->notification->topic_id}";
+        $this->notification_url = rtrim(env('DISCOURSE_URL'), '/')."/t/{$this->notification->slug}/{$this->notification->topic_id}";
     }
 
     /**
