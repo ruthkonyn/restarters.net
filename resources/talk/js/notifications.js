@@ -55,3 +55,12 @@ function ajaxSearchNotifications() {
     },
   });
 }
+
+function goToNotification() {
+  $(".notifcation-link").click(function(){
+    window.location = $(this).attr('href');
+  });
+}
+
+ajaxSearchNotifications();
+goToNotification();

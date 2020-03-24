@@ -48,12 +48,6 @@ function toggleNotifications() {
   });
 }
 
-function goToNotification() {
-  $(".notifcation-link").click(function(){
-    window.location = $(this).attr('href');
-  });
-}
-
 function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
@@ -105,9 +99,7 @@ setTimeout(function() {
   hamburgerMenu();
   categoriesMenu();
   activateSearch();
-  ajaxSearchNotifications();
   toggleNotifications();
-  goToNotification();
 }, 300);
 
 function ajaxSearchNotifications() {
@@ -167,6 +159,15 @@ function ajaxSearchNotifications() {
     },
   });
 }
+
+function goToNotification() {
+  $(".notifcation-link").click(function(){
+    window.location = $(this).attr('href');
+  });
+}
+
+ajaxSearchNotifications();
+goToNotification();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
