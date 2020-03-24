@@ -53,14 +53,12 @@ window.onload = function() {
 
     if (window.location.origin == 'https://test-wiki.rstrt.org') {
         $('.wiki-nav-item').addClass('active');
-    }
 
-    if (window.location.pathname == '/Special:RecentChanges') {
-      $('.nav-tabs-block li a').removeClass('active');
+        $('.nav-tabs-block li a').removeClass('active');
 
-      $('.nav-tabs-block li a[href*="'+ window.location.pathname +'"]').each(function() {
-          $(this).addClass('active');
-      });
+        $('.nav-tabs-block li a[href*="'+ window.location.pathname +'"]').each(function() {
+            $(this).addClass('active');
+        });
     }
   })(jQuery, window, document);
 }
