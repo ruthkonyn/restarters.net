@@ -74,63 +74,23 @@ class DiscourseNotificationController extends Controller
 
         $array = json_decode($response->getBody()->getContents(), true);
 
+        $accepted_notification_types = array(1, 2, 3, 4, 5, 6, 7);
+
         return collect($array['notifications'])->reject(function ($discourse_notification) {
-            return $discourse_notification['read'];
+            return $discourse_notification['read'] || ! in_array($discourse_notification['notification_type'], $accepted_notification_types);
         })->each(function ($discourse_notification) {
             DatabaseNotification::firstOrCreate(
                 [
-                    'id' => $discourse_notification['id'],
+                    'id' => 'dicsourse-'.$discourse_notification['id'],
                 ],
                 [
                     'type' => '',
                     'notifiable_type' => 'App\User',
                     'notifiable_id' => $this->user->id,
-                    'data' => [
-                        'title' => $discourse_notification['fancy_title'] ?? 'No Title',
-                        'name' => $discourse_notification['name'],
-                        'url' => $this->generateUrl($discourse_notification),
-                    ],
+                    'data' => new \App\Services\TransformDiscourseNotification($notification),
                     'read_at' => null,
                 ]
             );
         });
-    }
-    private function generateUrl(array $discourse_notification)
-    {
-        $key = array_key_first($discourse_notification['data']);
-
-        $username = $this->user->username;
-        if ($this->username) {
-            $username = $this->username;
-        }
-
-        if (str_contains($key, 'topic')) {
-            $prepend = 't';
-            $slug = sprintf(
-                '%s/%s/%s',
-                $discourse_notification['slug'],
-                $discourse_notification['topic_id'],
-                $discourse_notification['post_number']
-            );
-        }
-
-        if (str_contains($key, 'badge')) {
-            $prepend = 'badges';
-            $slug = sprintf(
-                '%s/%s?',
-                $discourse_notification['data']['badge_id'],
-                $discourse_notification['data']['badge_slug'],
-                "username={$username}"
-            );
-        }
-
-        $url = sprintf(
-            '%s/%s/%s',
-            env('DISCOURSE_URL'),
-            $prepend,
-            $slug
-        );
-
-        return $url;
     }
 }
