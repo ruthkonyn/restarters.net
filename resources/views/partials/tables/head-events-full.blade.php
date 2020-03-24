@@ -26,12 +26,12 @@
     </th>
 
     {{-- WASTE PREVENTED --}}
-    <th scope="col" width="60" class="text-center" data-toggle="tooltip" data-placement="bottom" title="Waste prevented">
+    <th scope="col" width="60" class="text-center" data-toggle="tooltip" data-placement="bottom" title="Waste prevented (kg)">
       @include('svgs/fixometer/trash-ico')
     </th>
 
     {{-- CO2 EMISSIONS PREVENTED --}}
-    <th scope="col" width="60" class="text-center" data-toggle="tooltip" data-placement="bottom" title="CO2 emissions prevented">
+    <th scope="col" width="60" class="text-center" data-toggle="tooltip" data-placement="bottom" title="CO2 emissions prevented (kg)">
       @include('svgs/fixometer/co-2-ico')
     </th>
 
