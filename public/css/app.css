@@ -24229,10 +24229,6 @@ td.col-device-auto {
   margin-bottom: 30px;
 }
 
-.groups {
-  padding: 70px 0;
-}
-
 .groups .breadcrumb {
   margin: auto;
 }
@@ -24691,7 +24687,6 @@ td.col-device-auto {
 }
 
 .events {
-  padding: 50px 0;
   min-height: 100%;
 }
 
