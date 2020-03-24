@@ -42,7 +42,7 @@ function toggleNotifications() {
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
-    $('.toggle-notifications-menu').toggle();
+    $('.notification-menu-items').toggle();
   });
 }
 
