@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Cookie;
 
 class DiscourseNotificationController extends Controller
 {
@@ -16,13 +17,13 @@ class DiscourseNotificationController extends Controller
     public function __invoke(Request $request)
     {
         // Check here if the user is authenticated
-        if ( ! \Cookie::get('authenticated')) {
+        if ( ! Cookie::get('authenticated')) {
             return response()->json([
                 'message' => 'failed',
             ]);
         }
 
-        $this->user = User::where('email', \Cookie::get('authenticated'))->first();
+        $this->user = User::where('email', Cookie::get('authenticated'))->first();
 
         if ( ! $this->user) {
             return response()->json([
@@ -30,12 +31,12 @@ class DiscourseNotificationController extends Controller
             ]);
         }
 
-        if ( ! \Cookie::get('has_cookie_notifications_set')) {
+        if ( ! Cookie::get('has_cookie_notifications_set')) {
             $this->handleRequest();
         }
 
-        // 10 Minutes
-        \Cookie::queue(\Cookie::make('has_cookie_notifications_set', true, env('NOTIFICATION_COOKIE_LIFETIME', 5), null, '.rstrt.org'));
+        // Default 5 minutes
+        Cookie::queue(Cookie::make('has_cookie_notifications_set', true, env('NOTIFICATION_COOKIE_LIFETIME', 5), null, '.rstrt.org'));
 
         $user_notitifications = $this->user->unReadNotifications;
 
@@ -74,10 +75,8 @@ class DiscourseNotificationController extends Controller
 
         $array = json_decode($response->getBody()->getContents(), true);
 
-        $accepted_notification_types = array(1, 2, 3, 4, 5, 6, 7);
-
         return collect($array['notifications'])->reject(function ($discourse_notification) use($accepted_notification_types) {
-            return $discourse_notification['read'] || ! in_array($discourse_notification['notification_type'], $accepted_notification_types);
+            return $discourse_notification['read'];
         })->each(function ($discourse_notification) {
             DatabaseNotification::firstOrCreate(
                 [
