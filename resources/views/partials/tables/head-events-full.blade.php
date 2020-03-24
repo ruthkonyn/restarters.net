@@ -16,12 +16,12 @@
     </th>
 
     {{-- PARTCIPANTS --}}
-    <th scope="col" width="60" class="text-center d-none d-md-table-cell" data-toggle="tooltip" data-placement="bottom" title="Partipants">
+    <th scope="col" width="60" class="text-center d-none d-md-table-cell" data-toggle="tooltip" data-placement="bottom" title="Participants">
       @include('svgs/navigation/groups-icon')
     </th>
 
     {{-- RESTARTERS --}}
-    <th scope="col" width="60" class="text-center d-none d-md-table-cell" data-toggle="tooltip" data-placement="bottom" title="Restarters">
+    <th scope="col" width="60" class="text-center d-none d-md-table-cell" data-toggle="tooltip" data-placement="bottom" title="Repairers">
       @include('svgs/navigation/drill-icon')
     </th>
 
