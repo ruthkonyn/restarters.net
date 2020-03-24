@@ -38,13 +38,11 @@ function addActive(tab) {
 function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
-    // If item is already active then close all.
     $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
-    // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
-    $('.notification-menu-items').toggle();
+    $('.toggle-notifications-menu').toggle();
   });
 }
 
