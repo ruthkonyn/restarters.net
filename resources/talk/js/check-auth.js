@@ -29,11 +29,6 @@ function checkAuth() {
           $notifications_list_item.css('display','');
         }
 
-        if ($auth_list_item.length) {
-          $auth_menu_items.addClass('dropdown-menu-items');
-          $auth_menu_items.css('display','');
-        }
-
         $('.d-header-icons').attr('style', 'display:block');
 
         var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
@@ -68,6 +63,7 @@ function checkAuth() {
         }
 
         if(response.menu) {
+          $auth_menu_items = $('.user-dropdown-menu-items');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
 
