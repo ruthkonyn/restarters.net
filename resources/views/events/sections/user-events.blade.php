@@ -1,4 +1,4 @@
-<section class="table-section py-30" id="user-events">
+<section class="table-section pb-30" id="user-events">
 
   @include('partials.alerts.alert-danger', [
     'text' => "You can now add all your upcoming events to your personal calendar!",
@@ -14,7 +14,7 @@
 
     <div class="col-12 col-lg-4 d-md-block collapseReadMore collapse show" id="collapseReadMore2">
       <p class="mb-0">
-        Events organised by griups you run of follow appear below. If you plan on going, make sure you click the RSVP button to let the organisers know.
+        Events organised by groups you run of follow appear below. If you plan on going, make sure you click the RSVP button to let the organisers know.
       </p>
     </div>
 
