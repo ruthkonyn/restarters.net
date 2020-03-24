@@ -2,8 +2,10 @@
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
+  userMenu();
+
   $notifications_list_item = $('.notifications-list-item').hide();
-  $auth_menu_items = $('.auth-menu-items').hide();
+  $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
 
   $.ajax({
@@ -109,5 +111,19 @@ function checkAuth() {
         );
       });
     },
+  });
+}
+
+function userMenu() {
+  var html = "<div class='user-dropdown-menu-items'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' style='display: none;'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
+  $(html).insertAfter('.d-header-icons');
+
+  $('.restarters-user-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-user-menu').toggleClass('dropdown-active');
+    $('.user-dropdown-menu-items').toggle();
   });
 }

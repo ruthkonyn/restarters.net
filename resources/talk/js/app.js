@@ -59,20 +59,6 @@ function hamburgerMenu() {
   });
 }
 
-function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' style='display: none;'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
-  $(html).insertAfter('.d-header-icons');
-
-  $('.restarters-user-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-user-menu').toggleClass('dropdown-active');
-    $('.user-dropdown-menu-items').toggle();
-  });
-}
-
 function changeForumNavigation() {
   $('#create-topic').addClass('d-none');
   $('#create-topic .d-button-label').text('New Topic');
@@ -109,7 +95,6 @@ function categoriesMenu() {
 
 setTimeout(function() {
   checkAuth();
-  userMenu();
   changeForumNavigation();
   hamburgerMenu();
   categoriesMenu();
