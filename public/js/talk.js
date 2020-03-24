@@ -199,7 +199,7 @@ function checkAuth() {
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
-$main_navigation_dropdown = $('.main-nav-dropdown');
+
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
@@ -213,6 +213,7 @@ $main_navigation_dropdown = $('.main-nav-dropdown');
         $('.d-header-icons').attr('style', 'display:block');
 
         if(response.is_admin) {
+          $main_navigation_dropdown = $('.hamburger-dropdown-menu');
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
