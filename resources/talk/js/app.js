@@ -44,6 +44,7 @@ function toggleNotifications() {
     $('.hamburger-dropdown-menu-items').hide();
     // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
+    $('.notification-menu-items').toggle();
   });
 }
 
