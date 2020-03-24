@@ -115,4 +115,4 @@ setTimeout(function() {
   activateSearch();
   ajaxSearchNotifications();
   toggleNotifications();
-}, 150);
+}, 300);
