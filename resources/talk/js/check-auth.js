@@ -21,7 +21,7 @@ function checkAuth() {
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
-
+$main_navigation_dropdown = $('.main-nav-dropdown');
       if (response.authenticated !== null && response.authenticated !== undefined) {
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
