@@ -99,5 +99,7 @@ setTimeout(function() {
   hamburgerMenu();
   categoriesMenu();
   activateSearch();
+  ajaxSearchNotifications();
+  goToNotification();
   toggleNotifications();
 }, 300);

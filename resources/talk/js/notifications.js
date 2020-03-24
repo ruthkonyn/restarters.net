@@ -58,9 +58,9 @@ function ajaxSearchNotifications() {
 
 function goToNotification() {
   $(".notifcation-link").click(function(){
-    window.location = $(this).attr('href');
+    alert("notification clicked");
+    var link = $(this).attr('href');
+    console.log(link);
+    window.location = link;
   });
 }
-
-ajaxSearchNotifications();
-goToNotification();

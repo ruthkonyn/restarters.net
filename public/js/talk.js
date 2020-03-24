@@ -99,6 +99,8 @@ setTimeout(function() {
   hamburgerMenu();
   categoriesMenu();
   activateSearch();
+  ajaxSearchNotifications();
+  goToNotification();
   toggleNotifications();
 }, 300);
 
@@ -162,12 +164,12 @@ function ajaxSearchNotifications() {
 
 function goToNotification() {
   $(".notifcation-link").click(function(){
-    window.location = $(this).attr('href');
+    alert("notification clicked");
+    var link = $(this).attr('href');
+    console.log(link);
+    window.location = link;
   });
 }
-
-ajaxSearchNotifications();
-goToNotification();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
