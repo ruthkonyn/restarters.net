@@ -100,6 +100,7 @@ function checkAuth() {
         }
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
+        $('.d-header-icons').attr('style', 'display:none');
       }
 
       // Amend Main navigation dropdown links
