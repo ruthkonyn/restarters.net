@@ -91,6 +91,10 @@ function categoriesMenu() {
   });
 }
 
+if($('.loading-container').hasClass('.visible')) {
+  changeForumNavigation();
+}
+
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
