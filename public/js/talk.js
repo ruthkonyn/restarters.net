@@ -91,9 +91,9 @@ function categoriesMenu() {
   });
 }
 
-$('.loading-container').bind('DOMSubtreeModified', function(e) {
-      alert('class changed');
-  });
+window.addEventListener('locationchange', function(){
+    console.log('location changed!');
+})
 
 setTimeout(function() {
   checkAuth();
