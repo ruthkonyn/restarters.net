@@ -91,9 +91,9 @@ function categoriesMenu() {
   });
 }
 
-if($('.loading-container').hasClass('.visible')) {
-  changeForumNavigation();
-}
+$('.loading-container').bind('DOMSubtreeModified', function(e) {
+      alert('class changed');
+  });
 
 setTimeout(function() {
   checkAuth();
