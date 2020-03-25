@@ -94,13 +94,6 @@ function categoriesMenu() {
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
-  hamburgerMenu();
-  categoriesMenu();
   activateSearch();
-  ajaxSearchNotifications();
   toggleNotifications();
 }, 300);
-
-setTimeout(function() {
-  goToNotification();
-}, 500);

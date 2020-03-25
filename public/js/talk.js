@@ -94,16 +94,9 @@ function categoriesMenu() {
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
-  hamburgerMenu();
-  categoriesMenu();
   activateSearch();
-  ajaxSearchNotifications();
   toggleNotifications();
 }, 300);
-
-setTimeout(function() {
-  goToNotification();
-}, 500);
 
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
@@ -199,6 +192,10 @@ function checkAuth() {
       var response = response.data;
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
+        hamburgerMenu();
+        categoriesMenu();
+        ajaxSearchNotifications();
+
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }

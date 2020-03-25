@@ -25,6 +25,10 @@ function checkAuth() {
       var response = response.data;
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
+        hamburgerMenu();
+        categoriesMenu();
+        ajaxSearchNotifications();
+
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
