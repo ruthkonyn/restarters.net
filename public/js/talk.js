@@ -91,9 +91,11 @@ function categoriesMenu() {
   });
 }
 
-window.addEventListener('locationchange', function(){
-    console.log('location changed!');
-})
+var mutationObserver = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    console.log(mutation);
+  });
+});
 
 setTimeout(function() {
   checkAuth();
