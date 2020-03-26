@@ -5,6 +5,13 @@ setTimeout(function() {
   toggleNotifications();
 }, 300);
 
+modelChanged : function() {
+  Ember.run.scheduleOnce('afterRender', this, function() {
+    window.scrollTo(0, document.body.scrollHeight);
+    console.log('New scroll height: '+document.body.scrollHeight);
+  });
+}.observes('content')
+
 
 function navigateUrl(item) {
   if(item.value) {
