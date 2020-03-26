@@ -91,13 +91,18 @@ function categoriesMenu() {
   });
 }
 
-(function() {
-  var mutationObserver = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      console.log(mutation);
-    });
-  });
-});
+// function checkPageChange() {
+//   var mutationObserver = new MutationObserver(function(mutations) {
+//     mutations.forEach(function(mutation) {
+//       console.log(mutation);
+//     });
+//   });
+// }
+
+setInterval(function(){
+  console.log('timer running');
+  changeForumNavigation();
+}, 300);
 
 setTimeout(function() {
   checkAuth();
