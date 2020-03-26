@@ -1,3 +1,21 @@
+setInterval(function(){
+  console.log('timer running');
+  $('#create-topic').addClass('d-none');
+  $('#create-topic .d-button-label').text('New Topic');
+  $('#create-topic').removeClass('d-none');
+
+  var text = "<p class='forum-nav-text'><strong>A place to discuss all things repair: advice, activism, and more.</strong> Join in! Anyone can post a topic.</p>";
+  $(text).insertAfter("#create-topic");
+}, 300);
+
+setTimeout(function() {
+  checkAuth();
+  changeForumNavigation();
+  activateSearch();
+  toggleNotifications();
+}, 300);
+
+
 function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;
@@ -98,15 +116,3 @@ function categoriesMenu() {
 //     });
 //   });
 // }
-
-setInterval(function(){
-  console.log('timer running');
-  changeForumNavigation();
-}, 300);
-
-setTimeout(function() {
-  checkAuth();
-  changeForumNavigation();
-  activateSearch();
-  toggleNotifications();
-}, 300);
