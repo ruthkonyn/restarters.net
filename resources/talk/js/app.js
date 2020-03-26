@@ -91,9 +91,11 @@ function categoriesMenu() {
   });
 }
 
-var mutationObserver = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    console.log(mutation);
+(function() {
+  var mutationObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      console.log(mutation);
+    });
   });
 });
 
