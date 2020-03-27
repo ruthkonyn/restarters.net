@@ -1,6 +1,6 @@
 setTimeout(function() {
   checkAuth();
-  changeForumNavigation();
+  // changeForumNavigation();
   activateSearch();
   toggleNotifications();
 }, 300);
