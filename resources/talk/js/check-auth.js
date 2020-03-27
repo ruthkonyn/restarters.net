@@ -26,7 +26,7 @@ function checkAuth() {
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         hamburgerMenu();
-        categoriesMenu();
+        //categoriesMenu();
         ajaxSearchNotifications();
 
         if ($notifications_list_item.length) {
