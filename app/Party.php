@@ -5,7 +5,7 @@ namespace App;
 use App\Device;
 use App\EventUsers;
 use App\Helpers\FootprintRatioCalculator;
-
+use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,6 +16,7 @@ class Party extends Model implements Auditable
 {
     use SoftDeletes;
     use \OwenIt\Auditing\Auditable;
+    use \App\Traits\GlobalScopes;
 
     protected $table = 'events';
     protected $primaryKey = 'idevents';
@@ -435,7 +436,7 @@ class Party extends Model implements Auditable
     public function scopeUpcomingEventsInUserArea($query, $user)
     {
       //Look for groups where user ID exists in pivot table
-      $user_group_ids = UserGroups::where('user', $user->id)->pluck('group')->toArray();
+      $user_group_ids = $user->user_groups_ids;
 
       return $this
       ->select(DB::raw('`events`.*, ( 6371 * acos( cos( radians('.$user->latitude.') ) * cos( radians( events.latitude ) ) * cos( radians( events.longitude ) - radians('.$user->longitude.') ) + sin( radians('.$user->latitude.') ) * sin( radians( events.latitude ) ) ) ) AS distance'))
@@ -725,9 +726,8 @@ class Party extends Model implements Auditable
      */
     public function isVolunteer($user_id = NULL)
     {
-        $attributes = ['user' => $user_id ?: auth()->id()];
-
-        return $this->allConfirmedVolunteers()->where($attributes)->exists();
+        return $this->allConfirmedVolunteers
+        ->contains('user', $user_id ?: auth()->id());
     }
 
     public function isBeingAttendedBy($userId)
@@ -773,8 +773,8 @@ class Party extends Model implements Auditable
     public function checkForMissingData()
     {
       $participants_count = $this->participants;
-      $volunteers_count = $this->allConfirmedVolunteers()->count();
-      $devices_count = $this->allDevices()->count();
+      $volunteers_count = $this->allConfirmedVolunteers->count();
+      $devices_count = $this->allDevices->count();
 
       return [
         'participants_count' => $participants_count,
@@ -816,5 +816,46 @@ class Party extends Model implements Auditable
     public function shouldPushToWordpress()
     {
         return $this->theGroup->eventsShouldPushToWordpress();
+    }
+
+    public function scopeHasDevicesRepaired($query, int $has_x_devices_fixed = 1)
+    {
+        return $query->whereHas('allDevices', function($query) {
+          return $query->where('repair_status', 1);
+        }, '>=', $has_x_devices_fixed);
+    }
+
+    public function scopeEventHasFinished($query)
+    {
+        $now = Carbon::now();
+
+        return $query->whereRaw("CONCAT(`event_date`, ' ', `end`) < '{$now}'");
+    }
+
+    public function getWastePreventedAttribute()
+    {
+        $footprintRatioCalculator = new FootprintRatioCalculator();
+        $emissionRatio = $footprintRatioCalculator->calculateRatio();
+
+        return round($this->getEventStats($emissionRatio)['ewaste'], 2);
+    }
+
+    public function scopeWithAll($query)
+    {
+        return $query->with([
+          'allDevices.deviceCategory',
+          'allInvited',
+          'allConfirmedVolunteers',
+          'host',
+          'theGroup.groupImage.image',
+          'devices.deviceCategory',
+        ]);
+    }
+
+    public function getFriendlyLocationAttribute()
+    {
+        $short_location = str_limit($this->location, 15);
+
+        return "{$this->getEventDate('d/m/Y')} at {$short_location}";
     }
 }

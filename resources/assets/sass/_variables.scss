@@ -2,24 +2,50 @@
 
 // Body
 $body-bg: #f5f8fa;
-$brand: #0394A6;
+$brand: #4aaebc;
+$apricot: #ffbe5f;
 
 // Typography
-$font-family-sans-serif: 'Patua One', sans-serif;
+$font-family-sans-serif: 'Asap', sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 $font-family-second: 'Open Sans', sans-serif;
 $font-family-third: 'Asap', sans-serif;
 
-.clear {
+$focus1 : #0062cc;
+$black: #000;
 
-  &:after, &:before {
+.clear {
+  &:after,
+  &:before {
     content: "";
     display: table;
     clear: both;
   }
-
 }
 
-$focus1 : #0062cc;
+$theme-colors: (
+  primary: $brand,
+  warning: $apricot,
+  info: #d0dae6,
+  success: #3fce97,
+);
+
+/** Custom spacing properties */
+$spacers: () !default;
+$spacers: map-merge(
+  (
+    10: 10px,
+    15: 15px,
+    20: 20px,
+    25: 25px,
+    30: 30px,
+    35: 35px,
+    40: 40px,
+    45: 45px,
+    50: 50px,
+    60: 60px,
+  ),
+  $spacers
+);

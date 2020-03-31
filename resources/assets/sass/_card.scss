@@ -9,7 +9,8 @@
         text-decoration: underline;
 
         &:hover {
-            text-decoration: none;
+            color: #000;
+            text-decoration: underline;
         }
     }
 
@@ -31,6 +32,7 @@
             color: #000;
             text-decoration: underline;
             &:hover{
+              color: #000;
               text-decoration: none;
             }
         }
@@ -39,7 +41,7 @@
 
     &__content {
         background-color: $brand;
-        color: #FFF;
+        color: $black;
         padding: 40px 35px;
         display: flex;
         flex: 1 0 auto;

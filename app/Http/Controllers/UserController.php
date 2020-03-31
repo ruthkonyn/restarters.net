@@ -126,6 +126,7 @@ class UserController extends Controller
 
         return view('user.profile-edit', [
         'user' => $user,
+        'user_email_preferences' => $user->DiscourseEmailPreferences,
         'skills' => FixometerHelper::allSkills(),
         'user_skills' => $user_skills,
         'user_groups' => $user_groups,
@@ -266,19 +267,6 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        // Subscriptions only happen at registration.
-        // Unsubscriptions only happen via links in newsletter.
-        /*if ( is_null(request()->input('newsletter')) ) {
-          $user->newsletter = 0;
-          $unsubscribe_user = DripEvent::unsubscribeSubscriberFromNewsletter($user);
-        } else {
-          $drip_subscribe_user = DripEvent::subscribeSubscriberToNewsletter($user);
-          if (!empty((array) $drip_subscribe_user)) {
-            $user->newsletter = 1;
-            $user->drip_subscriber_id = $drip_subscribe_user->id;
-          }
-        }*/
-
         if ($request->input('invites') !== null) :
             $user->invites = 1;
         else :
@@ -287,7 +275,13 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('message', 'User Preferences Updated!');
+        $user->updateDiscourseEmailPreferences($request->only([
+          'email_messages_level',
+          'email_level',
+          'digest_after_minutes',
+        ]));
+
+        return back()->with('message', 'User Preferences Updated!');
     }
 
     public function postProfileTagsEdit(Request $request)
@@ -1083,8 +1077,10 @@ class UserController extends Controller
 
     public function logout()
     {
+        $user = Auth::user();
 
         Auth::logout();
+
         return redirect('/login');
     }
 
@@ -1245,12 +1241,19 @@ class UserController extends Controller
 
         $user->save();
 
-  // Notify relevant users
-        $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
-        Notification::send($notify_users, new AdminNewUser([
-        'id' => $user->id,
-        'name' => $user->name,
-        ]));
+        $user->createUserOnDiscourse([
+            'password' => $request->input('password'),
+        ]);
+
+        // Notify relevant users
+        if (! \App::environment('local')) {
+          $notify_users = FixometerHelper::usersWhoHavePreference('admin-new-user');
+
+          Notification::send($notify_users, new AdminNewUser([
+            'id' => $user->id,
+            'name' => $user->name,
+          ]));
+        }
 
       // Sync user skills
         if (!empty($skills)) {

@@ -22,9 +22,7 @@
     </div>
 
     @if(session()->has('message'))
-      <div class="alert alert-success col-lg-12">
-        {{ session()->get('message') }}
-      </div>
+        @include('partials.alerts.alert-success',['text'=> session()->get('message')])
     @endif
 
     @if (session()->has('error'))
@@ -215,15 +213,18 @@
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-lg-4">
-                        @php ( $path = $user->getProfile($user->id)->path )
-                        @if ( !is_null($path) )
+                      @php $path = $user->getProfile($user->id)->path; @endphp
+                      @if ( !is_null($path) )
+                        <div class="form-group col-lg-4">
                           <img width="50" src="{{ asset('/uploads/thumbnail_' . $path) }}" alt="{{{ $user->name }}}'s avatar">
-                        @endif
-                      </div>
-                      <div class="form-group col-lg-8">
+                        </div>
+                      @endif
+
+                      <div class="form-group col-lg-12">
                         <div class="d-flex justify-content-end">
-                          <button type="submit" class="btn btn-primary">@lang('general.change_photo')</button>
+                          <button type="submit" class="btn btn-primary">
+                            @lang('general.change_photo')
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -250,7 +251,7 @@
 
                 {{ Form::hidden('id', $user->id) }}
 
-                <fieldset class="registration__offset2">
+                <fieldset>
                   <div class="form-row">
                     <div class="form-group col-lg-6">
                       <label for="current-password">@lang('auth.current_password'):</label>
@@ -262,6 +263,7 @@
                       <label for="new-password">@lang('auth.new_password'):</label>
                       <input type="password" class="form-control" id="new-password" name="new-password">
                     </div>
+
                     <div class="form-group col-lg-6">
                       <label for="new-password-repeat">@lang('auth.new_repeat_password'):</label>
                       <input type="password" class="form-control" id="new-password-repeat" name="new-password-repeat">
@@ -411,47 +413,96 @@
                   {{ Form::hidden('id', $user->id) }}
 
                   <fieldset class="email-options">
-                      {{-- <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->newsletter == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="newsletter" id="newsletter" value="1">
-                          @endif
-                          <label class="form-check-label" for="newsletter">
-                              @lang('general.email_alerts_pref1')
-                          </label>
-                      </div>--}}
-                      <div class="form-check d-flex align-items-center justify-content-start">
-                          @if( $user->invites == 1 )
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" checked>
-                          @else
-                            <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1">
-                          @endif
-                          <label class="form-check-label" for="invites">
-                          @lang('general.email_alerts_pref2')
+                    <div class="form-check d-flex align-items-center justify-content-start">
+                      <input class="checkbox-top form-check-input" type="checkbox" name="invites" id="invites" value="1" @if( $user->invites == 1 ) checked @endif>
+                      <label class="form-check-label" for="invites">
+                        @lang('general.email_alerts_pref2')
                       </label>
+                    </div>
+
+                    @if (isset($user_email_preferences) && ! empty($user_email_preferences))
+                      @php
+                        $basic_email_options = [
+                          'always',
+                          'only when away',
+                          'never',
+                        ];
+
+                        $summary_email_times = [
+                          30 => 'every 30 minutes',
+                          60 => 'hourly',
+                          1440 => 'daily',
+                          10080 => 'weekly',
+                          43200 => 'every month',
+                          259200 => 'every six months',
+                        ];
+                      @endphp
+
+                      <div class="form-group">
+                        <label for="email_messages_level">
+                          Send me an email when someone messages me:
+                        </label>
+                        <div class="form-control form-control__select col-12 col-lg-6">
+                          <select class="field select2" id="email_messages_level" name="email_messages_level">
+                            @foreach ($basic_email_options as $value => $text)
+                              <option value="{{ $value }}" @if($user_email_preferences['email_messages_level'] == $value) selected @endif>
+                                {{ $text }}
+                              </option>
+                            @endforeach
+                          </select>
+                        </div>
                       </div>
+
+                      <div class="form-group">
+                        <label for="email_level">
+                          Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic
+                        </label>
+
+                        <div class="form-control form-control__select col-12 col-lg-6">
+                          <select class="field select2" id="email_level" name="email_level">
+                            @foreach ($basic_email_options as $value => $text)
+                              <option value="{{ $value }}" @if($user_email_preferences['email_level'] == $value) selected @endif>
+                                {{ $text }}
+                              </option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <h4>Summary Emails</h4>
+
+                        <label for="digest_after_minutes">
+                          When I don’t visit here, send me an email summary of popular topics and replies
+                        </label>
+
+                        <div class="form-control form-control__select col-12 col-lg-6">
+                          <select class="field select2" id="digest_after_minutes" name="digest_after_minutes">
+                            @foreach ($summary_email_times as $value => $text)
+                              <option value="{{ $value }}" @if($user_email_preferences['digest_after_minutes'] == $value) selected @endif>
+                                {{ $text }}
+                              </option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                    @endif
                   </fieldset>
 
                   <div class="button-group row">
-                      <div class="col-sm-9 d-flex align-items-center justify-content-start">
+                      <div class="col-sm-6 d-flex align-items-center justify-content-start">
                           <a class="btn-preferences" href="{{ env('PLATFORM_COMMUNITY_URL') }}/u/{{ Auth::user()->username }}/preferences/emails">@lang('auth.set_preferences')</a>
                       </div>
-                      <div class="col-sm-3 d-flex align-items-center justify-content-end">
+                      <div class="col-sm-6 d-flex align-items-center justify-content-end">
                           <button class="btn btn-primary btn-save">@lang('auth.save_preferences')</button>
                       </div>
                   </div>
-
               </form>
-
             </div>
-
           </div>
 
 
-
-
-          {{-- TODO --}}
           <div class="tab-pane fade" id="list-calendar-links" role="tabpanel" aria-labelledby="list-calendar-links-list">
             <div class="edit-panel">
               <div class="form-row">

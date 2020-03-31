@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
 
         view()->composer('*', function ($view) {
             if (Auth::check()) {
-
                 // $notifications = Party::whereDate('events.event_date', '<', date('Y-m-d'))
                 //                   ->whereDate('events.event_date', '>=', date("Y-m-d", strtotime("-6 months")))
                 //                     ->leftjoin('devices', 'devices.event', '=', 'events.idevents')

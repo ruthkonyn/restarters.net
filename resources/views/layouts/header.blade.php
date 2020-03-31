@@ -19,6 +19,7 @@
 
     <!-- Cookie banner with fine-grained opt-in -->
     <script src="{{ asset('js/gdpr-cookie-notice.js') }}"></script>
+
     <!-- Check to see if visitor has opted in to analytics cookies -->
     <script>
         window.restarters = {};

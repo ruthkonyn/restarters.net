@@ -65,6 +65,14 @@
                     </div>
                     <small class="after-offset">@lang('groups.groups_group_small')</small>
 
+                    @if( FixometerHelper::hasRole(Auth::user(), 'Administrator') )
+                      <div class="form-group form-group__offset">
+                          <label for="grp_slug">@lang('groups.groups_discourse_slug'):</label>
+                          <input type="text" class="form-control field" id="grp_slug" name="discourse_slug" value="{{ $formdata->discourse_slug }}">
+                      </div>
+                      <small class="after-offset">@lang('groups.groups_discourse_slug_helper')</small>
+                    @endif
+
                     <div class="form-group form-group__offset">
                       <label for="grp_web">@lang('groups.groups_website'):</label>
                       <input type="url" class="form-control field" id="website" name="website" placeholder="https://" value="{{ $formdata->website }}">
@@ -182,12 +190,12 @@
 
 
           </div>
-          <div class="button-group row row-compressed-xs">
-            <div class="col-lg-12 d-flex align-items-center justify-content-end">
-              <button type="submit" class="btn btn-primary btn-create">@lang('groups.edit_group_save_changes')</button>
-            </div>
-          </div>
 
+          <div class="d-flex flex-column flex-lg-row align-items-end justify-content-end">
+            <button type="submit" name="button" class="btn btn-primary btn-block btn-create float-right">
+              @lang('groups.edit_group_save_changes')
+            </button>
+          </div>
         </div>
       </div>
     </form>

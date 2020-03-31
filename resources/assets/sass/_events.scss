@@ -1,9 +1,6 @@
 .events {
     @extend .clear;
-    padding: 50px 0;
     min-height: 100%;
-
-
 
     header {
         padding-left: 55px;
@@ -230,9 +227,34 @@
         margin: 30px 0 0 0;
     }
 
-    .table-add{
-      td:first-child, th:first-child {
+    .table-add {
+      td:first-child,
+      th:first-child {
           padding-left: 0;
+      }
+
+      td {
+        &:not(:last-child) {
+          padding-right: 8px;
+        }
+      }
+
+      td {
+        .form-control {
+          height: 50px;
+
+          .select2-selection__rendered {
+            line-height: 40px !important;
+          }
+
+          .select2-selection__arrow {
+            top: 8px !important;
+          }
+        }
+
+        button {
+          height: 50px;
+        }
       }
     }
 
@@ -287,7 +309,7 @@
 }
 
 .cell-primary-heading {
-  background-color: #0394A6;
+  background-color:  $brand;
 }
 
 .cell-danger-heading {

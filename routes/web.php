@@ -60,6 +60,7 @@ Route::prefix('calendar')->group(function () {
     Route::get('/group-area/{area}', 'CalendarEventsController@allEventsByArea')->name('calendar-events-by-area');
     Route::get('/group-tag/{grouptags_groups}', 'CalendarEventsController@allEventsByGroupTag')->name('calendar-events-by-group-tag');
     Route::get('/all-events/{hash_env}', 'CalendarEventsController@allEvents')->name('calendar-events-all');
+    Route::get('/single-event/{event_id}', 'CalendarEventsController@singleEvent')->name('calendar-events-single');
 });
 
 Route::prefix('faultcat')->group(function () {
@@ -141,6 +142,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
 
     //Group Controller
     Route::prefix('group')->group(function () {
+        Route::get('/', 'GroupController@index')->name('groups');
         Route::get('/create', 'GroupController@create')->name('create-group');
         Route::post('/create', 'GroupController@create');
         Route::get('/edit/{id}', 'GroupController@edit');
@@ -152,8 +154,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
         Route::post('/image-upload/{id}', 'GroupController@imageUpload');
         Route::get('/image/delete/{idgroups}/{id}/{path}', 'GroupController@ajaxDeleteImage');
         Route::get('/search/column', 'GroupController@searchColumn');
-        Route::get('/{all?}', 'GroupController@index')->name('groups');
-        Route::get('/all/search', 'GroupController@search');
         Route::get('/search', 'GroupController@searchColumn');
         Route::get('/make-host/{group_id}/{user_id}', 'GroupController@getMakeHost');
         Route::get('/remove-volunteer/{group_id}/{user_id}', 'GroupController@getRemoveVolunteer');
@@ -241,7 +241,9 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/export/time-volunteered', 'ExportController@exportTimeVolunteered');
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
-    
+
+    // Auth API routes
+    Route::get('/api/events/{group}/', 'API\EventController');
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');
@@ -283,11 +285,19 @@ Route::get('/party/stats/{id}/wide', function ($id) {
 Route::get('markAsRead/{id}', function ($id) {
     auth()->user()->unReadNotifications->where('id', $id)->markAsRead();
 
-    return  redirect()->back();
+    return redirect()->back();
 })->name('markAsRead');
+
+Route::get('/notifications/{notification_id}/', 'NotificationController');
+Route::get('/test/discourse/notifications', 'DiscourseNotificationController');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::post('/set-cookie', 'InformationAlertCookieController');
+
+
+Route::get('/test/check-auth', function () {
+    return new \App\Services\CheckAuthService;
+});

@@ -133,64 +133,69 @@
                               <label for="profilePhoto">Upload Device Photo:</label>
                               <input type="file" class="form-control" id="devicePhoto" name="devicePhoto">
                           </div> -->
-
-
-
                       </div>
+
                       <div class="offset-lg-1 col-lg-7">
-                          <div class="row">
-                              <div class="col-4 col-lg-auto flex-column d-flex d-lg-table-cell">
-                                  <div class="form-group">
-                                      <label for="repair_status">@lang('devices.repair_status'):</label>
-                                      <div class="form-control form-control__select">
-                                          <select name="repair_status" id="repair_status" class="form-control field select2 repair-status">
-                                            <option value="0">@lang('general.please_select')</option>
-                                            <option value="1" <?php echo ($formdata->repair_status == 1 ? ' selected' : ''); ?>>Fixed</option>
-                                            <option value="2" <?php echo ($formdata->repair_status == 2 ? ' selected' : ''); ?>>Repairable</option>
-                                            <option value="3" <?php echo ($formdata->repair_status == 3 ? ' selected' : ''); ?>>End-of-life</option>
-                                          </select>
-                                      </div>
-                                      <?php if(isset($error) && isset($error['repair_status']) && !empty($error['repair_status'])) { echo '<span class="help-block text-danger">' . $error['repair_status'] . '</span>'; } ?>
-                                  </div>
+                          <div class="form-row">
+                            <div class="col-12 col-md-6 form-group">
+                              <label for="repair_status">@lang('devices.repair_status'):</label>
+                              <div class="form-control form-control__select">
+                                <select name="repair_status" id="repair_status" class="form-control field select2 repair-status">
+                                  <option value="0">@lang('general.please_select')</option>
+                                  <option value="1" <?php echo ($formdata->repair_status == 1 ? ' selected' : ''); ?>>Fixed</option>
+                                  <option value="2" <?php echo ($formdata->repair_status == 2 ? ' selected' : ''); ?>>Repairable</option>
+                                  <option value="3" <?php echo ($formdata->repair_status == 3 ? ' selected' : ''); ?>>End-of-life</option>
+                                </select>
                               </div>
-                              <div class="col-4 col-device <?php echo ($formdata->repair_status == 2 ? 'col-device-auto' : 'd-none'); ?>">
-                                  <div class="form-group">
-                                      <label for="repair_status_2">@lang('devices.repair_details'):</label>
-                                      <div class="form-control form-control__select">
-                                          <select name="repair_more" id="repair_details_edit" class="form-control field select2 repair-details-edit">
-                                            <option value="0">@lang('general.please_select')</option>
-                                            <option value="1" <?php echo ($formdata->more_time_needed == 1 ? ' selected' : '') ?>>More time needed</option>
-                                            <option value="2" <?php echo ($formdata->professional_help == 1 ? ' selected' : '') ?>>Professional help</option>
-                                            <option value="3" <?php echo ($formdata->do_it_yourself == 1 ? ' selected' : '') ?>>Do it yourself</option>
-                                          </select>
-                                      </div>
-                                  </div>
+                              @if (isset($error) && isset($error['repair_status']) && !empty($error['repair_status']))
+                                <small id="passwordHelpBlock" class="form-text text-danger">
+                                  {{ $error['repair_status'] }}
+                                </small>
+                              @endif
+                            </div>
+
+                            <div class="col-12 col-md-6 form-group @if($formdata->repair_status != 2) d-none @endif">
+                              <label for="repair_status_2">@lang('devices.repair_details'):</label>
+                              <div class="form-control form-control__select">
+                                <select name="repair_more" id="repair_details_edit" class="form-control field select2 repair-details-edit">
+                                  <option value="0">@lang('general.please_select')</option>
+                                  <option value="1" <?php echo ($formdata->more_time_needed == 1 ? ' selected' : '') ?>>More time needed</option>
+                                  <option value="2" <?php echo ($formdata->professional_help == 1 ? ' selected' : '') ?>>Professional help</option>
+                                  <option value="3" <?php echo ($formdata->do_it_yourself == 1 ? ' selected' : '') ?>>Do it yourself</option>
+                                </select>
                               </div>
-                              <div class="col-4 col-device <?php echo ($formdata->repair_status == 1 || $formdata->repair_status == 2 ? 'col-device-auto' : 'd-none'); ?>">
-                                  <div class="form-group">
-                                      <label for="spare_parts">@lang('devices.spare_parts_required'):</label>
-                                      <div class="form-control form-control__select">
-                                          <select name="spare_parts" id="spare_parts" class="form-control field select2 spare-parts">
-                                            <option @if ( $formdata->spare_parts == 1 && is_null($formdata->parts_provider) ) value="4" @else value="0" @endif>@lang('general.please_select')</option>
-                                            <option value="1" @if ( $formdata->spare_parts == 1 && !is_null($formdata->parts_provider) ) selected @endif>@lang('partials.yes_manufacturer')</option>
-                                            <option value="3" @if ( $formdata->parts_provider == 2 ) selected @endif>@lang('partials.yes_third_party')</option>
-                                            <option value="2" @if ( $formdata->spare_parts == 2 ) selected @endif>@lang('partials.no')</option>
-                                          </select>
-                                      </div>
-                                  </div>
+                            </div>
+
+                            <div class="col-12 col-md-6 form-group @if($formdata->repair_status != 1 || $formdata->repair_status != 2) d-none @endif">
+                              <label for="spare_parts">@lang('devices.spare_parts_required'):</label>
+                              <div class="form-control form-control__select">
+                                <select name="spare_parts" id="spare_parts" class="form-control field select2 spare-parts">
+                                  <option @if ( $formdata->spare_parts == 1 && is_null($formdata->parts_provider) ) value="4" @else value="0" @endif>
+                                    @lang('general.please_select')
+                                  </option>
+                                  <option value="1" @if ( $formdata->spare_parts == 1 && !is_null($formdata->parts_provider) ) selected @endif>
+                                    @lang('partials.yes_manufacturer')
+                                  </option>
+                                  <option value="3" @if ( $formdata->parts_provider == 2 ) selected @endif>
+                                    @lang('partials.yes_third_party')
+                                  </option>
+                                  <option value="2" @if ( $formdata->spare_parts == 2 ) selected @endif>
+                                    @lang('partials.no')
+                                  </option>
+                                </select>
                               </div>
-                              <div class="col-4 col-device <?php echo ($formdata->repair_status == 3 ? 'col-device-auto' : 'd-none'); ?>">
-                                  <div class="form-group">
-                                      <label for="repair_barrier">@lang('devices.repair_barrier'):</label>
-                                      <div class="form-control form-control__select form-control__select_placeholder">
-                                          <select name="barrier[]" multiple id="repair_barrier" class="form-control field select2-repair-barrier repair-barrier">
-                                            @foreach( FixometerHelper::allBarriers() as $barrier )
-                                              <option value="{{{ $barrier->id }}}" @if ( $formdata->barriers->contains($barrier->id) ) selected @endif>{{{ $barrier->barrier }}}</option>
-                                            @endforeach
-                                          </select>
-                                      </div>
-                                  </div>
+                            </div>
+
+                            <div class="col-12 col-md-6 form-group @if($formdata->repair_status != 3) d-none @endif">
+                              <label for="repair_barrier">@lang('devices.repair_barrier'):</label>
+                              <div class="form-control form-control__select form-control__select_placeholder">
+                                <select name="barrier[]" multiple id="repair_barrier" class="form-control field select2-repair-barrier repair-barrier">
+                                  @foreach( FixometerHelper::allBarriers() as $barrier )
+                                    <option value="{{{ $barrier->id }}}" @if ( $formdata->barriers->contains($barrier->id) ) selected @endif>{{{ $barrier->barrier }}}</option>
+                                  @endforeach
+                                </select>
                               </div>
+                            </div>
                           </div>
 
                           <div class="form-group">

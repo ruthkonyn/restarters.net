@@ -5,7 +5,6 @@ namespace App;
 use App\Events\UserDeleted;
 use App\Network;
 use App\UserGroups;
-
 use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -65,7 +64,17 @@ class User extends Authenticatable implements Auditable
         'deleted' => UserDeleted::class,
     ];
 
+    protected $appends = ['UserGroupsIDs'];
+
+    protected $with = ['userGroups'];
+
+
     public function role()
+    {
+        return $this->hasOne('App\Role', 'idroles', 'role');
+    }
+
+    public function userRole()
     {
         return $this->hasOne('App\Role', 'idroles', 'role');
     }
@@ -465,5 +474,127 @@ class User extends Authenticatable implements Auditable
         $network = Network::find($this->repair_network);
 
         return ($network->include_in_zapier == true);
+    }
+
+    public function hasLocationSet()
+    {
+        return ! is_null($this->latitude) && ! is_null($this->longitude);
+    }
+
+    public function userGroups()
+    {
+        return $this->hasMany(UserGroups::class, 'user', 'id');
+    }
+
+    public function getUserGroupsIDsAttribute()
+    {
+        return $this->userGroups->pluck('group')->toArray();
+    }
+
+    public function getDiscourseEmailPreferencesAttribute()
+    {
+        $discourse_user = $this->getUserFromDiscourse();
+
+        if ( ! $discourse_user) {
+            return false;
+        }
+
+        $user_options = $discourse_user['user']['user_option'];
+
+        $email_options = [
+            'email_messages_level',
+            'email_level',
+            'digest_after_minutes',
+        ];
+
+        return array_filter($user_options, function ($user_option) use ($email_options) {
+            return in_array($user_option, $email_options);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public function updateDiscourseEmailPreferences(array $email_preference_options)
+    {
+        $client = app('discourse-client');
+
+        // $placeholder = 'Dean_Claydon';
+        // $this->username
+
+        $response = $client->request('PUT', "/users/{$this->username}.json", [
+            'query' => $email_preference_options,
+        ]);
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function logoutOfDiscourse()
+    {
+        $discourse_user = $this->getUserFromDiscourse();
+
+        if ( ! $discourse_user) {
+            return;
+        }
+
+        $user_id = $discourse_user['user']['id'];
+
+        $client = app('discourse-client');
+
+        $response = $client->request('POST', "/admin/users/{$user_id}/log_out");
+
+        \Cookie::queue(\Cookie::forget('authenticated'));
+
+        \Cookie::queue(\Cookie::forget('has_cookie_notifications_set'));
+    }
+
+    public function getUserFromDiscourse()
+    {
+        $client = app('discourse-client');
+
+        $response = $client->request('GET', "/users/{$this->username}.json");
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return false;
+        }
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        return $array;
+    }
+
+    public function createUserOnDiscourse(array $data)
+    {
+        $attempt_retrieval_of_user = $this->getUserFromDiscourse();
+
+
+        if ($attempt_retrieval_of_user) {
+            return $attempt_retrieval_of_user;
+        }
+
+        $client = app('discourse-client');
+
+        $response = $client->request('POST', '/users', [
+            'form_params' => [
+                'name' => isset($data['name']) ? $data['name'] : $this->name,
+                'email' => isset($data['email']) ? $data['email'] : $this->email,
+                'password' => \Hash::make(str_random(20)),
+                'username' => isset($data['username']) ? $data['username'] : $this->username,
+                'user_fields[1]' => '1',
+                'user_fields[2]' => '2',
+                'user_fields[3]' => '3',
+                'user_fields[4]' => '4',
+                'user_fields[5]' => '5',
+            ],
+        ]);
+
+        if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+            return false;
+        }
+
+        $array = json_decode($response->getBody()->getContents(), true);
+
+        return $array;
     }
 }

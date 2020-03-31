@@ -1,20 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <section class="events events-page">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col">
-        <div class="d-flex justify-content-between align-content-center">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{{ route('dashboard') }}}">FIXOMETER</a></li>
-              <li class="breadcrumb-item"><a href="{{{ route('events') }}}">Events</a></li>
-              <li class="breadcrumb-item active" aria-current="page">All Past Events</li>
-            </ol>
-          </nav>
-        </div>
-      </div>
-    </div>
+  <div class="container">
 
     @if (\Session::has('success'))
     <div class="alert alert-success">
@@ -30,7 +17,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-12">
           <header>
-              <h2>All past events</h2>
+              <h1>All past events</h1>
           </header>
           <p>There are {{ $past_events_count }} past events.
           <div class="table-responsive">

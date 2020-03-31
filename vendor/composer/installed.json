@@ -214,12 +214,12 @@
         "version_normalized": "0.11.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/barryvdh/laravel-cors.git",
+            "url": "https://github.com/fruitcake/laravel-cors.git",
             "reference": "7969a52f52d0d9a04b42565d25ac9994b8c83332"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/7969a52f52d0d9a04b42565d25ac9994b8c83332",
+            "url": "https://api.github.com/repos/fruitcake/laravel-cors/zipball/7969a52f52d0d9a04b42565d25ac9994b8c83332",
             "reference": "7969a52f52d0d9a04b42565d25ac9994b8c83332",
             "shasum": ""
         },
@@ -1059,12 +1059,12 @@
         "version_normalized": "1.6.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/facebook/php-webdriver.git",
+            "url": "https://github.com/php-webdriver/php-webdriver.git",
             "reference": "bd8c740097eb9f2fc3735250fc1912bc811a954e"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/bd8c740097eb9f2fc3735250fc1912bc811a954e",
+            "url": "https://api.github.com/repos/php-webdriver/php-webdriver/zipball/bd8c740097eb9f2fc3735250fc1912bc811a954e",
             "reference": "bd8c740097eb9f2fc3735250fc1912bc811a954e",
             "shasum": ""
         },
@@ -1113,7 +1113,8 @@
             "php",
             "selenium",
             "webdriver"
-        ]
+        ],
+        "abandoned": "php-webdriver/webdriver"
     },
     {
         "name": "fideloper/proxy",
@@ -2244,8 +2245,7 @@
             "lumen",
             "publish",
             "vendor"
-        ],
-        "abandoned": true
+        ]
     },
     {
         "name": "league/csv",

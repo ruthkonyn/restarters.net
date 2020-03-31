@@ -171,19 +171,18 @@
                 </div>
               </div>
 
-              <div class="button-group row">
-                  <div class="offset-lg-3 col-lg-7 d-flex align-items-right justify-content-end text-right">
-                      @if( is_null($formdata->wordpress_post_id) )
-                        <span class="button-group__notice text-right">@lang('events.before_submit_text')</span>
-                      @endif
-                  </div>
-                  <div class="col-lg-2 d-flex align-items-center justify-content-end">
-                      <input type="submit" class="btn btn-primary btn-block btn-create" id="create-event" value="@lang('events.save_event')">
-                  </div>
+              <div class="d-flex flex-column flex-lg-row align-items-end justify-content-end">
+                @if( is_null($formdata->wordpress_post_id) )
+                  <span class="button-group__notice text-right mb-20 mb-lg-auto mr-lg-20">
+                      @lang('events.before_submit_text')
+                  </span>
+                @endif
+
+                <button type="submit" name="button" class="btn btn-primary btn-block btn-create float-right" id="create-event">
+                  @lang('events.save_event')
+                </button>
               </div>
-
             </form>
-
           </div>
 
           <div class="tab-pane" id="photos">
