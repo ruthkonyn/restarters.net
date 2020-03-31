@@ -2,9 +2,12 @@ function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
   var html = '<a href="#" class="toggle-notifications-menu">' +
-  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul></span>';
+  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
 
   $('.notification-icon').append(html);
+
+  var notification_text = '<ul class="dropdown-menu-items notification-menu-items"></ul>';
+  $('.d-header-icons').append(notification_text);
 
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
@@ -43,7 +46,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });
@@ -53,5 +56,11 @@ function ajaxSearchNotifications() {
         );
       }
     },
+  });
+}
+
+function goToNotification() {
+  $(".notification-link").click(function(){
+    document.location.href= $(this).attr('href');
   });
 }

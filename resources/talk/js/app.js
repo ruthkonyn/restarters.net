@@ -1,3 +1,10 @@
+setTimeout(function() {
+  checkAuth();
+  changeForumNavigation();
+  activateSearch();
+  toggleNotifications();
+}, 300);
+
 function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;
@@ -38,13 +45,11 @@ function addActive(tab) {
 function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
-    // If item is already active then close all.
     $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
-    // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
-    $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
+    $('.notification-menu-items').toggle();
   });
 }
 
@@ -56,20 +61,6 @@ function hamburgerMenu() {
     $('.notification-menu-items').hide();
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
-  });
-}
-
-function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' style='display: none;'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
-  $(html).insertAfter('.d-header-icons');
-
-  $('.restarters-user-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-user-menu').toggleClass('dropdown-active');
-    $('.user-dropdown-menu-items').toggle();
   });
 }
 
@@ -97,22 +88,12 @@ function activateSearch() {
   });
 }
 
-function categoriesMenu() {
-  $('.category-breadcrumb').remove();
-  var dropdown = "<div class='talk-categories'><span>Latest topics <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></span><ul class='talk-menu' style='display: none;'><li><a href='https://talk.restarters.net/categories'>Topic Categories <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/latestTopic'>Latest Forum Topics</a></li><li><a href='https://talk.restarters.net/g?type=my'>My Groups <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/c/help'>Help & Feedback</a></li><li><a href='https://talk.restarters.net/g?type=my'>My Groups</a></li><li><a href='https://talk.restarters.net/c/help/user-guides'>User Guides</a></li><li><a href='https://talk.restarters.net/c/local-chat'>Group Chat <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li></ul></div>";
-  $(dropdown).insertBefore("#create-topic");
-
-  $('.talk-categories').click(function() {
-    $('.talk-menu').toggle();
-  });
-}
-
-setTimeout(function() {
-  checkAuth();
-  changeForumNavigation();
-  hamburgerMenu();
-  categoriesMenu();
-  activateSearch();
-  ajaxSearchNotifications();
-  toggleNotifications();
-}, 150);
+// function categoriesMenu() {
+//   $('.category-breadcrumb').remove();
+//   var dropdown = "<div class='talk-categories'><span>Latest topics <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></span><ul class='talk-menu' style='display: none;'><li><a href='/categories'>Topic Categories</a></li><li><a href='/latest'>Latest Forum Topics</a></li><li><a href='/c/help'>Help & Feedback</a></li><li><a href='/g?type=my'>My Groups</a></li><li><a href='/c/help/user-guides'>User Guides</a></li><li><a href='/c/local-chat'>Group Chat</a></li></ul></div>";
+//   $(dropdown).insertBefore("#create-topic");
+//
+//   $('.talk-categories').click(function() {
+//     $('.talk-menu').toggle();
+//   });
+// }

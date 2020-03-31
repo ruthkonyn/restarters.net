@@ -1,3 +1,10 @@
+setTimeout(function() {
+  checkAuth();
+  changeForumNavigation();
+  activateSearch();
+  toggleNotifications();
+}, 300);
+
 function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;
@@ -38,13 +45,11 @@ function addActive(tab) {
 function toggleNotifications() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
-    // If item is already active then close all.
     $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
     $('.user-dropdown-menu-items').hide();
     $('.hamburger-dropdown-menu-items').hide();
-    // Show items.
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
-    $('.toggle-notifications-menu').parents().children('.dropdown-menu-items').toggle();
+    $('.notification-menu-items').toggle();
   });
 }
 
@@ -56,20 +61,6 @@ function hamburgerMenu() {
     $('.notification-menu-items').hide();
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
-  });
-}
-
-function userMenu() {
-  var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul><li><a class='my-profile-url' href=''>My profile &amp; settings</a></li><li class='admin-dropdown-spacer' style='display: none;'></li><li class='dropdown-spacer'></li><li><a href='https://test-restarters.rstrt.org/logout'>Logout</a></li></ul></div>";
-  $(html).insertAfter('.d-header-icons');
-
-  $('.restarters-user-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-user-menu').toggleClass('dropdown-active');
-    $('.user-dropdown-menu-items').toggle();
   });
 }
 
@@ -97,33 +88,26 @@ function activateSearch() {
   });
 }
 
-function categoriesMenu() {
-  $('.category-breadcrumb').remove();
-  var dropdown = "<div class='talk-categories'><span>Latest topics <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></span><ul class='talk-menu' style='display: none;'><li><a href='https://talk.restarters.net/categories'>Topic Categories <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/latestTopic'>Latest Forum Topics</a></li><li><a href='https://talk.restarters.net/g?type=my'>My Groups <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li><li><a href='https://talk.restarters.net/c/help'>Help & Feedback</a></li><li><a href='https://talk.restarters.net/g?type=my'>My Groups</a></li><li><a href='https://talk.restarters.net/c/help/user-guides'>User Guides</a></li><li><a href='https://talk.restarters.net/c/local-chat'>Group Chat <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></a></li></ul></div>";
-  $(dropdown).insertBefore("#create-topic");
-
-  $('.talk-categories').click(function() {
-    $('.talk-menu').toggle();
-  });
-}
-
-setTimeout(function() {
-  checkAuth();
-  changeForumNavigation();
-  hamburgerMenu();
-  categoriesMenu();
-  activateSearch();
-  ajaxSearchNotifications();
-  toggleNotifications();
-}, 150);
+// function categoriesMenu() {
+//   $('.category-breadcrumb').remove();
+//   var dropdown = "<div class='talk-categories'><span>Latest topics <svg xmlns='http://www.w3.org/2000/svg' width='16.086' height='8.794' viewBox='0 0 16.086 8.794'><path d='M7.263 8.359a1.692 1.692 0 0 0 2.265 0L15.681 2.5A1.4 1.4 0 1 0 13.695.528L8.563 5.367a.35.35 0 0 1-.461 0L2.325.347A1.402 1.402 0 0 0 .48 2.458z' data-name='Path 125'/></svg></span><ul class='talk-menu' style='display: none;'><li><a href='/categories'>Topic Categories</a></li><li><a href='/latest'>Latest Forum Topics</a></li><li><a href='/c/help'>Help & Feedback</a></li><li><a href='/g?type=my'>My Groups</a></li><li><a href='/c/help/user-guides'>User Guides</a></li><li><a href='/c/local-chat'>Group Chat</a></li></ul></div>";
+//   $(dropdown).insertBefore("#create-topic");
+//
+//   $('.talk-categories').click(function() {
+//     $('.talk-menu').toggle();
+//   });
+// }
 
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
 
   var html = '<a href="#" class="toggle-notifications-menu">' +
-  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a><ul class="dropdown-menu-items notification-menu-items"></ul></span>';
+  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
 
   $('.notification-icon').append(html);
+
+  var notification_text = '<ul class="dropdown-menu-items notification-menu-items"></ul>';
+  $('.d-header-icons').append(notification_text);
 
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
@@ -162,7 +146,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });
@@ -175,12 +159,20 @@ function ajaxSearchNotifications() {
   });
 }
 
+function goToNotification() {
+  $(".notification-link").click(function(){
+    document.location.href= $(this).attr('href');
+  });
+}
+
 // API call to current site - check for user authenticated
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
+  userMenu();
+
   $notifications_list_item = $('.notifications-list-item').hide();
-  $auth_menu_items = $('.auth-menu-items').hide();
+  $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
 
   $.ajax({
@@ -200,6 +192,71 @@ function checkAuth() {
       var response = response.data;
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
+        hamburgerMenu();
+        //categoriesMenu();
+        ajaxSearchNotifications();
+
+        if ($notifications_list_item.length) {
+          $notifications_list_item.css('display','');
+        }
+
+        $('.d-header-icons').attr('style', 'display:block');
+
+        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+        $(html).insertAfter('.d-header-icons');
+
+        if(response.is_admin) {
+          $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
+          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
+
+          $.each( response.menu.reporting, function( key, value ) {
+            var spacer_condition = key.includes('spacer');
+
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
+              $main_navigation_dropdown.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $main_navigation_dropdown.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
+          });
+        }
+
+        if(response.menu) {
+          $auth_menu_items = $('.user-dropdown-menu');
+          $.each( response.menu.user, function( key, value ) {
+            var spacer_condition = key.includes('spacer');
+
+            var header_condition = key.includes('header');
+
+            if (header_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-menu-header').text(value)
+              );
+            } else if (spacer_condition) {
+              $auth_menu_items.append(
+                $('<li>').attr('class', 'dropdown-spacer')
+              );
+            } else {
+              $auth_menu_items.append(
+                $('<li>').append(
+                  $('<a>').attr('href', value).text(key)
+                )
+              );
+            }
+          });
+        }
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
@@ -208,49 +265,33 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
-
-        if ($('.my-profile-url').length) {
-          $('.my-profile-url').attr('href', '/my/preferences/account');
-        }
-
-        $('.d-header-icons').attr('style', 'display:block');
-
-        userMenu();
-
-        if(response.is_admin) {
-          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
-          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
-
-          $('.admin-dropdown-spacer').show();
-          var html =  "<p class='admin-menu-header'>Administrator</p><ul><li><a href=''>Brands</a></li><li><a href=''>Skills</a></li><li><a href='/g'>Groups</a></li><li><a href='/tags'>Tags</a></li><li><a href='/categories'>Categories</a></li><li><a href='/u'>Users</a></li><li><a href=''>Roles</a></li><li><a href=''>Translations</a></li><li><a href='/admin'>Talk Admin Panel</a></li><li><a href='/admin/site_settings/category/required'>Talk Site Settings</a></li><li><a href=''>Repair Directory</a></li></ul>";
-          $(html).insertAfter('.admin-dropdown-spacer');
-        }
-
-        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-        $(html).insertAfter('.d-header-icons');
-
-        if(response.menu) {
-          var menu_text = "<p class='admin-menu-header'>Reporting</p>";
-          $('.hamburger-dropdown-menu-items').prepend(menu_text);
-
-          $.each(response.menu.reporting, function(key, value) {
-            var admin_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-            $('.hamburger-dropdown-menu').append(admin_links);
-          });
-
-          $.each(response.menu.general, function(key, value) {
-            var general_links = "<li class='"+ key +"'><a href='"+ value +"'>"+ key +"</a></li>";
-            $('.hamburger-dropdown-menu').append(general_links);
-          });
-
-          var menu_line = "<li class='admin-dropdown-spacer'></li>"
-          $('.About').prepend(menu_line);
-        }
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
-
         $('.d-header-icons').attr('style', 'display:none');
       }
+
+      // Amend Main navigation dropdown links
+      $.each( response.menu.general, function( key, value ) {
+        $main_navigation_dropdown.append(
+          $('<li>').append(
+            $('<a>').attr('href', value).text(key)
+          )
+        );
+      });
     },
+  });
+}
+
+function userMenu() {
+  var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
+  $(html).insertAfter('.d-header-icons');
+
+  $('.restarters-user-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-user-menu').toggleClass('dropdown-active');
+    $('.user-dropdown-menu-items').toggle();
   });
 }
