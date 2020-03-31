@@ -2,8 +2,11 @@
 
 namespace App;
 
+use App\Network;
+
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -439,5 +442,41 @@ class Group extends Model implements Auditable
     public function getApprovedAttribute()
     {
         return !is_null($this->wordpress_post_id);
+    }
+
+    public function networks()
+    {
+        return $this->belongsToMany(Network::class, 'group_network', 'group_id', 'network_id');
+    }
+
+    public function isMemberOf($network)
+    {
+        return $this->networks->contains($network);
+    }
+
+    // If just one of the networks that the group is a member of
+    // should push to Wordpress, then we should push.
+    public function eventsShouldPushToWordpress()
+    {
+        foreach ($this->networks as $network) {
+            if ($network->events_push_to_wordpress == true) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // If just one of the networks that the group is a member of
+    // should push to Wordpress, then we should push.
+    public function changesShouldPushToZapier()
+    {
+        foreach ($this->networks as $network) {
+            if ($network->include_in_zapier == true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
