@@ -94420,7 +94420,7 @@ $(document).ready(function () {
   $('.redirectToIntended').click(function () {
     $prefix = $(this).attr('data-initial-url');
 
-    location.href = $prefix + $('.group_discourse_slug').val();
+    location.href = $prefix + $('.group_discourse_slug').val() + '/messages/inbox/';
   });
 
   $('.change-group').on('change', function () {

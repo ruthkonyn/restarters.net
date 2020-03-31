@@ -10,6 +10,12 @@
         &:active {
             background-color: $apricot !important;
         }
+
+    }
+
+    .registration-skill {
+        padding: 16px 10px !important;
+        font-size: 14px !important;
     }
 
     [type="checkbox"]:checked + label.btn-checkbox {
