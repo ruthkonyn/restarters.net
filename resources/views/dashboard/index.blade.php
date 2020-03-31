@@ -133,7 +133,7 @@
               @include('svgs.dashboard.talk_doodle')
             </div>
 
-            <a href="{{ env('DISCOURSE_URL')}}/session/sso?return_path=https://talk.restarters.net/top/weekly" class="text-dark ml-auto">
+            <a href="{{ config('restarters.discourse.base_url')}}/session/sso?return_path={{ config('restarters.discourse.base_url')}}/latest" class="text-dark ml-auto">
               @lang('partials.hot_topics_link')
             </a>
           </div>

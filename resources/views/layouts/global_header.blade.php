@@ -95,7 +95,7 @@
       </li>
 
       <li>
-        <a href="@lang('general.wiki_url')" rel="noopener noreferrer">
+        <a href="{{ config('restarters.wiki.base_url') }}" rel="noopener noreferrer">
           @include('svgs/navigation/wiki-icon')
           <span>@lang('general.menu_wiki')</span>
         </a>

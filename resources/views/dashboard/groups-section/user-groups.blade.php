@@ -125,7 +125,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="sendUrgrentMessageModal" tabindex="-1" role="dialog" aria-labelledby="sendUrgrentMessageLabel" aria-hidden="true">
+<div class="modal fade" id="sendUrgentMessageModal" tabindex="-1" role="dialog" aria-labelledby="sendUrgentMessageLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
@@ -149,8 +149,8 @@
             </div>
           </div>
 
-          <a href="javascript:{}" data-initial-url="{{ env('DISCOURSE_URL')."g/" }}" class="btn btn-primary w-min-auto redirectToIntended">
-            Send
+          <a href="javascript:{}" data-initial-url="{{ config('restarters.discourse.base_url')."/g/" }}" class="btn btn-primary w-min-auto redirectToIntended">
+            @lang('dashboard.compose')
           </a>
         </div>
       </div>
