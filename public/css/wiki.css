@@ -14221,6 +14221,7 @@ h1 {
   letter-spacing: normal;
   text-align: center;
   color: #000;
+  padding-top: 0;
 }
 
 h2 {
@@ -14784,5 +14785,19 @@ body {
 
 .responsive-image {
   margin-bottom: 10px;
+}
+
+.tab-pane-content {
+  padding-top: 60px;
+  padding-bottom: 90px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+@media (max-width: 991.98px) {
+  .tab-pane-content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
 }
 
