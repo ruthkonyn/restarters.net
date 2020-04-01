@@ -14763,6 +14763,7 @@ body {
 .mw-parser-output .mw-collapsible .mw-collapsible-content ul {
   margin-left: 100px;
   margin-bottom: 25px;
+  list-style: none;
 }
 
 .mw-parser-output .mw-collapsible .mw-collapsible-content ul li a {
