@@ -44,20 +44,19 @@
             @endif
           </div>
 
-          <div class="row entry-panel__actions">
-            <div class="col-6 col-md-8 align-content-center flex-column d-flex">
-              <div class="row">
-                <div class="col-12">
-                  <a class="entry-panel__link" href="/user/recover">@lang('auth.forgot_password')</a>
-                </div>
-                <div class="col-12">
-                  <a class="entry-panel__link" href="{{{ route('registration') }}}">@lang('auth.create_account')</a>
-                </div>
-              </div>
+          <div class="d-flex justify-content-between align-items-center flex-row mt-15">
+            <div class="d-flex flex-column align-content-center">
+              <a class="entry-panel__link" href="/user/recover">
+                @lang('auth.forgot_password')
+              </a>
+              <a class="entry-panel__link" href="{{{ route('registration') }}}">
+                @lang('auth.create_account')
+              </a>
             </div>
-            <div class="col-6 col-md-4 align-content-center flex-column justify-content-end d-flex">
-              <button type="submit" class="btn btn-primary">@lang('auth.login')</button>
-            </div>
+
+            <button type="submit" class="btn btn-primary">
+              @lang('auth.login')
+            </button>
           </div>
         </form>
 
