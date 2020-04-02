@@ -10,30 +10,30 @@
 
     {{-- LOCATION --}}
     <th scope="col" class="d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center">
+      {{-- <label for="label-location" class="sort-column justify-content-center"> --}}
         @include('svgs/fixometer/location-pin')
-      </label>
+      {{-- </label> --}}
     </th>
 
     {{-- RESTARTERS --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center">
+      {{-- <label for="label-restarters" class="sort-column justify-content-center"> --}}
         @include('svgs/navigation/user-icon')
-      </label>
+      {{-- </label> --}}
     </th>
 
     {{-- PARTCIPANTS --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center @if( $sort_column == 'upcoming_event' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+      {{-- <label for="label-participants" class="sort-column justify-content-center @if( $sort_column == 'upcoming_event' ) sort-column-{{{ strtolower($sort_direction) }}} @endif"> --}}
         @include('svgs/navigation/groups-icon')
-      </label>
+      {{-- </label> --}}
     </th>
 
     {{-- NEXT EVENT DATE --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-partcipants" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+      {{-- <label for="label-upcoming_event" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif"> --}}
         @include('svgs/navigation/events-icon')
-      </label>
+      {{-- </label> --}}
     </th>
 
     {{-- FOLLOW BUTTON --}}
