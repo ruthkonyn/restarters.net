@@ -16878,6 +16878,10 @@ select.form-control:not([class*="select2"]) {
   }
 }
 
+.slick-your-groups .card-group-slick {
+  overflow: hidden;
+}
+
 .slick-your-groups .card-group-slick .card-img {
   opacity: 0.75;
 }

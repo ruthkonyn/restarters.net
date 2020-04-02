@@ -117,6 +117,8 @@
   @extend .mb-0;
 
   .card-group-slick {
+    overflow: hidden;
+    
     .card-img {
       opacity: 0.75;
     }
