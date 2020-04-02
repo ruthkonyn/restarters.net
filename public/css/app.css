@@ -26564,6 +26564,7 @@ h5 {
   color: #000;
   text-transform: uppercase;
   font-size: 18px;
+  text-decoration: none !important;
 }
 
 .tooltip {
@@ -26606,6 +26607,16 @@ h5 {
 .dashboard .table tbody tr td {
   vertical-align: middle;
   height: 70px;
+}
+
+@media (max-width: 991.98px) {
+  .hot-topics-header {
+    font-size: 28px !important;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.14;
+    letter-spacing: normal;
+  }
 }
 
 /* Slider */
