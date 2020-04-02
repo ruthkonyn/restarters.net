@@ -26899,3 +26899,26 @@ h5 {
   opacity: 0.75;
 }
 
+.deviceFilterContainer .form-control__select {
+  border: 1px solid black !important;
+  height: 50px !important;
+}
+
+.deviceFilterContainer .form-control__select .select2-container--default {
+  border-radius: 0 !important;
+  top: 2px;
+}
+
+.deviceFilterContainer .form-control__select .select2-selection--multiple {
+  border-radius: 0 !important;
+}
+
+.deviceFilterContainer .form-control__select .select2-search__field {
+  margin-top: 8px;
+}
+
+.deviceFilterContainer .form-control.field {
+  height: 50px;
+  border: 1px solid #000;
+}
+

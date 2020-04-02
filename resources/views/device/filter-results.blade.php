@@ -40,7 +40,7 @@
         </li>
       </ul>
 
-      <div id="content" class="tab-content" role="tablist">
+      <div id="content" class="tab-content deviceFilterContainer" role="tablist">
         <div id="pane-A" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
           <div class="accordion-tab-header collapse-plus-and-minus" role="tab" id="heading-A">
             <button class="btn" type="button" data-toggle="collapse" data-target="#collapse-A" aria-expanded="true" aria-controls="collapse-A">

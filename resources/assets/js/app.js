@@ -1128,9 +1128,7 @@ function initAutocomplete() {
     $('.tokenfield').tokenfield();
 
     $current_column = $('input[name=sort_column]:checked').val();
-    console.log('testing123');
     $('input[name=sort_column]').on('click', function(e) {
-      console.log(1, 2, 3);
         $form = $('#device-search');
 
         $sort_direction = $form.find('input[name=sort_direction]');
