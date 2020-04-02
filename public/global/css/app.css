@@ -15264,7 +15264,7 @@ label.form-check-label {
 }
 
 .select2-container--default {
-  text-transform: uppercase;
+  text-transform: none;
   border-radius: 0;
 }
 
@@ -15785,7 +15785,7 @@ select.form-control:not([class*="select2"]) {
 }
 
 .table td {
-  font-size: 14px;
+  font-size: 16px;
   border: none;
   vertical-align: middle;
   font-family: "Asap", sans-serif;

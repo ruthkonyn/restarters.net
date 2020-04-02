@@ -96,7 +96,11 @@ window.onload = function () {
 
       // Keep hash within URL when toggling between Bootstrap Panes/Tabs
       $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        window.location.hash = $(this).attr('href');
+        if (history.pushState) {
+          history.pushState(null, null, $(this).attr('href'));
+        } else {
+          location.hash = $(this).attr('href');
+        }
       });
 
       $("form[id$='-search']").submit(function (e) {

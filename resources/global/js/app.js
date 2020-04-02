@@ -18,7 +18,11 @@ window.onload = function() {
 
       // Keep hash within URL when toggling between Bootstrap Panes/Tabs
       $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        window.location.hash = $(this).attr('href');
+        if(history.pushState) {
+          history.pushState(null, null, $(this).attr('href'));
+        } else {
+          location.hash = $(this).attr('href');
+        }
       });
 
       $("form[id$='-search']").submit(function (e) {
@@ -52,13 +56,13 @@ window.onload = function() {
     }
 
     if (window.location.origin == 'https://test-wiki.rstrt.org') {
-        $('.wiki-nav-item').addClass('active');
+      $('.wiki-nav-item').addClass('active');
 
-        $('.nav-tabs-block li a').removeClass('active');
+      $('.nav-tabs-block li a').removeClass('active');
 
-        $('.nav-tabs-block li a[href*="'+ window.location.pathname +'"]').each(function() {
-            $(this).addClass('active');
-        });
+      $('.nav-tabs-block li a[href*="'+ window.location.pathname +'"]').each(function() {
+        $(this).addClass('active');
+      });
     }
   })(jQuery, window, document);
 }
