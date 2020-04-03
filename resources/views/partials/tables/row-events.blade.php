@@ -2,14 +2,14 @@
   {{-- <td class="hightlighted {{ $event->VisuallyHighlight() }}"></td> --}}
 
   {{-- EVENT DATE --}}
-  <td colspan="1" width="70" class="text-center td-event-date @if($event->isInProgress()) td-event-in-progress @endif">
+  <td colspan="1" width="70" class="text-center td-event-date w-50px @if($event->isInProgress()) td-event-in-progress @endif">
     <span class="td-event-day">{{ $event->getEventDate('d') }}</span>
     <br>
     <span class="td-event-month">{{ $event->getEventDate('M') }}</span>
   </td>
 
   {{-- EVENT LOCATION --}}
-  <td colspan="1" class="cell-name">
+  <td colspan="1" class="cell-name pl-md-20">
     <a href="/party/view/{{ $event->idevents }}" class="d-none d-md-block font-weight-bold">
       {{ $event->getEventName() }}
     </a>

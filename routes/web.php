@@ -11,6 +11,23 @@
 |
 */
 
+Route::get('/testing123', function () {
+    $client = app('discourse-client');
+
+    $response = $client->request('GET', "/users/Dean_Claydon.json");
+
+    if ($response->getStatusCode() != 200 || $response->getReasonPhrase() != 'OK') {
+        return false;
+    }
+
+    $array = json_decode($response->getBody()->getContents(), true);
+
+
+    $user = \App\User::where('email', 'hello@dean.codes')->first();
+
+    dd($array, $user);
+});
+
 Route::prefix('user')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::get('reset', 'UserController@reset');

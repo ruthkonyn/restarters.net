@@ -15811,6 +15811,11 @@ select.form-control:not([class*="select2"]) {
   padding-left: 20px;
 }
 
+.table td.w-50px,
+.table th.w-50px {
+  width: 50px !important;
+}
+
 .table td.table-cell-icon,
 .table th.table-cell-icon {
   text-align: center;
