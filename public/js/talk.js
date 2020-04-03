@@ -235,7 +235,7 @@ function checkAuth() {
           });
         }
 
-        if(response.is_admin) {
+        if(response.menu) {
           $auth_menu_items = $('.user-dropdown-menu');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
