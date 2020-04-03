@@ -257,6 +257,7 @@ function checkAuth() {
             }
           });
         }
+        
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
@@ -265,19 +266,19 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
+
+        // Amend Main navigation dropdown links
+        $.each( response.menu.general, function( key, value ) {
+          $main_navigation_dropdown.append(
+            $('<li>').append(
+              $('<a>').attr('href', value).text(key)
+            )
+          );
+        });
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
         $('.d-header-icons').attr('style', 'display:none');
       }
-
-      // Amend Main navigation dropdown links
-      $.each( response.menu.general, function( key, value ) {
-        $main_navigation_dropdown.append(
-          $('<li>').append(
-            $('<a>').attr('href', value).text(key)
-          )
-        );
-      });
     },
   });
 }
