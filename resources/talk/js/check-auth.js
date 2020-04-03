@@ -104,6 +104,7 @@ function checkAuth() {
         }
 
       } else {
+        hideHeaderIcons();
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
 

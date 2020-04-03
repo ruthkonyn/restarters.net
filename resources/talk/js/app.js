@@ -1,5 +1,3 @@
-hideHeaderIcons();
-
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
