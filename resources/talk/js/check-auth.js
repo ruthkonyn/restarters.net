@@ -1,6 +1,6 @@
 var interval = null;
-$(document).on('ready',function(){
-    interval = setInterval(checkAuth,1000);
+$(document).on('load',function(){
+    interval = setInterval(checkAuth,2000);
 });
 
 // API call to current site - check for user authenticated
