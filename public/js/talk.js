@@ -1,6 +1,11 @@
-var refreshIntervalId = setInterval(function() {
+var interval = null;
+$(document).on('ready',function(){
+    interval = setInterval(checkAuth,1000);
+});
+
+// API call to current site - check for user authenticated
+function checkAuth() {
   console.log('checking auth');
-  console.log(refreshIntervalId);
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
@@ -20,6 +25,8 @@ var refreshIntervalId = setInterval(function() {
     url: $url,
     datatype: 'json',
     success: function(response) {
+      console.log("clearing " + interval);
+      clearInterval(interval);
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
@@ -117,9 +124,7 @@ var refreshIntervalId = setInterval(function() {
       });
     },
   });
-});
-
-clearInterval(refreshIntervalId);
+}
 
 function userMenu() {
   var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
