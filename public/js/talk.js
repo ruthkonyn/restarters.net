@@ -169,9 +169,9 @@ function goToNotification() {
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
-  userMenu();
-
   $notifications_list_item = $('.notifications-list-item').hide();
+  $auth_menu_items = $('.user-dropdown-menu-items').hide();
+  $auth_menu_items.removeClass('dropdown-menu-items');
 
   $.ajax({
     headers: {
@@ -193,6 +193,8 @@ function checkAuth() {
         hamburgerMenu();
         //categoriesMenu();
         ajaxSearchNotifications();
+
+        userMenu();
 
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
