@@ -1,3 +1,5 @@
+var refreshIntervalId = setInterval(checkAuth(), 1000);
+
 // API call to current site - check for user authenticated
 function checkAuth() {
   console.log('checking auth');

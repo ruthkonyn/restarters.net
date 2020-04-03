@@ -1,5 +1,3 @@
-var refreshIntervalId = setInterval(checkAuth(), 1000);
-
 setTimeout(function() {
   changeForumNavigation();
   activateSearch();
