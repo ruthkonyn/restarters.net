@@ -189,14 +189,14 @@ function checkAuth() {
 
       var response = response.data;
 
-      $('.d-header-icons').attr('style', 'display:block');
-
       var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
       $(html).insertAfter('.d-header-icons');
 
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
+        $('.d-header-icons').attr('style', 'display:block');
+        $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
         //categoriesMenu();
         ajaxSearchNotifications();
