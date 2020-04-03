@@ -5,6 +5,7 @@ function checkAuth() {
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
+  $('.d-header-icons').attr('style', 'display:none');
 
   $.ajax({
     headers: {
@@ -103,7 +104,6 @@ function checkAuth() {
 
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
-        $('.d-header-icons').attr('style', 'display:none');
       }
 
       // Amend Main navigation dropdown links
