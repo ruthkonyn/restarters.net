@@ -14762,6 +14762,18 @@ a.form-text-corrected:focus {
   width: 280px;
 }
 
+@media only screen and (max-width: 576px) {
+  .nav-wrapper .dropdown-menu-items {
+    width: 255px;
+  }
+}
+
+@media only screen and (max-width: 375px) {
+  .nav-wrapper .dropdown-menu-items.xxs-center {
+    left: -100px;
+  }
+}
+
 .nav-wrapper .dropdown-menu-items li {
   margin: 0;
   width: 100%;
