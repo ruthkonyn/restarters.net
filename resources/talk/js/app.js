@@ -1,5 +1,6 @@
+hideHeaderIcons();
+
 setTimeout(function() {
-  hideHeaderIcons();
   checkAuth();
   changeForumNavigation();
   activateSearch();
