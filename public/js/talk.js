@@ -1,5 +1,6 @@
 setTimeout(function() {
   $('.d-header-icons').attr('style', 'display:none');
+  checkAuth();
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
@@ -97,11 +98,6 @@ function activateSearch() {
 //     $('.talk-menu').toggle();
 //   });
 // }
-
-var interval = null;
-$(document).on('ready',function(){
-    interval = setInterval(checkAuth,2000);
-});
 
 // API call to current site - check for user authenticated
 function checkAuth() {

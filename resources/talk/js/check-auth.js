@@ -1,8 +1,3 @@
-var interval = null;
-$(document).on('ready',function(){
-    interval = setInterval(checkAuth,2000);
-});
-
 // API call to current site - check for user authenticated
 function checkAuth() {
   console.log('checking auth');
