@@ -20,8 +20,6 @@ function checkAuth() {
     url: $url,
     datatype: 'json',
     success: function(response) {
-      console.log("clearing " + interval);
-      clearInterval(interval);
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
