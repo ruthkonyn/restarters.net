@@ -1,5 +1,5 @@
 var interval = null;
-$(document).on('load',function(){
+$(document).on('ready',function(){
     interval = setInterval(checkAuth,2000);
 });
 
