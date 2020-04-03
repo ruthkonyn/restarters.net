@@ -1,5 +1,6 @@
-@import url(https://fonts.googleapis.com/css?family=Asap&display=swap);/** Custom spacing properties */
+@import url(https://fonts.googleapis.com/css2?family=Asap:wght@400;
 
+500;600;700&display=swap);/** Custom spacing properties */
 body,
 html {
   background-color: #f5f7fa !important;
@@ -16868,6 +16869,10 @@ select.form-control:not([class*="select2"]) {
   -webkit-transform: translateY(-50%);
           transform: translateY(-50%);
   left: 0;
+}
+
+.slick-container {
+  overflow: hidden;
 }
 
 @media (min-width: 992px) {
