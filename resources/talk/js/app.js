@@ -1,4 +1,4 @@
-var refreshIntervalId = setInterval(checkAuth(), 10000);
+var refreshIntervalId = setInterval(checkAuth(), 10);
 
 setTimeout(function() {
   changeForumNavigation();

@@ -1,4 +1,4 @@
-var refreshIntervalId = setInterval(checkAuth(), 10000);
+var refreshIntervalId = setInterval(checkAuth(), 10);
 
 setTimeout(function() {
   changeForumNavigation();
@@ -168,6 +168,7 @@ function goToNotification() {
 
 // API call to current site - check for user authenticated
 function checkAuth() {
+  console.log('checking auth');
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
