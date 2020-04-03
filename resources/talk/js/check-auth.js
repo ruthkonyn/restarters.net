@@ -1,7 +1,4 @@
-var refreshIntervalId = setInterval(checkAuth(), 1000);
-
-// API call to current site - check for user authenticated
-function checkAuth() {
+var refreshIntervalId = setInterval(function() {
   console.log('checking auth');
   console.log(refreshIntervalId);
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
@@ -10,8 +7,6 @@ function checkAuth() {
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
   $('.d-header-icons').attr('style', 'display:none');
-
-  clearInterval(refreshIntervalId);
 
   $.ajax({
     headers: {
@@ -122,7 +117,9 @@ function checkAuth() {
       });
     },
   });
-}
+});
+
+clearInterval(refreshIntervalId);
 
 function userMenu() {
   var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
