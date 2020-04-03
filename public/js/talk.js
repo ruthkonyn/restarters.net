@@ -53,6 +53,17 @@ function toggleNotifications() {
   });
 }
 
+function hamburgerMenu() {
+  $('.restarters-hamburger-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
+    $('.user-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').toggle();
+  });
+}
+
 function changeForumNavigation() {
   $('#create-topic').addClass('d-none');
   $('#create-topic .d-button-label').text('New Topic');
@@ -155,11 +166,10 @@ function goToNotification() {
 }
 
 // API call to current site - check for user authenticated
-
-userMenu();
-
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
+
+  userMenu();
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -180,7 +190,6 @@ function checkAuth() {
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
-      console.log(response);
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         hamburgerMenu();
@@ -284,16 +293,5 @@ function userMenu() {
     $('.notification-menu-items').hide();
     $('.toggle-user-menu').toggleClass('dropdown-active');
     $('.user-dropdown-menu-items').toggle();
-  });
-}
-
-function hamburgerMenu() {
-  $('.restarters-hamburger-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
-    $('.user-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').toggle();
   });
 }
