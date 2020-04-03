@@ -29,7 +29,7 @@ function checkAuth() {
 
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
-      if (response.authenticated !== null && response.authenticated !== undefined) {
+      if (response.authenticated === true) {
         $('.d-header-icons').attr('style', 'display:inline-flex');
         $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
