@@ -196,7 +196,7 @@ function checkAuth() {
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
-        $('.d-header-icons').attr('style', 'display:block');
+        $('.d-header-icons').attr('style', 'display:inline-flex');
         $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
         //categoriesMenu();
