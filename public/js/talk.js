@@ -155,10 +155,11 @@ function goToNotification() {
 }
 
 // API call to current site - check for user authenticated
+
+userMenu();
+
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
-
-  userMenu();
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -179,6 +180,7 @@ function checkAuth() {
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
+      console.log(response);
 
       if (response.authenticated !== null && response.authenticated !== undefined) {
         hamburgerMenu();
