@@ -189,6 +189,8 @@ function checkAuth() {
 
       var response = response.data;
 
+      $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+
       if (response.authenticated !== null && response.authenticated !== undefined) {
         hamburgerMenu();
         //categoriesMenu();
@@ -206,7 +208,6 @@ function checkAuth() {
         $(html).insertAfter('.d-header-icons');
 
         if(response.is_admin) {
-          $main_navigation_dropdown = $('.hamburger-dropdown-menu');
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
@@ -233,7 +234,7 @@ function checkAuth() {
           });
         }
 
-        if(response.menu) {
+        if(response.is_admin) {
           $auth_menu_items = $('.user-dropdown-menu');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -257,7 +258,7 @@ function checkAuth() {
             }
           });
         }
-        
+
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
@@ -267,18 +268,19 @@ function checkAuth() {
           $auth_menu_items.css('display','');
         }
 
-        // Amend Main navigation dropdown links
-        $.each( response.menu.general, function( key, value ) {
-          $main_navigation_dropdown.append(
-            $('<li>').append(
-              $('<a>').attr('href', value).text(key)
-            )
-          );
-        });
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
         $('.d-header-icons').attr('style', 'display:none');
       }
+
+      // Amend Main navigation dropdown links
+      $.each( response.menu.general, function( key, value ) {
+        $main_navigation_dropdown.append(
+          $('<li>').append(
+            $('<a>').attr('href', value).text(key)
+          )
+        );
+      });
     },
   });
 }
