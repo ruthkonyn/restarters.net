@@ -53,17 +53,6 @@ function toggleNotifications() {
   });
 }
 
-function hamburgerMenu() {
-  $('.restarters-hamburger-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
-    $('.user-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').toggle();
-  });
-}
-
 function changeForumNavigation() {
   $('#create-topic').addClass('d-none');
   $('#create-topic .d-button-label').text('New Topic');

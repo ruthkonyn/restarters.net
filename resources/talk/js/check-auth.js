@@ -128,3 +128,14 @@ function userMenu() {
     $('.user-dropdown-menu-items').toggle();
   });
 }
+
+function hamburgerMenu() {
+  $('.restarters-hamburger-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
+    $('.user-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-hamburger-menu').toggleClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').toggle();
+  });
+}
