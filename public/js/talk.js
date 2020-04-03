@@ -169,6 +169,7 @@ function goToNotification() {
 // API call to current site - check for user authenticated
 function checkAuth() {
   console.log('checking auth');
+  console.log(refreshIntervalId);
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
