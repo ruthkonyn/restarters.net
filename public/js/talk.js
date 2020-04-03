@@ -1,5 +1,6 @@
+var refreshIntervalId = setInterval(checkAuth(), 10000);
+
 setTimeout(function() {
-  checkAuth();
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
@@ -173,6 +174,8 @@ function checkAuth() {
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
   $('.d-header-icons').attr('style', 'display:none');
+
+  clearInterval(refreshIntervalId);
 
   $.ajax({
     headers: {

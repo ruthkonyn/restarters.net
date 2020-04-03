@@ -1,5 +1,6 @@
+var refreshIntervalId = setInterval(checkAuth(), 10000);
+
 setTimeout(function() {
-  checkAuth();
   changeForumNavigation();
   activateSearch();
   toggleNotifications();

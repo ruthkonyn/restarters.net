@@ -7,6 +7,8 @@ function checkAuth() {
   $auth_menu_items.removeClass('dropdown-menu-items');
   $('.d-header-icons').attr('style', 'display:none');
 
+  clearInterval(refreshIntervalId);
+
   $.ajax({
     headers: {
       // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
