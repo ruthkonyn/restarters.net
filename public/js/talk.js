@@ -1,10 +1,14 @@
 setTimeout(function() {
-  $('.d-header-icons').attr('style', 'display:none');
+  hideHeaderIcons();
   checkAuth();
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
 }, 300);
+
+function hideHeaderIcons() {
+    $('.d-header-icons').attr('style', 'display:none');
+}
 
 function navigateUrl(item) {
   if(item.value) {
@@ -100,6 +104,7 @@ function activateSearch() {
 // }
 
 // API call to current site - check for user authenticated
+
 function checkAuth() {
   console.log('checking auth');
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';

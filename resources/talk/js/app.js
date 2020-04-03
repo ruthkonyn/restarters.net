@@ -1,10 +1,14 @@
 setTimeout(function() {
-  $('.d-header-icons').attr('style', 'display:none');
+  hideHeaderIcons();
   checkAuth();
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
 }, 300);
+
+function hideHeaderIcons() {
+    $('.d-header-icons').attr('style', 'display:none');
+}
 
 function navigateUrl(item) {
   if(item.value) {

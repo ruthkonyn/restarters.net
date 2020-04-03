@@ -1,4 +1,5 @@
 // API call to current site - check for user authenticated
+
 function checkAuth() {
   console.log('checking auth');
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
