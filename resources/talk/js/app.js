@@ -1,4 +1,5 @@
 setTimeout(function() {
+  $('.d-header-icons').attr('style', 'display:none');
   changeForumNavigation();
   activateSearch();
   toggleNotifications();

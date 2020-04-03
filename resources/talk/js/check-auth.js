@@ -11,7 +11,6 @@ function checkAuth() {
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
-  $('.d-header-icons').attr('style', 'display:none');
 
   $.ajax({
     headers: {
