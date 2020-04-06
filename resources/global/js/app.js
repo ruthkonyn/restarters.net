@@ -55,7 +55,7 @@ window.onload = function() {
       }
     }
 
-    if (window.location.origin == 'https://test-wiki.rstrt.org') {
+    if (window.location.origin == process.env.MIX_WIKI_URL) {
       $('.wiki-nav-item').addClass('active');
 
       $('.nav-tabs-block li a').removeClass('active');

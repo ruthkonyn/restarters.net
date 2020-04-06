@@ -2,7 +2,7 @@
 
 function checkAuth() {
   console.log('checking auth');
-  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
+  $url = process.env.MIX_APP_URL + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -105,7 +105,7 @@ function checkAuth() {
 
       } else {
         hideHeaderIcons();
-        $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
+        $auth_list_item.find('a').attr('href', process.env.MIX_APP_URL);
       }
 
       // Amend Main navigation dropdown links

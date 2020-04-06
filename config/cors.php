@@ -16,8 +16,8 @@ return [
     'allowedOrigins' => [
         'https://www.test-cors.org',
         'https://therestartproject.org',
-        'https://test-wiki.rstrt.org',
-        'https://test-talk.rstrt.org'
+        config('restarters.wiki.base_url'),
+        config('restarters.discourse.base_url')
     ],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],
