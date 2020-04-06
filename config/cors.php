@@ -14,10 +14,9 @@ return [
 
     'supportsCredentials' => true,
     'allowedOrigins' => [
-        'https://www.test-cors.org',
         'https://therestartproject.org',
-        config('restarters.wiki.base_url'),
-        config('restarters.discourse.base_url')
+        env('WIKI_URL'),
+        env('DISCOURSE_URL'),
     ],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],
