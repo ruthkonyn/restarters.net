@@ -24,7 +24,7 @@
       </p>
 
       @if( FixometerHelper::userCanCreateEvents(Auth::user()) )
-        <a href="/party/create">
+        <a href="/party/create" class="btn-link">
           Add one!
         </a>
       @endif

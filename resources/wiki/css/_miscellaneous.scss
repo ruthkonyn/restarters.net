@@ -17,3 +17,7 @@
     content: none !important;
   }
 }
+
+.mw-parser-output .mw-collapsible div:first-of-type h2 span:first-child::before {
+  min-width: 50px
+}

@@ -16,7 +16,7 @@ return array (
     'by_details' => 'By details',
     'add_groups' => 'Add a group',
     'add_groups_content' => 'Tell us more about your group, so we can create a page for you and help you publicise to potential volunteers and participants.',
-    'create_groups' => 'Create a new group',
+    'create_groups' => 'Add a new group',
     'create_groups_mobile' => 'Add new',
     'create_group' => 'Create group',
     'groups_discourse_slug' => 'Discourse Slug',

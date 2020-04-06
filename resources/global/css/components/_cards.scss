@@ -106,6 +106,8 @@
 }
 
 .slick-container {
+  overflow: hidden;
+  
   @include media-breakpoint-up(lg) {
     position: absolute;
     width: 100%;
@@ -117,6 +119,8 @@
   @extend .mb-0;
 
   .card-group-slick {
+    overflow: hidden;
+
     .card-img {
       opacity: 0.75;
     }

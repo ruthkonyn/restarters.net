@@ -34,7 +34,7 @@
 
       <div class="row">
         <div class="col-12 col-md-12 p-0 p-md-15">
-          <form action="/party/" method="get" id="events-search">
+          <form action="/party/" method="get" id="device-search">
             <input type="hidden" name="formHash" id="formHash" value="{{ $formHash }}">
             <input type="hidden" name="sort_direction" value="{{ $sort_direction }}" class="sr-only">
             <input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">

@@ -5,6 +5,10 @@ setTimeout(function() {
   toggleNotifications();
 }, 300);
 
+function hideHeaderIcons() {
+    $('.d-header-icons').attr('style', 'display:none');
+}
+
 function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;

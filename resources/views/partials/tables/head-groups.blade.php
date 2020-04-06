@@ -1,3 +1,10 @@
+<input type="hidden" name="sort_direction" value="{{$sort_direction}}" class="sr-only">
+<input type="radio" name="sort_column" value="name" @if( $sort_column == 'name' ) checked @endif id="label-name" class="sr-only">
+<input type="radio" name="sort_column" value="distance" @if( $sort_column == 'distance' ) checked @endif id="label-location" class="sr-only">
+<input type="radio" name="sort_column" value="hosts" @if( $sort_column == 'hosts' ) checked @endif id="label-hosts" class="sr-only">
+<input type="radio" name="sort_column" value="restarters" @if( $sort_column == 'restarters' ) checked @endif id="label-restarters" class="sr-only">
+<input type="radio" name="sort_column" value="upcoming_event" @if( $sort_column == 'upcoming_event' ) checked @endif id="label-upcoming_event" class="sr-only">
+
 <thead>
   <tr>
     {{-- ICON --}}
@@ -10,28 +17,28 @@
 
     {{-- LOCATION --}}
     <th scope="col" class="d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center">
+      <label for="label-location" class="sort-column justify-content-center">
         @include('svgs/fixometer/location-pin')
       </label>
     </th>
 
     {{-- RESTARTERS --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center">
+      <label for="label-restarters" class="sort-column justify-content-center">
         @include('svgs/navigation/user-icon')
       </label>
     </th>
 
     {{-- PARTCIPANTS --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-upcoming_event" class="sort-column justify-content-center @if( $sort_column == 'upcoming_event' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+      <label for="label-hosts" class="sort-column justify-content-center @if( $sort_column == 'upcoming_event' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
         @include('svgs/navigation/groups-icon')
       </label>
     </th>
 
     {{-- NEXT EVENT DATE --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-partcipants" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+      <label for="label-upcoming_event" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
         @include('svgs/navigation/events-icon')
       </label>
     </th>
