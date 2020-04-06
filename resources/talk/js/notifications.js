@@ -46,8 +46,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', process.env.MIX_APP_URL . '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
-            ).attr('class', 'notifcation-text')
+              $('<a>').attr('href', process.env.MIX_APP_URL + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text')
           );
         });
       } else {
