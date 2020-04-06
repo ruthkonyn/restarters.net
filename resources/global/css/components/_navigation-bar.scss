@@ -183,6 +183,18 @@
     right: 0;
     width: 280px;
 
+    // xs
+    @media only screen and (max-width: 576px) {
+      width: 255px;
+    }
+
+    // Smaller than xs
+    &.xxs-center {
+      @media only screen and (max-width: 375px) {
+        left: -100px;
+      }
+    }
+
     li {
       margin: 0;
       width: 100%;

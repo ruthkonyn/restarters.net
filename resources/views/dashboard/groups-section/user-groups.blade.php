@@ -1,4 +1,4 @@
-<div class="card card-info-box mb-30">
+<div class="card card-info-box mb-35">
   <div class="card-body pt-10">
     <div class="d-flex flex-column flex-lg-row align-items-center">
       <h2 class="mb-0 mr-30">

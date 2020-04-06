@@ -20,7 +20,7 @@
 
     <div class="col-12 col-lg-4">
       <p class="mb-0">
-        If you can't see any here yet, why not <a href="#pane-B" data-toggle="tab" role="tab" aria-selected="true">follow your nearest group</a> to hear about their upcoming repair events?
+        If you can't see any here yet, why not <a href="#pane-B" data-toggle="tab" role="tab" aria-selected="true" class="btn-link">follow your nearest group</a> to hear about their upcoming repair events?
       </p>
     </div>
   </div>

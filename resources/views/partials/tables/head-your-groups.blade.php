@@ -18,7 +18,7 @@
 
     {{-- NEXT EVENT DATE --}}
     <th scope="col" class="text-center d-none d-md-table-cell">
-      <label for="label-partcipants" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
+      <label for="label-hosts" class="sort-column justify-content-center @if( $sort_column == 'partcipants' ) sort-column-{{{ strtolower($sort_direction) }}} @endif">
         @include('svgs/navigation/events-icon')
       </label>
     </th>

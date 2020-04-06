@@ -115,7 +115,7 @@
           @endif
         </a>
 
-        <ul class="dropdown-menu-items">
+        <ul class="dropdown-menu-items xxs-center">
           @if ( FixometerHelper::hasRole(Auth::user(), 'Administrator') || FixometerHelper::hasRole(Auth::user(), 'Host') )
             <li class="dropdown-menu-header">
               Reporting

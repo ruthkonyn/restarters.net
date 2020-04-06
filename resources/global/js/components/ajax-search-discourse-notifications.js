@@ -5,7 +5,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications';
+  $url = process.env.MIX_APP_URL + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
@@ -39,7 +39,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
+              $('<a>').attr('href', process.env.MIX_APP_URL + $notification.id).text($notification.data.title)
             ).attr('class', 'notifcation-text')
           );
         });

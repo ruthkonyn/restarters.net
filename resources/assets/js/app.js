@@ -1128,9 +1128,9 @@ function initAutocomplete() {
     $('.tokenfield').tokenfield();
 
     $current_column = $('input[name=sort_column]:checked').val();
-
     $('input[name=sort_column]').on('click', function(e) {
         $form = $('#device-search');
+
         $sort_direction = $form.find('input[name=sort_direction]');
             if( $sort_direction.val() === 'DSC' ){
                 $sort_direction.val('ASC');

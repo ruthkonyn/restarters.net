@@ -199,7 +199,8 @@ body {
 
         margin-left: 100px; // Override
         margin-bottom: 25px;
-
+        list-style: none;
+        
         li {
           a {
             text-decoration: underline !important;
@@ -231,4 +232,16 @@ body {
 
 .responsive-image {
   margin-bottom: 10px;
+}
+
+.tab-pane-content {
+  padding-top: 60px;
+  padding-bottom: 90px;
+  padding-left: 30px;
+  padding-right: 30px;
+
+  @include media-breakpoint-down(md) {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
 }

@@ -4,7 +4,7 @@
     {{-- <th class="hightlighted" width="10"></th> --}}
 
     {{-- EVENT DATE --}}
-    <th scope="col" width="70">
+    <th scope="col" class="w-50px">
       &nbsp;
     </th>
 

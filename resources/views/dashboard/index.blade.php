@@ -30,7 +30,7 @@
       </div>
 
       <div class="row">
-        <div class="col-12 col-md-12">
+        <div class="col-12 col-md-12 p-0 p-md-15">
           @include('partials.alerts.alert-danger', [
             'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
           ])
@@ -43,24 +43,24 @@
         <div class="col-12 col-lg-8 d-flex flex-column order-2 order-lg-1">
 
           {{-- Host with groups and no events --}}
-          @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0)
+          {{-- @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0) --}}
 
-            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false])
+            {{-- @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false]) --}}
 
           {{-- Host/ Fixer/ All Others with 1 group and upcoming events --}}
-          @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Administrator', 'Restarter']) && $user_groups->count() >= 1 && $user_upcoming_events->count() >= 1)
-            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true])
+          {{-- @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Administrator', 'Restarter']) && $user_groups->count() >= 1 && $user_upcoming_events->count() >= 1)
+            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true]) --}}
 
           {{-- Anyone who hasn’t followed a group --}}
-          @else
+          {{-- @else --}}
 
             @include('dashboard.groups-section.no-groups')
-          @endif
+          {{-- @endif --}}
 
           @include('dashboard.add-data-section')
         </div>
 
-        <div class="col-12 col-lg-4 order-1 mb-30 mb-lg-0">
+        <div class="col-12 col-lg-4 order-1 mb-35 mb-lg-0">
           <div class="d-none d-lg-block">
             <div class="card card-info-box bg-info">
               <img src="images/community.jpg" class="card-img-top" alt="...">
@@ -126,7 +126,7 @@
       <div class="row mt-50">
         <div class="col">
           <div class="d-flex align-items-center">
-            <h1 id="dashboard__header" class="mb-0 mr-30">
+            <h1 id="dashboard__header" class="hot-topics-header mb-0 mr-30">
               @lang('partials.hot_topics')
             </h1>
             <div class="mr-auto d-none d-md-block">

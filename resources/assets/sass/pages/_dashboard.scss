@@ -25,3 +25,13 @@
     }
   }
 }
+
+.hot-topics-header {
+  @include media-breakpoint-down(md) {
+    font-size: 28px !important;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.14;
+    letter-spacing: normal;
+  }
+}

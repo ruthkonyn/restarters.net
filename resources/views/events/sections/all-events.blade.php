@@ -1,6 +1,6 @@
 <section class="table-section py-30" id="all-events">
   <p class="mb-30">
-    There are <span class="font-weight-bold">{{ $all_events_count }} events</span>. See <a href="{{ route('all-past-events') }}" class="font-weight-bold">past events</a>
+    There are <span class="font-weight-bold">{{ $all_events_count }} events</span>. See <a href="{{ route('all-past-events') }}" class="btn-link">past events</a>
   </p>
 
   @include('group.group-filters')

@@ -1,8 +1,8 @@
 // API call to current site - check for user authenticated
-function checkAuth() {
-  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
-  userMenu();
+function checkAuth() {
+  console.log('checking auth');
+  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -24,22 +24,25 @@ function checkAuth() {
 
       var response = response.data;
 
-      if (response.authenticated !== null && response.authenticated !== undefined) {
+      var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
+
+      $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+
+      if (response.authenticated === true) {
+        $('.d-header-icons').attr('style', 'display:inline-flex');
+        $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
         //categoriesMenu();
         ajaxSearchNotifications();
+
+        userMenu();
 
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
 
-        $('.d-header-icons').attr('style', 'display:block');
-
-        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-        $(html).insertAfter('.d-header-icons');
-
         if(response.is_admin) {
-          $main_navigation_dropdown = $('.hamburger-dropdown-menu');
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
@@ -90,6 +93,7 @@ function checkAuth() {
             }
           });
         }
+
         if ($notifications_list_item.length) {
           $notifications_list_item.css('display','');
         }
@@ -98,9 +102,10 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
+
       } else {
+        hideHeaderIcons();
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
-        $('.d-header-icons').attr('style', 'display:none');
       }
 
       // Amend Main navigation dropdown links
