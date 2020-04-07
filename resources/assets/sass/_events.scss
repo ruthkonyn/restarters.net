@@ -52,6 +52,10 @@
                 width: 115px;
             }
         }
+
+        .btn-title {
+            padding: 0;
+        }
     }
 
     &__filter {
@@ -97,10 +101,9 @@
 
     &__description {
         padding: 15px;
-        border-radius: 3px;
         margin-bottom: 30px;
-        background-color: #F9F9F9;
-        border: 1px solid #D9D9D9;
+        background-color: white;
+        border: 1px solid black;
         color: #5A5A5A;
         overflow: hidden;
         @extend .clear;
@@ -285,8 +288,8 @@
             margin-right: 5px;
         }
         &.active {
-            border-bottom: 1px #F9F9F9 solid;
-            background-color: #F9F9F9;
+            border-bottom: 1px white solid;
+            background-color: white;
         }
         &:hover, &:focus {
             text-decoration: underline;

@@ -20675,13 +20675,13 @@ h2 sup a:hover {
 }
 
 .accordion__share {
-  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-top: 1px solid black;
 }
 
 .accordion__share .card {
   border: 0 none;
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: 1px solid black;
+  border-right: 1px solid black;
 }
 
 .accordion__share .card-header {
@@ -20704,7 +20704,7 @@ h2 sup a:hover {
 .accordion__share .card-header .btn:active,
 .accordion__share .card-header .btn:focus {
   text-decoration: none;
-  outline: 2px solid rgba(3, 148, 166, 0.5);
+  outline: 2px solid black;
 }
 
 .accordion__share .card-header .btn .accordion-arrow {
@@ -20720,12 +20720,12 @@ h2 sup a:hover {
 }
 
 .accordion__share .card-body {
-  background: #EEF0F0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  background: white;
+  border-bottom: 1px solid black;
 }
 
 .accordion__grps .card {
-  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-top: 1px solid black;
   margin-bottom: 2px;
 }
 
@@ -24632,21 +24632,15 @@ td.col-device-auto {
 
 .group-view .events-list-wrap,
 .group-view .events-link-wrap {
-  border: 1px #D9D9D9 solid;
-}
-
-.group-view .events-list-wrap {
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border: 1px black solid;
 }
 
 .group-view .events-list-wrap table {
+  background-color: white;
   margin-bottom: 0;
 }
 
 .group-view .events-link-wrap {
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
   padding-top: 12px;
   padding-bottom: 13px;
 }
@@ -24866,8 +24860,8 @@ td.col-device-auto {
 }
 
 .properties li > div {
-  background-color: #F9F9F9;
-  border: 1px solid #D9D9D9;
+  background-color: white;
+  border: 1px solid black;
   padding: 15px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -24879,7 +24873,6 @@ td.col-device-auto {
   -webkit-box-flex: 1;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
-  border-radius: 3px;
   position: relative;
   z-index: 1;
   -ms-flex-preferred-size: auto;
@@ -24903,7 +24896,7 @@ td.col-device-auto {
   font-size: 18px;
   font-weight: 400;
   padding: 0 0 15px 28px;
-  color: #4aaebc;
+  color: black;
   -webkit-box-flex: 1;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
@@ -25050,6 +25043,10 @@ td.col-device-auto {
   }
 }
 
+.events header .btn-title {
+  padding: 0;
+}
+
 .events__filter .breadcrumb {
   margin: 0;
 }
@@ -25095,10 +25092,9 @@ td.col-device-auto {
 
 .events__description {
   padding: 15px;
-  border-radius: 3px;
   margin-bottom: 30px;
-  background-color: #F9F9F9;
-  border: 1px solid #D9D9D9;
+  background-color: white;
+  border: 1px solid black;
   color: #5A5A5A;
   overflow: hidden;
 }
@@ -25276,8 +25272,8 @@ td.col-device-auto {
 }
 
 .nav-tabs .nav-link.active {
-  border-bottom: 1px #F9F9F9 solid;
-  background-color: #F9F9F9;
+  border-bottom: 1px white solid;
+  background-color: white;
 }
 
 .nav-tabs .nav-link:hover,
@@ -25389,8 +25385,9 @@ td.col-device-auto {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  border: 1px #D9D9D9 solid;
+  border: 1px black solid;
   border-bottom: 0;
+  background-color: white;
 }
 
 .users-list .badge-primary {
@@ -25460,6 +25457,7 @@ td.col-device-auto {
 }
 
 .users-list li {
+  background-color: white;
   list-style: none;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -25545,14 +25543,13 @@ td.col-device-auto {
   text-decoration: none;
 }
 
-.users-list__single {
-  padding: 0;
-  background-color: #F9F9F9;
+.users-list li button {
+  font-size: small;
 }
 
-.users-list__single .users-list {
-  border-right: 0;
-  border-left: 0;
+.users-list__single {
+  padding: 0;
+  background-color: white;
 }
 
 @media (min-width: 992px) {
@@ -25569,6 +25566,7 @@ td.col-device-auto {
 .users-list__single .users-list__more {
   padding: 15px;
   margin: auto;
+  border: 1px solid black;
 }
 
 .users-list .dropdown-menu {
@@ -25658,8 +25656,8 @@ span.popover-usergroups {
 }
 
 .stat {
-  background-color: #F9F9F9;
-  border: 1px solid #D9D9D9;
+  background-color: white;
+  border: 1px solid black;
   padding: 15px;
   display: -webkit-box;
   display: -ms-flexbox;

@@ -1,11 +1,11 @@
 .accordion__share {
 
-  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-top: 1px solid black;
 
   .card {
     border: 0 none;
-    border-left: 1px solid rgba(0, 0, 0, 0.125);
-    border-right: 1px solid rgba(0, 0, 0, 0.125);
+    border-left: 1px solid black;
+    border-right: 1px solid black;
   }
 
   .card-header {
@@ -26,7 +26,7 @@
 
       &:active, &:focus {
         text-decoration: none;
-        outline: 2px solid rgba(3, 148, 166, 0.5);
+        outline: 2px solid black;
       }
 
       .accordion-arrow {
@@ -48,8 +48,8 @@
   }
 
   .card-body {
-    background: #EEF0F0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background: white;
+    border-bottom: 1px solid black;
   }
 
 }
@@ -57,7 +57,7 @@
 .accordion__grps {
 
   .card {
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    border-top: 1px solid black;
     margin-bottom: 2px;
 
     &:first-child {
