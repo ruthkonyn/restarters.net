@@ -27,7 +27,7 @@
     <td colspan="11">
         <form id="data-{{ $device->iddevices }}" class="edit-device" data-device="{{ $device->iddevices }}" method="post" enctype="multipart/form-data">
 
-        <div class="row row-compressed-xs nested-fields d-lg-table col-lg-12">
+        <div class="row no-gutters row-compressed-xs nested-fields d-lg-table col-lg-12">
 
           <div class="col-12 col-sm-6 col-device-auto">
 
@@ -187,7 +187,7 @@
           </div>
 
         </div><!-- /row -->
-        <div class="row row-compressed-xs nested-fields table-row-more">
+        <div class="row no-gutters row-compressed-xs nested-fields table-row-more">
           <div class="col-12 col-lg-6 flex-column d-flex">
 
               <label for="problem-{{ $device->iddevices }}">@lang('partials.description_of_problem_solution'):</label>
@@ -222,7 +222,7 @@
 
         </form>
 
-        <div class="row row-compressed-xs nested-fields table-row-more">
+        <div class="row no-gutters row-compressed-xs nested-fields table-row-more">
           <div class="col-12 col-lg-6 flex-column d-flex">
               <div class="form-group">
                   <label>@lang('partials.add_image'):</label>
@@ -259,7 +259,7 @@
 <tr class="collapse table-row-details" id="row-{{ $device->iddevices }}">
     <td colspan="11">
 
-        <div class="row row-compressed-xs nested-fields d-lg-table col-lg-12">
+        <div class="row no-gutters row-compressed-xs nested-fields d-lg-table col-lg-12">
 
           <div class="col-12 col-sm-6 col-device-auto">
 
@@ -419,7 +419,7 @@
           </div>
 
         </div><!-- /row -->
-        <div class="row row-compressed-xs nested-fields table-row-more">
+        <div class="row no-gutters row-compressed-xs nested-fields table-row-more">
           <div class="col-12 col-lg-6 flex-column d-flex">
 
               <label for="problem-{{ $device->iddevices }}">@lang('partials.description_of_problem_solution'):</label>
@@ -449,7 +449,7 @@
 
         </div><!-- /row -->
 
-        <div class="row row-compressed-xs nested-fields table-row-more">
+        <div class="row no-gutters row-compressed-xs nested-fields table-row-more">
             <div class="col-12 col-lg-6 device-images">
               <label for="device-image-{{ $device->iddevices }}">@lang('partials.device_images'):</label>
               <div class="previews">
