@@ -14728,7 +14728,7 @@ body {
   min-height: 70px;
 }
 
-.mw-parser-output .mw-collapsible div:first-of-type h2 span:first-child::before {
+.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-headline:first-child::before {
   content: counter(chapter);
   width: 50px;
   height: 50px;
@@ -14751,10 +14751,6 @@ body {
     letter-spacing: normal;
     text-align: left;
   }
-}
-
-.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-editsection-bracket {
-  display: none;
 }
 
 .mw-parser-output .mw-collapsible .mw-collapsible-content h3 .mw-headline:first-child::before {
