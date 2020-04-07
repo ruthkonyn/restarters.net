@@ -65,15 +65,17 @@
 /************************************************************************/
 /******/ ({
 
-/***/ 138:
+/***/ 139:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkAuth", function() { return checkAuth; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "userMenu", function() { return userMenu; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications__ = __webpack_require__(7);
 // API call to current site - check for user authenticated
+
 
 
 function checkAuth() {
@@ -110,7 +112,7 @@ function checkAuth() {
         $main_navigation_dropdown.attr('style', 'display:block');
         Object(__WEBPACK_IMPORTED_MODULE_0__app__["hamburgerMenu"])();
         //categoriesMenu();
-        ajaxSearchNotifications();
+        Object(__WEBPACK_IMPORTED_MODULE_1__notifications__["ajaxSearchNotifications"])();
 
         userMenu();
 
@@ -193,7 +195,7 @@ function userMenu() {
 
 /***/ }),
 
-/***/ 139:
+/***/ 140:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -205,8 +207,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hamburgerMenu", function() { return hamburgerMenu; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "changeForumNavigation", function() { return changeForumNavigation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "activateSearch", function() { return activateSearch; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_auth__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_auth__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications__ = __webpack_require__(7);
 
 
 
@@ -337,7 +339,17 @@ function activateSearch() {
 
 /***/ }),
 
-/***/ 140:
+/***/ 190:
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(139);
+__webpack_require__(140);
+module.exports = __webpack_require__(7);
+
+
+/***/ }),
+
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -404,16 +416,6 @@ function goToNotification() {
   });
 }
 
-
-
-/***/ }),
-
-/***/ 190:
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(138);
-__webpack_require__(139);
-module.exports = __webpack_require__(140);
 
 
 /***/ })
