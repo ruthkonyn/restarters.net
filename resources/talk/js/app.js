@@ -1,6 +1,3 @@
-import { checkAuth, userMenu } from './check-auth';
-import { ajaxSearchNotifications, goToNotification } from './notifications';
-
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
@@ -104,5 +101,3 @@ function activateSearch() {
 //     $('.talk-menu').toggle();
 //   });
 // }
-
-export { hideHeaderIcons, navigateUrl, addActive, toggleNotifications, hamburgerMenu, changeForumNavigation, activateSearch }
