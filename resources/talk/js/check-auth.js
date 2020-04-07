@@ -1,4 +1,5 @@
 // API call to current site - check for user authenticated
+import { hamburgerMenu } from './app';
 
 function checkAuth() {
   console.log('checking auth');

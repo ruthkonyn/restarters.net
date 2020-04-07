@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 189);
+/******/ 	return __webpack_require__(__webpack_require__.s = 190);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -72,7 +72,9 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkAuth", function() { return checkAuth; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "userMenu", function() { return userMenu; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(139);
 // API call to current site - check for user authenticated
+
 
 function checkAuth() {
   console.log('checking auth');
@@ -106,7 +108,7 @@ function checkAuth() {
       if (response.authenticated === true) {
         $('.d-header-icons').attr('style', 'display:inline-flex');
         $main_navigation_dropdown.attr('style', 'display:block');
-        hamburgerMenu();
+        Object(__WEBPACK_IMPORTED_MODULE_0__app__["hamburgerMenu"])();
         //categoriesMenu();
         ajaxSearchNotifications();
 
@@ -196,89 +198,15 @@ function userMenu() {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ajaxSearchNotifications", function() { return ajaxSearchNotifications; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "goToNotification", function() { return goToNotification; });
-function ajaxSearchNotifications() {
-  // $base_url = window.location.host;
-
-  var html = '<a href="#" class="toggle-notifications-menu">' + '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
-
-  $('.notification-icon').append(html);
-
-  var notification_text = '<ul class="dropdown-menu-items notification-menu-items"></ul>';
-  $('.d-header-icons').append(notification_text);
-
-  $('.notification-menu-items').hide();
-  $('.toggle-notifications-menu .bell-icon-active').hide();
-
-  $url = "https://restarters.dev" + '/test/discourse/notifications';
-
-  $.ajax({
-    headers: {
-      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    xhrFields: {
-      withCredentials: true
-    },
-    type: 'GET',
-    url: $url,
-    datatype: 'json',
-    success: function success(response) {
-      console.log('Success: connected to Discourse.');
-
-      // Response failed
-      if (response.message == 'failed') {
-        console.log('Success: failed to find any new notifications.');
-        return false;
-      }
-
-      // If notifications exist then we can create a cookie
-      var $notifications = response.notifications;
-
-      if (Object.keys($notifications).length > 0) {
-        console.log('Success: notifications found on Discourse.');
-
-        // $('.notification-menu-items').show();
-        $('.toggle-notifications-menu .bell-icon-active').show();
-
-        $.each($notifications, function (index, $notification) {
-          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "https://restarters.dev" + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
-        });
-      } else {
-        $('.notification-menu-items').append($('<p class="admin-menu-header">').text('No notifications'));
-      }
-    }
-  });
-}
-
-function goToNotification() {
-  $(".notification-link").click(function () {
-    document.location.href = $(this).attr('href');
-  });
-}
-
-
-
-/***/ }),
-
-/***/ 189:
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(138);
-__webpack_require__(190);
-module.exports = __webpack_require__(139);
-
-
-/***/ }),
-
-/***/ 190:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hideHeaderIcons", function() { return hideHeaderIcons; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "navigateUrl", function() { return navigateUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addActive", function() { return addActive; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toggleNotifications", function() { return toggleNotifications; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hamburgerMenu", function() { return hamburgerMenu; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "changeForumNavigation", function() { return changeForumNavigation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "activateSearch", function() { return activateSearch; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_auth__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications__ = __webpack_require__(140);
 
 
 
@@ -404,6 +332,89 @@ function activateSearch() {
 //     $('.talk-menu').toggle();
 //   });
 // }
+
+
+
+/***/ }),
+
+/***/ 140:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ajaxSearchNotifications", function() { return ajaxSearchNotifications; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "goToNotification", function() { return goToNotification; });
+function ajaxSearchNotifications() {
+  // $base_url = window.location.host;
+
+  var html = '<a href="#" class="toggle-notifications-menu">' + '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
+
+  $('.notification-icon').append(html);
+
+  var notification_text = '<ul class="dropdown-menu-items notification-menu-items"></ul>';
+  $('.d-header-icons').append(notification_text);
+
+  $('.notification-menu-items').hide();
+  $('.toggle-notifications-menu .bell-icon-active').hide();
+
+  $url = "https://restarters.dev" + '/test/discourse/notifications';
+
+  $.ajax({
+    headers: {
+      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    xhrFields: {
+      withCredentials: true
+    },
+    type: 'GET',
+    url: $url,
+    datatype: 'json',
+    success: function success(response) {
+      console.log('Success: connected to Discourse.');
+
+      // Response failed
+      if (response.message == 'failed') {
+        console.log('Success: failed to find any new notifications.');
+        return false;
+      }
+
+      // If notifications exist then we can create a cookie
+      var $notifications = response.notifications;
+
+      if (Object.keys($notifications).length > 0) {
+        console.log('Success: notifications found on Discourse.');
+
+        // $('.notification-menu-items').show();
+        $('.toggle-notifications-menu .bell-icon-active').show();
+
+        $.each($notifications, function (index, $notification) {
+          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "https://restarters.dev" + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
+        });
+      } else {
+        $('.notification-menu-items').append($('<p class="admin-menu-header">').text('No notifications'));
+      }
+    }
+  });
+}
+
+function goToNotification() {
+  $(".notification-link").click(function () {
+    document.location.href = $(this).attr('href');
+  });
+}
+
+
+
+/***/ }),
+
+/***/ 190:
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(138);
+__webpack_require__(139);
+module.exports = __webpack_require__(140);
+
 
 /***/ })
 
