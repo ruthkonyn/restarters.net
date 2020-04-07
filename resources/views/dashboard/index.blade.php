@@ -29,13 +29,13 @@
         </div>
       </div>
 
-      <div class="row">
+      {{-- <div class="row">
         <div class="col-12 col-md-12 p-0 p-md-15">
           @include('partials.alerts.alert-danger', [
             'text' => 'Attention, Members! message about important event, eort, survey, topic, etc, <a href="#">with link</a>',
           ])
         </div>
-      </div>
+      </div>--}}
 
       {{-- @include('dashboard.temporary-banner') --}}
 
@@ -43,19 +43,17 @@
         <div class="col-12 col-lg-8 d-flex flex-column order-2 order-lg-1">
 
           {{-- Host with groups and no events --}}
-          {{-- @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0) --}}
-
-            {{-- @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false]) --}}
-
+          @if (FixometerHelper::hasRole(Auth::user(), ['Administrator', 'Host']) && $user_groups->count() >= 1 && $user_upcoming_events->count() == 0) 
+            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => false])
           {{-- Host/ Fixer/ All Others with 1 group and upcoming events --}}
-          {{-- @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Administrator', 'Restarter']) && $user_groups->count() >= 1 && $user_upcoming_events->count() >= 1)
-            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true]) --}}
+          @elseif (FixometerHelper::hasRole(Auth::user(), ['Host', 'Administrator', 'Restarter']) && $user_groups->count() >= 1 && $user_upcoming_events->count() >= 1)
+            @include('dashboard.groups-section.user-groups', ['show_new_groups_count' => true])
 
           {{-- Anyone who hasn’t followed a group --}}
-          {{-- @else --}}
+          @else
 
             @include('dashboard.groups-section.no-groups')
-          {{-- @endif --}}
+          @endif
 
           @include('dashboard.add-data-section')
         </div>

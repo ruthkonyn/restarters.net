@@ -128,6 +128,9 @@
 <div class="modal fade" id="sendUrgentMessageModal" tabindex="-1" role="dialog" aria-labelledby="sendUrgentMessageLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Choose a group</h5>
+        </div>
       <div class="modal-body">
         <div class="flex-dynamic-row">
           <div class="flex-dynamic mb-0">

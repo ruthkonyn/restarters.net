@@ -137,7 +137,8 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     });
 
     //Dashboard Controller
-    Route::prefix('dashboard')->group(function () {
+    Route::redirect('dashboard', 'home');
+    Route::prefix('home')->group(function () {
         Route::get('/', 'DashboardController@index')->name('dashboard')->middleware('AcceptUserInvites');
         Route::get('/host', 'DashboardController@getHostDash');
     });
