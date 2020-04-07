@@ -14753,6 +14753,10 @@ body {
   }
 }
 
+.mw-parser-output .mw-collapsible div:first-of-type h2 .mw-editsection-bracket {
+  font-size: 18px;
+}
+
 .mw-parser-output .mw-collapsible .mw-collapsible-content h3 .mw-headline:first-child::before {
   content: counter(chapter) "." counter(section) " ";
   margin: 0;
