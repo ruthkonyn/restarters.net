@@ -369,7 +369,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = "https://restarters.dev" + '/test/discourse/notifications';
+  var $url = "https://restarters.dev" + '/test/discourse/notifications';
 
   $.ajax({
     headers: {

@@ -12,7 +12,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = process.env.MIX_APP_URL + '/test/discourse/notifications';
+  var $url = process.env.MIX_APP_URL + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
