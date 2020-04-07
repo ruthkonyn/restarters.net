@@ -133,3 +133,5 @@ function userMenu() {
     $('.user-dropdown-menu-items').toggle();
   });
 }
+
+export { checkAuth, userMenu }

@@ -1,3 +1,6 @@
+import { checkAuth, userMenu } from './check-auth';
+import { ajaxSearchNotifications, goToNotification } from './notifications';
+
 setTimeout(function() {
   checkAuth();
   changeForumNavigation();
