@@ -104,3 +104,5 @@ function activateSearch() {
 //     $('.talk-menu').toggle();
 //   });
 // }
+
+export { hideHeaderIcons, navigateUrl, addActive, toggleNotifications, hamburgerMenu, changeForumNavigation, activateSearch }
