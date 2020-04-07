@@ -128,7 +128,7 @@
         @php( $stats = $event->getEventStats($EmissionRatio) )
           {{ $stats['fixed_devices'] }} fixed devices
       @else
-          No devices added <a href="/party/view/{{ $event->idevents }}">Add a device</a>
+          No devices added<br/> <a href="/party/view/{{ $event->idevents }}">Add a device</a>
       @endif
     </td>
 

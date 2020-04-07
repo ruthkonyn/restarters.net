@@ -4,7 +4,7 @@
 @endsection
 @section('content')
 <section class="events group-view">
-  <div class="container-fluid">
+  <div class="container">
 
       <?php if( isset($_GET['message']) && $_GET['message'] == 'invite' ): ?>
         <div class="alert alert-info" role="alert">
@@ -85,14 +85,6 @@
                   <a class="events__header__url" href="{{{ $group->website }}}" rel="noopener noreferrer">{{{ $group->website }}}</a>
                 @endif
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">FIXOMETER</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url('/group') }}">@lang('groups.groups')</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{{ $group->name }}}</li>
-                    </ol>
-                </nav>
-
                 @php( $groupImage = $group->groupImage )
                 @if( is_object($groupImage) && is_object($groupImage->image) )
                   <img src="{{ asset('/uploads/mid_'. $groupImage->image->path) }}" alt="{{{ $group->name }}} group image" class="event-icon">
@@ -150,23 +142,24 @@
         $info_text = "If you follow this group, you will now be able to add their events to your personal calendar.  You can use the <button disabled class='btn btn-primary btn-sm btn-normal-padding'>Follow group</button> button above.";
         }
       ?>
+
+        {{-- 
       @include('partials.information-alert', [
           'html_text' => "<span class='badge badge-success'>NEW!</span> <strong class='mb-2'>Do you use Google / Outlook / Yahoo calendars?</strong> <br> " . $info_text . "",
         'dismissable_id' => "groupcalendar",
         'classes' => ['set-information-box-margin'],
-      ])
+      ])--}}
 
         <div class="row">
             <div class="col-lg-3">
 
-                <h2 id="about-grp">About the group
+                <h2 id="about-grp">About
                   @if( FixometerHelper::hasRole( $user, 'Administrator' ) || $is_host_of_group )
                     <sup>(<a href="{{ url('/group/edit/'.$group->idgroups) }}">Edit group</a>)</sup>
                   @endif
                 </h2>
 
                 <div class="events__description">
-                    <h3 class="events__side__heading" id="description">Description:</h3>
                     <p>{!! str_limit(strip_tags($group->free_text), 160, '...') !!}</p>
                     @if( strlen($group->free_text) > 160 )
                       <button data-toggle="modal" data-target="#group-description"><span>Read more</span></button>
@@ -351,7 +344,7 @@
 
                 <h2 id="environmental-impact">Environmental impact</h2>
 
-                <div class="row row-compressed-xs">
+                <div class="row row-compressed-xs no-gutters">
                     <div class="col-lg-3 d-flex flex-column">
                         <ul class="properties">
                             <li class="properties__item__full properties__item__half_xs">
@@ -407,7 +400,7 @@
                     ?>
 
                     <div class="col-lg-9 d-flex flex-column">
-                        <div class="row row-compressed-xs">
+                        <div class="row row-compressed-xs no-gutters">
                             <div class="col-lg-6 d-flex flex-column">
                                 <div class="stat">
                                     <h3>{{{ $consume_label }}}</h3>
@@ -430,7 +423,7 @@
 
                 <h2 id="device-breakdown">Device breakdown</h2>
 
-                <div class="row row-compressed-xs">
+                <div class="row row-compressed-xs no-gutters">
                     <div class="col-lg-5">
                         <ul class="properties properties__small">
                             <li>

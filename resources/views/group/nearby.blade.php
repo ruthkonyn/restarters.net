@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <section class="events group-view">
-  <div class="container-fluid">
+  <div class="container">
 
       <?php if( isset($_GET['message']) && $_GET['message'] == 'invite' ): ?>
         <div class="alert alert-info" role="alert">
@@ -81,14 +81,6 @@
                   <a class="events__header__url" href="{{{ $group->website }}}" rel="noopener noreferrer">{{{ $group->website }}}</a>
                 @endif
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">FIXOMETER</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url('/group') }}">@lang('groups.groups')</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{{ $group->name }}}</li>
-                    </ol>
-                </nav>
-
                 @php( $groupImage = $group->groupImage )
                 @if( is_object($groupImage) && is_object($groupImage->image) )
                   <img src="{{ asset('/uploads/mid_'. $groupImage->image->path) }}" alt="{{{ $group->name }}} group image" class="event-icon">
@@ -134,7 +126,7 @@
         <div class="row">
             <div class="col-lg-3">
 
-                <h2 id="about-grp">About the group
+                <h2 id="about-grp">About
                   @if( FixometerHelper::hasRole( $user, 'Administrator' ) || $is_host_of_group )
                     <sup>(<a href="{{ url('/group/edit/'.$group->idgroups) }}">Edit group</a>)</sup>
                   @endif
