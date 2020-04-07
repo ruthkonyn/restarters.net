@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 180);
+/******/ 	return __webpack_require__(__webpack_require__.s = 182);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 180:
+/***/ 182:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(181);
+module.exports = __webpack_require__(183);
 
 
 /***/ }),
 
-/***/ 181:
+/***/ 183:
 /***/ (function(module, exports, __webpack_require__) {
 
 // import jquery from 'jquery';
@@ -88,9 +88,9 @@ window.onload = function () {
     "use strict";
 
     $(document).ready(function () {
-      __webpack_require__(182);
-      __webpack_require__(183);
       __webpack_require__(184);
+      __webpack_require__(185);
+      __webpack_require__(186);
 
       console.log('Global js ready!');
 
@@ -145,7 +145,7 @@ window.onload = function () {
 
 /***/ }),
 
-/***/ 182:
+/***/ 184:
 /***/ (function(module, exports) {
 
 $('.toggle-dropdown-menu').click(function () {
@@ -173,7 +173,7 @@ $('.toggle-dropdown-menu').click(function () {
 
 /***/ }),
 
-/***/ 183:
+/***/ 185:
 /***/ (function(module, exports, __webpack_require__) {
 
 // API call to current site - check for notifications
@@ -226,7 +226,7 @@ ajaxSearchNotifications();
 
 /***/ }),
 
-/***/ 184:
+/***/ 186:
 /***/ (function(module, exports, __webpack_require__) {
 
 // API call to current site - check for user authenticated

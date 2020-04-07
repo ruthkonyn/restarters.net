@@ -63,3 +63,5 @@ function goToNotification() {
     document.location.href= $(this).attr('href');
   });
 }
+
+export { ajaxSearchNotifications, goToNotification }
