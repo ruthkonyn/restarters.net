@@ -82,7 +82,7 @@ module.exports = __webpack_require__(190);
 
 function checkAuth() {
   console.log('checking auth');
-  $url = "http://restarters.test:8000" + '/test/check-auth';
+  $url = "https://restarters.dev" + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -168,7 +168,7 @@ function checkAuth() {
         }
       } else {
         hideHeaderIcons();
-        $auth_list_item.find('a').attr('href', "http://restarters.test:8000");
+        $auth_list_item.find('a').attr('href', "https://restarters.dev");
       }
 
       // Amend Main navigation dropdown links
@@ -339,7 +339,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = "http://restarters.test:8000" + '/test/discourse/notifications';
+  $url = "https://restarters.dev" + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
@@ -371,7 +371,7 @@ function ajaxSearchNotifications() {
         $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function (index, $notification) {
-          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "http://restarters.test:8000" + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
+          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "https://restarters.dev" + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
         });
       } else {
         $('.notification-menu-items').append($('<p class="admin-menu-header">').text('No notifications'));
