@@ -1,10 +1,8 @@
 // API call to current site - check for user authenticated
-import { hamburgerMenu } from './app';
-import { ajaxSearchNotifications } from './notifications';
 
 function checkAuth() {
   console.log('checking auth');
-  var $url = process.env.MIX_APP_URL + '/test/check-auth';
+  var $url = 'https://restarters.dev' + '/test/check-auth';
 
   var $notifications_list_item = $('.notifications-list-item').hide();
   var $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -107,7 +105,7 @@ function checkAuth() {
 
       } else {
         hideHeaderIcons();
-        $auth_list_item.find('a').attr('href', process.env.MIX_APP_URL);
+        $auth_list_item.find('a').attr('href', 'https://restarters.dev');
       }
 
       // Amend Main navigation dropdown links
@@ -135,5 +133,3 @@ function userMenu() {
     $('.user-dropdown-menu-items').toggle();
   });
 }
-
-export { checkAuth, userMenu }

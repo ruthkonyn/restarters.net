@@ -12,7 +12,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  var $url = process.env.MIX_APP_URL + '/test/discourse/notifications';
+  var $url = 'https://restarters.dev' + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
@@ -46,7 +46,7 @@ function ajaxSearchNotifications() {
         $.each($notifications, function(index, $notification) {
           $('.notification-menu-items').append(
             $('<li>').append(
-              $('<a>').attr('href', process.env.MIX_APP_URL + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text')
+              $('<a>').attr('href', 'https://restarters.dev' + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text')
           );
         });
       } else {
@@ -63,5 +63,3 @@ function goToNotification() {
     document.location.href= $(this).attr('href');
   });
 }
-
-export { ajaxSearchNotifications, goToNotification }
