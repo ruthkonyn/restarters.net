@@ -184,7 +184,7 @@ body {
 
     .mw-collapsible-content {
       h3 {
-        span:first-child {
+        .mw-headline:first-child {
           &::before {
             content: counter(chapter)"." counter(section)" ";
             margin: 0;
@@ -235,7 +235,7 @@ body {
 }
 
 .tab-pane-content {
-  padding-top: 60px;
+  padding-top: 30px;
   padding-bottom: 90px;
   padding-left: 30px;
   padding-right: 30px;
