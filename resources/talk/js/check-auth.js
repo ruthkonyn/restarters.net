@@ -2,10 +2,10 @@
 
 function checkAuth() {
   console.log('checking auth');
-  $url = process.env.MIX_APP_URL + '/test/check-auth';
+  var $url = process.env.MIX_APP_URL + '/test/check-auth';
 
-  $notifications_list_item = $('.notifications-list-item').hide();
-  $auth_menu_items = $('.user-dropdown-menu-items').hide();
+  var $notifications_list_item = $('.notifications-list-item').hide();
+  var $auth_menu_items = $('.user-dropdown-menu-items').hide();
   $auth_menu_items.removeClass('dropdown-menu-items');
 
   $.ajax({
@@ -20,14 +20,14 @@ function checkAuth() {
     url: $url,
     datatype: 'json',
     success: function(response) {
-      $auth_list_item = $('.auth-list-item');
+      var $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
 
       var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
       $(html).insertAfter('.d-header-icons');
 
-      $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+      var $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
       if (response.authenticated === true) {
         $('.d-header-icons').attr('style', 'display:inline-flex');
