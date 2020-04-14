@@ -131,7 +131,7 @@ window.onload = function () {
       }
     }
 
-    if (window.location.origin == "http://wiki.restarters.test") {
+    if (window.location.origin == "https://wiki.restarters.dev") {
       $('.wiki-nav-item').addClass('active');
 
       $('.nav-tabs-block li a').removeClass('active');
@@ -183,7 +183,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = "http://restarters.test:8000" + '/test/discourse/notifications';
+  $url = "https://restarters.dev" + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
@@ -215,7 +215,7 @@ function ajaxSearchNotifications() {
         $('.toggle-notifications-menu .bell-icon-active').css('display', '');
 
         $.each($notifications, function (index, $notification) {
-          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "http://restarters.test:8000" + '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
+          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "https://restarters.dev" + '/notifications/' + $notification.id).text($notification.data.title)).attr('class', 'notifcation-text'));
         });
       }
     }
@@ -231,7 +231,7 @@ ajaxSearchNotifications();
 
 // API call to current site - check for user authenticated
 function checkAuth() {
-  $url = "http://restarters.test:8000" + '/test/check-auth';
+  $url = "https://restarters.dev" + '/test/check-auth';
 
   $notifications_list_item = $('.notifications-list-item').hide();
   $auth_menu_items = $('.auth-menu-items').hide();
@@ -296,7 +296,7 @@ function checkAuth() {
           $auth_menu_items.css('display', '');
         }
       } else {
-        $auth_list_item.find('a').attr('href', "http://restarters.test:8000");
+        $auth_list_item.find('a').attr('href', "https://restarters.dev");
       }
 
       // Amend Main navigation dropdown links

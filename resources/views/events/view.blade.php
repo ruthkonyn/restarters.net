@@ -140,7 +140,7 @@
           </div>
       </div>
 
-      <div class="row">
+      <div class="row no-gutters">
         <div class="col-lg-4">
 
           <aside class="sidebar-lg-offset">
