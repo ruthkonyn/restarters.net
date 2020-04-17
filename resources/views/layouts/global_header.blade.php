@@ -190,6 +190,9 @@
         </a>
 
         <ul class="dropdown-menu-items notification-menu-items">
+          <li>
+            <a>You are up to date!</a>
+          </li>
         </ul>
       </li>
 
