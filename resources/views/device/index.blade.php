@@ -18,7 +18,7 @@
               @include('svgs.fixometer.fixometer-doodle')
             </div>
 
-            <button type="button" name="button" class="btn btn-sm btn-primary ml-auto">
+            <button data-target="#add-device-modal" data-toggle="modal" aria-expanded="true" aria-controls="add-device-modal" class="btn btn-sm btn-primary ml-auto">
               Add Data
             </button>
           </div>
@@ -170,5 +170,7 @@
       </div>
     </section>
   </form>
+
+  @include('includes.modals.add-device')
 
 @endsection
