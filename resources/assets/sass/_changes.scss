@@ -20,7 +20,8 @@
 .deviceFilterContainer {
   .form-control__select {
     border: 1px solid black !important;
-    height: 50px !important;
+    min-height: 50px;
+    overflow: hidden;
 
     .select2-container--default {
       border-radius: 0 !important;
