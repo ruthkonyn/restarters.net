@@ -80,7 +80,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 function checkAuth() {
   console.log('checking auth');
-  var $url = "https://restarters.dev" + '/test/check-auth';
+  var $url = Object({"MIX_PUSHER_APP_KEY":"","MIX_PUSHER_APP_CLUSTER":"mt1","NODE_ENV":"development"}).MIX_APP_URL + '/test/check-auth';
 
   var $notifications_list_item = $('.notifications-list-item').hide();
   var $auth_menu_items = $('.user-dropdown-menu-items').hide();
@@ -166,7 +166,7 @@ function checkAuth() {
         }
       } else {
         hideHeaderIcons();
-        $auth_list_item.find('a').attr('href', "https://restarters.dev");
+        $auth_list_item.find('a').attr('href', Object({"MIX_PUSHER_APP_KEY":"","MIX_PUSHER_APP_CLUSTER":"mt1","NODE_ENV":"development"}).MIX_APP_URL);
       }
 
       // Amend Main navigation dropdown links
@@ -369,7 +369,7 @@ function ajaxSearchNotifications() {
   $('.notification-menu-items').hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
-  $url = "https://restarters.dev" + '/test/discourse/notifications';
+  var $url = Object({"MIX_PUSHER_APP_KEY":"","MIX_PUSHER_APP_CLUSTER":"mt1","NODE_ENV":"development"}).MIX_APP_URL + '/test/discourse/notifications';
 
   $.ajax({
     headers: {
@@ -401,7 +401,7 @@ function ajaxSearchNotifications() {
         $('.toggle-notifications-menu .bell-icon-active').show();
 
         $.each($notifications, function (index, $notification) {
-          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', "https://restarters.dev" + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
+          $('.notification-menu-items').append($('<li>').append($('<a>').attr('href', Object({"MIX_PUSHER_APP_KEY":"","MIX_PUSHER_APP_CLUSTER":"mt1","NODE_ENV":"development"}).MIX_APP_URL + '/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)).attr('class', 'notifcation-text'));
         });
       } else {
         $('.notification-menu-items').append($('<p class="admin-menu-header">').text('No notifications'));

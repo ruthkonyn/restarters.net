@@ -24163,6 +24163,10 @@ td.col-device-auto {
   margin: auto;
 }
 
+.table .deviceID {
+  padding: 9px 10px 13px 5px !important;
+}
+
 .table.table-striped tbody tr {
   background-color: #fff;
   border-bottom: 1px solid #000;

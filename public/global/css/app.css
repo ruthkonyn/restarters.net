@@ -14979,7 +14979,7 @@ a.form-text-corrected:focus {
   line-height: 1.13;
   letter-spacing: 1.2px;
   text-align: center;
-  color: #000 !important;
+  color: #000;
   -webkit-transition: none;
   transition: none;
 }
@@ -15042,7 +15042,7 @@ a.form-text-corrected:focus {
 .btn-outline-primary:focus,
 .btn-checkbox:focus {
   background-color: #000;
-  color: #fff !important;
+  color: #fff;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
           box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
   border-color: #000 !important;

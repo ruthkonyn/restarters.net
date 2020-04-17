@@ -55,7 +55,7 @@
   line-height: 1.13;
   letter-spacing: 1.2px;
   text-align: center;
-  color: $black !important;
+  color: $black;
   transition: none;
 
   svg {
@@ -100,7 +100,7 @@
 
   &:focus {
     background-color: $black;
-    color: $white !important;
+    color: $white;
     box-shadow: 0 0 0 0.2rem rgba($black, 0.5) !important;
     border-color: $black !important;
 

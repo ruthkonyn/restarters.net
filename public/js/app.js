@@ -94531,7 +94531,9 @@ $(document).ready(function () {
 /***/ (function(module, exports) {
 
 $('.entireRowClickable').click(function () {
-  window.location = $(this).find('a').attr('href');
+  if ($(this).find('a').attr('href')) {
+    window.location = $(this).find('a').attr('href');
+  }
 }).hover(function () {
   $(this).toggleClass('hoverablePointer');
 });
