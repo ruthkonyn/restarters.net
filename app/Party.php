@@ -413,15 +413,25 @@ class Party extends Model implements Auditable
     * Laravel specific code
     */
 
-    public function scopeUpcomingEvents()
+    public function scopeUpcomingEvents($by_event = false)
     {
+      if( $by_event ) {
         return $this->join('groups', 'groups.idgroups', '=', 'events.group')
-                     ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+                     ->join('events_users', 'events_users.event', '=', 'events.idevents')
                      ->whereNotNull('events.wordpress_post_id')
                      ->whereDate('event_date', '>=', date('Y-m-d'))
                      ->select('events.*')
                      ->groupBy('idevents')
                      ->orderBy('event_date', 'ASC');
+      }
+
+      return $this->join('groups', 'groups.idgroups', '=', 'events.group')
+            ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+            ->whereNotNull('events.wordpress_post_id')
+            ->whereDate('event_date', '>=', date('Y-m-d'))
+            ->select('events.*')
+            ->groupBy('idevents')
+            ->orderBy('event_date', 'ASC');
     }
 
     /**
