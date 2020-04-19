@@ -133,8 +133,8 @@ class PartyController extends Controller
 
          $events_query->when($request->input('location'), function ($query, $location) {
            return $query->where(function ($query) use ($location) {
-               $query->where('location', 'like', "%{$location}%")
-               ->orWhere('area', 'like', "%{$location}%");
+               $query->where('location', 'like', "%{$location}%");
+               //->orWhere('area', 'like', "%{$location}%");
            });
          });
 
