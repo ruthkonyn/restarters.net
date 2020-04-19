@@ -9,7 +9,9 @@
   <section class="groups groups-page">
     <div class="container">
 
-      @include('partials.alerts')
+      @include('partials.alerts', [
+        'no_success' => true
+      ])
 
       <div class="row">
         <div class="col-12 col-md-12 mb-50">
