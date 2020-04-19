@@ -1054,6 +1054,33 @@ class GroupController extends Controller
         }
     }
 
+    public function getLeaveGroup($group_id)
+    {
+        $user = Auth::user();
+        $user_id = $user->id;
+
+        $inGroup = UserGroups::where('group', $group_id)
+          ->where('user', $user_id)
+          ->where('status', 1);
+
+        if ( ! $inGroup->exists() ) {
+            $response['warning'] = 'You cannot leave a group you are not part of';
+            return redirect()->back()->with('response', $response);
+        }
+
+        try {
+            $inGroup->forceDelete();
+
+            return redirect()->back()
+              ->with('success', "You have now left the group {$group->name}")
+              ->with('formHash', '#your-groups-pane');
+        } catch (\Exception $e) {
+            return redirect()->back()
+              ->with('warning', "Failed to leave this group")
+              ->with('formHash', '#your-groups-pane');
+        }
+    }
+
     public function imageUpload(Request $request, $id)
     {
         try {
