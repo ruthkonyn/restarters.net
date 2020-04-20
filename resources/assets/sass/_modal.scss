@@ -80,6 +80,10 @@
 
   .modal-dialog {
     max-width: 445px;
+
+    &.modal-lg {
+      max-width: 728px;
+    }
   }
 
   .close {

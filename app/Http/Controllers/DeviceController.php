@@ -94,6 +94,15 @@ class DeviceController extends Controller
             'emissions' => '300568',
         ];
 
+        $user_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
+        ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+        ->join('events', 'events.group', '=', 'groups.idgroups')
+        ->where('users_groups.user', $user->id)
+        ->orderBy('groups.name', 'ASC')
+        ->groupBy('groups.idgroups')
+        ->select('groups.*')
+        ->get();
+
         return view('device.index', [
             'title' => 'Devices',
             'categories' => $categories,
@@ -112,6 +121,7 @@ class DeviceController extends Controller
             'status' => null,
             'sort_direction' => 'DSC',
             'sort_column' => 'event_date',
+            'user_groups' => $user_groups,
         ]);
     }
 
@@ -245,6 +255,15 @@ class DeviceController extends Controller
         ->orderBy('event_date', 'DESC')
         ->first();
 
+        $user_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
+        ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+        ->join('events', 'events.group', '=', 'groups.idgroups')
+        ->where('users_groups.user', $user->id)
+        ->orderBy('groups.name', 'ASC')
+        ->groupBy('groups.idgroups')
+        ->select('groups.*')
+        ->get();
+
         return view('device.index', [
             'impact_data' => $impact_data,
             'title' => 'Devices',
@@ -264,6 +283,7 @@ class DeviceController extends Controller
             'wiki' => $request->input('wiki'),
             'sort_direction' => $sort_direction,
             'sort_column' => $sort_column,
+            'user_groups' => $user_groups,
         ]);
     }
 
