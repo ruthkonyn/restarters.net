@@ -33,19 +33,16 @@ setTimeout(function() {
 
 setTimeout(function() {
   if (window.location.href.indexOf("messages") > -1) {
-    var inbox_tab = document.querySelector('.inbox');
-    inbox_tab.classList.add('active');
+    $('.forum-tabs .inbox').addClass('active');
   } else {
-    var forum_tab = document.querySelector('.forum');
-    forum_tab.classList.add('active');
+    $('.forum-tabs .forum').addClass('active');
   }
 
   $('.custom-header-links .talk').addClass('active');
 }, 300);
 
 function addActive(tab) {
-  var alreadyActive = document.querySelector('.active');
-  alreadyActive.classList.remove('active');
+  $('.forum-tabs .active').removeClass('active');
   tab.classList.add('active');
 }
 
@@ -137,8 +134,7 @@ function checkAuth() {
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
       if (response.authenticated === true) {
-        //$('.d-header-icons').attr('style', 'display:inline-flex');
-        $main_navigation_dropdown.attr('style', 'display:block');
+        // $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
         //categoriesMenu();
         ajaxSearchNotifications();
