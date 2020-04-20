@@ -68,9 +68,9 @@ class PartyController extends Controller
         }
 
         $upcoming_events = Party::withAll()
-        ->upcomingEvents()
-        ->where('users_groups.user', Auth::id())
-        ->get();
+          ->upcomingEvents(true)
+            ->where('events_users.user', Auth::id())
+              ->get();
 
         // Quick fix to resolve the shared partial form with groups index
         if ($request->input('sort_column') == 'name') {
@@ -814,7 +814,7 @@ class PartyController extends Controller
 
               $event->increment('volunteers');
 
-              $flashData['warning'] = 'You are already part of this event';
+              $flashData['success'] = 'You have now joined '.$event->getEventName().', we look forward to seeing you there';
 
               if (! Auth::user()->isInGroup($event->theGroup->idgroups)) {
                   $flashData['prompt-follow-group'] = true;
@@ -823,18 +823,15 @@ class PartyController extends Controller
               $this->notifyHostsOfRsvp($user_event, $event_id);
 
               return redirect()->back()
-              ->with($flashData)
-              ->with('formHash', '#your-events-pane');
+                ->with($flashData);
           } catch (\Exception $e) {
               return redirect()->back()
-              ->with('danger', 'Failed to join this event')
-              ->with('formHash', '#your-events-pane');
+                ->with('danger', 'Failed to join this event');
           }
         }
 
         return redirect()->back()
-        ->with('warning', 'You are already part of this event')
-        ->with('formHash', '#your-events-pane');
+          ->with('warning', 'You are already part of this event');
     }
 
     public function notifyHostsOfRsvp($user_event, $event_id)
