@@ -3,10 +3,13 @@ setTimeout(function() {
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
+  isLoggedIn();
 }, 300);
 
-function hideHeaderIcons() {
-    $('.d-header-icons').attr('style', 'display:none');
+function isLoggedIn() {
+  if( ! $('.login-button').length ) { //&& ! $('.login-button').is(":visible")
+    $('body').addClass('logged-in');
+  }
 }
 
 function navigateUrl(item) {
@@ -134,7 +137,7 @@ function checkAuth() {
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
       if (response.authenticated === true) {
-        $('.d-header-icons').attr('style', 'display:inline-flex');
+        //$('.d-header-icons').attr('style', 'display:inline-flex');
         $main_navigation_dropdown.attr('style', 'display:block');
         hamburgerMenu();
         //categoriesMenu();
@@ -208,7 +211,6 @@ function checkAuth() {
         }
 
       } else {
-        hideHeaderIcons();
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
 

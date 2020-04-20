@@ -3,10 +3,13 @@ setTimeout(function() {
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
+  isLoggedIn();
 }, 300);
 
-function hideHeaderIcons() {
-    $('.d-header-icons').attr('style', 'display:none');
+function isLoggedIn() {
+  if( ! $('.login-button').length ) { //&& ! $('.login-button').is(":visible")
+    $('body').addClass('logged-in');
+  }
 }
 
 function navigateUrl(item) {
