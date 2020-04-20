@@ -24,8 +24,10 @@ function checkAuth() {
 
       var response = response.data;
 
-      var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-      $(html).insertAfter('.d-header-icons');
+      if( ! $('.hamburger-dropdown-menu-items').length ) {
+        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+        $(html).insertAfter('.d-header-icons');
+      }
 
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
