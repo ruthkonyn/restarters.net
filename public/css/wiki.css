@@ -14664,6 +14664,7 @@ body {
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
   background-color: transparent;
+  counter-reset: section;
 }
 
 .mw-parser-output .mw-collapsible:first-child {
@@ -14757,7 +14758,7 @@ body {
   display: none;
 }
 
-.mw-parser-output .mw-collapsible .mw-collapsible-content h3 span:first-child::before {
+.mw-parser-output .mw-collapsible .mw-collapsible-content h3 > span:first-child::before {
   content: counter(chapter) "." counter(section) " ";
   margin: 0;
   display: inline-block;

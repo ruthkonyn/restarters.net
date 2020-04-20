@@ -36602,6 +36602,11 @@ $(document).ready(function () {
 
     $input_field.val($new_url);
   });
+
+  $(".btn-open-pane").click(function (e) {
+    e.preventDefault();
+    $($(this).attr('href')).trigger('click');
+  });
 });
 
 // Copy Calendar Feed link
@@ -94528,7 +94533,9 @@ $(document).ready(function () {
 /***/ (function(module, exports) {
 
 $('.entireRowClickable').click(function () {
-  window.location = $(this).find('a').attr('href');
+  if ($(this).find('a').attr('href')) {
+    window.location = $(this).find('a').attr('href');
+  }
 }).hover(function () {
   $(this).toggleClass('hoverablePointer');
 });

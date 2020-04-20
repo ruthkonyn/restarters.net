@@ -20337,7 +20337,7 @@ label.form-check-label {
   background-color: #0394a6;
   color: #fff;
   font-size: 14px;
-  padding: 5px 12px 5px 10px;
+  padding: 0 12px 0 10px;
   border: 0 none;
   border-bottom: 3px solid #155e67;
   line-height: 24px;
@@ -23756,6 +23756,10 @@ td.col-device-auto {
   max-width: 445px;
 }
 
+.modal-form .modal-dialog.modal-lg {
+  max-width: 728px;
+}
+
 .modal-form .close {
   color: #000 !important;
   font-size: 40px !important;
@@ -24115,6 +24119,10 @@ td.col-device-auto {
 .table-tick {
   display: block;
   margin: auto;
+}
+
+.table .deviceID {
+  padding: 9px 10px 13px 5px;
 }
 
 .table.table-striped tbody tr {
@@ -26363,7 +26371,7 @@ h5 {
 }
 
 .flex-dynamic-row .flex-dynamic .form-control {
-  height: 50px;
+  min-height: 50px;
 }
 
 .flex-dynamic-row .flex-dynamic .select2-selection--multiple {
@@ -26411,6 +26419,7 @@ h5 {
 
 .flex-dynamic-row .btn.btn-primary {
   height: 50px;
+  line-height: 1;
 }
 
 .w-min-auto {
@@ -26901,7 +26910,8 @@ h5 {
 
 .deviceFilterContainer .form-control__select {
   border: 1px solid black !important;
-  height: 50px !important;
+  min-height: 50px;
+  overflow: hidden;
 }
 
 .deviceFilterContainer .form-control__select .select2-container--default {

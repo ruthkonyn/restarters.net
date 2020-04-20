@@ -73,13 +73,12 @@ body {
     border-top: 1px solid $black;
     border-bottom: 1px solid $black;
     background-color: transparent;
+    counter-reset: section;
 
-    // TODO: First child should have 2px border top
     &:first-child {
       border-top: 2px solid $black !important;
     }
 
-    // TODO: Last child should have 2px border bottom
     &:last-child {
       border-bottom: 2px solid $black !important;
     }
@@ -184,7 +183,7 @@ body {
 
     .mw-collapsible-content {
       h3 {
-        span:first-child {
+        > span:first-child {
           &::before {
             content: counter(chapter)"." counter(section)" ";
             margin: 0;
@@ -200,7 +199,7 @@ body {
         margin-left: 100px; // Override
         margin-bottom: 25px;
         list-style: none;
-        
+
         li {
           a {
             text-decoration: underline !important;

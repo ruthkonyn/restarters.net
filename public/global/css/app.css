@@ -14979,7 +14979,7 @@ a.form-text-corrected:focus {
   line-height: 1.13;
   letter-spacing: 1.2px;
   text-align: left;
-  color: #000 !important;
+  color: #000;
   -webkit-transition: none;
   transition: none;
 }
@@ -15042,7 +15042,7 @@ a.form-text-corrected:focus {
 .btn-outline-primary:focus,
 .btn-checkbox:focus {
   background-color: #000;
-  color: #fff !important;
+  color: #fff;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
           box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5) !important;
   border-color: #000 !important;
@@ -15330,7 +15330,7 @@ label.form-check-label {
   margin-top: 0;
   margin-bottom: 0;
   text-transform: uppercase;
-  height: 46px;
+  min-height: 46px;
 }
 
 .form-control__select .select2-selection--multiple .select2-search--inline {
@@ -15341,7 +15341,7 @@ label.form-check-label {
   background-color: #fff;
   color: #000;
   font-size: 14px;
-  padding: 5px 12px 5px 10px;
+  padding: 0 12px 0 10px;
   border: 2px solid black;
   border-radius: 0;
   line-height: 35px;
@@ -16865,7 +16865,6 @@ select.form-control:not([class*="select2"]) {
 }
 
 .card-info-box .card-body a {
-  color: #000;
   text-decoration: underline;
 }
 
