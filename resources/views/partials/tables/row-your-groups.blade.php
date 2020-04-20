@@ -34,9 +34,8 @@
   </td>
 
   {{-- FOLLOW BUTTON --}}
-  {{-- TODO: Link/route for unfollowing to be confirmed. --}}
   <td class="text-center" colspan="1">
-    <a class="btn btn-primary" href="/group/join/{{ $group->idgroups }}" id="join-group">
+    <a class="btn btn-primary" href="/group/leave/{{ $group->idgroups }}" id="leave-group">
       Unfollow
     </a>
   </td>
