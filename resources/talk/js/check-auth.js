@@ -123,8 +123,10 @@ function checkAuth() {
 }
 
 function userMenu() {
-  var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
-  $(html).insertAfter('.d-header-icons');
+  if( ! $('.user-dropdown-menu-items').length ) {
+    var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
+    $(html).insertAfter('.d-header-icons');
+  }
 
   $('.restarters-user-toggle').click(function(e) {
     e.preventDefault();
