@@ -40,15 +40,17 @@
             @for ($i=0; $i < 3; $i++)
               <div class="card card-group-slick bg-dark text-white rounded-0">
                 <img class="card-img" src="images/dashboard/your-groups-carousel-placeholder.jpg" alt="Card image">
-                <div class="card-img-overlay">
-                  <p class="font-weight-bold">
-                    You aren’t following any repair groups.
-                  </p>
+                @if( $user_groups->isEmpty())
+                  <div class="card-img-overlay">
+                    <p class="font-weight-bold">
+                      You aren’t following any repair groups.
+                    </p>
 
-                  <p>
-                    You’re welcome to <a href="#">follow any group in the world.</a> And new groups pop up all the time, so do check back!
-                  </p>
-                </div>
+                    <p>
+                      You’re welcome to <a href="#">follow any group in the world.</a> And new groups pop up all the time, so do check back!
+                    </p>
+                  </div>
+                @endif
               </div>
             @endfor
           </div>
