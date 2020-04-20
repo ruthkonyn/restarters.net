@@ -14,7 +14,7 @@
   @endforeach
 @endif
 
-@if (\Session::has('success'))
+@if (\Session::has('success') && ! isset($no_success))
   <div class="alert alert-success">
     {!! \Session::get('success') !!}
   </div>
