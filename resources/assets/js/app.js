@@ -1688,6 +1688,11 @@ function initAutocomplete() {
       $input_field.val($new_url);
     });
 
+    $(".btn-open-pane").click(function(e) {
+      e.preventDefault();
+      $($(this).attr('href')).trigger('click');
+    });
+
   });
 
   // Copy Calendar Feed link
