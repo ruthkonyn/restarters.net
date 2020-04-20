@@ -3,7 +3,6 @@ setTimeout(function() {
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
-  isLoggedIn();
 }, 300);
 
 function isLoggedIn() {
@@ -205,6 +204,8 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
+
+        isLoggedIn();
 
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');

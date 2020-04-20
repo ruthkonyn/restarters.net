@@ -102,6 +102,8 @@ function checkAuth() {
           $auth_menu_items.css('display','');
         }
 
+        isLoggedIn();
+
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }

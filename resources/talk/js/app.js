@@ -3,7 +3,6 @@ setTimeout(function() {
   changeForumNavigation();
   activateSearch();
   toggleNotifications();
-  isLoggedIn();
 }, 300);
 
 function isLoggedIn() {
