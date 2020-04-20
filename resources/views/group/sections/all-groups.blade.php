@@ -28,7 +28,7 @@
       {{-- Custom pagination view --}}
       <ul class="pagination">
         @include('pagination', [
-          'paginator' => $groups->appends(request()->input()),
+          'paginator' => $groups->fragment('all-groups-pane')->appends(request()->input()),
           'onEachSide' => 4
         ])
       </ul>
