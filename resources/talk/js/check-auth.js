@@ -25,7 +25,7 @@ function checkAuth() {
 
       var response = response.data;
 
-      if( ! $('.hamburger-dropdown-menu-items').length ) {
+      if( ! $('.hamburger-dropdown-menu-items').length && ! $('.auth-loaded').length ) {
         console.log('d-header-icons 1');
         var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
         $(html).insertAfter('.d-header-icons');
@@ -39,7 +39,9 @@ function checkAuth() {
         //categoriesMenu();
         ajaxSearchNotifications();
 
-        userMenu();
+        if( ! $('.auth-loaded').length) {
+          userMenu();
+        }
 
         // if ($notifications_list_item.length) {
         //   $notifications_list_item.css('display','');
