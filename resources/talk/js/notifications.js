@@ -1,6 +1,6 @@
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
-  if( ! $('.notifications-loaded').length ) {
+  // if( ! $('.notifications-loaded').length ) {
     var html = '<a href="#" class="toggle-notifications-menu">' +
     '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
 
@@ -59,8 +59,8 @@ function ajaxSearchNotifications() {
     });
 
 
-    $('body').addClass('notifications-loaded');
-  }
+    // $('body').addClass('notifications-loaded');
+  // }
 }
 
 function goToNotification() {
