@@ -160,11 +160,9 @@ function checkAuth() {
         //   $notifications_list_item.css('display','');
         // }
 
-        if(response.is_admin) {
-          if( ! $('.auth-loaded').length ) {
-            $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
-            $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
-          }
+        if(response.is_admin && ! $('.auth-loaded').length) {
+          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
+          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
           $.each( response.menu.reporting, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -189,7 +187,7 @@ function checkAuth() {
           });
         }
 
-        if(response.menu) {
+        if(response.menu && ! $('.auth-loaded').length) {
           $auth_menu_items = $('.user-dropdown-menu');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
