@@ -169,7 +169,7 @@ function checkAuth() {
         $main_navigation_dropdown = $('.hamburger-dropdown-menu');
         $main_navigation_dropdown.empty();
 
-        if(response.is_admin && ! $('.auth-loaded').length) {
+        if(response.is_admin) {
           $('body').addClass('is_admin');
 
           $.each( response.menu.reporting, function( key, value ) {
@@ -196,17 +196,15 @@ function checkAuth() {
 
         }
 
-        if( ! $('.auth-loaded').length) {
-          $.each( response.menu.general, function( key, value ) {
-            $main_navigation_dropdown.append(
-              $('<li>').append(
-                $('<a>').attr('href', value).text(key)
-              )
-            );
-          });
-        }
+        $.each( response.menu.general, function( key, value ) {
+          $main_navigation_dropdown.append(
+            $('<li>').append(
+              $('<a>').attr('href', value).text(key)
+            )
+          );
+        });
 
-        if(response.menu && ! $('.auth-loaded').length) {
+        if(response.menu) {
           $auth_menu_items = $('.user-dropdown-menu');
           $auth_menu_items.empty();
           $.each( response.menu.user, function( key, value ) {
@@ -235,8 +233,6 @@ function checkAuth() {
 
     },
   });
-
-  $('body').addClass('auths-loaded');
 }
 
 function ajaxSearchNotifications() {
