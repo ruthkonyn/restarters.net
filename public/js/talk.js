@@ -262,7 +262,7 @@ function userMenu() {
 
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
-  if( ! $('.auth-loaded').length ) {
+  if( ! $('.notifications-loaded').length ) {
     var html = '<a href="#" class="toggle-notifications-menu">' +
     '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
 
@@ -319,6 +319,9 @@ function ajaxSearchNotifications() {
         }
       },
     });
+
+
+    $('body').addClass('notifications-loaded');
   }
 }
 
