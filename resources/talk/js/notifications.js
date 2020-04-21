@@ -1,9 +1,5 @@
 function ajaxSearchNotifications() {
 
-  var html = '<a href="#" class="toggle-notifications-menu">' +
-  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
-  $('.notification-icon').append(html);
-
   $.ajax({
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -24,8 +20,6 @@ function ajaxSearchNotifications() {
       var $notifications = response.notifications;
 
       if (Object.keys($notifications).length > 0) {
-        // console.log('Success: notifications found on Discourse.');
-
         $('.toggle-notifications-menu .bell-icon-active').show();
         $notification_menu_items = $('.notification-menu-items');
         $notification_menu_items.empty();

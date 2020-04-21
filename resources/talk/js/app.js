@@ -1,6 +1,7 @@
 setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
     createUI();
+    createNotificationUI();
     changeForumNavigation();
     activateSearch();
     isLoggedIn();
@@ -15,6 +16,7 @@ setTimeout(function() {
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === "class") {
+        createNotificationUI();
         clearDropdowns();
         checkAuth();
         defineClicks();
@@ -54,9 +56,17 @@ function createUI() {
     var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
     $(html).insertAfter('.d-header .wrap .contents');
   }
+}
 
-  var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
-  $(html).insertAfter('.d-header .wrap .contents');
+function createNotificationUI() {
+  if( ! $('.toggle-notifications-menu').length ) {
+    var html = '<a href="#" class="toggle-notifications-menu">' +
+    '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
+    $('.notification-icon').append(html);
+
+    var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
+    $(html).insertAfter('.d-header .wrap .contents');
+  }
 }
 
 function addActive(tab) {
