@@ -154,11 +154,11 @@ function checkAuth() {
 
         userMenu();
 
-        if ($notifications_list_item.length) {
-          $notifications_list_item.css('display','');
-        }
+        // if ($notifications_list_item.length) {
+        //   $notifications_list_item.css('display','');
+        // }
 
-        if(response.is_admin) {
+        if(response.is_admin && ! $('.auth-loaded').length ) {
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
@@ -185,7 +185,7 @@ function checkAuth() {
           });
         }
 
-        if(response.menu) {
+        if(response.menu && ! $('.auth-loaded').length ) {
           $auth_menu_items = $('.user-dropdown-menu');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -210,11 +210,11 @@ function checkAuth() {
           });
         }
 
-        if ($notifications_list_item.length) {
-          $notifications_list_item.css('display','');
-        }
+        // if ($notifications_list_item.length) {
+        //   $notifications_list_item.css('display','');
+        // }
 
-        if ($auth_list_item.length) {
+        if ($auth_list_item.length && ! $('.auth-loaded').length ) {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
