@@ -14,17 +14,19 @@ function isLoggedIn() {
   }
 }
 
-var observer = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    if (mutation.attributeName === "class") {
-      var attributeValue = $(mutation.target).prop(mutation.attributeName);
-      console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
-    }
+setTimeout(function() {
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === "class") {
+        var attributeValue = $(mutation.target).prop(mutation.attributeName);
+        console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
+      }
+    });
   });
-});
-observer.observe(document.querySelector('.d-header')[0], {
-  attributes: true
-});
+  observer.observe(document.getElementsByClassName('d-header').item(0), {
+    attributes: true
+  });
+}, 3000);
 
 // setTimeout(function() {
 //   var options = document.querySelectorAll(".messages-dropdown-123 option");
