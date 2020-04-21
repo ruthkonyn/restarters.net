@@ -118,9 +118,11 @@ function activateSearch() {
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
-  $notifications_list_item = $('.notifications-list-item').hide();
-  $auth_menu_items = $('.user-dropdown-menu-items').hide();
-  $auth_menu_items.removeClass('dropdown-menu-items');
+  if( ! $('.auth-loaded').length ) {
+    $notifications_list_item = $('.notifications-list-item').hide();
+    $auth_menu_items = $('.user-dropdown-menu-items').hide();
+    $auth_menu_items.removeClass('dropdown-menu-items');
+  }
 
   $.ajax({
     headers: {
@@ -138,7 +140,7 @@ function checkAuth() {
 
       var response = response.data;
 
-      if( ! $('.auth-loaded').length ) {
+      if( ! $('.hamburger-dropdown-menu-items').length && ! $('.auth-loaded').length ) {
         console.log('d-header-icons 1');
         var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
         $(html).insertAfter('.d-header-icons');
@@ -152,13 +154,15 @@ function checkAuth() {
         //categoriesMenu();
         ajaxSearchNotifications();
 
-        userMenu();
+        if( ! $('.auth-loaded').length) {
+          userMenu();
+        }
 
         // if ($notifications_list_item.length) {
         //   $notifications_list_item.css('display','');
         // }
 
-        if(response.is_admin && ! $('.auth-loaded').length ) {
+        if(response.is_admin && ! $('.auth-loaded').length) {
           $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
           $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
 
@@ -185,7 +189,7 @@ function checkAuth() {
           });
         }
 
-        if(response.menu && ! $('.auth-loaded').length ) {
+        if(response.menu && ! $('.auth-loaded').length) {
           $auth_menu_items = $('.user-dropdown-menu');
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -214,7 +218,7 @@ function checkAuth() {
         //   $notifications_list_item.css('display','');
         // }
 
-        if ($auth_list_item.length && ! $('.auth-loaded').length ) {
+        if ($auth_list_item.length) {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
@@ -240,7 +244,7 @@ function checkAuth() {
 }
 
 function userMenu() {
-  if( ! $('.auth-loaded').length ) {
+  if( ! $('.user-dropdown-menu-items').length ) {
     console.log('d-header-icons 2');
     var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
     $(html).insertAfter('.d-header-icons');
