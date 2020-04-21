@@ -26,11 +26,11 @@ function ajaxSearchNotifications() {
       url: $url,
       datatype: 'json',
       success: function(response) {
-        console.log('Success: connected to Discourse.');
+        // console.log('Success: connected to Discourse.');
 
         // Response failed
         if (response.message == 'failed') {
-          console.log('Success: failed to find any new notifications.');
+          // console.log('Success: failed to find any new notifications.');
           return false;
         }
 
@@ -38,7 +38,7 @@ function ajaxSearchNotifications() {
         var $notifications = response.notifications;
 
         if (Object.keys($notifications).length > 0) {
-          console.log('Success: notifications found on Discourse.');
+          // console.log('Success: notifications found on Discourse.');
 
           // $('.notification-menu-items').show();
           $('.toggle-notifications-menu .bell-icon-active').show();
