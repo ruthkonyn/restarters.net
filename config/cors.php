@@ -17,7 +17,9 @@ return [
         'https://www.test-cors.org',
         'https://therestartproject.org',
         'https://test-wiki.rstrt.org',
-        'https://test-talk.rstrt.org'
+        'https://test-talk.rstrt.org',
+        'https://restarters.test',
+        'https://localhost:3000'
     ],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],

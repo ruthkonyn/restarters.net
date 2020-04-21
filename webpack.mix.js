@@ -29,7 +29,7 @@ mix.webpackConfig({
 mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
    .browserSync({
-        proxy: 'restarters.test'
+        proxy: 'https://restarters.test'
     });
 
 mix.js('resources/global/js/app.js', 'public/global/js')

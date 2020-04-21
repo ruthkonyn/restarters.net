@@ -1,18 +1,13 @@
 setTimeout(function() {
-  if( ! $('.ui-loaded').length ) {
-    createUI();
-    createNotificationUI();
-    changeForumNavigation();
-    activateSearch();
-    isLoggedIn();
-    checkAuth();
-    defineClicks();
+  activeStates();
+  createUI();
+  createNotificationUI();
+  changeForumNavigation();
+  activateSearch();
+  isLoggedIn();
+  checkAuth();
+  defineClicks();
 
-    $('body').addClass('ui-loaded');
-  }
-}, 300);
-
-setTimeout(function() {
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === "class") {
@@ -21,7 +16,7 @@ setTimeout(function() {
         checkAuth();
         defineClicks();
         var attributeValue = $(mutation.target).prop(mutation.attributeName);
-        console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
+        // console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
       }
     });
   });
@@ -30,7 +25,8 @@ setTimeout(function() {
   });
 }, 1500);
 
-setTimeout(function() {
+
+function activeStates() {
   if (window.location.href.indexOf("messages") > -1) {
     $('.forum-tabs .inbox').addClass('active');
   } else {
@@ -38,12 +34,11 @@ setTimeout(function() {
   }
 
   $('.custom-header-links .talk').addClass('active');
-}, 300);
+}
 
-function isLoggedIn() {
-  if( ! $('.login-button').length ) {
-    $('body').addClass('logged-in');
-  }
+function addActive(tab) {
+  $('.forum-tabs .active').removeClass('active');
+  tab.classList.add('active');
 }
 
 function createUI() {
@@ -71,9 +66,32 @@ function createNotificationUI() {
   }
 }
 
-function addActive(tab) {
-  $('.forum-tabs .active').removeClass('active');
-  tab.classList.add('active');
+function changeForumNavigation() {
+  $('#create-topic').addClass('d-none');
+  $('#create-topic .d-button-label').text('New Topic');
+  $('#create-topic').removeClass('d-none');
+
+  var text = "<p class='forum-nav-text'><strong>A place to discuss all things repair: advice, activism, and more.</strong> Join in! Anyone can post a topic.</p>";
+  $(text).insertAfter("#create-topic");
+}
+
+function activateSearch() {
+  $('#search-button-123').click(function() {
+    $('#search-button').trigger('click');
+  });
+
+  $(document).mouseup(function(e) {
+    var container = $(".search-menu");
+    if ( ! container.is(e.target) && container.has(e.target).length === 0) {
+      container.hide();
+    }
+  });
+}
+
+function isLoggedIn() {
+  if( ! $('.login-button').length ) {
+    $('body').addClass('logged-in');
+  }
 }
 
 function defineClicks() {
@@ -105,28 +123,6 @@ function defineClicks() {
 function clearDropdowns() {
   $('a.dropdown-active').removeClass('dropdown-active');
   $('.user-dropdown-menu-items, .hamburger-dropdown-menu-items, .notification-menu-items').hide();
-}
-
-function changeForumNavigation() {
-  $('#create-topic').addClass('d-none');
-  $('#create-topic .d-button-label').text('New Topic');
-  $('#create-topic').removeClass('d-none');
-
-  var text = "<p class='forum-nav-text'><strong>A place to discuss all things repair: advice, activism, and more.</strong> Join in! Anyone can post a topic.</p>";
-  $(text).insertAfter("#create-topic");
-}
-
-function activateSearch() {
-  $('#search-button-123').click(function() {
-    $('#search-button').trigger('click');
-  });
-
-  $(document).mouseup(function(e) {
-    var container = $(".search-menu");
-    if ( ! container.is(e.target) && container.has(e.target).length === 0) {
-      container.hide();
-    }
-  });
 }
 
 // function categoriesMenu() {
