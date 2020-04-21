@@ -60,6 +60,9 @@ function createUI() {
   } else {
     console.log('al2 off');
   }
+
+  var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
+  $('.d-header-icons').append(notification_text);
 }
 
 function addActive(tab) {
@@ -112,13 +115,11 @@ function activateSearch() {
     $('#search-button').trigger('click');
   });
 
-  $(document).mouseup(function(e)
-  {
-      var container = $(".search-menu");
-      if (!container.is(e.target) && container.has(e.target).length === 0)
-      {
-          container.hide();
-      }
+  $(document).mouseup(function(e) {
+    var container = $(".search-menu");
+    if ( ! container.is(e.target) && container.has(e.target).length === 0) {
+      container.hide();
+    }
   });
 }
 

@@ -60,6 +60,9 @@ function createUI() {
   } else {
     console.log('al2 off');
   }
+
+  var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
+  $('.d-header-icons').append(notification_text);
 }
 
 function addActive(tab) {
@@ -112,13 +115,11 @@ function activateSearch() {
     $('#search-button').trigger('click');
   });
 
-  $(document).mouseup(function(e)
-  {
-      var container = $(".search-menu");
-      if (!container.is(e.target) && container.has(e.target).length === 0)
-      {
-          container.hide();
-      }
+  $(document).mouseup(function(e) {
+    var container = $(".search-menu");
+    if ( ! container.is(e.target) && container.has(e.target).length === 0) {
+      container.hide();
+    }
   });
 }
 
@@ -237,68 +238,47 @@ function checkAuth() {
 }
 
 function ajaxSearchNotifications() {
-  // $base_url = window.location.host;
-  if( ! $('.notifications-loaded').length ) {
-    var html = '<a href="#" class="toggle-notifications-menu">' +
-    '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
 
-    $('.notification-icon').append(html);
+  var html = '<a href="#" class="toggle-notifications-menu">' +
+  '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
+  $('.notification-icon').append(html);
 
-    var notification_text = '<ul class="dropdown-menu-items notification-menu-items"></ul>';
-    $('.d-header-icons').append(notification_text);
+  $.ajax({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    xhrFields: {
+      withCredentials: true
+    },
+    type: 'GET',
+    url: 'https://test-restarters.rstrt.org' + '/test/discourse/notifications',
+    datatype: 'json',
+    success: function(response) {
 
-    $('.notification-menu-items').hide();
-    $('.toggle-notifications-menu .bell-icon-active').hide();
+      if (response.message == 'failed') {
+        return false;
+      }
 
-    $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications';
+      // If notifications exist then we can create a cookie
+      var $notifications = response.notifications;
 
-    $.ajax({
-      headers: {
-        // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      xhrFields: {
-        withCredentials: true
-      },
-      type: 'GET',
-      url: $url,
-      datatype: 'json',
-      success: function(response) {
-        // console.log('Success: connected to Discourse.');
+      if (Object.keys($notifications).length > 0) {
+        // console.log('Success: notifications found on Discourse.');
 
-        // Response failed
-        if (response.message == 'failed') {
-          // console.log('Success: failed to find any new notifications.');
-          return false;
-        }
+        $('.toggle-notifications-menu .bell-icon-active').show();
+        $notification_menu_items = $('.notification-menu-items');
+        $notification_menu_items.empty();
 
-        // If notifications exist then we can create a cookie
-        var $notifications = response.notifications;
-
-        if (Object.keys($notifications).length > 0) {
-          // console.log('Success: notifications found on Discourse.');
-
-          // $('.notification-menu-items').show();
-          $('.toggle-notifications-menu .bell-icon-active').show();
-
-          $.each($notifications, function(index, $notification) {
-            $('.notification-menu-items').append(
-              $('<li>').append(
-                $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
-              ).attr('class', 'notifcation-text')
-            );
-          });
-        } else {
-          $('.notification-menu-items').append(
-            $('<p class="admin-menu-header">').text('No notifications')
+        $.each($notifications, function(index, $notification) {
+          $notification_menu_items.append(
+            $('<li>').append(
+              $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).attr('class', 'notification-link').text($notification.data.title)
+            ).attr('class', 'notifcation-text')
           );
-        }
-      },
-    });
-
-
-    $('body').addClass('notifications-loaded');
-  }
+        });
+      }
+    },
+  });
 }
 
 function goToNotification() {
