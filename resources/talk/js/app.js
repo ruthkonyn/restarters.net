@@ -14,7 +14,6 @@ function isLoggedIn() {
   }
 }
 
-var $div = $(".d-header");
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if (mutation.attributeName === "class") {
@@ -23,7 +22,7 @@ var observer = new MutationObserver(function(mutations) {
     }
   });
 });
-observer.observe($div[0], {
+observer.observe(document.querySelector('.d-header')[0], {
   attributes: true
 });
 
