@@ -1,120 +1,87 @@
 // API call to current site - check for user authenticated
-
 function checkAuth() {
-  $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
+  if( $('.auth-loaded').length ){
+    $.ajax({
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      xhrFields: {
+        withCredentials: true
+      },
+      type: 'GET',
+      url: 'https://test-restarters.rstrt.org' + '/test/check-auth',
+      datatype: 'json',
+      success: function(response) {
+        $auth_list_item = $('.auth-list-item');
 
-  if( ! $('.auth-loaded-1').length ) {
-    // $notifications_list_item = $('.notifications-list-item').hide();
-    $auth_menu_items.removeClass('dropdown-menu-items');
-    $('body').addClass('auth-loaded-1');
-    console.log('al1 on');
-  } else {
-    console.log('al1 off');
-  }
+        var response = response.data;
 
-  $.ajax({
-    headers: {
-      // 'X-CSRF-TOKEN': $("input[name='_token']").val(),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    xhrFields: {
-      withCredentials: true
-    },
-    type: 'GET',
-    url: $url,
-    datatype: 'json',
-    success: function(response) {
-      $auth_list_item = $('.auth-list-item');
+        $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
-      var response = response.data;
+        if (response.authenticated === true) {
+          ajaxSearchNotifications();
 
-      $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+          if(response.is_admin && ! $('.auth-loaded').length) {
+            $('body').addClass('is_admin');
 
-      if (response.authenticated === true) {
-        // $main_navigation_dropdown.attr('style', 'display:block');
-        hamburgerMenu();
-        //categoriesMenu();
-        ajaxSearchNotifications();
-        userMenu();
+            $.each( response.menu.reporting, function( key, value ) {
+              var spacer_condition = key.includes('spacer');
 
-        // if ($notifications_list_item.length) {
-        //   $notifications_list_item.css('display','');
-        // }
+              var header_condition = key.includes('header');
 
-        if(response.is_admin && ! $('.auth-loaded-3').length) {
-          $('body').addClass('is_admin');
+              if (header_condition) {
+                $main_navigation_dropdown.append(
+                  $('<li>').attr('class', 'dropdown-menu-header').text(value)
+                );
+              } else if (spacer_condition) {
+                $main_navigation_dropdown.append(
+                  $('<li>').attr('class', 'dropdown-spacer')
+                );
+              } else {
+                $main_navigation_dropdown.append(
+                  $('<li>').append(
+                    $('<a>').attr('href', value).text(key)
+                  )
+                );
+              }
+            });
 
-          $.each( response.menu.reporting, function( key, value ) {
-            var spacer_condition = key.includes('spacer');
+          }
 
-            var header_condition = key.includes('header');
+          if(response.menu) {
+            $auth_menu_items = $('.user-dropdown-menu');
+            $.each( response.menu.user, function( key, value ) {
+              var spacer_condition = key.includes('spacer');
 
-            if (header_condition) {
-              $main_navigation_dropdown.append(
-                $('<li>').attr('class', 'dropdown-menu-header').text(value)
-              );
-            } else if (spacer_condition) {
-              $main_navigation_dropdown.append(
-                $('<li>').attr('class', 'dropdown-spacer')
-              );
-            } else {
-              $main_navigation_dropdown.append(
-                $('<li>').append(
-                  $('<a>').attr('href', value).text(key)
-                )
-              );
-            }
-          });
-          $('body').addClass('auth-loaded-3');
-          console.log('al3 on');
+              var header_condition = key.includes('header');
+
+              if (header_condition) {
+                $auth_menu_items.append(
+                  $('<li>').attr('class', 'dropdown-menu-header').text(value)
+                );
+              } else if (spacer_condition) {
+                $auth_menu_items.append(
+                  $('<li>').attr('class', 'dropdown-spacer')
+                );
+              } else {
+                $auth_menu_items.append(
+                  $('<li>').append(
+                    $('<a>').attr('href', value).text(key)
+                  )
+                );
+              }
+            });
+          }
+
+          // if ($auth_list_item.length) {
+          //   $auth_menu_items.addClass('dropdown-menu-items');
+          //   $auth_menu_items.css('display','');
+          // }
         } else {
-          console.log('al3 off');
-          $('body').removeClass('is_admin');
+          $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
         }
 
-        if(response.menu && ! $('.auth-loaded-4').length) {
-          $auth_menu_items = $('.user-dropdown-menu');
-          $.each( response.menu.user, function( key, value ) {
-            var spacer_condition = key.includes('spacer');
-
-            var header_condition = key.includes('header');
-
-            if (header_condition) {
-              $auth_menu_items.append(
-                $('<li>').attr('class', 'dropdown-menu-header').text(value)
-              );
-            } else if (spacer_condition) {
-              $auth_menu_items.append(
-                $('<li>').attr('class', 'dropdown-spacer')
-              );
-            } else {
-              $auth_menu_items.append(
-                $('<li>').append(
-                  $('<a>').attr('href', value).text(key)
-                )
-              );
-            }
-          });
-          $('body').addClass('auth-loaded-4');
-          console.log('al4 on');
-        } else {
-          console.log('al4 off');
-        }
-
-        // if ($notifications_list_item.length) {
-        //   $notifications_list_item.css('display','');
-        // }
-
-        if ($auth_list_item.length) {
-          $auth_menu_items.addClass('dropdown-menu-items');
-          $auth_menu_items.css('display','');
-        }
-      } else {
-        $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
-      }
-
-      // Amend Main navigation dropdown links
-      if( ! $('.auth-loaded-6').length) {
+        // Amend Main navigation dropdown links
         $.each( response.menu.general, function( key, value ) {
           $main_navigation_dropdown.append(
             $('<li>').append(
@@ -122,14 +89,9 @@ function checkAuth() {
             )
           );
         });
+      },
+    });
+  }
 
-        $('body').addClass('auth-loaded-6');
-        console.log('al6 on');
-      } else {
-        console.log('al6 off');
-      }
-    },
-  });
-
-  // $('body').addClass('auth-loaded');
+  $('body').addClass('auth-loaded');
 }

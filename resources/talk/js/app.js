@@ -1,36 +1,15 @@
 setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
-    $('body').addClass('ui-loaded');
-
-    if( ! $('.hamburger-dropdown-menu-items').length ) {
-      var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-      $(html).insertAfter('.d-header-icons');
-      console.log('al1 on');
-    } else {
-      console.log('al1 off');
-    }
-
-    if( ! $('.user-dropdown-menu-items').length) {
-      var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
-      $(html).insertAfter('.d-header-icons');
-      console.log('al2 on');
-    } else {
-      console.log('al2 off');
-    }
-
-    isLoggedIn();
-    checkAuth();
+    createUI();
     changeForumNavigation();
     activateSearch();
+    isLoggedIn();
+    checkAuth();
     defineClicks();
+
+    $('body').addClass('ui-loaded');
   }
 }, 300);
-
-function isLoggedIn() {
-  if( ! $('.login-button').length ) {
-    $('body').addClass('logged-in');
-  }
-}
 
 setTimeout(function() {
   var observer = new MutationObserver(function(mutations) {
@@ -48,19 +27,6 @@ setTimeout(function() {
   });
 }, 3000);
 
-// setTimeout(function() {
-//   var options = document.querySelectorAll(".messages-dropdown-123 option");
-//   for(const option of options) {
-//     const url = option.dataset.url;
-//     const location = window.location.href;
-//     const lastPart = location.substr(location.lastIndexOf('/') + 1);
-//     if (lastPart == url) {
-//       option.setAttribute("selected", "");
-//       break;
-//     }
-//   }
-// }, 500);
-
 setTimeout(function() {
   if (window.location.href.indexOf("messages") > -1) {
     $('.forum-tabs .inbox').addClass('active');
@@ -70,6 +36,30 @@ setTimeout(function() {
 
   $('.custom-header-links .talk').addClass('active');
 }, 300);
+
+function isLoggedIn() {
+  if( ! $('.login-button').length ) {
+    $('body').addClass('logged-in');
+  }
+}
+
+function createUI() {
+  if( ! $('.hamburger-dropdown-menu-items').length ) {
+    var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+    $(html).insertAfter('.d-header .wrap');
+    console.log('al1 on');
+  } else {
+    console.log('al1 off');
+  }
+
+  if( ! $('.user-dropdown-menu-items').length) {
+    var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
+    $(html).insertAfter('.d-header .wrap');
+    console.log('al2 on');
+  } else {
+    console.log('al2 off');
+  }
+}
 
 function addActive(tab) {
   $('.forum-tabs .active').removeClass('active');
@@ -135,3 +125,16 @@ function activateSearch() {
 //     $('.talk-menu').toggle();
 //   });
 // }
+
+// setTimeout(function() {
+//   var options = document.querySelectorAll(".messages-dropdown-123 option");
+//   for(const option of options) {
+//     const url = option.dataset.url;
+//     const location = window.location.href;
+//     const lastPart = location.substr(location.lastIndexOf('/') + 1);
+//     if (lastPart == url) {
+//       option.setAttribute("selected", "");
+//       break;
+//     }
+//   }
+// }, 500);
