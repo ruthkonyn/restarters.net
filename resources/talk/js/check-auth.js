@@ -44,7 +44,9 @@ function checkAuth() {
             }
           });
 
-        } else if( ! $('.auth-loaded').length) {
+        }
+
+        if( ! $('.auth-loaded').length) {
           $.each( response.menu.general, function( key, value ) {
             $main_navigation_dropdown.append(
               $('<li>').append(

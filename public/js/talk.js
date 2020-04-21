@@ -15,6 +15,7 @@ setTimeout(function() {
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === "class") {
+        clearDropdowns();
         checkAuth();
         defineClicks();
         var attributeValue = $(mutation.target).prop(mutation.attributeName);
@@ -90,6 +91,11 @@ function defineClicks() {
     $('.toggle-user-menu').toggleClass('dropdown-active');
     $('.user-dropdown-menu-items').toggle();
   });
+}
+
+function clearDropdowns() {
+  $('a.dropdown-active').removeClass('dropdown-active');
+  $('.user-dropdown-menu-items, .hamburger-dropdown-menu-items, .notification-menu-items').hide();
 }
 
 function changeForumNavigation() {
@@ -185,7 +191,9 @@ function checkAuth() {
             }
           });
 
-        } else if( ! $('.auth-loaded').length) {
+        }
+
+        if( ! $('.auth-loaded').length) {
           $.each( response.menu.general, function( key, value ) {
             $main_navigation_dropdown.append(
               $('<li>').append(
