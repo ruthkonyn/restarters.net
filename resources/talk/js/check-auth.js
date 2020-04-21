@@ -4,8 +4,7 @@ function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
   if( ! $('.auth-loaded-1').length ) {
-    $notifications_list_item = $('.notifications-list-item').hide();
-    $auth_menu_items = $('.user-dropdown-menu-items').hide();
+    // $notifications_list_item = $('.notifications-list-item').hide();
     $auth_menu_items.removeClass('dropdown-menu-items');
     $('body').addClass('auth-loaded-1');
     console.log('al1 on');
@@ -43,8 +42,7 @@ function checkAuth() {
         // }
 
         if(response.is_admin && ! $('.auth-loaded-3').length) {
-          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
-          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
+          $('body').addClass('is_admin');
 
           $.each( response.menu.reporting, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -71,6 +69,7 @@ function checkAuth() {
           console.log('al3 on');
         } else {
           console.log('al3 off');
+          $('body').removeClass('is_admin');
         }
 
         if(response.menu && ! $('.auth-loaded-4').length) {
