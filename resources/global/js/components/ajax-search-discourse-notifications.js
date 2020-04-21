@@ -1,7 +1,8 @@
 // API call to current site - check for notifications
 function ajaxSearchNotifications() {
   // $base_url = window.location.host;
-  $('.notification-menu-items').hide();
+  $notification_menu_items = $('.notification-menu-items');
+  $notification_menu_items.hide();
   $('.toggle-notifications-menu .bell-icon-active').hide();
 
   $url = 'https://test-restarters.rstrt.org' + '/test/discourse/notifications';
@@ -32,11 +33,12 @@ function ajaxSearchNotifications() {
       if (Object.keys($notifications).length > 0) {
         console.log('Success: notifications found on Discourse.');
 
-        $('.notification-menu-items').css('display', '');
+        $notification_menu_items.css('display', '');
+        $notification_menu_items.empty();
         $('.toggle-notifications-menu .bell-icon-active').css('display', '');
 
         $.each($notifications, function(index, $notification) {
-          $('.notification-menu-items').append(
+          $notification_menu_items.append(
             $('<li>').append(
               $('<a>').attr('href', 'https://test-restarters.rstrt.org/notifications/' + $notification.id).text($notification.data.title)
             ).attr('class', 'notifcation-text')
