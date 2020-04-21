@@ -1,12 +1,15 @@
 setTimeout(function() {
-  checkAuth();
-  changeForumNavigation();
-  activateSearch();
-  toggleNotifications();
+  if( ! $('.ui-loaded').length ) {
+    $('body').addClass('ui-loaded');
+    checkAuth();
+    changeForumNavigation();
+    activateSearch();
+    toggleNotifications();
+  }
 }, 300);
 
 function isLoggedIn() {
-  if( ! $('.login-button').length ) { //&& ! $('.login-button').is(":visible")
+  if( ! $('.login-button').length ) {
     $('body').addClass('logged-in');
   }
 }
