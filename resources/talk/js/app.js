@@ -63,8 +63,10 @@ function createNotificationUI() {
     var html = '<a href="#" class="toggle-notifications-menu">' +
     '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
     $('.notification-icon').append(html);
+  }
 
-    var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
+  if( ! $('.notification-menu-items').length ) {
+    var html = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
     $(html).insertAfter('.d-header .wrap .contents');
   }
 }
