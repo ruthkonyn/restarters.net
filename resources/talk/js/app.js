@@ -18,6 +18,7 @@ setTimeout(function() {
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === "class") {
+        checkAuth();
         var attributeValue = $(mutation.target).prop(mutation.attributeName);
         console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
       }

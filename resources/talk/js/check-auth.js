@@ -3,9 +3,11 @@
 function checkAuth() {
   $url = 'https://test-restarters.rstrt.org' + '/test/check-auth';
 
-  $notifications_list_item = $('.notifications-list-item').hide();
-  $auth_menu_items = $('.user-dropdown-menu-items').hide();
-  $auth_menu_items.removeClass('dropdown-menu-items');
+  if( ! $('.auth-loaded').length ) {
+    $notifications_list_item = $('.notifications-list-item').hide();
+    $auth_menu_items = $('.user-dropdown-menu-items').hide();
+    $auth_menu_items.removeClass('dropdown-menu-items');
+  }
 
   $.ajax({
     headers: {
@@ -39,13 +41,15 @@ function checkAuth() {
 
         userMenu();
 
-        if ($notifications_list_item.length) {
-          $notifications_list_item.css('display','');
-        }
+        // if ($notifications_list_item.length) {
+        //   $notifications_list_item.css('display','');
+        // }
 
         if(response.is_admin) {
-          $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
-          $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
+          if( ! $('.auth-loaded').length ) {
+            $('.toggle-hamburger-menu svg').removeClass('restarters-hamburger');
+            $('.toggle-hamburger-menu svg').addClass('restarters-hamburger-admin');
+          }
 
           $.each( response.menu.reporting, function( key, value ) {
             var spacer_condition = key.includes('spacer');
@@ -95,9 +99,9 @@ function checkAuth() {
           });
         }
 
-        if ($notifications_list_item.length) {
-          $notifications_list_item.css('display','');
-        }
+        // if ($notifications_list_item.length) {
+        //   $notifications_list_item.css('display','');
+        // }
 
         if ($auth_list_item.length) {
           $auth_menu_items.addClass('dropdown-menu-items');
