@@ -14,6 +14,19 @@ function isLoggedIn() {
   }
 }
 
+var $div = $(".d-header");
+var observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    if (mutation.attributeName === "class") {
+      var attributeValue = $(mutation.target).prop(mutation.attributeName);
+      console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
+    }
+  });
+});
+observer.observe($div[0], {
+  attributes: true
+});
+
 // setTimeout(function() {
 //   var options = document.querySelectorAll(".messages-dropdown-123 option");
 //   for(const option of options) {
