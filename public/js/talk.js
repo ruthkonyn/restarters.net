@@ -26,7 +26,7 @@ setTimeout(function() {
   observer.observe(document.getElementsByClassName('d-header').item(0), {
     attributes: true
   });
-}, 3000);
+}, 1500);
 
 setTimeout(function() {
   if (window.location.href.indexOf("messages") > -1) {
@@ -47,22 +47,16 @@ function isLoggedIn() {
 function createUI() {
   if( ! $('.hamburger-dropdown-menu-items').length ) {
     var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-    $(html).insertAfter('.d-header .wrap');
-    console.log('al1 on');
-  } else {
-    console.log('al1 off');
+    $(html).insertAfter('.d-header .wrap .contents');
   }
 
   if( ! $('.user-dropdown-menu-items').length) {
     var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
-    $(html).insertAfter('.d-header .wrap');
-    console.log('al2 on');
-  } else {
-    console.log('al2 off');
+    $(html).insertAfter('.d-header .wrap .contents');
   }
 
   var notification_text = '<ul class="dropdown-menu-items notification-menu-items" style="display: none;"><li><a>You are up to date!</a></li></ul>';
-  $('.d-header-icons').append(notification_text);
+  $(html).insertAfter('.d-header .wrap .contents');
 }
 
 function addActive(tab) {
