@@ -154,11 +154,11 @@ function checkAuth() {
     success: function(response) {
       var response = response.data;
 
-      $auth_list_item = $('.auth-list-item');
-      $main_navigation_dropdown = $('.hamburger-dropdown-menu');
-
       if (response.authenticated === true) {
         ajaxSearchNotifications();
+
+        $main_navigation_dropdown = $('.hamburger-dropdown-menu');
+        $main_navigation_dropdown.empty();
 
         if(response.is_admin && ! $('.auth-loaded').length) {
           $('body').addClass('is_admin');
@@ -185,10 +185,19 @@ function checkAuth() {
             }
           });
 
+        } else if( ! $('.auth-loaded').length) {
+          $.each( response.menu.general, function( key, value ) {
+            $main_navigation_dropdown.append(
+              $('<li>').append(
+                $('<a>').attr('href', value).text(key)
+              )
+            );
+          });
         }
 
         if(response.menu && ! $('.auth-loaded').length) {
           $auth_menu_items = $('.user-dropdown-menu');
+          $auth_menu_items.empty();
           $.each( response.menu.user, function( key, value ) {
             var spacer_condition = key.includes('spacer');
 
@@ -211,29 +220,12 @@ function checkAuth() {
             }
           });
         }
-
-        // if ($auth_list_item.length) {
-        //   $auth_menu_items.addClass('dropdown-menu-items');
-        //   $auth_menu_items.css('display','');
-        // }
-      } else {
-        $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
 
-      // Amend Main navigation dropdown links
-      if( ! $('.auth-loaded').length) {
-        $.each( response.menu.general, function( key, value ) {
-          $main_navigation_dropdown.append(
-            $('<li>').append(
-              $('<a>').attr('href', value).text(key)
-            )
-          );
-        });
-      }
     },
   });
 
-  $('body').addClass('auth-loaded');
+  $('body').addClass('auths-loaded');
 }
 
 function ajaxSearchNotifications() {
