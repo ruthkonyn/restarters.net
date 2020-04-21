@@ -1,6 +1,7 @@
 setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
     $('body').addClass('ui-loaded');
+    isLoggedIn();
     checkAuth();
     changeForumNavigation();
     activateSearch();

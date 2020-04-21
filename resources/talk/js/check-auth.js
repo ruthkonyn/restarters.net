@@ -119,21 +119,25 @@ function checkAuth() {
           $auth_menu_items.addClass('dropdown-menu-items');
           $auth_menu_items.css('display','');
         }
-
-        isLoggedIn();
-
       } else {
         $auth_list_item.find('a').attr('href', 'https://test-restarters.rstrt.org');
       }
 
       // Amend Main navigation dropdown links
-      $.each( response.menu.general, function( key, value ) {
-        $main_navigation_dropdown.append(
-          $('<li>').append(
-            $('<a>').attr('href', value).text(key)
-          )
-        );
-      });
+      if( ! $('.auth-loaded-6').length) {
+        $.each( response.menu.general, function( key, value ) {
+          $main_navigation_dropdown.append(
+            $('<li>').append(
+              $('<a>').attr('href', value).text(key)
+            )
+          );
+        });
+
+        $('body').addClass('auth-loaded-6');
+        console.log('al6 on');
+      } else {
+        console.log('al6 off');
+      }
     },
   });
 
