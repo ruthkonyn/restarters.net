@@ -1,6 +1,26 @@
 setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
     $('body').addClass('ui-loaded');
+
+    if( ! $('.auth-loaded-2').length ) {
+      var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
+      $('body').addClass('auth-loaded-2');
+      console.log('al2 on');
+    } else {
+      console.log('al2 off');
+    }
+
+    if( ! $('.auth-loaded-5').length) {
+      var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
+
+      $('body').addClass('auth-loaded-5');
+      console.log('al5 on');
+    } else {
+      console.log('al5 off');
+    }
+
     isLoggedIn();
     checkAuth();
     changeForumNavigation();
@@ -80,6 +100,17 @@ function hamburgerMenu() {
   });
 }
 
+function userMenu() {
+  $('.restarters-user-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-user-menu').toggleClass('dropdown-active');
+    $('.user-dropdown-menu-items').toggle();
+  });
+}
+
 function changeForumNavigation() {
   $('#create-topic').addClass('d-none');
   $('#create-topic .d-button-label').text('New Topic');
@@ -144,15 +175,6 @@ function checkAuth() {
       $auth_list_item = $('.auth-list-item');
 
       var response = response.data;
-
-      if( ! $('.auth-loaded-2').length ) {
-        var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
-        $(html).insertAfter('.d-header-icons');
-        $('body').addClass('auth-loaded-2');
-        console.log('al2 on');
-      } else {
-        console.log('al2 off');
-      }
 
       $main_navigation_dropdown = $('.hamburger-dropdown-menu');
 
@@ -258,27 +280,6 @@ function checkAuth() {
   });
 
   // $('body').addClass('auth-loaded');
-}
-
-function userMenu() {
-  if( ! $('.auth-loaded-5').length) {
-    var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
-    $(html).insertAfter('.d-header-icons');
-
-    $('body').addClass('auth-loaded-5');
-    console.log('al5 on');
-  } else {
-    console.log('al5 off');
-  }
-
-  $('.restarters-user-toggle').click(function(e) {
-    e.preventDefault();
-    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
-    $('.hamburger-dropdown-menu-items').hide();
-    $('.notification-menu-items').hide();
-    $('.toggle-user-menu').toggleClass('dropdown-active');
-    $('.user-dropdown-menu-items').toggle();
-  });
 }
 
 function ajaxSearchNotifications() {

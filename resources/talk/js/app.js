@@ -1,6 +1,26 @@
 setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
     $('body').addClass('ui-loaded');
+
+    if( ! $('.auth-loaded-2').length ) {
+      var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
+      $('body').addClass('auth-loaded-2');
+      console.log('al2 on');
+    } else {
+      console.log('al2 off');
+    }
+
+    if( ! $('.auth-loaded-5').length) {
+      var html = "<div class='user-dropdown-menu-items'><ul class='user-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
+
+      $('body').addClass('auth-loaded-5');
+      console.log('al5 on');
+    } else {
+      console.log('al5 off');
+    }
+
     isLoggedIn();
     checkAuth();
     changeForumNavigation();
@@ -77,6 +97,17 @@ function hamburgerMenu() {
     $('.notification-menu-items').hide();
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
+  });
+}
+
+function userMenu() {
+  $('.restarters-user-toggle').click(function(e) {
+    e.preventDefault();
+    $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
+    $('.hamburger-dropdown-menu-items').hide();
+    $('.notification-menu-items').hide();
+    $('.toggle-user-menu').toggleClass('dropdown-active');
+    $('.user-dropdown-menu-items').toggle();
   });
 }
 
