@@ -14821,6 +14821,10 @@ a.form-text-corrected:focus {
   right: 12px;
 }
 
+.has-notifications .bell-icon-active {
+  display: block !important;
+}
+
 .notifcation-text {
   word-break: normal !important;
 }

@@ -265,7 +265,8 @@ function ajaxSearchNotifications() {
       var $notifications = response.notifications;
 
       if (Object.keys($notifications).length > 0) {
-        $('.toggle-notifications-menu .bell-icon-active').show();
+        $('body').addClass('has-notifications');
+        
         $notification_menu_items = $('.notification-menu-items');
         $notification_menu_items.empty();
 
@@ -276,6 +277,8 @@ function ajaxSearchNotifications() {
             ).attr('class', 'notifcation-text')
           );
         });
+      } else {
+        $('body').removeClass('has-notifications');
       }
     },
   });
