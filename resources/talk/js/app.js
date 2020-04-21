@@ -2,30 +2,27 @@ setTimeout(function() {
   if( ! $('.ui-loaded').length ) {
     $('body').addClass('ui-loaded');
 
-    if( ! $('.auth-loaded-2').length ) {
+    if( ! $('.hamburger-dropdown-menu-items').length ) {
       var html = "<div class='hamburger-dropdown-menu-items' style='display: none;'><ul class='hamburger-dropdown-menu'></ul></div>";
       $(html).insertAfter('.d-header-icons');
-      $('body').addClass('auth-loaded-2');
+      console.log('al1 on');
+    } else {
+      console.log('al1 off');
+    }
+
+    if( ! $('.user-dropdown-menu-items').length) {
+      var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
+      $(html).insertAfter('.d-header-icons');
       console.log('al2 on');
     } else {
       console.log('al2 off');
-    }
-
-    if( ! $('.auth-loaded-5').length) {
-      var html = "<div class='user-dropdown-menu-items' style='display: none;'><ul class='user-dropdown-menu'></ul></div>";
-      $(html).insertAfter('.d-header-icons');
-
-      $('body').addClass('auth-loaded-5');
-      console.log('al5 on');
-    } else {
-      console.log('al5 off');
     }
 
     isLoggedIn();
     checkAuth();
     changeForumNavigation();
     activateSearch();
-    toggleNotifications();
+    defineClicks();
   }
 }, 300);
 
@@ -40,6 +37,7 @@ setTimeout(function() {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === "class") {
         checkAuth();
+        defineClicks();
         var attributeValue = $(mutation.target).prop(mutation.attributeName);
         console.log("Class attribute changed to:", attributeValue); // expecting hide-menus
       }
@@ -78,7 +76,7 @@ function addActive(tab) {
   tab.classList.add('active');
 }
 
-function toggleNotifications() {
+function defineClicks() {
   $('.notification-icon').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-notifications-menu').removeClass('dropdown-active');
@@ -86,9 +84,7 @@ function toggleNotifications() {
     $('.toggle-notifications-menu').toggleClass('dropdown-active');
     $('.notification-menu-items').toggle();
   });
-}
 
-function hamburgerMenu() {
   $('.restarters-hamburger-toggle').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-hamburger-menu').removeClass('dropdown-active');
@@ -96,9 +92,7 @@ function hamburgerMenu() {
     $('.toggle-hamburger-menu').toggleClass('dropdown-active');
     $('.hamburger-dropdown-menu-items').toggle();
   });
-}
 
-function userMenu() {
   $('.restarters-user-toggle').click(function(e) {
     e.preventDefault();
     $('a.dropdown-active').not('.toggle-user-menu').removeClass('dropdown-active');
