@@ -37,14 +37,17 @@ h2 {
 .link-text {
   text-decoration: none !important;
   border-bottom: 1px solid #000;
+  color: #000;
 }
 
 .link-text:hover {
   border-bottom: 2px solid #000;
+  color: #000;
 }
 
 .link-text:focus {
   border-bottom: 3px solid #000;
+  color: #000;
 }
 
 :root {

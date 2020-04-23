@@ -7,7 +7,6 @@ setTimeout(function() {
   isLoggedIn();
   checkAuth();
   defineClicks();
-  navigateUrl();
 
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -26,6 +25,7 @@ setTimeout(function() {
   });
 }, 1500);
 
+navigateUrl();
 
 function activeStates() {
   if (window.location.href.indexOf("messages") > -1) {

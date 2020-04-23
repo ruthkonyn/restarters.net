@@ -47,7 +47,7 @@
                     </p>
 
                     <p>
-                      You’re welcome to <a href="#">follow any group in the world.</a> And new groups pop up all the time, so do check back!
+                      You’re welcome to <a href="#" class="link-text">follow any group in the world.</a> And new groups pop up all the time, so do check back!
                     </p>
                   </div>
                 @endif
@@ -63,7 +63,7 @@
         </p>
 
         <p>
-          Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region’s Talk group and <a href="#">invite others in your area for a chat!</a> Or view our <a href="#">school programme planning guide.</a> When you’re ready to start a group, <a href="#">get in touch.</a>
+          Anyone with interest and some skills in organising can start a group. Check out our event planning kit. Then join your region’s Talk group and <a href="#" class="link-text">invite others in your area for a chat!</a> Or view our <a href="#" class="link-text">school programme planning guide.</a> When you’re ready to start a group, <a href="#" class="link-text">get in touch.</a>
         </p>
 
         <p class="font-weight-bold mb-0">

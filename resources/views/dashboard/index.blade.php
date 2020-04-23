@@ -106,15 +106,15 @@
               <div class="d-md-block collapse" id="collapseReadMore">
                 <ul class="list-doodle">
                   <li>
-                    make sure you’re not missing out on our forum conversations - <a href="#">check your email digest</a> settings and whitelist
+                    make sure you’re not missing out on our forum conversations - <a href="#" class="link-text">check your email digest</a> settings and whitelist
                   </li>
 
                   <li>
-                    learn more about <a href="#">how to share or even embed your Fixometer impact stats</a>
+                    learn more about <a href="#" class="link-text">how to share or even embed your Fixometer impact stats</a>
                   </li>
 
                   <li>
-                    if you’ve changed your skillset or role you’d like to play with Restart, <a href="#">update your skills</a> for the best experience here.
+                    if you’ve changed your skillset or role you’d like to play with Restart, <a href="#" class="link-text">update your skills</a> for the best experience here.
                   </li>
                 </ul>
               </div>
@@ -133,7 +133,7 @@
               @include('svgs.dashboard.talk_doodle')
             </div>
 
-            <a href="{{ env('DISCOURSE_URL')}}/session/sso?return_path=https://talk.restarters.net/top/weekly" class="text-dark ml-auto">
+            <a href="{{ env('DISCOURSE_URL')}}/session/sso?return_path=https://talk.restarters.net/top/weekly" class="ml-auto link-text">
               @lang('partials.hot_topics_link')
             </a>
           </div>

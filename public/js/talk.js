@@ -25,6 +25,7 @@ setTimeout(function() {
   });
 }, 1500);
 
+navigateUrl();
 
 function activeStates() {
   if (window.location.href.indexOf("messages") > -1) {
@@ -123,6 +124,13 @@ function defineClicks() {
 function clearDropdowns() {
   $('a.dropdown-active').removeClass('dropdown-active');
   $('.user-dropdown-menu-items, .hamburger-dropdown-menu-items, .notification-menu-items').hide();
+}
+
+// Used on the inbox drop down in Discourse
+function navigateUrl(item) {
+  if(item.value) {
+    location.href = document.location.origin + item.value;
+  }
 }
 
 // function categoriesMenu() {

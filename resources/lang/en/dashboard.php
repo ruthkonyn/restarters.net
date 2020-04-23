@@ -42,7 +42,7 @@ return array (
   'add_data_description' => "And see your impact in the Fixometer:",
 
   // Side column
-  'first_card_title_bold' => 'Restarters.net is a free, open source platform for a global community making local repair events happen and campaigning for our right to repair. Check out our <a href="#">free event planning kit!</a>',
-  'first_card_title_description' => 'We’re here to help with all of your hosting questions, or starting a school programme. <a href="#">Just get in touch.</a>',
+  'first_card_title_bold' => 'Restarters.net is a free, open source platform for a global community making local repair events happen and campaigning for our right to repair. Check out our <a href="#" class="link-text">free event planning kit!</a>',
+  'first_card_title_description' => 'We’re here to help with all of your hosting questions, or starting a school programme. <a href="#" class="link-text">Just get in touch.</a>',
   'second_card_title' => 'Getting the most from Restarters.net',
 );
