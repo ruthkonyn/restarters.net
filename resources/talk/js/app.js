@@ -135,13 +135,10 @@ function navigateUrl(item) {
 }
 
 function setInboxDropdownState() {
-  console.log(window.location.pathname );
   $("#messages-dropdown option").each(function(){
-   if ($(this).val() == '/' + window.location.pathname )
-   {
-     console.log(this);
-    $(this).prop("selected", true);
-   }
+    if ($(this).val() == window.location.pathname ){
+      $(this).prop("selected", true);
+    }
   })
 }
 
