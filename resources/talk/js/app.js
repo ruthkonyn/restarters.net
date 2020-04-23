@@ -135,6 +135,7 @@ function navigateUrl(item) {
 }
 
 function setInboxDropdownState() {
+  console.log(window.location.pathname );
   $(".messages-nav option").each(function(){
    if ($(this).val() == '/' + window.location.pathname )
    {
