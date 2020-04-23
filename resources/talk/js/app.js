@@ -7,6 +7,7 @@ setTimeout(function() {
   isLoggedIn();
   checkAuth();
   defineClicks();
+  navigateUrl();
 
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
