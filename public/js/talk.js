@@ -7,6 +7,8 @@ setTimeout(function() {
   isLoggedIn();
   checkAuth();
   defineClicks();
+  navigateUrl();
+  setInboxDropdownState();
 
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -25,7 +27,6 @@ setTimeout(function() {
   });
 }, 1500);
 
-navigateUrl();
 
 function activeStates() {
   if (window.location.href.indexOf("messages") > -1) {
@@ -131,6 +132,12 @@ function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;
   }
+}
+
+function setInboxDropdownState() {
+  $(".messages-nav option").each(function(){
+   if ($(this).val() == '/' + window.location.pathname ) $(this).prop("selected", true);
+  })
 }
 
 // function categoriesMenu() {
