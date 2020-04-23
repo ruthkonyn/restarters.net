@@ -8,7 +8,6 @@ setTimeout(function() {
   checkAuth();
   defineClicks();
   navigateUrl();
-  setInboxDropdownState();
 
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -134,13 +133,6 @@ function navigateUrl(item) {
   });
 }
 
-function setInboxDropdownState() {
-  $("#messages-dropdown option").each(function(){
-    if ($(this).val() == window.location.pathname ){
-      $(this).prop("selected", true);
-    }
-  })
-}
 
 // function categoriesMenu() {
 //   $('.category-breadcrumb').remove();
