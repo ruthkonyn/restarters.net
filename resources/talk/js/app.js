@@ -8,6 +8,7 @@ setTimeout(function() {
   checkAuth();
   defineClicks();
   navigateUrl();
+  setInboxDropdownState();
 
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -131,6 +132,12 @@ function navigateUrl(item) {
   if(item.value) {
     location.href = document.location.origin + item.value;
   }
+}
+
+function setInboxDropdownState() {
+  $(".messages-nav option").each(function(){
+   if ($(this).val() == '/' + window.location.pathname ) $(this).prop("selected", true);
+  })
 }
 
 // function categoriesMenu() {
