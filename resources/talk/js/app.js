@@ -129,9 +129,9 @@ function clearDropdowns() {
 
 // Used on the inbox drop down in Discourse
 function navigateUrl(item) {
-  if(item.value) {
-    location.href = document.location.origin + item.value;
-  }
+  $('#messages-dropdown').on('change', function(){
+    location.href = document.location.origin + $(this).val();
+  });
 }
 
 function setInboxDropdownState() {
