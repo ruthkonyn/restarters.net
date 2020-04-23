@@ -136,7 +136,11 @@ function navigateUrl(item) {
 
 function setInboxDropdownState() {
   $(".messages-nav option").each(function(){
-   if ($(this).val() == '/' + window.location.pathname ) $(this).prop("selected", true);
+   if ($(this).val() == '/' + window.location.pathname )
+   {
+     console.log(this);
+    $(this).prop("selected", true);
+   }
   })
 }
 
