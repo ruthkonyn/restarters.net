@@ -57,7 +57,7 @@ function createUI() {
 function createNotificationUI() {
   if( ! $('.toggle-notifications-menu').length ) {
     var html = '<a href="#" class="toggle-notifications-menu">' +
-    '<svg class="notification-bell"><span class="bell-icon-active" style="display: none;"></svg></a></span>';
+    '<svg class="notification-bell"><span class="bell-icon-active"></svg></a></span>';
     $('.notification-icon').append(html);
   }
 
