@@ -13,6 +13,7 @@ use App\Events\EditEvent;
 use App\Events\EventImagesUploaded;
 use App\EventsUsers;
 use App\Group;
+use App\GrouptagsGroups;
 use App\Helpers\FootprintRatioCalculator;
 use App\Host;
 use App\Invite;
