@@ -42,19 +42,6 @@ class GroupController extends Controller
     {
         $user = Auth::user();
 
-        // All groups only
-        $groupsQuery = $this->filterGroups($request);
-
-        $groups_count = $groupsQuery->count();
-        $groups = $groupsQuery->paginate(env('PAGINATE'));
-
-        //Look for groups where user ID exists in pivot table
-        $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')
-        ->toArray();
-
-        $sort_direction = request('sort_direction');
-        $sort_column = request('sort_column');
-
         //Look for groups where user ID exists in pivot table
         $your_groups = Group::with('allRestarters', 'parties', 'groupImage.image')
         ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
@@ -70,6 +57,19 @@ class GroupController extends Controller
         ->groupBy('groups.idgroups')
         ->select('groups.*')
         ->get();
+
+        // All groups only
+        $groupsQuery = $this->filterGroups($request);
+
+        $groups_count = $groupsQuery->count();
+        $groups = $groupsQuery->paginate(env('PAGINATE'));
+
+        //Look for groups where user ID exists in pivot table
+        $your_groups_uniques = UserGroups::where('user', auth()->id())->pluck('group')
+        ->toArray();
+
+        $sort_direction = request('sort_direction');
+        $sort_column = request('sort_column');
 
         //Make sure we don't show the same groups in nearest to you
         $your_groups_uniques = $your_groups->pluck('idgroups')->toArray();
@@ -95,7 +95,6 @@ class GroupController extends Controller
         } else {
             $groups_near_you = collect([]);
         }
-
         return view('group.index', [
             'your_groups' => $your_groups,
             'your_groups_uniques' => $your_groups_uniques,
