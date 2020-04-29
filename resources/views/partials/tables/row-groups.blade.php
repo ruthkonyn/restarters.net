@@ -51,6 +51,10 @@
       <a class="btn btn-primary" href="/group/join/{{ $group->idgroups }}" id="join-group">
         Follow
       </a>
+    @else
+      <a class="btn btn-primary" href="/group/leave/{{ $group->idgroups }}" id="leave-group">
+        Unfollow
+      </a>
     @endif
   </td>
 </tr>
