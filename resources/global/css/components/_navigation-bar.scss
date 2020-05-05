@@ -244,7 +244,7 @@
   right: 12px;
 }
 
-.has-notifications .bell-icon-active {
+.has-notifications .toggle-notifications-menu:not(.dropdown-active) .bell-icon-active {
   display: block !important;
 }
 
