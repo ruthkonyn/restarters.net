@@ -105,4 +105,10 @@ return array (
   'title_unpowered' => 'UNPOWERED',
   'description_powered' => 'A <b>powered item</b> is anything that has or requires a power source.',
   'description_unpowered' => 'An <b>unpowered item</b> is anything that doesn\'t have or require a power source.',
+  'repair_records' => 'Repair Records',
+  'view_record' => 'View',
+  'close_record' => 'Close',
+  'model' => 'Model',
+  'status' => 'Status',
+  'spare_parts' => 'Spare parts'
 );
