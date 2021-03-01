@@ -1,6 +1,6 @@
 <template>
   <div class="mb-2">
-    <FixometerHeading />
+    <FixometerHeading :attended-events="attendedEvents" />
     <FixometerGlobalImpact :latest-data="latestData" :impact-data="impactData" class="mt-4" />
     <hr class="mt-md-50 hr-dashed">
 
@@ -242,6 +242,10 @@ export default {
       default: null
     },
     isAdmin: {
+      type: Boolean,
+      required: true
+    },
+    attendedEvents: {
       type: Boolean,
       required: true
     }

@@ -5,7 +5,7 @@
         <h1>{{ translatedFixometer }}</h1>
         <b-img src="/images/fixometer_doodle.svg" class="ml-4 d-none d-md-block" />
       </div>
-      <div>
+      <div v-if="attendedEvents">
         <b-btn variant="primary" data-target="#add-device-modal" data-toggle="modal">
           {{ translatedAddData }}
         </b-btn>
@@ -24,6 +24,12 @@
 <script>
 
 export default {
+  props: {
+    attendedEvents: {
+      type: Boolean,
+      required: true
+    }
+  },
   computed: {
     translatedFixometer() {
       return this.$lang.get('devices.fixometer')

@@ -16,6 +16,7 @@
             <div class="vue">
                 <FixometerPage
                     csrf="{{ csrf_token() }}"
+                    :attended-events="{{ (count($user_groups) && $most_recent_finished_event) ? 'true' : 'false' }}"
                     :latest-data="{{ json_encode($most_recent_finished_event, JSON_INVALID_UTF8_IGNORE) }}"
                     :impact-data="{{ json_encode($impact_data, JSON_INVALID_UTF8_IGNORE) }}"
                     :clusters="{{ json_encode($clusters, JSON_INVALID_UTF8_IGNORE) }}"
