@@ -804,15 +804,13 @@ class PartyController extends Controller
                     if ($method == 'update') {
                         $Device->update($device, $iddevice);
                         if (FixometerHelper::featureIsEnabled(env('FEATURE__DEVICE_PHOTOS')) && $files[$i]['error'] == 0) {
-                                $File->simpleUpload($files[$i], $iddevice, 'device', 'Device S/N Image');
-                            }
+                            $File->simpleUpload($files[$i], $iddevice, 'device', 'Device S/N Image');
                         }
                     } else {
                         $device['category_creation'] = $device['category'];
                         $iddevice = $Device->create($device);
                         if (FixometerHelper::featureIsEnabled(env('FEATURE__DEVICE_PHOTOS')) && $files[$i]['error'] == 0) {
-                                $File->simpleUpload($files[$i], $iddevice, 'device', 'Device S/N Image');
-                            }
+                            $File->simpleUpload($files[$i], $iddevice, 'device', 'Device S/N Image');
                         }
                     }
 
