@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\BattcatOra;
 use App\Faultcat;
 use App\Misccat;
 use App\Mobifix;
 use App\MobifixOra;
-use App\BattcatOra;
 use App\PrintcatOra;
-use App\TabicatOra;
-
 use App\Services\DiscourseService;
+use App\TabicatOra;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
@@ -33,7 +32,7 @@ class MicrotaskingController extends Controller
         ];
     }
 
-    public function index(DiscourseService $discourseService)
+    public function index(DiscourseService $discourseService, Request $request)
     {
         if (Auth::check()) {
             $currentUserId = Auth::user()->id;
@@ -49,13 +48,18 @@ class MicrotaskingController extends Controller
         $activeQuest = config('restarters.microtasking.active_quest');
         $tag = config('restarters.microtasking.discussion_tag');
 
+        // We record that we have visited this page, so that if we subsequently sign up, we can redirect back to it.
+        // This is an intentionally partial solution to the problem of redirecting after we log in.
+        $request->session()->put('redirectTime', time());
+        $request->session()->put('redirectTo', $request->path());
+
         return view('microtasking.dashboard', [
             'totalQuests' => $this->getTotalContributions()['quests'],
             'totalContributions' => $this->getTotalContributions()['contributions'],
             'currentUserQuests' => $currentUserQuests,
             'currentUserContributions' => $currentUserContributions,
             'topics' => $discourseService->getDiscussionTopics($tag, 5),
-            'seeAllTopicsLink' => env('DISCOURSE_URL') . "/tag/{$tag}/l/latest",
+            'seeAllTopicsLink' => env('DISCOURSE_URL')."/tag/{$tag}/l/latest",
             'activeQuest' => $activeQuest,
         ]);
     }
@@ -75,7 +79,7 @@ class MicrotaskingController extends Controller
 
         return [
             'quests' => $userQuests,
-            'contributions' => $userContributions
+            'contributions' => $userContributions,
         ];
     }
 
@@ -91,7 +95,7 @@ class MicrotaskingController extends Controller
 
         return [
             'quests' => $totalQuests,
-            'contributions' => $totalContributions
+            'contributions' => $totalContributions,
         ];
     }
 }

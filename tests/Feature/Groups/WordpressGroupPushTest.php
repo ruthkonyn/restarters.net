@@ -5,27 +5,27 @@ namespace Tests\Feature;
 use App\Events\ApproveGroup;
 use App\Events\EditGroup;
 use App\Group;
+use App\Network;
 use App\Party;
 use App\User;
-
-use DB;
 use Carbon\Carbon;
+use DB;
+use HieuLe\WordpressXmlrpcClient\WordpressClient;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Mockery;
 use Tests\TestCase;
-use HieuLe\WordpressXmlrpcClient\WordpressClient;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WordpressGroupPushTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        DB::statement("SET foreign_key_checks=0");
+        DB::statement('SET foreign_key_checks=0');
         User::truncate();
         Group::truncate();
         Party::truncate();
-        DB::statement("SET foreign_key_checks=1");
+        DB::statement('SET foreign_key_checks=1');
     }
 
     /** @test */
@@ -35,7 +35,12 @@ class WordpressGroupPushTest extends TestCase
             $mock->shouldReceive('newPost')->once();
         }));
 
+        $network = factory(Network::class)->create([
+            'name' => 'Restart',
+            'events_push_to_wordpress' => true,
+        ]);
         $group = factory(Group::class)->create();
+        $network->addGroup($group);
 
         $groupData = factory(Group::class)->raw();
         $groupData['moderate'] = 'approve';
@@ -52,9 +57,14 @@ class WordpressGroupPushTest extends TestCase
             $mock->shouldReceive('editPost')->once();
         }));
 
+        $network = factory(Network::class)->create([
+            'name' => 'Restart',
+            'events_push_to_wordpress' => true,
+        ]);
         $group = factory(Group::class)->create();
         $group->wordpress_post_id = 100;
         $group->save();
+        $network->addGroup($group);
 
         $groupData = factory(Group::class)->raw();
         $groupData['free_text'] = 'Some change';

@@ -53,7 +53,6 @@ Route::get('/party/view/{id}', 'PartyController@view');
 // so we allow anonymous access.
 Route::get('/export/devices', 'ExportController@devices');
 
-
 // Calendar routes do not require authentication.
 // (You would not be able to subscribe from a calendar application if they did.)
 Route::prefix('calendar')->group(function () {
@@ -222,7 +221,7 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
 
     // TODO: the rest of these to be redirected properly.
     Route::prefix('device')->group(function () {
-        Route::get('/', function() {
+        Route::get('/', function () {
             return redirect('/fixometer');
         });
         Route::get('/search', 'DeviceController@search');
@@ -316,7 +315,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     //Skills Controller
     Route::prefix('skills')->group(function () {
         Route::get('/', 'SkillsController@index')->name('skills');
-        Route::get('/create', 'SkillsController@getCreateSkill');
         Route::post('/create', 'SkillsController@postCreateSkill');
         Route::get('/edit/{id}', 'SkillsController@getEditSkill');
         Route::post('/edit/{id}', 'SkillsController@postEditSkill');
@@ -326,7 +324,6 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     //GroupTags Controller
     Route::prefix('tags')->group(function () {
         Route::get('/', 'GroupTagsController@index')->name('tags');
-        Route::get('/create', 'GroupTagsController@getCreateTag');
         Route::post('/create', 'GroupTagsController@postCreateTag');
         Route::get('/edit/{id}', 'GroupTagsController@getEditTag');
         Route::post('/edit/{id}', 'GroupTagsController@postEditTag');
@@ -344,14 +341,13 @@ Route::group(['middleware' => ['auth', 'verifyUserConsent']], function () {
     Route::get('/export/time-volunteered', 'ExportController@exportTimeVolunteered');
     Route::get('/reporting/time-volunteered', 'ExportController@getTimeVolunteered');
     Route::get('/reporting/time-volunteered/{search}', 'ExportController@getTimeVolunteered');
-
 });
 
 Route::get('/party/invite/{code}', 'PartyController@confirmCodeInvite');
 Route::get('/group/invite/{code}', 'GroupController@confirmCodeInvite');
 
 Route::get('/media-wiki', function () {
-    if (FixometerHelper::hasRole(Auth::user(), 'Administrator')) {
+    if (Fixometer::hasRole(Auth::user(), 'Administrator')) {
         return view('mediawiki.index');
     }
 
@@ -383,7 +379,7 @@ Route::get('/party/stats/{id}/wide', function ($id) {
     return App\Http\Controllers\PartyController::stats($id);
 });
 
-Route::get('markAsRead/{id?}', function ($id = NULL) {
+Route::get('markAsRead/{id?}', function ($id = null) {
     $notifications = auth()->user()->unReadNotifications;
 
     if ($id) {
@@ -394,8 +390,6 @@ Route::get('markAsRead/{id?}', function ($id = NULL) {
 
     return redirect()->back();
 })->name('markAsRead');
-
-Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 
 Route::get('/set-lang/{locale}', 'LocaleController@setLang');
 

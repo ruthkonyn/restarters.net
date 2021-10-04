@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -13,7 +14,7 @@
                 <div class="col-md-12">
 
                     @if(isset($response))
-                      @php( FixometerHelper::printResponse($response) )
+                      @php( App\Helpers\Fixometer::printResponse($response) )
                     @endif
 
                     <form action="/device/create" method="post">

@@ -4,16 +4,15 @@ namespace Tests\Feature;
 
 use App\BattcatOra;
 use DB;
-use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
+use Tests\TestCase;
 
 class BattcatOraTest extends TestCase
 {
-
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        DB::statement("SET foreign_key_checks=0");
+        DB::statement('SET foreign_key_checks=0');
         BattcatOra::truncate();
         DB::table('devices_battcat_ora')->truncate();
         DB::table('devices_faults_batteries_ora_adjudicated')->truncate();
@@ -32,7 +31,7 @@ class BattcatOraTest extends TestCase
         $result = $BattcatOra->fetchFault();
         $this->assertTrue(is_array($result), 'fetch_battcatora_record: result is not array');
         $this->assertEquals(1, count($result), 'fetch_battcatora_record: wrong result count');
-        $this->assertGreaterThan(0, !is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
+        $this->assertGreaterThan(0, ! is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
 
         // use locale, no exclusions
         // expects a record with language matching locale
@@ -43,7 +42,7 @@ class BattcatOraTest extends TestCase
             $result = $BattcatOra->fetchFault($exclude, $locale);
             $this->assertTrue(is_array($result), 'fetch_battcatora_record: result is not array');
             $this->assertEquals(1, count($result), 'fetch_battcatora_record: wrong result count');
-            $this->assertGreaterThan(0, !is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
+            $this->assertGreaterThan(0, ! is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
             if ($locale !== 'foo') {
                 $this->assertEquals($locale, $result[0]->language, 'fetch_battcatora_record: wrong language');
             }
@@ -64,7 +63,7 @@ class BattcatOraTest extends TestCase
         $result = $BattcatOra->fetchFault($exclude);
         $this->assertTrue(is_array($result), 'fetch_battcatora_record: result is not array');
         $this->assertEquals(1, count($result), 'fetch_battcatora_record: wrong result count');
-        $this->assertGreaterThan(0, !is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
+        $this->assertGreaterThan(0, ! is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
         $this->assertEquals($include, $result[0]->id_ords, 'fetch_battcatora_record: wrong value');
 
         // use locale, exclude 7 records
@@ -73,7 +72,7 @@ class BattcatOraTest extends TestCase
             $result = $BattcatOra->fetchFault($exclude, $locale);
             $this->assertTrue(is_array($result), 'fetch_battcatora_record: result is not array');
             $this->assertEquals(1, count($result), 'fetch_battcatora_record: wrong result count');
-            $this->assertGreaterThan(0, !is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
+            $this->assertGreaterThan(0, ! is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
             $this->assertEquals($include, $result[0]->id_ords, 'fetch_battcatora_record: wrong value');
         }
 
@@ -86,31 +85,16 @@ class BattcatOraTest extends TestCase
         $result = $BattcatOra->fetchFault($exclude, $locale);
         $this->assertTrue(is_array($result), 'fetch_battcatora_record: result is not array');
         $this->assertEquals(1, count($result), 'fetch_battcatora_record: wrong result count');
-        $this->assertGreaterThan(0, !is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
+        $this->assertGreaterThan(0, ! is_null($result[0]->id_ords), 'fetch_battcatora_record: id_ords is null');
         $this->assertTrue(in_array($result[0]->id_ords, $expect), 'fetch_battcatora_record: invalid id_ords');
     }
 
     /** @test */
-    public function fetch_battcatora_page()
+    public function battcatora_should_redirect_to_status_page()
     {
-        $fault_types = $this->_setup_fault_types();
-        $data = $this->_setup_devices();
-        $this->withSession([]);
-        $this->_bypass_cta();
-        for ($i = 1; $i <= count($data); $i++) {
-            // Illuminate\Foundation\Testing\TestResponse
-            $response = $this->get('/battcat');
-            $seshids = $this->app['session']->get('battcatora.exclusions');
-            $this->assertTrue(is_array($seshids), 'battcatora.exclusions not an array');
-            $this->assertEquals($i, count($seshids), 'battcatora.exclusions wrong length');
-            $response->assertSuccessful();
-            $response->assertViewIs('battcatora.index');
-        }
-        // No more records for this user
+        // BattCat is closed - should redirect to status page.
         $response = $this->get('/battcat');
-        $response->assertSessionHas('battcatora.exclusions');
-        $response->assertRedirect();
-        $response->assertRedirect(url()->current() . '/status');
+        $response->assertRedirect(url()->current().'/status');
     }
 
     /** @test */
@@ -123,18 +107,18 @@ class BattcatOraTest extends TestCase
         $result = $BattcatOra->fetchStatus();
         $this->assertTrue(is_array($result), 'fetch_battcatora_status: result is not array');
         foreach ($opinions['status'] as $k => $v) {
-            $this->assertTrue(isset($result, $k), 'fetch_battcatora_status: missing key - ' . $k);
+            $this->assertTrue(isset($result, $k), 'fetch_battcatora_status: missing key - '.$k);
             if ($k == 'list_recats') {
-                $this->assertTrue(is_array($result[$k]), 'fetch_battcatora_status: not array - ' . $k);
+                $this->assertTrue(is_array($result[$k]), 'fetch_battcatora_status: not array - '.$k);
                 foreach ($v[0] as $key => $val) {
-                    $this->assertTrue(property_exists($result[$k][0], $key), 'fetch_battcatora_status #' . $k . ': missing key - ' . $key);
-                    $this->assertEquals($val, $result[$k][0]->{$key}, 'fetch_battcatora_status #' . $k . ': wrong ' . $key);
+                    $this->assertTrue(property_exists($result[$k][0], $key), 'fetch_battcatora_status #'.$k.': missing key - '.$key);
+                    $this->assertEquals($val, $result[$k][0]->{$key}, 'fetch_battcatora_status #'.$k.': wrong '.$key);
                 }
             } else {
-                $this->assertEquals(1, count($result[$k]),   'fetch_battcatora_status: wrong array count ' . $k);
-                $this->assertTrue(is_object($result[$k][0]), 'fetch_battcatora_status: not object ' . $k);
-                $this->assertTrue(property_exists($result[$k][0], 'total'), 'fetch_battcatora_status #' . $k . ': missing key - total');
-                $this->assertEquals($v, $result[$k][0]->total,   'fetch_battcatora_status: wrong total for ' . $k);
+                $this->assertEquals(1, count($result[$k]), 'fetch_battcatora_status: wrong array count '.$k);
+                $this->assertTrue(is_object($result[$k][0]), 'fetch_battcatora_status: not object '.$k);
+                $this->assertTrue(property_exists($result[$k][0], 'total'), 'fetch_battcatora_status #'.$k.': missing key - total');
+                $this->assertEquals($v, $result[$k][0]->total, 'fetch_battcatora_status: wrong total for '.$k);
             }
         }
     }
@@ -146,18 +130,18 @@ class BattcatOraTest extends TestCase
         $data = $this->_setup_devices();
         $opinions = $this->_setup_opinions($data);
         $BattcatOra = new BattcatOra;
-        $before = DB::select("SELECT id_ords, fault_type_id FROM devices_battcat_ora");
+        $before = DB::select('SELECT id_ords, fault_type_id FROM devices_battcat_ora');
         foreach ($before as $k => $v) {
-            $this->assertEquals($v->fault_type_id, 0, 'update_battcatora_devices: initial fault_type not 0: ' . $v->fault_type_id);
+            $this->assertEquals($v->fault_type_id, 0, 'update_battcatora_devices: initial fault_type not 0: '.$v->fault_type_id);
         }
         $updated = $BattcatOra->updateDevices();
-        $after = DB::select("SELECT id_ords, fault_type_id FROM devices_battcat_ora");
-        $this->assertEquals($updated, count($opinions['updates']), 'update_battcatora_devices: wrong number of records updated: ' . $updated);
+        $after = DB::select('SELECT id_ords, fault_type_id FROM devices_battcat_ora');
+        $this->assertEquals($updated, count($opinions['updates']), 'update_battcatora_devices: wrong number of records updated: '.$updated);
         foreach ($after as $k => $v) {
             if (isset($opinions['updates'][$v->id_ords])) {
-                $this->assertEquals($v->fault_type_id, $opinions['updates'][$v->id_ords], 'update_battcatora_devices: updated fault_type is wrong: ' . $v->id_ords . ' => ' . $v->fault_type_id);
+                $this->assertEquals($v->fault_type_id, $opinions['updates'][$v->id_ords], 'update_battcatora_devices: updated fault_type is wrong: '.$v->id_ords.' => '.$v->fault_type_id);
             } else {
-                $this->assertEquals($v->fault_type_id, 0, 'update_battcatora_devices: fault_type should still be 0: ' . $v->fault_type_id);
+                $this->assertEquals($v->fault_type_id, 0, 'update_battcatora_devices: fault_type should still be 0: '.$v->fault_type_id);
             }
         }
     }
@@ -179,7 +163,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'de',
                 'translation' => 'Defective battery',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'rcint_7168',
@@ -195,7 +179,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'nl',
                 'translation' => 'battery exhausted',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'restart_10452',
@@ -211,7 +195,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'en',
                 'translation' => 'Won\'t charge',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'restart_11931',
@@ -227,7 +211,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'en',
                 'translation' => 'battery dead',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'anstiftung_5424',
@@ -243,7 +227,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'de',
                 'translation' => 'battery kaput',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'rcint_3689',
@@ -259,7 +243,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'nl',
                 'translation' => 'battery failure',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'restart_17002',
@@ -275,7 +259,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'en',
                 'translation' => 'Charger not working',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
             [
                 'id_ords' => 'restart_9918',
@@ -291,7 +275,7 @@ class BattcatOraTest extends TestCase
                 'language' => 'en',
                 'translation' => 'Doesn\'t charge',
                 'fault_type_id' => '0',
-                'fault_type' => ''
+                'fault_type' => '',
             ],
         ];
 
@@ -316,6 +300,7 @@ class BattcatOraTest extends TestCase
                 'id_ords' => $v['id_ords'],
             ]);
         }
+
         return $data;
     }
 
@@ -354,7 +339,7 @@ class BattcatOraTest extends TestCase
         $opinions[$data[3]['id_ords']][] = $this->_insert_opinion($data[3]['id_ords'], 4);
         $opinions[$data[3]['id_ords']][] = $this->_insert_opinion($data[3]['id_ords'], 7);
         $opinions[$data[3]['id_ords']][] = $this->_insert_opinion($data[3]['id_ords'], 8);
-        DB::update("INSERT INTO devices_faults_batteries_ora_adjudicated SET id_ords = '" . $data[3]['id_ords'] . "', fault_type_id=4");
+        DB::update("INSERT INTO devices_faults_batteries_ora_adjudicated SET id_ords = '".$data[3]['id_ords']."', fault_type_id=4");
         $updates[$data[3]['id_ords']] = 4;
 
         // $data[4] : 2 eol opinions with majority : recat
@@ -417,6 +402,7 @@ class BattcatOraTest extends TestCase
         $this->assertDatabaseHas('devices_faults_batteries_ora_opinions', [
             'id_ords' => $id_ords,
         ]);
+
         return $insert;
     }
 
@@ -429,7 +415,6 @@ class BattcatOraTest extends TestCase
 
     protected function _setup_fault_types()
     {
-
         $fault_types = [
             ['id' => '1', 'title' => 'Clean battery contacts', 'description' => '', 'repair_status' => 'Repairable'],
             ['id' => '2', 'title' => 'Fix connectors or casing', 'description' => '', 'repair_status' => 'Repairable'],
@@ -454,7 +439,8 @@ class BattcatOraTest extends TestCase
         foreach ($fault_types as $row) {
             DB::table('fault_types_batteries')->insert($row);
             $this->assertDatabaseHas('fault_types_batteries', ['id' => $row['id']]);
-        };
+        }
+
         return $fault_types;
     }
 }
