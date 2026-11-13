@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use Illuminate\Http\RedirectResponse;
 use App\GroupTags;
-use Auth;
 use App\Helpers\Fixometer;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
+#[Feature('Administration', description: 'Platform administration and configuration')]
 class GroupTagsController extends Controller
 {
+    #[UserStory('As an Admin, I can view all group tags', persona: 'Admin', theme: 'Reference data')]
     public function index()
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
@@ -19,12 +24,13 @@ class GroupTagsController extends Controller
         $all_tags = GroupTags::all();
 
         return view('tags.index', [
-        'title' => 'Group Tags',
+        'title' => __('group-tags.title'),
         'tags' => $all_tags,
         ]);
     }
 
-    public function postCreateTag(Request $request)
+    #[UserStory('As an Admin, I can create a new group tag', persona: 'Admin', theme: 'Reference data')]
+    public function postCreateTag(Request $request): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -38,9 +44,10 @@ class GroupTagsController extends Controller
         'description' => $description,
         ]);
 
-        return Redirect::to('tags/edit/'.$group_tag->id)->with('success', 'Group Tag successfully created!');
+        return Redirect::to('tags/edit/'.$group_tag->id)->with('success', __('group-tags.create_success'));
     }
 
+    #[UserStory('As an Admin, I can access the form to edit a group tag', persona: 'Admin', theme: 'Reference data')]
     public function getEditTag($id)
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
@@ -50,12 +57,13 @@ class GroupTagsController extends Controller
         $tag = GroupTags::find($id);
 
         return view('tags.edit', [
-        'title' => 'Edit Group Tag',
+        'title' => __('group-tags.edit_tag'),
         'tag'   => $tag,
         ]);
     }
 
-    public function postEditTag($id, Request $request)
+    #[UserStory('As an Admin, I can update a group tag', persona: 'Admin', theme: 'Reference data')]
+    public function postEditTag($id, Request $request): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -69,10 +77,11 @@ class GroupTagsController extends Controller
         'description' => $description,
         ]);
 
-        return Redirect::back()->with('success', 'Group Tag successfully updated!');
+        return Redirect::back()->with('success', __('group-tags.update_success'));
     }
 
-    public function getDeleteTag($id)
+    #[UserStory('As an Admin, I can delete a group tag', persona: 'Admin', theme: 'Reference data')]
+    public function getDeleteTag($id): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -80,6 +89,6 @@ class GroupTagsController extends Controller
 
         GroupTags::find($id)->delete();
 
-        return Redirect::to('/tags')->with('success', 'Group Tag successfully deleted!');
+        return Redirect::to('/tags')->with('success', __('group-tags.delete_success'));
     }
 }

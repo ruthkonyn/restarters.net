@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use Illuminate\View\View;
 use App\Device;
+use App\Helpers\Fixometer;
 use App\Http\Controllers\Controller;
 use App\Party;
-use App\Helpers\Fixometer;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Msurguy\Honeypot\Honeypot;
 
+#[Feature('Users', description: 'User accounts, profiles, and authentication')]
 class LoginController extends Controller
 {
     /*
@@ -31,7 +38,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -40,17 +47,17 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except(['index', 'logout']);
     }
 
     /**
      * Override login from AuthenticateUsers
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+    #[UserStory('As a Guest, I can log in to the platform', persona: 'Guest', theme: 'Authentication')]
     public function login(Request $request)
     {
         $this->validateLogin($request);
@@ -67,7 +74,15 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             \Cookie::queue(\Cookie::make('authenticated', $request->email, config('session.lifetime'), null, config('session.domain')));
 
-            return $this->sendLoginResponse($request);
+            try {
+                return $this->sendLoginResponse($request);
+            } catch (\Throwable $e) {
+                Log::error('Login post-auth error for user ' . $request->email . ': ' . $e->getMessage(), [
+                    'exception' => $e,
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                throw $e;
+            }
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
@@ -80,36 +95,36 @@ class LoginController extends Controller
 
     /**
      * Override validateLogin from AuthenticateUsers
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
      */
-    protected function validateLogin(Request $request)
+    protected function validateLogin(Request $request): void
     {
+        if (env('HONEYPOT_DISABLE', false)) {
+            // This is used in Playwright testing where we get many requests in a short time.
+            // TODO There is probably a better place to put this code.
+            app('honeypot')->disable();
+        }
+
         $this->validate($request, [
             $this->username() => 'required|email',
             'password' => 'required|string',
             'my_name'   => 'honeypot',
-            'my_time'   => 'required|honeytime:1',
+            'my_time'   => 'required|honeytime:0',
         ]);
     }
 
     /**
      * Override showLoginForm from AuthenticateUsers
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    #[UserStory('As a Guest, I can view the login page', persona: 'Guest', theme: 'Authentication')]
+    public function showLoginForm(): View
     {
         $stats = Fixometer::loginRegisterStats();
 
-        $deviceCount = array_key_exists(0, $stats['device_count_status']) ? $stats['device_count_status'][0]->counter : 0;
-
         return view('auth.login', [
-          'co2Total' => $stats['co2Total'][0]->total_footprints,
-          'wasteTotal' => $stats['co2Total'][0]->total_weights,
-          'partiesCount' => count($stats['allparties']),
-          'deviceCount' => $deviceCount,
+          'co2Total' => $stats['co2Total'],
+          'wasteTotal' => $stats['wasteTotal'],
+          'partiesCount' => $stats['partiesCount'],
+          'deviceCount' => $stats['deviceCount'],
         ]);
     }
 }

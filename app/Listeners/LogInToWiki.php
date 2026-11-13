@@ -2,20 +2,25 @@
 
 namespace App\Listeners;
 
-use App\User;
 use App\WikiSyncStatus;
 use Cookie;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
-use Mediawiki\Api\ApiUser;
-use Mediawiki\Api\MediawikiApi;
-use Mediawiki\Api\Service\UserCreator;
+use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
+use Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword;
+use Addwiki\Mediawiki\Api\Client\MediaWiki;
+use Addwiki\Mediawiki\Api\Guzzle\ClientFactory;
+use Addwiki\Mediawiki\Api\Service\UserCreator;
+use GuzzleHttp\Cookie\CookieJar;
 
+// Don't extend BaseEvent - we don't want to queue because this needs to happen before we return to the client.
 class LogInToWiki
 {
+    // We use the Laravel hashed password as the mediawiki password.  This means we can log in to the wiki
+    // if we need to, which we wouldn't always be able to do if we used the original password (for example
+    // during password reset).  It also avoids Mediawiki complaining about the password being a common one.
+
     protected $wikiUserCreator;
 
     /**
@@ -23,7 +28,7 @@ class LogInToWiki
      *
      * @return void
      */
-    public function __construct(Request $request, UserCreator $mediawikiUserCreator)
+    public function __construct(Request $request, ?UserCreator $mediawikiUserCreator)
     {
         $this->request = $request;
         $this->wikiUserCreator = $mediawikiUserCreator;
@@ -31,53 +36,65 @@ class LogInToWiki
 
     /**
      * Handle the event.
-     *
-     * @param  Login  $event
-     * @return void
      */
-    public function handle(Login $event)
+    public function handle(Login $event): void
     {
-        $user = $event->user;
+        try {
+            // If Wiki integration is not available, just return without error
+            if ($this->wikiUserCreator === null) {
+                Log::info("Wiki integration not available - skipping wiki login");
+                return;
+            }
 
-        // TODO: for all of this we need to move to restarters.net being the auth provider for Mediawiki.
-        // This is currently a workaround.
+            $user = $event->user;
 
-        if ($user->wiki_sync_status == WikiSyncStatus::CreateAtLogin) {
-            $this->createUserInWiki($user, $this->request->input('password'));
-        }
+            if ($user->wiki_sync_status == WikiSyncStatus::CreateAtLogin) {
+                Log::info("Need to create " . $user->name);
+                $this->createUserInWiki($user);
+                $user->refresh();
+            }
 
-        if (! is_null($user->mediawiki) && ! empty($user->mediawiki) &&
-            $user->wiki_sync_status == WikiSyncStatus::Created) {
-            $this->logUserIn($user->mediawiki, $this->request->input('password'));
+            if (! is_null($user->mediawiki) && ! empty($user->mediawiki) &&
+                $user->wiki_sync_status == WikiSyncStatus::Created) {
+                $this->logUserIn($user);
+            }
+        } catch (\Exception $ex) {
+            // Log the error but don't let it break the user's login
+            Log::error("Wiki login failed but user login will continue: " . $ex->getMessage());
         }
     }
 
-    protected function createUserInWiki($user, $password)
+    protected function createUserInWiki($user)
     {
         try {
+            if (!$this->wikiUserCreator) {
+                Log::error("Wiki UserCreator not available - cannot create user '".$user->username."' in mediawiki");
+                return;
+            }
+
             // Mediawiki does strange things with underscores.
             $mediawikiUsername = str_replace('_', '-', $user->username);
-            $this->wikiUserCreator->create($mediawikiUsername, $password, $user->email);
+            $this->wikiUserCreator->create($mediawikiUsername, $user->password, $user->email);
 
             $user->wiki_sync_status = WikiSyncStatus::Created;
             $user->mediawiki = $mediawikiUsername;
             $user->save();
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             Log::error("Failed to create new account for user '".$user->username."' in mediawiki: ".$ex->getMessage());
         }
     }
 
-    protected function logUserIn($wikiUsername, $password)
+    protected function logUserIn($user)
     {
         try {
-            $api = MediawikiApi::newFromApiEndpoint(env('WIKI_URL').'/api.php');
-            $api->login(new ApiUser($wikiUsername, $password));
+            Log::info("Log in to wiki $user->mediawiki");
+            $cookieJar = new CookieJar();
+            $guzzleClient = (new ClientFactory(['cookies' => $cookieJar, 'timeout' => 10, 'connect_timeout' => 5]))->getClient();
+            $auth = new UserAndPassword($user->mediawiki, $user->password);
+            $api = new ActionApi(env('WIKI_URL').'/api.php', $auth, $guzzleClient);
+            $api->getToken('csrf');
+            Log::info("Logged in to wiki $user->mediawiki");
 
-            // NGM: it appears that right from the beginning MediawikiApi->getClient access modifier was changed
-            // in our vendor folder from private to public in order to access the underlying client for the cookies.
-            // This is really bad, as obviously when we update the package via composer the method changes back to private.
-            // Stuck with that until we can figure out an alternative way to access the client.
-            $cookieJar = $api->getClient()->getConfig('cookies');
             $cookieJarArray = $cookieJar->toArray();
 
             if (! empty($cookieJarArray)) {
@@ -85,8 +102,8 @@ class LogInToWiki
                     Cookie::queue(Cookie::make($cookie['Name'], $cookie['Value'], $cookie['Expires']));
                 }
             }
-        } catch (\Exception $ex) {
-            Log::error("Failed to log user '".$wikiUsername."' in to mediawiki: ".$ex->getMessage());
+        } catch (\Throwable $ex) {
+            Log::error("Failed to log user '".$user->mediawiki."' in to mediawiki: ".$ex->getMessage());
         }
     }
 }

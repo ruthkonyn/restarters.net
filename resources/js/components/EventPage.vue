@@ -1,35 +1,39 @@
 <template>
-  <div v-if="event">
-    <EventHeading :idevents="idevents" :canedit="canedit" :candelete="candelete" :is-admin="isAdmin" :in-group="inGroup" :is-attending="isAttending" />
-    <div class="layout">
-      <div>
-        <EventDetails class="pr-md-3" :idevents="idevents" :hosts="hosts" :calendar-links="calendarLinks" :is-attending="isAttending" :discourse-thread="discourseThread" />
-        <EventDescription class="pr-md-3" :idevents="idevents" />
+  <div>
+    <AlertBanner />
+    <div v-if="event">
+      <EventHeading :idevents="idevents" :canedit="canedit" :candelete="candelete" :is-admin="isAdmin" :in-group="inGroup" :is-attending="isAttending" />
+      <div class="ep-layout">
+        <div>
+          <EventDetails class="pr-md-3" :idevents="idevents" :hosts="hosts" :calendar-links="calendarLinks" :is-attending="isAttending" :discourse-thread="discourseThread" />
+          <EventDescription class="pr-md-3" :idevents="idevents" />
+        </div>
+        <div>
+          <EventAttendance class="pl-md-3" :idevents="idevents" :canedit="canedit" :invitations="invitations" />
+        </div>
       </div>
+      <EventImages :images="images" v-if="images && images.length" />
       <div>
-        <EventAttendance class="pl-md-3" :idevents="idevents" :canedit="canedit" :attendance="attendance" :invitations="invitations" />
+        <EventStats :idevents="idevents" />
+        <EventDevices id="devices-section" :idevents="idevents" :canedit="canedit || isAttending" :devices="devices" :clusters="clusters" :brands="brands" :barrier-list="barrierList" />
       </div>
-    </div>
-    <EventImages :images="images" v-if="images && images.length" />
-    <div v-if="inProgress || finished">
-      <EventStats :idevents="idevents" />
-      <EventDevices id="devices-section":idevents="idevents" :canedit="canedit" :devices="devices" :clusters="clusters" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" />
     </div>
   </div>
 </template>
 <script>
 import event from '../mixins/event'
-import EventHeading from './EventHeading'
-import EventDetails from './EventDetails'
-import EventDescription from './EventDescription'
-import EventAttendance from './EventAttendance'
-import EventImages from './EventImages'
-import EventStats from './EventStats'
-import EventDevices from './EventDevices'
+import EventHeading from './EventHeading.vue'
+import EventDetails from './EventDetails.vue'
+import EventDescription from './EventDescription.vue'
+import EventAttendance from './EventAttendance.vue'
+import EventImages from './EventImages.vue'
+import EventStats from './EventStats.vue'
+import EventDevices from './EventDevices.vue'
 import auth from '../mixins/auth'
+import AlertBanner from './AlertBanner.vue'
 
 export default {
-  components: {EventDevices, EventStats, EventImages, EventAttendance, EventDescription, EventDetails, EventHeading},
+  components: {EventDevices, EventStats, EventImages, EventAttendance, EventDescription, EventDetails, EventHeading, AlertBanner},
   mixins: [ event, auth ],
   props: {
     initialEvent: {
@@ -103,11 +107,6 @@ export default {
       required: false,
       default: null
     },
-    itemTypes: {
-      type: Array,
-      required: false,
-      default: null
-    },
     hosts: {
       type: Array,
       required: false,
@@ -143,11 +142,16 @@ export default {
     })
 
     if (this.devices && this.devices.length) {
-      this.$store.dispatch('devices/set', {
-        idevents: this.idevents,
+      this.$store.dispatch('devices/setForEvent', {
+        eventid: this.idevents,
         devices: this.devices
       })
     }
+
+    this.$store.dispatch('attendance/set', {
+      idevents: this.idevents,
+      attendees: [...this.attendance, ...this.invitations]
+    })
 
     if (window && window.location && window.location.hash) {
       setTimeout(() => {
@@ -174,11 +178,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
-.layout {
+.ep-layout {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto auto;

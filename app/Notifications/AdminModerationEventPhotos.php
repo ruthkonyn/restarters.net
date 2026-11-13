@@ -2,69 +2,53 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class AdminModerationEventPhotos extends Notification implements ShouldQueue
+class AdminModerationEventPhotos extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr)
-    {
-        $this->arr = $arr;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        if ($notifiable->invites == 1) {
-            return ['mail', 'database'];
-        }
-
-        return ['database'];
-    }
-
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $locale = $notifiable->language;
         return (new MailMessage)
-                      ->subject('New event photos uploaded to event: '.$this->arr['event_venue'])
-                      ->greeting('Hello!')
-                      ->line('Photos have been uploaded to an event: \''.$this->arr['event_venue'].'\'.')
-                      ->action('View event', $this->arr['event_url'])
-                      ->line('These photos might need your moderation, if they haven\'t yet been moderated by another administrator.')
-                      ->line('If you would like to stop receiving these notifications, please edit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
+            ->subject(
+                __('notifications.new_event_photos_subject', [
+                    'event' => $this->arr['event_venue']
+                ], $locale)
+            )
+            ->greeting(__('notifications.greeting', [], $locale))
+            ->line(
+                __('notifications.moderation_event_photos_line1', [
+                    'name' => $this->arr['event_venue']
+                ], $notifiable->language)
+            )
+            ->action(__('notifications.view_event', [], $notifiable->language), $this->arr['event_url'])
+            ->line(
+                __('notifications.moderation_event_photos_line2', [
+                    'name' => $this->arr['event_venue']
+                ], $notifiable->language)
+            )
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $notifiable->locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
+        $locale = $notifiable->language;
         return [
-            'title' => 'New event photos uploaded:',
+            'title' => __('notifications.moderation_event_photos_subject', [], $locale),
             'event_id' => $this->arr['event_id'],
             'name' => $this->arr['event_venue'],
             'url' => $this->arr['event_url'],

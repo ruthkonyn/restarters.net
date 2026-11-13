@@ -6,7 +6,7 @@
           <div class="align-self-center">
             {{ __('dashboard.add_data_heading') }}
           </div>
-          <b-img src="/images/fixometer_doodle.svg" class="ml-4 d-none d-md-block" />
+          <b-img :src="imageUrl('/images/fixometer_doodle.svg')" class="ml-4 d-none d-md-block" />
         </div>
       </template>
       <template slot="content">
@@ -14,7 +14,7 @@
           <p>
             {{ __('dashboard.see_your_impact') }}:
           </p>
-          <div class="layout">
+          <div class="dad-layout">
             <multiselect
                 class="groups"
                 v-model="groupValue"
@@ -49,10 +49,12 @@
   </div>
 </template>
 <script>
-import CollapsibleSection from './CollapsibleSection'
+import CollapsibleSection from './CollapsibleSection.vue'
+import images from '../mixins/images'
 import moment from 'moment'
 
 export default {
+  mixins: [images],
   data () {
     return {
       groupValue: null,
@@ -72,7 +74,7 @@ export default {
       return Object.values(this.$store.getters['events/getAll'])
     },
     attendedEvents() {
-      return this.events.filter(e => e.attended).sort((a,b) => new moment(b.event_date + ' ' + b.start).unix() - new moment(a.event_date + ' ' + a.start).unix())
+      return this.events.filter(e => e.attended).sort((a,b) => new moment(b.event_start_utc).unix() - new moment(a.event_start_utc).unix())
     },
     groupEvents() {
       return this.events
@@ -88,7 +90,7 @@ export default {
       return this.groupEvents.filter(e => e.idgroups === this.groupValue.idgroups).map(e => {
         return {
           idevents: e.idevents,
-          name: new moment(e.event_date).format('DD MMM YY') + ' @ ' + e.venue
+          name: new moment(e.event_start_utc).format('DD MMM YY') + ' @ ' + e.venue
         }
       })
     },
@@ -100,7 +102,7 @@ export default {
 
       this.eventValue = {
         idevents: e.idevents,
-        name: new moment(e.event_date).format('DD MMM YY') + ' @ ' + e.venue
+        name: new moment(e.event_start_utc).format('DD MMM YY') + ' @ ' + e.venue
       }
 
       this.groupValue = this.groups.find(g => g.idgroups === e.idgroups)
@@ -110,9 +112,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .content {
   border-top: 3px dashed black;
@@ -135,7 +137,7 @@ a {
   border: 1px solid $black;
 }
 
-.layout {
+.dad-layout {
   display: grid;
   grid-template-rows: auto auto auto;
   grid-template-columns: auto;

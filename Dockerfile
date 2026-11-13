@@ -1,33 +1,76 @@
 # This is the docker for restarters.  It's used from docker-compose.
-FROM circleci/php:7.4-node-browsers
+FROM php:8.2-fpm
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        zip \
+        unzip \
+        npm \
+        vim \
+        netcat-openbsd \
+        default-mysql-client \
+        postgresql-client && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Playwright system dependencies
+# We need to install @playwright/test first to get the install-deps command
+RUN npm install -g @playwright/test && \
+    npm install -g jest-junit && \
+    npx playwright install-deps && \
+    npm uninstall -g @playwright/test
+
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.7.31/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions \
+    pdo_mysql \
+    bcmath \
+    zip \
+    xmlrpc \
+    xdebug \
+    intl \
+    exif \
+    pcntl \
+    curl \
+    gd
+
+# Install composer.  Don't run composer install yet - see docker_run.sh
+COPY --from=composer/composer:2-bin /composer /usr/bin/composer
+
+RUN git config --system --add safe.directory /var/www
 
 # Set working directory to where we will run.
 WORKDIR /var/www
 
-# Install dependencies
-RUN sudo apt-get update && \
-    sudo apt-get install build-essential locales curl unzip openssl zip unzip git libxml2-dev libzip-dev zlib1g-dev libcurl4-openssl-dev iputils-ping default-mysql-client vim libpng-dev libgmp-dev libjpeg62-turbo-dev
+# Add ARGs for syncing permissions
+ARG UID=1000
+ARG GID=1000
 
-# Clear cache - reduces image size.
-RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
+# Create a new user with the specified UID and GID, reusing an existing group if GID exists
+RUN if getent group ${GID}; then \
+      group_name=$(getent group ${GID} | cut -d: -f1); \
+      useradd -m -u ${UID} -g ${GID} -s /bin/bash restarter; \
+    else \
+      groupadd -g ${GID} restarter && \
+      useradd -m -u ${UID} -g restarter -s /bin/bash restarter; \
+    fi
 
-# Install PHP extensions
-RUN sudo docker-php-ext-configure gd --with-jpeg
-RUN sudo docker-php-ext-install zip pdo pdo_mysql xmlrpc curl gd zip
+# Dynamically update php-fpm to use the new user and group, and listen on all interfaces
+RUN sed -i "s/user = www-data/user = restarter/g" /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i "s/group = www-data/group = restarter/g" /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g" /usr/local/etc/php-fpm.d/www.conf
 
-# Copy the code
-COPY . /var/www/
-
-# Copy composer.lock and composer.json from the codebase to where we will install and run.
-COPY composer.lock composer.json /var/www/
-
-# Grant permissions to /var/www so we can put files in it.
-RUN sudo chown -R circleci:circleci /var/www
-
-# Install composer.  Don't run composer install yet - see docker_run.sh
-RUN wget https://getcomposer.org/composer-1.phar
+# Copy the code (this will be overridden by the volume mount in docker-compose)
+COPY --chown=${UID}:${GID} . ./
 
 # Expose port 9000, which is our PHP FPM port referenced from nginx.conf.
 EXPOSE 9000
+
+# Install xmlrpc as the restarter user to avoid permission issues
+USER root
+RUN pecl install channel://pecl.php.net/xmlrpc-1.0.0RC3 xmlrpc
+USER restarter
 
 CMD ["bash", "docker_run.sh"]

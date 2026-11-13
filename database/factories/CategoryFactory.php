@@ -1,69 +1,99 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(App\Category::class, function (Faker $faker) {
-    return [];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->state(App\Category::class, 'Misc', function (Faker $faker) {
-    return [
+class CategoryFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     */
+    public function definition(): array
+    {
+        return [];
+    }
+
+    public function misc()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 46,
         'name' => 'Misc',
-        'revision' => 1,
+        'revision' => 2,
         'aggregate' => 0,
     ];
-});
+        });
+    }
 
-$factory->state(App\Category::class, 'Desktop computer', function (Faker $faker) {
-    return [
+    public function desktopComputer()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 11,
         'name' => 'Desktop computer',
-        'revision' => 1,
+        'revision' => 2,
         'aggregate' => 0,
+        'cluster' => 1
     ];
-});
+        });
+    }
 
-$factory->state(App\Category::class, 'Mobile', function (Faker $faker) {
-    return [
+    public function mobile()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 25,
         'name' => 'Mobile',
-        'revision' => 1,
+        'revision' => 2,
         'footprint' => 1,
         'weight' => 1,
         'aggregate' => 0,
     ];
-});
+        });
+    }
 
-$factory->state(App\Category::class, 'Cat1', function (Faker $faker) {
-    return [
+    public function cat1()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 111,
         'name' => 'Cat1',
-        'revision' => 1,
+        'revision' => 2,
         'footprint' => 1,
         'weight' => 1,
         'aggregate' => 0,
+        'powered' => 0
     ];
-});
+        });
+    }
 
-$factory->state(App\Category::class, 'Cat2', function (Faker $faker) {
-    return [
+    public function cat2()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 222,
         'name' => 'Cat2',
-        'revision' => 1,
+        'revision' => 2,
         'footprint' => 2,
         'weight' => 2,
         'aggregate' => 0,
+        'powered' => 1
     ];
-});
+        });
+    }
 
-$factory->state(App\Category::class, 'Cat3', function (Faker $faker) {
-    return [
+    public function cat3()
+    {
+        return $this->state(function () {
+            return [
         'idcategories' => 333,
         'name' => 'Cat3',
-        'revision' => 1,
+        'revision' => 2,
         'footprint' => 3,
         'weight' => 3,
         'aggregate' => 0,
     ];
-});
+        });
+    }
+}

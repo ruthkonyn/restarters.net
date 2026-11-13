@@ -2,70 +2,51 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class NotifyRestartersOfNewEvent extends Notification implements ShouldQueue
+class NotifyRestartersOfNewEvent extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-    protected $user;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr, $user = null)
-    {
-        $this->arr = $arr;
-        $this->user = $user;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        if ($notifiable->invites == 1) {
-            return ['mail', 'database'];
-        }
-
-        return ['database'];
-    }
-
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $locale = $notifiable->language;
+
         return (new MailMessage)
-                    ->subject('New event for '.$this->arr['event_group'])
-                    ->greeting('Hello!')
-                    ->line('There has been a new event added to your group: \''.$this->arr['event_venue'].'\'.')
-                    ->action('View event', $this->arr['event_url'])
-                    ->line('If you would like to stop receiving these emails, please visit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
+            ->subject(
+                __('notifications.new_event_subject', [
+                    'name' => $this->arr['event_group'],
+                    'time' => $this->arr['event_start']
+                ], $locale)
+            )
+            ->greeting(__('notifications.greeting', [], $locale))
+            ->line(
+                __('notifications.new_event_line1', [
+                    'name' => $this->arr['event_venue']
+                ], $locale)
+            )
+            ->action(__('notifications.view_event', [], $locale), $this->arr['event_url'])
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
-            'title' => 'A new event has been created for group '.$this->arr['event_group'].':',
+            'title' => __('notifications.new_event_title', [
+                'name' => $this->arr['event_group']
+            ],            $notifiable->language),
             'name' => $this->arr['event_venue'],
             'url' => $this->arr['event_url'],
         ];

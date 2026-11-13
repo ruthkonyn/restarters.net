@@ -2,26 +2,20 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Validation\ValidationException;
+use Throwable;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that are not reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-
-    ];
-
-    /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
      * @var array
      */
     protected $dontFlash = [
+        'current_password',
         'password',
         'password_confirmation',
     ];
@@ -30,12 +24,17 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         if ($request->wantsJson()) {
+            if ($exception instanceof ValidationException) {
+                return response()->json(
+                    ['message' => $exception->getMessage(), 'errors' => $exception->errors()],
+                    422);
+            }
+
             return response()->json(
                 ['message' => $exception->getMessage()],
                 method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500);
@@ -44,7 +43,7 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         if (app()->bound('sentry') && app()->environment('production') && $this->shouldReport($exception)) {
             app('sentry')->captureException($exception);

@@ -16,22 +16,23 @@
       :taggable="false"
       selectLabel=""
       ref="multiselect"
-      @select=""
       :selectedLabel="allowEmpty ? __('partials.remove') : null"
+      @open="onOpen"
     >
     </multiselect>
-    <div v-b-popover.html.left="__('devices.tooltip_category')" class="ml-3 mt-2">
-      <b-img class="icon clickable" src="/icons/info_ico_black.svg" v-if="iconVariant === 'black'" />
-      <b-img class="icon clickable" src="/icons/info_ico_green.svg" v-else="iconVariant === 'brand'" />
+    <div v-if="iconVariant !== 'none'" v-b-popover.html.left="__('devices.tooltip_category')" class="ml-3 mt-2">
+      <b-img class="icon clickable" :src="imageUrl('/icons/info_ico_black.svg')" v-if="iconVariant === 'black'" />
+      <b-img class="icon clickable" :src="imageUrl('/icons/info_ico_green.svg')" v-else />
     </div>
     <div class="multiselect__content-wrapper d-none" />
   </div>
 </template>
 <script>
-
-import { CATEGORY_MISC } from '../constants'
+import { CATEGORY_MISC_POWERED, CATEGORY_MISC_UNPOWERED } from '../constants'
+import images from '../mixins/images'
 
 export default {
+  mixins: [images],
   props: {
     category: {
       type: Number,
@@ -43,9 +44,11 @@ export default {
       required: true
     },
     powered: {
-      // The server might return a number rather than a boolean.
+      // The server might return a number rather than a boolean.  Null offers both powered and unpowered categories,
+      // for searching.
       type: [ Boolean, Number ],
-      required: true
+      required: false,
+      default: null
     },
     iconVariant: {
       type: String,
@@ -83,6 +86,12 @@ export default {
         this.$emit('changed')
       }
     },
+    miscCat() {
+      return this.powered ? CATEGORY_MISC_POWERED : CATEGORY_MISC_UNPOWERED
+    },
+    anyPower() {
+      return this.powered === null
+    },
     categoryOptions() {
       let ret = []
 
@@ -90,9 +99,14 @@ export default {
         let categories = []
 
         cluster.categories.forEach((c) => {
-          if ((this.powered && c.powered) || (!this.powered && !c.powered)) {
+          // Don't include the misc category - it gets added at the end, which encourages people to read the
+          // whole list before selecting it.
+          if (this.anyPower ?
+              (c.idcategories !== CATEGORY_MISC_POWERED && c.idcategories !== CATEGORY_MISC_UNPOWERED) :
+              ((c.idcategories !== this.miscCat) &&
+              ((this.powered && c.powered) || (!this.powered && !c.powered)))) {
             categories.push({
-              name: this.$lang.get('strings.' + c.name),
+              name: this.__(c.name),
               value: c.idcategories
             })
           }
@@ -100,25 +114,45 @@ export default {
 
         if (categories.length) {
           ret.push({
-            cluster: this.$lang.get('strings.' + cluster.name),
+            cluster: this.__(cluster.name),
             categories: categories
           })
         }
       })
 
-      if (this.powered) {
-        ret.push({
-          cluster: '---',
-          categories: [
-            {
-              name: this.$lang.get('partials.category_none'),
-              value: CATEGORY_MISC,
-            }
-          ]
-        })
-      }
+      ret.push({
+        cluster: '---',
+        categories: this.anyPower ? [
+          {
+            name: this.__('partials.category_none') + ' (' + this.__('devices.powered') + ')',
+            value: CATEGORY_MISC_POWERED,
+          },
+          {
+            name: this.__('partials.category_none') + ' (' + this.__('devices.unpowered') + ')',
+            value: CATEGORY_MISC_UNPOWERED,
+          }
+        ] : [
+          {
+            name: this.__('partials.category_none'),
+            value: this.miscCat,
+          }
+        ]
+      })
 
       return ret
+    },
+  },
+  methods: {
+    onOpen() {
+      this.$emit('open')
+      const select = this.$refs.multiselect
+      let position = select.filteredOptions.findIndex(
+          option => option[select.trackBy] === select.value[select.trackBy]
+      )
+      select.pointerSet(position)
+      this.$nextTick(() => {
+        select.$refs.list.scrollTop = select.pointerPosition
+      })
     },
   }
 }
@@ -132,7 +166,7 @@ export default {
   width: 360px !important;
 }
 
-/deep/ .multiselect__tags {
+::v-deep .multiselect__tags {
   min-height: 43px;
 }
 </style>

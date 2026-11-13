@@ -7,14 +7,13 @@
         </div>
       </div>
     </template>
-    <p v-if="!events.length">
-      {{ translatedNoneMessage }}
-    </p>
+    <!--        eslint-disable-next-line-->
+    <p v-if="!events.length" v-html="translatedNoneMessage" />
     <GroupEventScrollTable v-else :limit="limit" :events="events" :canedit="canedit" :add-group-name="addGroupName" :past="past" :filters="filters" />
   </b-tab>
 </template>
 <script>
-import GroupEventScrollTable from './GroupEventScrollTable'
+import GroupEventScrollTable from './GroupEventScrollTable.vue'
 
 export default {
   components: {GroupEventScrollTable},
@@ -62,7 +61,7 @@ export default {
   },
   computed: {
     translatedNoneMessage() {
-      return this.$lang.get(this.noneMessage)
+      return this.__(this.noneMessage)
     },
   }
 }

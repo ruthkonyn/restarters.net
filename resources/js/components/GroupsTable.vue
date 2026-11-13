@@ -5,144 +5,153 @@
       <GroupsTableFilters
           v-if="search"
           :name.sync="searchName"
-          :location.sync="searchLocation"
-          :network.sync="searchNetwork"
-          :country.sync="searchCountry"
           :tags.sync="searchTags"
-          :networks="networks"
-          :groups="groups"
           :all-group-tags="allGroupTags"
           :show-tags="showTags"
       />
     </div>
     <div class="d-block d-md-none" v-if="search">
       <div class="clickme d-flex justify-content-end pr-3 text-uppercase" v-if="!searchShow" @click="toggleFilters">
-        <a href="#">{{ __('groups.show_filters') }}</a>&nbsp;<b-img class="plusminusicon" src="/images/add-icon.svg" />
+        <a href="#">{{ __('groups.show_filters') }}</a>&nbsp;<b-img class="plusminusicon" :src="imageUrl('/images/add-icon.svg')" />
       </div>
       <div class="clickme d-flex justify-content-end pr-3 text-uppercase" v-if="searchShow" @click="toggleFilters">
-        <b-img class="plusminusicon" src="/images/minus-icon.svg" /><a href="#">&nbsp;{{ __('groups.hide_filters') }}</a>
+        <b-img class="plusminusicon" :src="imageUrl('/images/minus-icon.svg')" /><a href="#">&nbsp;{{ __('groups.hide_filters') }}</a>
       </div>
       <GroupsTableFilters
           v-if="searchShow"
           class="pl-1 pr-1 pt-2 pb-2"
           :name.sync="searchName"
-          :location.sync="searchLocation"
-          :network.sync="searchNetwork"
-          :country.sync="searchCountry"
-          :networks="networks"
-          :groups="groups"
+          :tags.sync="searchTags"
           :all-group-tags="allGroupTags"
           :show-tags="showTags"
       />
     </div>
     <hr class="d-block d-md-none" />
-    <b-table :fields="fields" :items="itemsToShow" sort-null-last thead-tr-class="d-none d-md-table-row" :sort-compare="sortCompare">
+    <b-table :fields="fields" :items="itemsToShow" sort-null-last thead-tr-class="d-none d-md-table-row" :sort-compare="sortCompare"
+             :tbody-tr-class="rowClass"
+             @row-hovered="rowHovered" @row-unhovered="rowUnhovered"
+    >
       <template slot="head(group_image)">
         <span />
       </template>
       <template slot="cell(group_image)" slot-scope="data">
-        <b-img-lazy :src="data.item.group_name.image" class="profile" @error.native="brokenProfileImage" v-if="data.item.group_name.image" />
+        <b-img-lazy :src="groupImage(data.item)" class="profile" @error.native="brokenProfileImage" v-if="groupImage(data.item)" />
         <b-img-lazy :src="defaultProfile" class="profile" v-else />
       </template>
       <template slot="head(group_name)">
-        <b-img src="/icons/group_name_ico.svg" class="mt-3 icon" />
+        <b-img :src="imageUrl('/icons/group_name_ico.svg')" class="mt-3 icon" />
       </template>
       <template slot="cell(group_name)" slot-scope="data">
-        <a :href="'/group/view/' + data.item.group_name.idgroups">{{ data.item.group_name.name }}</a>
+        <!-- The template compiler condenses the newline between these two, so
+             without the margin the badge sits hard against the end of the name. -->
+        <a :href="'/group/view/' + (data.item.idgroups || data.item.id)" class="mr-2">{{ data.item.name }}</a>
+        <GroupArchivedBadge :idgroups="data.item.idgroups || data.item.id" />
+        <div v-if="showTags && data.item.group_tags_full && data.item.group_tags_full.length" class="mt-1">
+          <b-badge
+              v-for="tag in visibleTags(data.item.group_tags_full)"
+              :key="tag.id"
+              variant="secondary"
+              class="mr-1 tag-badge"
+          >{{ tag.name }}</b-badge>
+        </div>
       </template>
       <template slot="head(location)">
-        <b-img src="/icons/map_marker_ico.svg" class="mt-3 icon " />
+        <b-img :src="imageUrl('/icons/map_marker_ico.svg')" class="mt-3 icon " />
       </template>
       <template slot="cell(location)" slot-scope="data">
-        <div class="d-none d-md-block">
-          {{ data.item.location.location }}
+        <div class="d-none d-md-block" v-if="data.item.location && data.item.location.location">
+          {{ data.item.location.location }} <span class="text-muted small" v-if="data.item.location.distance">{{ distance(data.item.location.distance )}}&nbsp;km</span>
           <br />
           <span class="small text-muted">{{ data.item.location.country }}</span>
         </div>
       </template>
-      <template slot="head(all_hosts_count)">
-        <b-img src="/icons/user_ico.svg" class="mt-3 iconsmall" />
-      </template>
-      <template slot="head(all_restarters_count)">
-        <b-img src="/icons/volunteer_ico-thick.svg" class="mt-3 icon" />
+      <template slot="cell(distance)" slot-scope="data">
+        <span v-if="distanceKmFrom(data.item) !== null" class="text-nowrap">{{ distance(distanceKmFrom(data.item)) }}&nbsp;km</span>
       </template>
       <template slot="head(next_event)">
-        <b-img src="/icons/events_ico.svg" class="mt-3 icon" />
+        <b-img :src="imageUrl('/icons/events_ico.svg')" class="mt-3 icon" />
       </template>
       <template slot="cell(next_event)" slot-scope="data">
         <div>
           <div v-if="data.item.next_event">
-            {{ data.item.next_event }}
+            {{ formatDate(data.item.next_event) }}
           </div>
           <div v-else>
             {{ __('groups.upcoming_none_planned') }}
           </div>
         </div>
       </template>
-      <template slot="head(follow)">
+      <template slot="head(following)">
         <span />
       </template>
-      <template slot="cell(follow)" slot-scope="data">
-        <b-btn variant="primary" class="text-nowrap mr-2" v-if="data.item.follow" :to="'/group/join/' + data.item.idgroups">
-          <span class="d-block d-md-none">
-            {{ __('groups.join_group_button_mobile') }}
-          </span>
-          <span class="d-none d-md-block">
-            {{ __('groups.join_group_button') }}
-          </span>
-        </b-btn>
-        <b-btn variant="primary" class="text-nowrap mr-2" v-else @click="leaveGroup(data.item.idgroups)">
-          <span class="d-block d-md-none">
-            {{ __('groups.leave_group_button_mobile') }}
-          </span>
-          <span class="d-none d-md-block">
-            {{ __('groups.leave_group_button') }}
-          </span>
-        </b-btn>
-        <ConfirmModal :key="'leavegroupmodal-' + data.item.idgroups" :ref="'confirmLeave-' + data.item.idgroups" @confirm="leaveConfirmed(data.item.idgroups)" :message="__('groups.leave_group_confirm')" />
+      <template slot="cell(following)" slot-scope="data">
+        <div class="cell-warning d-flex justify-content-around p-2">
+          <a :href="'/group/edit/' + data.item.id">{{ __('groups.group_requires_moderation') }}</a>
+        </div>
       </template>
     </b-table>
+    <div v-if="showAllButton" class="text-center mt-2">
+      <b-btn v-if="show < filteredItems.length" variant="link" class="groups-show-all" @click="show = Infinity">
+        {{ __('groups.show_all_groups', { total: filteredItems.length }) }}
+      </b-btn>
+    </div>
+    <infinite-loading v-else :identifier="infiniteId" @infinite="loadMore">
+      <span slot="no-results" />
+      <span slot="no-more" />
+    </infinite-loading>
   </div>
 </template>
 <script>
 import { DATE_FORMAT, DEFAULT_PROFILE } from '../constants'
+import images from '../mixins/images'
 import moment from 'moment'
-import GroupsTableFilters from './GroupsTableFilters'
-import ConfirmModal from './ConfirmModal'
+import GroupsTableFilters from './GroupsTableFilters.vue'
+import GroupArchivedBadge from "./GroupArchivedBadge.vue";
+import { matchesFilters } from '../misc/groupFilter'
+
+// Rows shown per page. Small enough not to render a thousand rows at once,
+// big enough that zooming out visibly fills the list.
+const PAGE_SIZE = 25
+import InfiniteLoading from 'vue-infinite-loading'
+
 
 export default {
-  components: {ConfirmModal, GroupsTableFilters},
+  components: {GroupArchivedBadge, GroupsTableFilters, InfiniteLoading},
+  mixins: [images],
   props: {
-    groups: {
+    showAllButton: {
+      // Show one page of groups and a button that reveals the rest, rather than
+      // growing the list as you scroll, for pages with more below the list.
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    groupids: {
       type: Array,
       required: true
     },
-    count: {
-      type: Boolean,
+    // Where the map is centred, so the list can be ordered by what's nearest to
+    // the middle of what the user is looking at.  Null away from the map.
+    centre: {
+      type: Object,
       required: false,
-      default: false
+      default: null
     },
-    search: {
-      type: Boolean,
+    // {lat, lng} the distance column measures from - the user's own location,
+    // or the place they searched for (see GroupMapAndList.referencePoint).
+    // Null hides the column and leaves the ordering to centre/name.
+    referencePoint: {
+      type: Object,
       required: false,
-      default: false
+      default: null
     },
-    network: {
+    // Group id whose row should be highlighted (set when its map pin is hovered).
+    hover: {
       type: Number,
       required: false,
       default: null
     },
-    networks: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    allGroupTags: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    showTags: {
+    count: {
       type: Boolean,
       required: false,
       default: false
@@ -156,112 +165,225 @@ export default {
       type: String,
       required: false,
       default: null
-    }
+    },
+    approve: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    search: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    allGroupTags: {
+      type: Array,
+      required: false,
+      default: null
+    },
+    showTags: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   data () {
     return {
-      fields: [
-        { key: 'group_image', label: 'Group Image', tdClass: 'image'},
-        { key: 'group_name', label: 'Group Name', sortable: true },
-        { key: 'location', label: 'Location', tdClass: "hidecell", thClass: "hidecell" },
-        { key: 'all_hosts_count', label: 'Hosts', sortable: true, tdClass: "hidecell text-center", thClass: "hidecell text-center pl-3" },
-        { key: 'all_restarters_count', label: 'Restarters', sortable: true, tdClass: "hidecell text-center", thClass: "hidecell text-center pl-3" },
-        { key: 'next_event', label: 'Next Event', sortable: true, tdClass: "hidecell event", thClass: "hidecell" },
-        { key: 'follow' , label: 'Follow' }
-      ],
       searchName: null,
-      searchLocation: null,
-      searchNetwork: null,
-      searchCountry: null,
-      searchShow: false,
       searchTags: null,
-      show: 3
+      searchShow: false,
+      show: PAGE_SIZE,
+      infiniteId: 0
     }
   },
   computed: {
+    pageSize() {
+      return PAGE_SIZE
+    },
+    fields() {
+      const fields = [
+        { key: 'group_image', label: 'Group Image', tdClass: 'image'},
+        { key: 'group_name', label: 'Group Name', sortable: true },
+        { key: 'location', label: 'Location', tdClass: "hidecell", thClass: "hidecell" },
+        { key: 'next_event', label: 'Next Event', sortable: true, tdClass: "hidecell event", thClass: "hidecell" },
+      ]
+
+      if (this.referencePoint) {
+        // After next_event: distance is secondary to what the group is called
+        // and where, and hides on mobile like the other detail columns.
+        fields.splice(3, 0, { key: 'distance', label: this.__('groups.distance'), sortable: true, tdClass: "hidecell", thClass: "hidecell" })
+      }
+
+      if (this.approve) {
+        // Moderation reuses this table, and its rows need a way through to the
+        // group that is waiting to be approved.
+        fields.push({ key: 'following', label: 'Moderate' })
+      }
+
+      return fields
+    },
     defaultProfile() {
       return DEFAULT_PROFILE
     },
-    filteredGroups() {
-      return this.groups.filter(g => {
-        // Groups can be in multiple networks.
-        let match = true
+    groups() {
+      return this.$store.getters['groups/list']
+    },
+    items() {
+      return this.groups.filter((g) => this.groupids.includes(g.id))
+    },
+    activeFilters() {
+      return { name: this.searchName, tags: this.searchTags }
+    },
+    filteredItems() {
+      // The same predicate the map uses, so the pins and the rows can't disagree.
+      return this.items.filter(g => matchesFilters(g, this.activeFilters))
+    },
+    itemsToShow() {
+      // Sort before slicing, so the first page is the first groups in order
+      // rather than whichever ones happened to load first.
+      const items = [...this.filteredItems].sort((a, b) => {
+        if (this.referencePoint) {
+          // Nearest the user (or their searched place) first - the distance
+          // column's own order. Groups we can't place go last.
+          const da = this.distanceKmFrom(a)
+          const db = this.distanceKmFrom(b)
+          const ka = da === null ? Number.MAX_VALUE : da
+          const kb = db === null ? Number.MAX_VALUE : db
 
-        if (this.searchNetwork) {
-          match &= typeof g.networks.find(n => {
-            return parseInt(this.searchNetwork) === parseInt(n)
-          }) !== 'undefined'
-        }
+          if (ka !== kb) {
+            return ka - kb
+          }
+        } else if (this.centre) {
+          // Nearest the middle of the map first: someone looking at a map wants
+          // what's in front of them, and alphabetical order says nothing about
+          // where a group is.  Groups we can't place go last.
+          const da = this.distanceFromCentre(a)
+          const db = this.distanceFromCentre(b)
 
-        if (this.searchName) {
-          match &= g.name.toLowerCase().indexOf(this.searchName.toLowerCase()) !== -1
-        }
-
-        if (this.searchLocation) {
-          match &= g.location.toLowerCase().indexOf(this.searchLocation.toLowerCase()) !== -1
-        }
-
-        if (this.searchCountry) {
-          match &= g.country && g.country.toLowerCase().indexOf(this.searchCountry.country.toLowerCase()) !== -1
-        }
-
-        if (this.searchTags) {
-          // Tag in common?
-          if (this.searchTags.length) {
-            const tagsInCommon = this.searchTags.filter(t => {
-              return g.group_tags.indexOf(t.id) !== -1
-            })
-
-            match &= tagsInCommon.length > 0
+          if (da !== db) {
+            return da - db
           }
         }
 
-        return match
+        return a.name.localeCompare(b.name)
       })
-    },
-    items() {
-      return this.filteredGroups.map(g => {
-        return {
-          idgroups: g.idgroups,
-          group_image: g.group_image ? g.group_image : DEFAULT_PROFILE,
-          group_name: g,
-          location: g,
-          next_event: g.next_event ? (new moment(g.next_event).format(DATE_FORMAT)) : null,
-          all_hosts_count: g.all_hosts_count,
-          all_restarters_count: g.all_restarters_count,
-          follow: !g.ingroup
-        }
-      })
-    },
-    itemsToShow() {
-      return this.items.slice(0, this.show)
+
+      return items.slice(0, this.show)
     },
     translatedGroupCount() {
-      return this.$lang.choice('groups.group_count', this.filteredGroups.length, {
-        count: this.filteredGroups.length
+      // "There are 0 groups in this area" is a dead end; when nothing is in
+      // view, point at finding a group near them instead of counting nothing.
+      if (!this.items.length) {
+        return this.__('groups.group_count_none')
+      }
+
+      return this.__('groups.group_count', {
+        count: this.items.length
       })
     },
-},
-  created() {
-    // We might arrive on the page to filter by network.
-    this.searchNetwork = this.network
   },
-  mounted() {
-    this.loadMore()
+  watch: {
+    groupids(newVal, oldVal) {
+      // The map is showing a different set of groups, so start the list again
+      // from the top. Without this the row count stays at whatever the
+      // infinite scroll had reached, however much the viewport changes.
+      // Compared by contents, not identity: the parent hands over a freshly
+      // built array whenever the store changes, and resetting on that would
+      // throw away the user's scrolling.
+      const same = newVal.length === oldVal.length && newVal.every((id, i) => id === oldVal[i])
+
+      if (!same) {
+        this.show = PAGE_SIZE
+        this.infiniteId++
+      }
+    },
+    'items.length'(newVal, oldVal) {
+      // Groups can arrive after the scroller has decided there are no more -
+      // "Your groups" fetches each one separately - and once it has finished
+      // it never asks again. Restart it so the late arrivals can be scrolled to.
+      if (newVal > oldVal) {
+        this.infiniteId++
+      }
+    },
+    activeFilters: {
+      handler(newVal) {
+        // Tell the map, so filtering moves the pins rather than just shortening
+        // the list underneath them.
+        this.$emit('update:filters', newVal)
+      },
+      deep: true
+    },
+    itemsToShow: {
+      immediate: true,
+      handler(newVal) {
+        // Hydrate the visible rows in one batched call (image, location
+        // text, counts, next event, tag names). The store skips ids that
+        // are already hydrated or in flight.
+        const ids = newVal.map(g => g.id)
+
+        if (ids.length) {
+          this.$store.dispatch('groups/hydrate', { ids })
+        }
+      }
+    }
   },
   methods: {
+    distanceKmFrom(group) {
+      // Real kilometres (haversine) from the reference point - unlike
+      // distanceFromCentre below, this one is shown to the user, so the
+      // flat-degree approximation isn't good enough.
+      if (!this.referencePoint) {
+        return null
+      }
+
+      const lat = group.location && group.location.lat != null ? group.location.lat : group.lat
+      const lng = group.location && group.location.lng != null ? group.location.lng : group.lng
+
+      if (lat == null || lng == null || isNaN(+lat) || isNaN(+lng)) {
+        return null
+      }
+
+      const toRad = (deg) => (deg * Math.PI) / 180
+      const dLat = toRad(+lat - this.referencePoint.lat)
+      const dLng = toRad(+lng - this.referencePoint.lng)
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(this.referencePoint.lat)) * Math.cos(toRad(+lat)) * Math.sin(dLng / 2) ** 2
+
+      // Mean Earth radius in km.
+      return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    },
+    distanceFromCentre(group) {
+      // Only ever compared with each other, so the flat-earth approximation is
+      // fine and avoids the cost of a great-circle calculation per row.
+      const lat = group.location && group.location.lat != null ? group.location.lat : group.lat
+      const lng = group.location && group.location.lng != null ? group.location.lng : group.lng
+
+      if (lat == null || lng == null || isNaN(+lat) || isNaN(+lng)) {
+        return Number.MAX_VALUE
+      }
+
+      return Math.sqrt((+lat - this.centre.lat) ** 2 + (+lng - this.centre.lng) ** 2)
+    },
+    eventStart(event) {
+      // next_event is an object ({start}) from the v2 APIs but a plain date
+      // string in the moderation store (newToOld).
+      return event && event.start ? event.start : event
+    },
+    formatDate(date) {
+      return new moment(this.eventStart(date)).format('ddd Do MMM YYYY')
+    },
     brokenProfileImage(event) {
       event.target.src = DEFAULT_PROFILE
     },
-    toggleFilters() {
-      this.searchShow = !this.searchShow
+    groupImage(item) {
+      // The v2 APIs return a bare path; the moderation store and old
+      // server-rendered data are already prefixed.
+      if (!item.image) {
+        return null
+      }
 
-      // Reset the search filters so that we don't end up filtered if we switch screen sizes.  It might be nice
-      // to preserve the filter values, but that would be a bit of a faff with some two-way props bindings.
-      this.searchName = null
-      this.searchLocation = null
-      this.searchNetwork = this.network
-      this.searchCountry = null
+      return item.image.startsWith('/') || item.image.startsWith('http') ? item.image : '/uploads/mid_' + item.image
     },
     sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
       const a = aRow[key]
@@ -269,7 +391,13 @@ export default {
 
       if (key === 'group_name') {
         // We need a custom sort because we are putting a link into the group field.
-        return b.name.localeCompare(a.name, compareLocale, compareOptions)
+        return aRow.name.localeCompare(bRow.name, compareLocale, compareOptions)
+      } else if (key === 'distance') {
+        // A virtual column - the rows carry no `distance` property, so the
+        // default string compare would sort every row as "undefined".
+        const da = this.distanceKmFrom(aRow)
+        const db = this.distanceKmFrom(bRow)
+        return (da === null ? Number.MAX_VALUE : da) - (db === null ? Number.MAX_VALUE : db)
       } else if (key === 'next_event') {
         // Sort no events to the end.
         if (!aRow.next_event && !bRow.next_event) {
@@ -279,44 +407,58 @@ export default {
         } else if (bRow.next_event && !aRow.next_event) {
           return 1
         } else {
-          return new moment(aRow.group_name.next_event).unix() - new moment(bRow.group_name.next_event).unix()
-        }
-      } else if (key === 'all_hosts_count' || key === 'all_restarters_count') {
-        if (parseInt(a) < parseInt(b)) {
-          return -1
-        } else if (parseInt(a) > parseInt(b)) {
-          return 1
-        } else {
-          return 0
+          return new moment(this.eventStart(aRow.next_event)).unix() - new moment(this.eventStart(bRow.next_event)).unix()
         }
       } else {
-        return toString(a).localeCompare(toString(b), compareLocale, compareOptions)
+        return String(a).localeCompare(String(b), compareLocale, compareOptions)
       }
     },
-    loadMore() {
-      // We can't use a genuine infinite scroll because we need the data loaded into the table for filtering.  But
-      // we can load it gradually so that the page looks more responsive.
+    loadMore($state) {
       if (this.show < this.items.length) {
-        this.show += 10
-        setTimeout(this.loadMore, 1)
+        this.show += PAGE_SIZE
+        $state.loaded()
+      } else {
+        $state.complete()
       }
     },
-    leaveGroup(idgroups) {
-      this.$refs['confirmLeave-' + idgroups].show()
+    distance(dist ) {
+      if (dist < 5) {
+        return Math.round(dist * 10) / 10
+      } else {
+        return Math.round(dist)
+      }
     },
-    leaveConfirmed(idgroups) {
-      this.$store.dispatch('groups/unfollow', {
-        idgroups: idgroups
-      })
+    toggleFilters() {
+      this.searchShow = !this.searchShow
+    },
+    rowHovered(item, index, event) {
+      this.$emit('update:hover', item.id)
+    },
+    rowUnhovered(item, index, event) {
+      this.$emit('update:hover', null)
+    },
+    rowClass(item, type) {
+      return item && type === 'row' && item.id === this.hover ? 'group-row-hover' : ''
+    },
+    visibleTags(tags) {
+      // Filter tags to only show those the user has access to view
+      // allGroupTags contains the tags the user can see (admin sees all, NC sees their networks)
+      if (!this.allGroupTags || !tags) {
+        return []
+      }
+      // Resolve names from allGroupTags: index entries only carry tag ids
+      // until the row is hydrated.
+      const byId = new Map(this.allGroupTags.map(t => [t.id, t]))
+      return tags.filter(t => byId.has(t.id)).map(t => t.name ? t : byId.get(t.id))
     }
-  }
+  },
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .profile {
   border: 1px solid black;
@@ -336,21 +478,21 @@ export default {
   width: 20px;
 }
 
-/deep/ .image {
+::v-deep .image {
   width: 90px;
 }
 
-/deep/ .event {
+::v-deep .event {
   width: 8rem;
 }
 
-/deep/ .table.b-table > thead > tr {
+::v-deep .table.b-table > thead > tr {
   background-position-x: center !important;
 }
 
 // The multiselect is used in a few places, and we have some inconsistencies in styling.  Here we force it to match
 // the behaviour of the inputs.
-/deep/ .multiselect {
+::v-deep .multiselect {
   &.multiselect--active {
     border: 0 !important;
 
@@ -367,11 +509,23 @@ export default {
   }
 }
 
-/deep/ .hidecell {
+::v-deep .hidecell {
   display: none;
 
   @include media-breakpoint-up(md) {
     display: table-cell;
   }
+}
+
+.tag-badge {
+  font-size: 0.75rem;
+  font-weight: normal;
+  padding: 0.2em 0.5em;
+}
+
+// Row whose map pin is hovered. ::v-deep because the tr is rendered inside
+// b-table, outside this component's scope attribute.
+::v-deep .group-row-hover td {
+  background-color: #fff3cd;
 }
 </style>

@@ -5,8 +5,11 @@ namespace Tests\Feature\Groups;
 use App\Group;
 use App\Network;
 use App\Role;
+use App\Skills;
 use App\User;
+use App\UsersSkills;
 use Tests\TestCase;
+use Illuminate\Auth\AuthenticationException;
 
 class GroupHostTest extends TestCase
 {
@@ -19,90 +22,225 @@ class GroupHostTest extends TestCase
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $this->idgroups = $this->createGroup();
         $this->group = Group::find($this->idgroups);
+        $this->network = Network::factory()->create();
+        $this->network->addGroup($this->group);
         $this->assertNotNull($this->idgroups);
     }
 
-    public function testVolunteerNotInGroup()
+    public function roleProvider(): array {
+        return [
+            [ 'Administrator' ],
+            [ 'NetworkCoordinator' ],
+        ];
+    }
+
+    /**
+     * @dataProvider roleProvider
+     * @story:GroupController::getVolunteersForGroupv2
+     * @story:GroupController::patchVolunteerForGroupv2
+     * @story:GroupController::deleteVolunteerForGroupv2
+     */
+    public function testMakeHost($role): void
     {
-        $user = factory(User::class)->states('Administrator')->create();
+        $user = User::factory()->{lcfirst($role)}()->create();
         $this->actingAs($user);
 
-        $host = factory(User::class)->states('Host')->create();
-
-        try {
-            $response = $this->get("/group/make-host/{$this->idgroups}/{$host->id}");
-            $this->assertTrue(false);
-        } catch (\Exception $e) {
-            $this->assertContains('Volunteer is not currently in this group', $e->getMessage());
+        if ($role == 'NetworkCoordinator') {
+            $this->network->addCoordinator($user);
         }
-    }
 
-    public function testAdministratorMakeHost()
-    {
-        $user = factory(User::class)->states('Administrator')->create();
-        $this->actingAs($user);
-
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->create();
+        $this->assertEquals(Role::RESTARTER, $host->role);
         $this->group->addVolunteer($host);
 
-        $response = $this->get("/group/make-host/{$this->idgroups}/{$host->id}");
-        $response->assertSessionHas('success');
+        $skill1 = Skills::create([
+            'skill_name'  => 'UT1',
+            'description' => 'Planning',
+            'category' => 1
+        ]);
+
+        UsersSkills::create([
+            'skill' => $skill1->id,
+            'user' => $host->id,
+        ]);
+
+        // Get the volunteers.  There will be an admin added by the createGroup() method, so the host we've just
+        // added will be the second.
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals(2, count($json['data']));
+        $this->assertEquals($host->id, $json['data'][1]['user']);
+        $this->assertFalse($json['data'][1]['host']);
+        $this->assertEquals(1, count($json['data'][1]['skills']));
+
+        $response = $this->patch("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=" . $user->api_token, [
+            'host' => true,
+        ]);
+        $response->assertSuccessful();
+        $host->refresh();
+        $this->assertEquals(Role::HOST, $host->role);
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals(2, count($json['data']));
+        $this->assertEquals($host->id, $json['data'][1]['user']);
+        $this->assertTrue($json['data'][1]['host']);
+
+        // Remove them.
+        $response = $this->delete("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=" . $host->api_token);
+        $response->assertSuccessful();
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals(1, count($json['data']));
     }
 
-    public function testNetworkCoordinatorMakeHost()
+    /**
+     * @story:GroupController::patchVolunteerForGroupv2
+     * @story:GroupController::deleteVolunteerForGroupv2
+     */
+    public function testHostMakeHost(): void
     {
-        $network = factory(Network::class)->create();
-        $coordinator = factory(User::class)->state('NetworkCoordinator')->create();
-        $network->addGroup($this->group);
-        $network->addCoordinator($coordinator);
-        $this->actingAs($coordinator);
-
-        $host = factory(User::class)->states('Host')->create();
-        $this->group->addVolunteer($host);
-
-        $response = $this->get("/group/make-host/{$this->idgroups}/{$host->id}");
-        $response->assertSessionHas('success');
-    }
-
-    public function testHostMakeHost()
-    {
-        $firsthost = factory(User::class)->states('Host')->create();
+        $firsthost = User::factory()->host()->create();
         $this->group->addVolunteer($firsthost);
         $this->group->makeMemberAHost($firsthost);
         $this->actingAs($firsthost);
 
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $this->group->addVolunteer($host);
 
-        $response = $this->get("/group/make-host/{$this->idgroups}/{$host->id}");
-        $response->assertSessionHas('success');
+        $response = $this->patch("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=" . $firsthost->api_token);
+        $response->assertSuccessful();
 
         // Remove them.
-        $response = $this->get("/group/remove-volunteer/{$this->idgroups}/{$host->id}");
-        $response->assertSessionHas('success');
-
-        // Remove them again - should redirect back with warning.
-        $response = $this->from('/')->get("/group/remove-volunteer/{$this->idgroups}/{$host->id}");
-        $response->assertRedirect('/');
-        $response->assertSessionHas('warning');
+        $response = $this->delete("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=" . $firsthost->api_token);
+        $response->assertSuccessful();
 
         // Removed host tries and fails to remove the first host.
-        $response = $this->get('/logout');
         $this->actingAs($host);
-        $response = $this->from('/')->get("/group/remove-volunteer/{$this->idgroups}/{$firsthost->id}");
-        $response->assertRedirect('/');
-        $response->assertSessionHas('warning');
+        $this->expectException(AuthenticationException::class);
+        $response = $this->delete("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=" . $host->api_token);
     }
 
-    public function testIrrelevantHost()
+    public function providerTrueFalse(): array
     {
-        $firsthost = factory(User::class)->states('Host')->create();
-        $this->actingAs($firsthost);
+        return [
+            [false],
+            [true],
+        ];
+    }
 
-        $host = factory(User::class)->states('Host')->create();
+    /**
+     * @dataProvider providerTrueFalse
+     * @story:GroupController::patchVolunteerForGroupv2
+     */
+    public function testNetworkCoordinatorDemoteHost($addToNetwork): void {
+        $host = User::factory()->host()->create();
         $this->group->addVolunteer($host);
+        $this->group->makeMemberAHost($host);
 
-        $response = $this->get("/group/make-host/{$this->idgroups}/{$host->id}");
-        $response->assertSessionHas('warning');
+        $coordinator = User::factory()->networkCoordinator()->create();
+
+        if ($addToNetwork) {
+            $this->network->addCoordinator($coordinator);
+        } else {
+            $this->expectException(AuthenticationException::class);
+        }
+
+        $response = $this->patch("/api/v2/groups/{$this->idgroups}/volunteers/{$host->id}?api_token=".$coordinator->api_token, [
+            'host' => true,
+        ]);
+
+        $response->assertSuccessful();
+    }
+
+    public function testAdminCanSeeVolunteerEmail(): void
+    {
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $volunteer = User::factory()->create([
+            'email' => 'volunteer@example.com',
+        ]);
+        $this->group->addVolunteer($volunteer);
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+
+        // Find the volunteer in the response
+        $volunteerData = collect($json['data'])->firstWhere('user', $volunteer->id);
+        $this->assertNotNull($volunteerData);
+        $this->assertArrayHasKey('email', $volunteerData);
+        $this->assertEquals('volunteer@example.com', $volunteerData['email']);
+    }
+
+    public function testHostCanSeeVolunteerEmail(): void
+    {
+        $host = User::factory()->host()->create();
+        $this->group->addVolunteer($host);
+        $this->group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        $volunteer = User::factory()->create([
+            'email' => 'volunteer@example.com',
+        ]);
+        $this->group->addVolunteer($volunteer);
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+
+        // Find the volunteer in the response
+        $volunteerData = collect($json['data'])->firstWhere('user', $volunteer->id);
+        $this->assertNotNull($volunteerData);
+        $this->assertArrayHasKey('email', $volunteerData);
+        $this->assertEquals('volunteer@example.com', $volunteerData['email']);
+    }
+
+    public function testNetworkCoordinatorCanSeeVolunteerEmail(): void
+    {
+        $coordinator = User::factory()->networkCoordinator()->create();
+        $this->network->addCoordinator($coordinator);
+        $this->actingAs($coordinator);
+
+        $volunteer = User::factory()->create([
+            'email' => 'volunteer@example.com',
+        ]);
+        $this->group->addVolunteer($volunteer);
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+
+        // Find the volunteer in the response
+        $volunteerData = collect($json['data'])->firstWhere('user', $volunteer->id);
+        $this->assertNotNull($volunteerData);
+        $this->assertArrayHasKey('email', $volunteerData);
+        $this->assertEquals('volunteer@example.com', $volunteerData['email']);
+    }
+
+    public function testRestarterCannotSeeVolunteerEmail(): void
+    {
+        $restarter = User::factory()->restarter()->create();
+        $this->group->addVolunteer($restarter);
+        $this->actingAs($restarter);
+
+        $volunteer = User::factory()->create([
+            'email' => 'volunteer@example.com',
+        ]);
+        $this->group->addVolunteer($volunteer);
+
+        $response = $this->get("/api/v2/groups/{$this->idgroups}/volunteers");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+
+        // Find the volunteer in the response
+        $volunteerData = collect($json['data'])->firstWhere('user', $volunteer->id);
+        $this->assertNotNull($volunteerData);
+        $this->assertArrayNotHasKey('email', $volunteerData);
     }
 }

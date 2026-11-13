@@ -2,49 +2,33 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class JoinEvent extends Notification implements ShouldQueue
+class JoinEvent extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-    protected $user;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr, $user = null)
-    {
-        $this->arr = $arr;
-        $this->user = $user;
-    }
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
-        if ($notifiable == null) {
+        if ($notifiable == null)
+        {
             return [];
         }
 
         // If we're sending to a registered user, only send by mail channel if opted in to emails.
-        if ($this->user !== null) {
+        if ($this->user !== null)
+        {
             $channels[] = 'database';
 
-            if ($notifiable->invites) {
+            if ($notifiable->invites)
+            {
                 $channels[] = 'mail';
             }
-        } else { // Unregistered users
+        } else
+        { // Unregistered users
             // We can only send by email.
             $channels[] = 'mail';
         }
@@ -55,71 +39,85 @@ class JoinEvent extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
-        $subject = 'You\'ve been invited to an upcoming '.$this->arr['group'].' event';
-        $greeting = 'Hello!';
-        $introLine = $this->arr['name'].' has invited you to join '.$this->arr['group'].' at an upcoming repair event.';
+        $locale = $notifiable->language;
+        $subject = __('notifications.join_event_subject', [
+            'groupname' => $this->arr['group']
+        ],            $locale);
+        $greeting = __('notifications.greeting', [], $locale);
+
+        $introLine = __('notifications.join_event_line1', [
+            'inviter' => $this->arr['name'],
+            'groupname' => $this->arr['group']
+        ],              $locale);
+
         $eventDetailsTable = '<table style="margin-left:120px; color:black">
                                     <tr>
-                                    <td>Date:</td>
-                                    <td>'.$this->arr['event']->getEventDate('D jS M Y').'</td>
+                                    <td>' . __('notifications.join_event_date') . '</td>
+                                    <td>' . $this->arr['event']->getFormattedLocalStart('D jS M Y') . '</td>
                                   </tr>
                                   <tr>
-                                    <td>Time:</td>'.
-                                    '<td>'.$this->arr['event']->getEventStartEnd().'</td>
+                                    <td>' . __('notifications.join_event_time') . '</td>
+                                    <td>' . $this->arr['event']->getEventStartEndLocal(true) . '</td>
                                   </tr>
-                                    <tr>
-                                    <td>Location:</td>
-                                    <td>'.$this->arr['event']->location.'</td>
+                                  <tr>
+                                    <td>' . __('notifications.join_event_location') . '</td>
+                                    <td>' . $this->arr['event']->location . '</td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2"><a href="' . $this->arr['view_url'] . '">' . __(
+                'notifications.join_event_view'
+            ) . '</a></td>
                                   </tr>
                             </table>';
-        $ignoreLine = 'If you think this invitation was not intended for you, please disregard this email.';
+        $ignoreLine = __('notifications.join_event_ignore', [], $locale);
 
-        if ($this->user !== null) { // existing user
-            if ($this->user->invites == 1) { // opted in to emails
+        if ($this->user !== null)
+        { // existing user
+            if ($this->user->invites == 1)
+            { // opted in to emails
                 $mail = (new MailMessage)
-                      ->subject($subject)
-                      ->greeting($greeting)
-                      ->line($introLine)
-                      ->line('');
+                    ->subject($subject)
+                    ->greeting($greeting)
+                    ->line($introLine)
+                    ->line('');
 
                 // Add message from sender if they left one
-                if (! is_null($this->arr['message'])) {
-                    $mail->line('"'.nl2br($this->arr['message']).'"')
-                         ->line('');
+                if (!is_null($this->arr['message']))
+                {
+                    $mail->line('"' . nl2br($this->arr['message']) . '"')
+                        ->line('');
                 }
 
                 $mail->line($eventDetailsTable)
-                     ->action('RSVP now', $this->arr['url'])
-                     ->line('')
-                     ->line($ignoreLine)
-                     ->line('');
+                    ->action(__('notifications.join_event_rsvp_now', [], $locale), $this->arr['url'])
+                    ->line($ignoreLine)
+                    ->line('');
 
                 return $mail;
             }
-        } else { // receiver is someone not yet on the platform
+        } else
+        { // receiver is someone not yet on the platform
             $mail = (new MailMessage())
-                  ->subject($subject)
-                  ->greeting($greeting)
-                  ->line($introLine)
-                  ->line('');
+                ->subject($subject)
+                ->greeting($greeting)
+                ->line($introLine)
+                ->line('');
 
             // Add message from sender if they left one
-            if (! is_null($this->arr['message'])) {
+            if (!is_null($this->arr['message']))
+            {
                 $mail->line('')
-                     ->line('"'.nl2br($this->arr['message']).'"');
+                    ->line('"' . nl2br($this->arr['message']) . '"');
             }
 
             $mail->line($eventDetailsTable)
-                 ->action('RSVP now', $this->arr['url'])
-                 ->line('')
-                 ->line('You can turn up on the day, or if you would prefer you can also create an account with us and RSVP online now.')
-                 ->line('')
-                 ->line($ignoreLine);
+                ->action(__('notifications.join_event_rsvp_now', [], $locale), $this->arr['url'])
+                ->line('')
+                ->line($ignoreLine);
 
             return $mail;
         }
@@ -128,15 +126,14 @@ class JoinEvent extends Notification implements ShouldQueue
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
-            'title' => 'You\'ve been invited to join an event: ',
+            'title' => __('notifications.join_event_title', [], $notifiable->locale),
             'name' => $this->arr['event']->venue,
-            'url' => url('/party/view/'.$this->arr['event']->idevents),
+            'url' => url('/party/view/' . $this->arr['event']->idevents),
         ];
     }
 }

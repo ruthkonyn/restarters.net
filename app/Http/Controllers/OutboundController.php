@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
 use App\Device;
 use App\Group;
-use App\Helpers\FootprintRatioCalculator;
 use App\Party;
 use Request;
 
+#[Feature('Platform', description: 'Platform-wide statistics and public impact data')]
 class OutboundController extends Controller
 {
     /** type can be either party or group
      * id is id of group or party to display.
      * */
+    #[UserStory('As a Guest, I can view embeddable CO2 impact visualisations for events and groups', persona: 'Guest', theme: 'Embeddable widgets')]
+    #[UserStory('As a ThirdParty, I can embed CO2 impact widgets for events and groups on my platform', persona: 'ThirdParty', theme: 'Embeddable widgets')]
     public static function info($type, $id, $format = 'fixometer', $return = 'view')
     {
 
@@ -26,8 +30,6 @@ class OutboundController extends Controller
             $id = (int) $id;
             $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
-            // Calculators
-
             // Get the data by type
             if (strtolower($type) == 'party') {
                 $event = Party::find($id);
@@ -37,28 +39,15 @@ class OutboundController extends Controller
                 }
 
                 $eventStats = $event->getEventStats();
-                $co2 = $eventStats['co2'];
+                $co2 = $eventStats['co2_total'];
             } elseif (strtolower($type) == 'group') {
                 $group = Group::find($id);
 
                 if (! $group) {
                     abort(404);
                 }
-
-                $EmissionRatio = FootprintRatioCalculator::calculateRatio();
-
-                $groupStats = $group->getGroupStats($EmissionRatio);
-                $co2 = $groupStats['co2'];
-            } elseif (strtolower($type) == 'group-tag') {
-                $groups = Group::join('grouptags_groups', 'grouptags_groups.group', '=', 'groups.idgroups')
-                  ->where('grouptags_groups.group_tag', $id)
-                    ->select('groups.*')
-                      ->get();
-                $co2 = 0;
-                foreach ($groups as $group) {
-                    $groupStats = $group->getGroupStats($EmissionRatio);
-                    $co2 += $groupStats['co2'];
-                }
+                $groupStats = $group->getGroupStats();
+                $co2 = $groupStats['co2_total'];
             }
 
             if ($format == 'fixometer') {
@@ -90,12 +79,12 @@ class OutboundController extends Controller
                 if (Request::is('api*')) {
                     return response()->json([
                             'info' => $info,
-                            'co2' => $co2,
+                            'co2' => round($co2),
                         ]);
                 } else {
                     return view('outbound.info', [
                             'info' => $info,
-                            'co2' => $co2,
+                            'co2' => round($co2),
                         ]);
                 }
             } else {
@@ -120,6 +109,11 @@ class OutboundController extends Controller
                     $title = 'Like manufacturing';
                     $measure = 'half car';
                     $equal_to = round($co2 / 3000);
+                } elseif ($format == 'leaf') { // Display new sapling / hectare stats.
+                    // All constructed in Vue.  We pass the raw CO2 value.
+                    $title = '';
+                    $measure = '';
+                    $equal_to = $co2;
                 } else { // Display sofa
                     $title = 'Like manufacturing';
                     $measure = 'sofa';
@@ -130,7 +124,7 @@ class OutboundController extends Controller
                 if (Request::is('api*')) {
                     return response()->json([
                             'format'        => $format,
-                            'co2'           => $co2,
+                            'co2'           => round($co2),
                             'title'         => $title,
                             'measure'   => $measure,
                             'equal_to'  => $equal_to,
@@ -138,7 +132,7 @@ class OutboundController extends Controller
                 } else {
                     return view('visualisations', [
                             'format'        => $format,
-                            'co2'           => $co2,
+                            'co2'           => round($co2),
                             'title'         => $title,
                             'measure'   => $measure,
                             'equal_to'  => $equal_to,

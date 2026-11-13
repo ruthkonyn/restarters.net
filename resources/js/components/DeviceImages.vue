@@ -1,34 +1,27 @@
 <template>
   <div>
-    <div class="device-photo-layout" v-if="!add">
-      <label v-if="!add">
+    <div class="device-photo-layout">
+      <label>
         {{ __('devices.images') }}
       </label>
       <div class="d-flex flex-wrap device-photos dropzone-previews">
-        <FileUploader :url="'/device/image-upload/' + device.iddevices" v-if="edit && !disabled" previews-container=".device-photos" @uploaded="uploaded($event)" />
+        <FileUploader :url="uploadURL" v-if="(edit || add) && !disabled && images.length < maxFiles" previews-container=".device-photos" @uploaded="uploaded($event)" :max-files="maxFiles" />
         <DeviceImage v-for="image in images" :key="'img-' + image.path" :image="image" @remove="$emit('remove', image)" :disabled="disabled" />
       </div>
     </div>
-    <p class="p-1 form-text" v-else>
-      {{ __('devices.images_on_edit') }}
-    </p>
   </div>
 </template>
 <script>
-import FileUploader from './FileUploader'
-import DeviceImage from './DeviceImage'
+import FileUploader from './FileUploader.vue'
+import DeviceImage from './DeviceImage.vue'
 
 export default {
   components: {DeviceImage, FileUploader},
   props: {
-    // This is deliberately not retrieved from the store as it can be the current, unsaved device.
-    device: {
-      type: Object,
-      required: true
-    },
-    idevents: {
+    id: {
       type: Number,
-      required: true
+      required: false,
+      default: null
     },
     add: {
       type: Boolean,
@@ -46,24 +39,34 @@ export default {
       default: false
     },
   },
+  data () {
+    return {
+      maxFiles: 5,
+      imagesDuringCreation: null,
+    }
+  },
   computed: {
     images() {
       // TODO LATER The images are currently added/removed/deleted immediately, and so we get them from the store.
       // This should be deferred until the save.
-      if (this.device) {
-        return this.$store.getters['devices/imagesByDevice'](this.device.iddevices)
+      if (this.id > 0) {
+        return this.$store.getters['devices/imagesByDevice'](this.id)
       } else {
-        return []
+        return this.imagesDuringCreation || []
       }
     },
+    uploadURL() {
+      return '/device/image-upload/' + (this.id ? this.id : 0)
+    }
   },
   methods: {
     uploaded(images) {
-      // We have uploaded some images.  Add them to the store.
-      this.$store.dispatch('devices/setImages', {
-        iddevices: this.device.iddevices,
-        images: images
-      })
+      if (this.id > 0) {
+        // We have uploaded some images.  Fetch the device to reflect the new images.Add them to the store.
+        this.$store.dispatch('devices/fetch', this.id)
+      } else {
+        this.imagesDuringCreation = images
+      }
     }
   }
 }

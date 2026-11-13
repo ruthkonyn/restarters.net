@@ -3,12 +3,14 @@
 namespace Tests\Feature\Groups;
 
 use App\Group;
+use App\Party;
 use App\Role;
 use Tests\TestCase;
 
 class GroupDeleteTest extends TestCase
 {
-    public function testDelete()
+    /** @story:GroupController::delete */
+    public function testDelete(): void
     {
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $id = $this->createGroup();
@@ -18,23 +20,24 @@ class GroupDeleteTest extends TestCase
 
         // Only administrators can delete.
         foreach (['Restarter', 'Host', 'NetworkCoordinator'] as $role) {
-            $user = factory(\App\User::class)->states($role)->create();
+            $user = \App\User::factory()->{lcfirst($role)}()->create();
             $this->actingAs($user);
             $this->followingRedirects();
-            $response = $this->get("/group/delete/$id");
-            $this->assertContains('Sorry, but you do not have the permissions to perform that action', $response->getContent());
+            $response = $this->post("/group/delete/$id");
+            $this->assertStringContainsString('Sorry, but you do not have the permissions to perform that action', $response->getContent());
         }
 
-        $user = factory(\App\User::class)->states('Administrator')->create();
+        $user = \App\User::factory()->administrator()->create();
         $this->actingAs($user);
         $this->followingRedirects();
-        $response = $this->get("/group/delete/$id");
-        $this->assertContains(__('groups.delete_succeeded', [
+        $response = $this->post("/group/delete/$id");
+        $this->assertStringContainsString(__('groups.delete_succeeded', [
             'name' => $name,
         ]), $response->getContent());
     }
 
-    public function testCanDeleteWithEmptyEvent()
+    /** @story:GroupController::delete */
+    public function testCanDeleteWithEmptyEvent(): void
     {
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $id = $this->createGroup();
@@ -45,16 +48,17 @@ class GroupDeleteTest extends TestCase
         // Add an event with no devices - should still be able to delete.
         $this->createEvent($id, 'yesterday');
 
-        $user = factory(\App\User::class)->states('Administrator')->create();
+        $user = \App\User::factory()->administrator()->create();
         $this->actingAs($user);
         $this->followingRedirects();
-        $response = $this->get("/group/delete/$id");
-        $this->assertContains(__('groups.delete_succeeded', [
+        $response = $this->post("/group/delete/$id");
+        $this->assertStringContainsString(__('groups.delete_succeeded', [
             'name' => $name,
         ]), $response->getContent());
     }
 
-    public function testCantDeleteWithDevice()
+    /** @story:GroupController::delete */
+    public function testCantDeleteWithDevice(): void
     {
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $id = $this->createGroup();
@@ -62,12 +66,39 @@ class GroupDeleteTest extends TestCase
 
         // Add an event with a device - should not  be able to delete.
         $idevents = $this->createEvent($id, 'yesterday');
-        $this->createDevice($idevents, 'misc');
+        $iddevices = $this->createDevice($idevents, 'misc');
 
-        $user = factory(\App\User::class)->states('Administrator')->create();
+        $user = \App\User::factory()->administrator()->create();
         $this->actingAs($user);
         $this->followingRedirects();
-        $response = $this->get("/group/delete/$id");
-        $this->assertContains('Sorry, but you do not have the permissions to perform that action.', $response->getContent());
+        $response = $this->post("/group/delete/$id");
+        $this->assertStringContainsString('Sorry, but you do not have the permissions to perform that action.', $response->getContent());
+
+        // Delete the event - still shouldn't be deletable as a device exists.
+        Party::find($idevents)->delete();
+
+        $response = $this->post("/group/delete/$id");
+        $response->assertRedirect('/user/forbidden');
+    }
+
+    /** @story:GroupController::delete */
+    public function testCanDeleteWithDeletedEvent(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup();
+        $this->assertNotNull($id);
+
+        // Create a past event
+        $event = Party::factory()->moderated()->create([
+                                                                        'event_start_utc' => '2000-01-01T10:15:05+05:00',
+                                                                        'event_end_utc' => '2000-01-0113:45:05+05:00',
+                                                                        'group' => $id,
+                                                                    ]);
+
+        // Should
+        $event->delete();
+        $response = $this->post("/group/delete/$id");
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
     }
 }

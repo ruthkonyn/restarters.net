@@ -1,21 +1,19 @@
 <template>
   <div>
     <div class="d-flex justify-content-center align-content-center">
-      <b-img-lazy fluid src="/images/arrows_doodle.svg" class="d-none d-md-block" />
+      <b-img-lazy fluid :src="imageUrl('/images/arrows_doodle.svg')" class="d-none d-md-block" />
       <h1 class="ml-2 mr-2 align-self-center">{{ __('dashboard.title') }}</h1>
-      <b-img-lazy fluid src="/images/confetti_doodle.svg" class="d-none d-md-block" />
+      <b-img-lazy fluid :src="imageUrl('/images/confetti_doodle.svg')" class="d-none d-md-block" />
     </div>
-    <div class="layout mt-4 mb-4">
-      <DashboardBanner class="banner" />
+    <div class="dp-layout mt-4 mb-4">
+      <AlertBanner class="banner" />
       <div class="yourgroups">
         <DashboardYourGroups :newGroups="newGroups" :nearbyGroups="nearbyGroups" :location="location" />
       </div>
       <DashboardAddData class="adddata justify-self-end" />
       <DashboardRightSidebar class="sidebar" />
       <DiscourseDiscussion
-          v-if="topics"
           class="discourse"
-          :topics="topics"
           :see-all-topics-link="seeAllTopicsLink"
           :discourse-base-url="discourseBaseUrl"
           :is-logged-in="isLoggedIn"
@@ -25,15 +23,16 @@
 </template>
 <script>
 import auth from '../mixins/auth'
-import DashboardBanner from './DashboardBanner'
-import DashboardYourGroups from './DashboardYourGroups'
-import DashboardRightSidebar from './DashboardRightSidebar'
-import DiscourseDiscussion from './DiscourseDiscussion'
-import DashboardAddData from './DashboardAddData'
+import images from '../mixins/images'
+import AlertBanner from './AlertBanner.vue'
+import DashboardYourGroups from './DashboardYourGroups.vue'
+import DashboardRightSidebar from './DashboardRightSidebar.vue'
+import DiscourseDiscussion from './DiscourseDiscussion.vue'
+import DashboardAddData from './DashboardAddData.vue'
 
 export default {
-  components: {DashboardAddData, DashboardYourGroups,DashboardRightSidebar,DashboardBanner,DiscourseDiscussion},
-  mixins: [ auth ],
+  components: {DashboardAddData, DashboardYourGroups,DashboardRightSidebar,AlertBanner,DiscourseDiscussion},
+  mixins: [ auth, images ],
   props: {
     yourGroups: {
       type: Array,
@@ -54,16 +53,6 @@ export default {
       required: false,
       default: null
     },
-    pastEvents: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    topics: {
-      type: Array,
-      required: false,
-      detault: null
-    },
     seeAllTopicsLink: {
       type: String,
       required: true
@@ -77,12 +66,8 @@ export default {
       required: true
     },
     newGroups: {
-      type: Number,
+      type: Array,
       required: true
-    }
-  },
-  data () {
-    return {
     }
   },
   created() {
@@ -112,15 +97,6 @@ export default {
       })
     }
 
-    if (this.pastEvents) {
-      this.pastEvents.forEach(e => {
-        events[e.idevents] = e
-        e.group = e.the_group
-        delete e.the_group
-        e.attended = true
-      })
-    }
-
     this.$store.dispatch('events/setList', {
       events: Object.values(events)
     })
@@ -129,11 +105,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
-.layout {
+.dp-layout {
   display: grid;
   grid-template-rows: auto auto auto auto;
   grid-template-columns: 1fr;

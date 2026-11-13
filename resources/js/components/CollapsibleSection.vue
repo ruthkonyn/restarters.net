@@ -9,12 +9,11 @@
       'justify-content-between': true,
       }" @click="toggle">
       <div class="d-flex w-100 justify-content-between align-items-center">
-        <div class="d-flex flex-row w-100">
-          <div class="d-flex flex-column justify-content-center w-100">
+        <div class="d-flex flex-row flex-wrap w-100">
+          <div class="d-flex flex-column justify-content-center">
             <slot name="title" />
           </div>
           <div v-if="count" :class="{
-          'd-inline' : true,
           'd-md-none' : !alwaysShowCount,
           'text-muted' : true,
           'd-flex' : true,
@@ -24,17 +23,15 @@
           <span v-if="countBadge">
             &nbsp;<b-badge variant="primary" pill>{{ count }}</b-badge>
           </span>
-            <span v-else>
-            &nbsp;<span :class="countClass">({{ count }})</span>
-          </span>
+          <span v-else :class="countClass + ' ml-1'">({{ count }})</span>
           </div>
           <slot name="title-icon" />
         </div>
         <slot name="title-right" />
       </div>
       <span class="d-inline d-md-none clickme d-flex flex-column justify-content-center">
-        <img class="icon" v-if="expanded" src="/images/minus-icon.svg" alt="Collapse" />
-        <img class="icon" v-else src="/images/add-icon.svg" alt="Expand" />
+        <img class="icon" v-if="expanded" :src="imageUrl('/images/minus-icon.svg')" alt="Collapse" />
+        <img class="icon" v-else :src="imageUrl('/images/add-icon.svg')" alt="Expand" />
       </span>
     </component>
     <div :class="{
@@ -53,7 +50,10 @@
 // - optional count on mobile to encourage clicks.
 // The class-wrangling is complex because Vue doesn't let you use the same slot multiple times in the same component.
 
+import images from '../mixins/images'
+
 export default {
+  mixins: [images],
   props: {
     collapsed: {
       type: Boolean,
@@ -150,9 +150,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .icon {
   width: 30px;

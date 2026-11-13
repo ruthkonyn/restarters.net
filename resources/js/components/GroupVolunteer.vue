@@ -2,30 +2,32 @@
   <div>
     <div class="pt-2 pb-2 blackbord d-flex justify-content-between">
       <div class="d-flex w-100">
-        <b-img-lazy :src="profile" class="profile mr-2" rounded="circle" @error.native="brokenProfileImage" />
+        <a :href="'/profile/' + volunteer.user">
+          <b-img-lazy :src="profile" class="profile mr-2" rounded="circle" @error.native="brokenProfileImage" />
+        </a>
         <div class="namewidth flex-grow-1">
           <div class="d-flex flex-column">
             <div :class="{
             lineheight: true,
-            'font-weight-bold': host,
+            'font-weight-bold': volunteer.host,
             'd-flex': true,
             'flex-wrap': true
-            }" :title="volunteer.volunteer.name">
-            <span class="pr-1 overflow-hidden ellipsis">
-              {{ volunteer.volunteer.name }}
-            </span>
-              <span class="host" v-if="host">
+            }" :title="volunteer.name">
+            <a :href="'/profile/' + volunteer.user" class="pr-1 overflow-hidden ellipsis text-black">
+              {{ volunteer.name }}
+            </a>
+              <span class="host" v-if="volunteer.host">
               {{ __('partials.host') }}
             </span>
             </div>
-            <div :id="'skills-' + volunteer.volunteer.id" :class="{
+            <div :id="'skills-' + volunteer.user" :class="{
              'small': true,
              'd-flex': true,
              'clickme' : true,
              'text-muted': noskills
             }">
-              <div data-toggle="popover" data-placement="left" :data-content="skillList">
-                <b-img-lazy src="/images/star.svg" :class="{
+              <div v-b-tooltip.hover :title="skillList">
+                <b-img-lazy :src="imageUrl('/images/star.svg')" :class="{
                    'star': true,
                    'mr-1': true,
                    'faded': noskills
@@ -35,35 +37,43 @@
           </div>
         </div>
       </div>
-      <b-dropdown v-if="canedit" variant="none" ref="dropdown" class="edit-dropdown">
-        <b-dropdown-item :href="'/group/make-host/' + idgroups + '/' + volunteer.user" v-if="volunteer.role === restarter">{{ __('groups.make_host') }}</b-dropdown-item>
-        <b-dropdown-item target="_blank" rel="noopener" :href="'/group/remove-volunteer/' + idgroups + '/' + volunteer.user">{{ __('groups.remove_volunteer') }}</b-dropdown-item>
+      <b-dropdown v-if="canedit" variant="none" ref="dropdown" class="edit-dropdown" no-caret>
+        <template slot="button-content">
+          <img :src="imageUrl('/icons/edit_ico_green.svg')" alt="" width="24" height="24" />
+        </template>
+        <b-dropdown-item v-if="volunteer.host && candemote" @click="removeHostRole">{{ __('groups.remove_host_role') }}</b-dropdown-item>
+        <b-dropdown-item v-if="!volunteer.host" @click="makeVolunteerHost">{{ __('groups.make_host') }}</b-dropdown-item>
+        <b-dropdown-item @click="removeVolunteer">{{ __('groups.remove_volunteer') }}</b-dropdown-item>
       </b-dropdown>
-      <button class="dropdown-toggle d-none" />
     </div>
     <b-alert variant="danger" v-if="error">
       {{ __('partials.something_wrong') }}: {{ error }}
     </b-alert>
     <ConfirmModal @confirm="remove" ref="confirm" />
+    <ConfirmModal @confirm="removeVolunteerConfirmed" ref="removeVolunteerConfirm" />
   </div>
 </template>
 <script>
 import { DEFAULT_PROFILE, HOST, RESTARTER } from '../constants'
-import ConfirmModal from './ConfirmModal'
+import images from '../mixins/images'
+import ConfirmModal from './ConfirmModal.vue'
 import volunteers from '../store/volunteers'
+import { apiErrorMessage } from '../misc/apiError'
 
 export default {
   components: {ConfirmModal},
+  mixins: [images],
   props: {
-    idgroups: {
+    id: {
       type: Number,
       required: true
     },
-    volunteer: {
-      type: Object,
-      required: true
-    },
     canedit: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    candemote: {
       type: Boolean,
       required: false,
       default: false
@@ -77,29 +87,31 @@ export default {
     }
   },
   computed: {
-    profile() {
-      return this.volunteer ? this.volunteer.profilePath : DEFAULT_PROFILE
+    volunteer() {
+      return this.$store.getters['volunteers/byIDGroup'](this.id)
     },
-    host() {
-      return this.volunteer.role === HOST
+    profile() {
+      return this.volunteer ? this.volunteer.image : DEFAULT_PROFILE
     },
     noskills() {
-      return !this.volunteer.volunteer.user_skills || !this.volunteer.volunteer.user_skills.length
+      return !this.volunteer.skills || !this.volunteer.skills.length
     },
     skillCount() {
       let ret = null
-      let skills = this.volunteer.volunteer.user_skills
-      ret = (skills && skills.length ? skills.length : '0') + ' ' + this.$lang.choice('partials.skills', skills.length)
+      let skills = this.volunteer.skills
+      let len = skills && skills.length ? skills.length : 0
+      ret = len + ' ' + this.__('partials.skills', { count: len })
       return ret
     },
     skillList() {
       let ret = null
-      let skills = this.volunteer.volunteer.user_skills
+
+      let skills = this.volunteer.skills
 
       if (skills) {
         let names = []
         skills.forEach((s) => {
-          names.push(s.skill_name.skill_name)
+          names.push(s.name)
         })
 
         ret = names.join(', ')
@@ -119,7 +131,31 @@ export default {
           eventId: this.volunteer.event,
         })
       } catch (e) {
-        this.error = e.message
+        this.error = apiErrorMessage(e)
+      }
+    },
+    removeVolunteer() {
+      this.$refs.removeVolunteerConfirm.show()
+    },
+    async removeVolunteerConfirmed() {
+      try {
+        await this.$store.dispatch('volunteers/remove', this.volunteer.id)
+      } catch (e) {
+        this.error = apiErrorMessage(e)
+      }
+    },
+    async makeVolunteerHost() {
+      try {
+        await this.$store.dispatch('volunteers/makehost', this.volunteer.id)
+      } catch (e) {
+        this.error = apiErrorMessage(e)
+      }
+    },
+    async removeHostRole() {
+      try {
+        await this.$store.dispatch('volunteers/removehost', this.volunteer.id)
+      } catch (e) {
+        this.error = apiErrorMessage(e)
       }
     },
     confirm() {

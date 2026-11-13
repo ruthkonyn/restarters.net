@@ -4,66 +4,631 @@ namespace Tests\Feature;
 
 use App\Group;
 use App\GroupTags;
+use App\Network;
+use App\Role;
 use App\User;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Storage;
 
 class GroupEditTest extends TestCase
 {
-    /** @test */
-    public function group_tags_retained_after_edited_by_host()
+    /**
+     * @test
+     * @story:GroupController::edit
+     * @story:GroupController::updateGroupv2
+     */
+    public function group_tags_retained_after_edited_by_host(): void
     {
         $this->withoutExceptionHandling();
 
-        $group = factory(Group::class)->create();
-        $tag = factory(GroupTags::class)->create();
+        $group = Group::factory()->create();
+        $tag = GroupTags::factory()->create();
         $group->addTag($tag);
 
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
 
         $this->actingAs($host);
 
-        $response = $this->post('/group/edit/'.$group->idgroups, [
+        $response = $this->get('/group/edit/' . $group->idgroups);
+        $response->assertStatus(200);
+
+        $response = $this->patch('/api/v2/groups/' . $group->idgroups, [
             'description' => 'Test',
             'location' => 'London',
             'name' => 'Test',
             'website' => 'https://therestartproject.org',
             'free_text' => 'HQ',
+            'network_data' => [
+                'no_dummy' => 'no_dummy'
+            ]
         ]);
 
-        $this->assertContains('Group updated!', $response->getContent());
+        $response->assertSuccessful();
 
+        $group->refresh();
         $this->assertEquals(1, count($group->group_tags));
         $this->assertEquals($tag->tag_name, $group->group_tags[0]->tag_name);
+
+        // Network data should have changed.
+        $this->assertEquals($group->network_data, [
+            'no_dummy' => 'no_dummy'
+        ]);
     }
 
-    /** @test */
-    public function invalid_location()
+    /** @story:GroupController::edit */
+    public function testEditGroupAsRestarter(): void {
+        $group = Group::factory()->create();
+
+        $this->loginAsTestUser(Role::RESTARTER);
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->get('/group/edit/' . $group->idgroups);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function invalid_location(): void
     {
         $this->withoutExceptionHandling();
 
-        $group = factory(Group::class)->create();
-        $tag = factory(GroupTags::class)->create();
+        $group = Group::factory()->create();
+        $tag = GroupTags::factory()->create();
         $group->addTag($tag);
 
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
 
         $this->actingAs($host);
 
-        $response = $this->post('/group/edit/'.$group->idgroups, [
+        $this->expectException(ValidationException::class);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
             'description' => 'Test',
             'location' => 'zzzzzzzzzzzzz1234',
             'name' => 'Test',
             'website' => 'https://therestartproject.org',
             'free_text' => 'HQ',
         ]);
+    }
 
-        $this->assertContains('Group could not be saved. Address not found', $response->getContent());
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function partial_update_only_changes_the_fields_sent(): void {
+        $group = Group::factory()->create([
+            'name' => 'Partial Group',
+            'location' => 'Hackney, London',
+            'latitude' => 51.545,
+            'longitude' => -0.0553,
+            'country_code' => 'GB',
+            'free_text' => 'About us',
+            'website' => 'https://example.org',
+            'timezone' => 'Europe/London',
+            'email' => 'group@example.org',
+            'postcode' => 'E8 1AA',
+            'area' => 'London',
+            'network_data' => ['foo' => 'bar'],
+        ]);
+        $event = \App\Party::factory()->create([
+            'group' => $group->idgroups,
+            'event_start_utc' => Carbon::now()->addWeek()->toIso8601String(),
+            'event_end_utc' => Carbon::now()->addWeek()->addHours(2)->toIso8601String(),
+            'timezone' => 'Europe/London',
+        ]);
+
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['phone' => '999'])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertEquals('999', $group->phone);
+        $this->assertEquals('Partial Group', $group->name);
+        $this->assertEquals('Hackney, London', $group->location);
+        $this->assertEquals(51.545, $group->latitude);
+        $this->assertEquals(-0.0553, $group->longitude);
+        $this->assertEquals('GB', $group->country_code);
+        $this->assertEquals('About us', $group->free_text);
+        $this->assertEquals('https://example.org', $group->website);
+        $this->assertEquals('Europe/London', $group->timezone);
+        $this->assertEquals('group@example.org', $group->email);
+        $this->assertEquals('E8 1AA', $group->postcode);
+        $this->assertEquals('London', $group->area);
+        $this->assertEquals(['foo' => 'bar'], $group->network_data);
+
+        // Not sending the timezone isn't a timezone change: future events keep theirs.
+        $this->assertEquals('Europe/London', $event->fresh()->timezone);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function archiving_with_only_the_date_keeps_the_rest_of_the_group(): void {
+        $group = Group::factory()->create([
+            'name' => 'Archive Me',
+            'network_data' => ['foo' => 'bar'],
+        ]);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        // What the Archive group action sends.
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'archived_at' => Carbon::now()->toIso8601String(),
+        ])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertNotNull($group->archived_at);
+        $this->assertEquals('Archive Me', $group->name);
+        $this->assertEquals(['foo' => 'bar'], $group->network_data);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function sending_a_field_empty_or_null_clears_it(): void {
+        $group = Group::factory()->create([
+            'name' => 'Clear Me',
+            'website' => 'https://example.org',
+            'phone' => '0123',
+        ]);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        // Leaving a field out keeps it; sending it empty (a cleared form field) or null removes it.
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['website' => ''])->assertSuccessful();
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['phone' => null])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertNull($group->website);
+        $this->assertNull($group->phone);
+        $this->assertEquals('Clear Me', $group->name);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function sending_an_empty_archive_date_unarchives(): void {
+        $group = Group::factory()->create([
+            'name' => 'Archived',
+            'archived_at' => Carbon::now()->subDay(),
+        ]);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['archived_at' => ''])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertNull($group->archived_at);
+        $this->assertEquals('Archived', $group->name);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function archiving_is_audited_as_a_change_to_the_archive_date_only(): void {
+        $group = Group::factory()->create(['name' => 'Audit Me', 'network_data' => ['foo' => 'bar']]);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'archived_at' => Carbon::now()->toIso8601String(),
+        ])->assertSuccessful();
+
+        $audit = DB::table('audits')
+            ->where('auditable_type', Group::class)
+            ->where('auditable_id', $group->idgroups)
+            ->where('event', 'updated')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($audit);
+        $this->assertEquals(['archived_at'], array_keys(json_decode($audit->new_values, true)));
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function changing_the_location_updates_the_map_position_and_country(): void {
+        $group = Group::factory()->create([
+            'location' => 'London',
+            'latitude' => 51.5073509,
+            'longitude' => -0.1277583,
+            'country_code' => 'GB',
+        ]);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['location' => 'Brussels, Belgium'])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertEquals('Brussels, Belgium', $group->location);
+        $this->assertEqualsWithDelta(50.8503, $group->latitude, 0.0001);
+        $this->assertEqualsWithDelta(4.3517, $group->longitude, 0.0001);
+        $this->assertEquals('BE', $group->country_code);
+    }
+
+    private function londonGroupWithFutureEventAsAdmin(): array {
+        $group = Group::factory()->create(['timezone' => 'Europe/London']);
+        $future = \App\Party::factory()->create([
+            'group' => $group->idgroups,
+            'event_start_utc' => Carbon::now()->addWeek()->toIso8601String(),
+            'event_end_utc' => Carbon::now()->addWeek()->addHours(2)->toIso8601String(),
+            'timezone' => 'Europe/London',
+        ]);
+
+        $this->actingAs(User::factory()->administrator()->create());
+
+        return [$group, $future];
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function changing_the_timezone_moves_future_events(): void {
+        [$group, $future] = $this->londonGroupWithFutureEventAsAdmin();
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['timezone' => 'Europe/Brussels'])->assertSuccessful();
+
+        $this->assertEquals('Europe/Brussels', $group->fresh()->timezone);
+        $this->assertEquals('Europe/Brussels', $future->fresh()->timezone);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function clearing_the_timezone_leaves_future_events_alone(): void {
+        [$group, $future] = $this->londonGroupWithFutureEventAsAdmin();
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['timezone' => ''])->assertSuccessful();
+
+        $this->assertEmpty($group->fresh()->getAttributes()['timezone']);
+        $this->assertEquals('Europe/London', $future->fresh()->getAttributes()['timezone']);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function host_cannot_archive_or_set_the_area(): void {
+        $group = Group::factory()->create(['area' => 'London', 'archived_at' => null]);
+
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'area' => 'Elsewhere',
+            'archived_at' => Carbon::now()->toIso8601String(),
+        ])->assertSuccessful();
+
+        $group->refresh();
+        $this->assertEquals('London', $group->area);
+        $this->assertNull($group->archived_at);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function approving_without_resending_the_location_still_notifies_nearby_volunteers(): void {
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $nearby = User::factory()->create([
+            'location' => 'London',
+            'latitude' => 51.5072178,
+            'longitude' => -0.1275862,
+        ]);
+
+        $group = Group::factory()->create([
+            'name' => 'Approve Me',
+            'location' => 'London',
+            'latitude' => 51.5073509,
+            'longitude' => -0.1277583,
+            'approved' => false,
+        ]);
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, ['moderate' => 'approve'])->assertSuccessful();
+
+        \Illuminate\Support\Facades\Notification::assertSentTo([$nearby], \App\Notifications\NewGroupWithinRadius::class);
+        $this->assertEquals('Approve Me', $group->fresh()->name);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::updateGroupv2
+     */
+    public function host_can_edit_postcode_but_not_area(): void {
+        $group = Group::factory()->create(['postcode' => 'SW9 7QD', 'area' => 'London']);
+
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        $response = $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'postcode' => 'E8 1AA',
+            'area' => 'Elsewhere',
+        ]);
+        $response->assertSuccessful();
+
+        $group->refresh();
+        $this->assertEquals('E8 1AA', $group->postcode);
+        $this->assertEquals('London', $group->area);
+
+        // A partial update that doesn't send the postcode leaves it alone.
+        $response = $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'network_data' => ['foo' => 'bar'],
+        ]);
+        $response->assertSuccessful();
+        $this->assertEquals('E8 1AA', $group->refresh()->postcode);
+
+        // Longer than the column.
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'postcode' => str_repeat('X', 33),
+        ]);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::imageUpload
+     * @story:GroupController::ajaxDeleteImage
+     */
+    public function image_upload(): void {
+        Storage::fake('avatars');
+        $group = Group::factory()->create();
+
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        $this->actingAs($host);
+
+        // We don't upload files in a standard Laravel way, so testing upload is a bit of a hack.
+        $_SERVER['DOCUMENT_ROOT'] = getcwd();
+        \FixometerFile::$uploadTesting = TRUE;
+        file_put_contents('/tmp/UT.jpg', file_get_contents(public_path() . '/images/community.jpg'));
+
+        $_FILES = [
+            'file' => [
+                'error'    => "0",
+                'name'     => 'UT.jpg',
+                'size'     => 123,
+                'tmp_name' => [ '/tmp/UT.jpg' ],
+                'type'     => 'image/jpg'
+            ]
+        ];
+
+        $response = $this->json('POST', '/group/image-upload/' . $group->idgroups, []);
+        $response->assertOk();
+        $this->assertEquals('success - image uploaded', $response->getContent());
+
+        // And again, which will test the case of overwriting.
+        $response = $this->json('POST', '/group/image-upload/' . $group->idgroups, []);
+        $response->assertOk();
+        $this->assertEquals('success - image uploaded', $response->getContent());
+
+        // Delete the image.
+        $image = \DB::select("SELECT idimages, path FROM images ORDER BY idimages DESC LIMIT 1");
+        $idimages = $image[0]->idimages;
+        $path = $image[0]->path;
+        $response = $this->post("/group/image/delete/{$group->idgroups}/$idimages/$path");
+        $response->assertOk();
+        self::assertEquals('Thank you, the image has been deleted', $response->getContent());
+    }
+
+    /** @test */
+    public function image_upload_preserves_existing_image_when_upload_fails(): void {
+        $group = Group::factory()->create();
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        $_SERVER['DOCUMENT_ROOT'] = getcwd();
+        \FixometerFile::$uploadTesting = true;
+
+        if (!is_dir(getcwd() . '/uploads')) {
+            mkdir(getcwd() . '/uploads', 0777, true);
+        }
+
+        file_put_contents('/tmp/UT_preserve.jpg', file_get_contents(public_path() . '/images/community.jpg'));
+
+        // First upload via API (the path the Vue component uses)
+        $_FILES = [
+            'image' => [
+                'error'    => "0",
+                'name'     => 'UT_preserve.jpg',
+                'size'     => 123,
+                'tmp_name' => ['/tmp/UT_preserve.jpg'],
+                'type'     => 'image/jpeg'
+            ]
+        ];
+
+        $response = $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'description' => 'Test',
+            'location'    => 'London',
+            'name'        => 'Test',
+        ]);
+        $response->assertSuccessful();
+
+        $xrefCount = \DB::table('xref')
+            ->where('reference', $group->idgroups)
+            ->where('reference_type', env('TBL_GROUPS'))
+            ->count();
+        $this->assertEquals(1, $xrefCount, 'Should have one image after first upload');
+
+        // Now simulate a failed upload — non-existent directory (like Fly.io with no uploads dir)
+        $_SERVER['DOCUMENT_ROOT'] = '/tmp/nonexistent_upload_dir_' . uniqid();
+        file_put_contents('/tmp/UT_preserve2.jpg', file_get_contents(public_path() . '/images/community.jpg'));
+        $_FILES = [
+            'image' => [
+                'error'    => "0",
+                'name'     => 'UT_preserve2.jpg',
+                'size'     => 123,
+                'tmp_name' => ['/tmp/UT_preserve2.jpg'],
+                'type'     => 'image/jpeg'
+            ]
+        ];
+
+        $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'description' => 'Test',
+            'location'    => 'London',
+            'name'        => 'Test',
+        ]);
+
+        // The old image must still exist — it should NOT be deleted when the new upload fails
+        $xrefCountAfterFail = \DB::table('xref')
+            ->where('reference', $group->idgroups)
+            ->where('reference_type', env('TBL_GROUPS'))
+            ->count();
+        $this->assertEquals(1, $xrefCountAfterFail, 'Old image must be preserved when new upload fails');
+
+        // Clean up
+        $_FILES = [];
+        $_SERVER['DOCUMENT_ROOT'] = getcwd();
+    }
+
+    /** @test */
+    public function can_edit_timezone(): void {
+        // Get list of timezones.
+        $response = $this->get('/api/timezones');
+        $response->assertSuccessful();
+        $timezones = json_decode($response->getContent(), TRUE);
+        self::assertGreaterThan(0, count($timezones));
+        self::assertTrue(array_key_exists('name', $timezones[0]));
+
+        // Australia/Canberra is an outdated timezone; check it appears.
+        $found = false;
+        foreach ($timezones as $timezone) {
+            if ($timezone['name'] == 'Australia/Canberra') {
+                $found = true;
+            }
+        }
+
+        self::assertTrue($found);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::edit
+     * @story:GroupController::updateGroupv2
+     */
+    public function edit_email(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $group = Group::factory()->create();
+
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        $this->actingAs($host);
+
+        $response = $this->get('/group/edit/' . $group->idgroups);
+        $response->assertStatus(200);
+
+        $response = $this->patch('/api/v2/groups/' . $group->idgroups, [
+            'description' => 'Test',
+            'location' => 'London',
+            'name' => 'Test',
+            'website' => 'https://therestartproject.org',
+            'free_text' => 'HQ',
+            'network_data' => [
+                'no_dummy' => 'no_dummy'
+            ],
+            'email' => 'info@test.com'
+        ]);
+
+        $response->assertSuccessful();
+
+        $group->refresh();
+        $this->assertEquals('info@test.com', $group->email);
+    }
+
+    /** @story:GroupController::edit */
+    public function testEditAsNetworkCoordinator(): void {
+        $network = Network::factory()->create();
+        $coordinator = User::factory()->restarter()->create();
+        $network->addCoordinator($coordinator);
+        $coordinator->refresh();
+        $this->actingAs($coordinator);
+
+        $idgroups = $this->createGroup(
+            'Test Group',
+            'https://therestartproject.org',
+            'London',
+            'Some text.',
+            true,
+            false,
+            'info@test.com'
+        );
+
+        $response = $this->get('/group/edit/' . $idgroups);
+        $response->assertStatus(200);
+
+        // Shouldn't be able to approve the group, as it has not yet been put in our network (by an admin).
+        $this->assertVueProperties($response, [
+            [],
+            [
+                ':can-approve' => 'false',
+            ],
+        ]);
+    }
+
+    /** @test */
+    // F005: stored XSS via audited model attributes rendered in the audit-log accordion.
+    public function audit_log_escapes_xss_payload_in_group_fields(): void
+    {
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+
+        $group = Group::factory()->create(['website' => 'https://safe.example.com']);
+
+        // Updating an audited field records an 'updated' audit holding the new value verbatim.
+        $group->website = "<script>alert('XSSPROBE')</script>";
+        $group->save();
+
+        $response = $this->get('/group/edit/' . $group->idgroups);
+        $response->assertStatus(200);
+
+        // The injected <script> must NOT reach the admin's browser unescaped...
+        $response->assertDontSee("<script>alert('XSSPROBE')", false);
+        // ...but the value must still be displayed, HTML-escaped, in the audit log.
+        // (Blade's {{ }} uses ENT_QUOTES, so < > become &lt; &gt; and ' becomes &#039;.)
+        $response->assertSee('&lt;script&gt;alert(', false);
+        $response->assertSee('XSSPROBE', false);
     }
 }

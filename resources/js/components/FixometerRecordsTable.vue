@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <p class="text-brand small pl-3">{{ __('devices.table_intro') }}</p>
+  <div class="records bg-white">
     <div class="pl-md-3 pr-md-3">
       <b-table
           ref="table"
@@ -11,33 +10,28 @@
           :current-page="currentPage"
           sort-null-last
       >
-        <template slot="cell(shortProblem)" slot-scope="data">
-          <div v-line-clamp="3">
-            {{ data.item.shortProblem }}
-          </div>
-        </template>
-        <template slot="cell(model)" slot-scope="data">
-          <span v-if="data.item.model">
-            {{ data.item.model }}
+        <template slot="cell(item_type)" slot-scope="data">
+          <span v-if="data.item.item_type">
+            {{ data.item.item_type }}
           </span>
           <em v-else class="text-muted">
-            [Missing]
+            -
           </em>
+        </template>
+        <template slot="cell(category)" slot-scope="data">
+          {{ data.item.category ? __(data.item.category.name) : '' }}
+        </template>
+        <template slot="cell(short_problem)" slot-scope="data">
+          <div v-line-clamp="3">
+            {{ data.item.short_problem }}
+          </div>
         </template>
         <template slot="cell(brand)" slot-scope="data">
           <span v-if="data.item.brand">
             {{ data.item.brand }}
           </span>
           <em v-else class="text-muted">
-            [Missing]
-          </em>
-        </template>
-        <template slot="cell(item_type)" slot-scope="data">
-          <span v-if="data.item.item_type">
-            {{ data.item.item_type }}
-          </span>
-          <em v-else class="text-muted">
-            [Missing]
+            -
           </em>
         </template>
         <template slot="cell(repair_status)" slot-scope="data">
@@ -45,35 +39,33 @@
             {{ showStatus(data) }}
           </div>
         </template>
-        <template slot="cell(device_event.event_date)" slot-scope="data">
-          {{ formatDate(data) }}
+        <template slot="cell(event_date)" slot-scope="data">
+          <a v-if="data.item.eventid" :href="eventUrl(data.item)" class="record-event-link" :title="__('devices.view_event_for_repair')">
+            {{ formatDate(data) }}
+          </a>
+          <span v-else>{{ formatDate(data) }}</span>
         </template>
         <template slot="cell(show_details)" slot-scope="row">
-          <div v-if="isAdmin" class="text-md-right">
-            <span class="pl-0 pl-md-2 pr-2 clickme" @click="row.toggleDetails">
-              <b-img class="icon" src="/icons/edit_ico_green.svg" />
-            </span>
-            <ConfirmModal :key="'modal-' + row.item.iddevices" ref="confirmDelete" @confirm="deleteConfirmed(row.item)" :message="__('devices.confirm_delete')" />
-          </div>
-          <div v-else class="text-md-right">
-            <span class="pl-0 pl-md-2 pr-2 clickme" @click="row.toggleDetails">
-              <b-img class="icon" src="/icons/info_ico_green.svg" />
-            </span>
+          <div class="text-md-right">
+            <button type="button" class="btn btn-link p-0 pl-md-2 pr-2 record-details-toggle" @click="row.toggleDetails" :title="isAdmin ? __('devices.edit_record') : __('devices.view_record')" :aria-label="isAdmin ? __('devices.edit_record') : __('devices.view_record')">
+              <b-img v-if="isAdmin" class="icon" :src="imageUrl('/icons/edit_ico_green.svg')" alt="" />
+              <b-img v-else class="icon" :src="imageUrl('/icons/info_ico_green.svg')" alt="" />
+            </button>
           </div>
         </template>
         <template slot="row-details" slot-scope="row">
           <EventDevice
-              :device="row.item"
-              :powered="powered"
+              :id="row.item.id"
+              :powered="Boolean(row.item.category && row.item.category.powered)"
               :add="false"
               :edit="isAdmin"
               :delete-button="true"
               :clusters="clusters"
-              :idevents="row.item.event"
+              :eventid="row.item.eventid"
               :brands="brands"
               :barrier-list="barrierList"
-              :itemTypes="itemTypes"
               :cancel-button="false"
+              :show-info="false"
               @close="closed(row)" />
         </template>
       </b-table>
@@ -82,7 +74,7 @@
             v-model="currentPage"
             :total-rows="total"
             :per-page="perPage"
-            :aria-controls="'recordstable-' + powered"
+            :aria-controls="tableId"
         ></b-pagination>
       </div>
     </div>
@@ -91,20 +83,21 @@
 <script>
 import { END_OF_LIFE, FIXED, REPAIRABLE } from '../constants'
 import moment from 'moment'
-import DeviceModel from './DeviceModel'
-import Vue       from 'vue'
+import Vue from 'vue'
 import lineClamp from 'vue-line-clamp'
-import ConfirmModal from './ConfirmModal'
-import EventDevice from './EventDevice'
+import EventDevice from './EventDevice.vue'
+import images from '../mixins/images'
 
 Vue.use(lineClamp, {
   textOverflow: 'ellipsis'
 })
 
-const bootaxios = require('axios')
+import axios from 'axios'
+const bootaxios = axios
 
 export default {
-  components: {EventDevice, ConfirmModal, DeviceModel},
+  mixins: [images],
+  components: {EventDevice},
   props: {
     isAdmin: {
       type: Boolean,
@@ -112,8 +105,10 @@ export default {
       default: false
     },
     powered: {
+      // Null lists both powered and unpowered items.
       type: Boolean,
-      required: true
+      required: false,
+      default: null
     },
     clusters: {
       type: Array,
@@ -126,11 +121,6 @@ export default {
       default: null
     },
     barrierList: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    itemTypes: {
       type: Array,
       required: false,
       default: null
@@ -156,7 +146,8 @@ export default {
       default: null
     },
     status: {
-      type: Number,
+      // One of the repair status strings, e.g. 'Fixed'.
+      type: String,
       required: false,
       default: null
     },
@@ -199,86 +190,100 @@ export default {
   },
   computed: {
     tableId() {
-      return 'recordstable-' + this.powered
+      return 'recordstable'
     },
     fields () {
-      let ret = [
+      // The keys of sortable fields are what we ask the server to sort by.
+      return [
         {
-          key: 'device_category.name',
+          key: 'item_type',
+          label: this.__('devices.model_or_type'),
+          sortable: true,
+          tdClass: 'pl-0 pl-md-3'
+        },
+        {
+          key: 'category',
           label: this.__('devices.category'),
           thClass: 'width20 pl-0 pl-md-3',
           tdClass: 'width20 pl-0 pl-md-3',
           sortable: true
+        },
+        {
+          key: 'brand',
+          label: this.__('devices.brand'),
+          sortable: true,
+          thClass: 'd-none d-md-table-cell',
+          tdClass: 'd-none d-md-table-cell'
+        },
+        {
+          key: 'short_problem',
+          label: this.__('devices.assessment'),
+          thClass: 'width10 d-none d-md-table-cell',
+          tdClass: 'width10 d-none d-md-table-cell'
+        },
+        {
+          key: 'repair_status',
+          label: this.__('devices.status'),
+          thClass: 'width90px',
+          tdClass: 'width90px',
+          sortable: true
+        },
+        {
+          key: 'groupname',
+          label: this.__('devices.group'),
+          sortable: true,
+          thClass: 'd-none d-md-table-cell',
+          tdClass: 'd-none d-md-table-cell'
+        },
+        {
+          key: 'event_date',
+          label: this.__('devices.devices_date'),
+          thClass: 'width90px',
+          tdClass: 'width90px',
+          sortable: true
+        },
+        {
+          // Bootstrap tables have a mechanism to show a details row.  This is exactly what we need to show the
+          // view/edit section for a device.
+          key: 'show_details',
+          label: '',
         }
       ]
-
-      if (this.powered) {
-        ret.push({key: 'model', label: this.__('devices.model'), sortable: true})
-        ret.push({key: 'brand', label: this.__('devices.brand'), sortable: true, thClass: 'd-none d-md-table-cell', tdClass: 'd-none d-md-table-cell'})
-      } else {
-        ret.push({key: 'item_type', label: this.__('devices.model_or_type'), sortable: true, tdClass: 'pl-0 pl-md-3'})
-      }
-
-      ret.push({key: 'shortProblem', label: this.__('devices.assessment'), thClass: 'width10 d-none d-md-table-cell', tdClass: 'width10 d-none d-md-table-cell'})
-      ret.push({key: 'device_event.the_group.name', label: this.__('devices.group'), sortable: true, thClass: 'd-none d-md-table-cell', tdClass: 'd-none d-md-table-cell'})
-      ret.push({
-        key: 'repair_status',
-        label: this.__('devices.status'),
-        thClass: 'width90px',
-        tdClass: 'width90px',
-        sortable: true
-      })
-      ret.push({
-        key: 'device_event.event_date',
-        label: this.__('devices.devices_date'),
-        thClass: 'width90px',
-        tdClass: 'width90px',
-        sortable: true
-      })
-
-      // Bootstrap tables have a mechanism to show a details row.  This is exactly what we need to show the
-      // view/edit section for a device.
-      ret.push({
-        key: 'show_details',
-        label: '',
-      })
-
-      return ret
     },
   },
   watch: {
     powered(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     category(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     brand(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     model(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     comments(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     wiki(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     item_type(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     status(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     group(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     from_date(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     to_date(newVal) {
-      this.$refs.table.refresh()
+      this.filtersChanged()
     },
     total(newVal) {
       this.$emit('update:total', newVal)
@@ -291,27 +296,31 @@ export default {
     }
   },
   methods: {
+    filtersChanged () {
+      // The new results may have fewer pages than the one we are on, which would show an empty page.  Go back to
+      // the first page; the table fetches when the page changes, so only refresh if we're already there.
+      if (this.currentPage !== 1) {
+        this.currentPage = 1
+      } else {
+        this.$refs.table.refresh()
+      }
+    },
     items (ctx, callback) {
       // We want to take advantage of the paging and sorting features of the table, and therefore we are using the
-      // table's async method of providing data.
-      //
-      // Default sort is descending date order.
-      let sortBy = 'event_date'
-      let sortDesc = ctx.sortBy ? (ctx.sortDesc ? 'DESC' : 'ASC') : 'DESC'
+      // table's async method of providing data.  The server sorts by the column the table is sorted by; with no
+      // column chosen it shows the most recent events first.
+      const sortBy = ctx.sortBy || null
+      let sortDesc = 'DESC'
 
-      if (ctx.sortBy) {
-        // We have to munge what the table gives us a bit to match what the server can query.
-        sortBy = ctx.sortBy
-            .replace('device_event.the_group.', 'groups.')
-            .replace('device_event.', 'events.')
-            .replace('device_category.', 'categories.')
+      if (ctx.sortBy && !ctx.sortDesc) {
+        sortDesc = 'ASC'
       }
 
       axios.get('/api/devices/' + ctx.currentPage + '/' + ctx.perPage, {
         params: {
           sortBy: sortBy,
           sortDesc: sortDesc,
-          powered: this.powered,
+          powered: this.powered === null ? undefined : this.powered,
           category: this.category,
           brand: this.brand,
           model: this.model,
@@ -338,10 +347,8 @@ export default {
               await this.$store.dispatch('devices/clear')
 
               ret.data.items.forEach(item => {
-                item.idevents = item.event
-
-                this.$store.dispatch('devices/set', {
-                  idevents: item.event,
+                this.$store.dispatch('devices/setForEvent', {
+                  eventid: item.eventid,
                   devices: [ item ]
                 })
               })
@@ -358,11 +365,11 @@ export default {
     showStatus (data) {
       switch (data.item.repair_status) {
         case FIXED:
-          return this.$lang.get('partials.fixed')
+          return this.__('partials.fixed')
         case REPAIRABLE:
-          return this.$lang.get('partials.repairable')
+          return this.__('partials.repairable')
         case END_OF_LIFE:
-          return this.$lang.get('partials.end')
+          return this.__('partials.end')
         default:
           return null
       }
@@ -379,20 +386,12 @@ export default {
           return null
       }
     },
+    eventUrl (item) {
+      // Straight to the items on the event's page.
+      return '/party/view/' + item.eventid + '#devices-section'
+    },
     formatDate (data) {
-      return new moment(data.item.device_event.event_date).format('DD/MM/YYYY')
-    },
-    deleteConfirm() {
-      this.$refs.confirmDelete.show()
-    },
-    async deleteConfirmed(device) {
-      console.log("Delete", device)
-      await this.$store.dispatch('devices/delete', {
-        iddevices: device.iddevices,
-        idevents: device.event
-      })
-
-      this.$root.$emit('bv::refresh::table', this.tableId)
+      return data.item.event_date ? new moment(data.item.event_date).format('DD/MM/YYYY') : ''
     },
     closed(row) {
       // We have saved/edited the device.  We want to refresh the table to any edited data is updated, and
@@ -406,9 +405,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .badge {
   width: 90px;
@@ -419,25 +418,25 @@ export default {
   text-transform: uppercase;
 }
 
-/deep/ .width10 {
+::v-deep .width10 {
   width: 10%;
 }
 
-/deep/ .width20 {
+::v-deep .width20 {
   width: 20%;
 }
 
-/deep/ .width90px {
+::v-deep .width90px {
   width: 90px;
 }
 
-/deep/ .table th {
+::v-deep .table th {
   padding: 5px;
 }
 
 
 @include media-breakpoint-down(sm) {
-  /deep/ .table {
+  ::v-deep .table {
     tr {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -459,7 +458,7 @@ export default {
   }
 }
 
-/deep/ tr.b-table-details td {
+::v-deep tr.b-table-details td {
   padding: 0px;
 }
 

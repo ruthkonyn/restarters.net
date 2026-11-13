@@ -1,0 +1,49 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Device;
+use App\EventsUsers;
+use App\Group;
+use App\Network;
+use App\Notifications\NotifyRestartersOfNewEvent;
+use App\Party;
+use App\User;
+use App\UserGroups;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Tests\TestCase;
+
+class OnlineEventsTest extends TestCase
+{
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     */
+    public function a_host_can_create_an_online_event(): void
+    {
+        $this->withoutExceptionHandling();
+
+        // arrange
+        $host = User::factory()->host()->create();
+        $this->actingAs($host);
+
+        $group = Group::factory()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        // act
+        // PartyFactory creates its own group, so point the event at the group this host
+        // actually hosts - otherwise this is testing cross-group event creation.
+        $eventAttributes = Party::factory()->raw(['online' => true, 'group' => $group->idgroups]);
+        $response = $this->post('/api/v2/events?api_token=' . $host->api_token, $this->eventAttributesToAPI($eventAttributes));
+        $response->assertSuccessful();
+        $idevents = Party::latest()->first()->idevents;
+
+        // assert
+        $event = Party::find($idevents);
+        $this->assertTrue($event->online == true);
+    }
+}

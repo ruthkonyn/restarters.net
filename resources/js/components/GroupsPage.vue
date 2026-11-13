@@ -5,7 +5,7 @@
         <div class="mt-2">
         {{ __('groups.groups') }}
         </div>
-        <b-img class="height ml-4" src="/images/group_doodle_ico.svg" />
+        <b-img class="height ml-4" :src="imageUrl('/images/group_doodle_ico.svg')" />
       </div>
       <div>
         <b-btn variant="primary" href="/group/create" v-if="canCreate">
@@ -25,30 +25,38 @@
           <b class="text-uppercase d-none d-md-block">{{ __('groups.groups_title1') }}</b>
         </template>
         <div class="pt-2 pb-2">
-          <div v-if="myGroups && myGroups.length">
+          <div v-if="yourGroups.length">
             <GroupsTable
-                :groups="myGroups"
+                :groupids="yourGroups"
                 class="mt-3"
                 :tab="currentTab"
-                @nearest="currentTab = 1"
-                your-area="yourArea"
+                :your-area="yourArea"
+                :all-group-tags="allGroupTags"
+                :show-tags="showTags"
             />
           </div>
           <div v-else class="mt-2 mb-2 text-center" v-html="__('groups.no_groups_mine')" />
         </div>
       </b-tab>
-      <b-tab class="pt-2" lazy>
+      <!-- Only lazy until first shown: a plain `lazy` tab destroys its content
+           on every switch away, which would throw away the map and re-fetch
+           all the groups each time the user tabs back. -->
+      <b-tab class="pt-2" :lazy="!mapTabVisited">
         <template slot="title">
           <b class="text-uppercase d-block d-lg-none">{{ __('groups.groups_title2_mobile') }}</b>
           <b class="text-uppercase d-none d-lg-block">{{ __('groups.groups_title2') }}</b>
         </template>
-        <div v-if="nearbyGroups && nearbyGroups.length">
-          <GroupsTable
-              :groups="nearbyGroups"
-              class="mt-3"
-              :tab="currentTab"
-              @all="currentTab = 2"
-              your-area="yourArea"
+        <div v-if="nearbyGroups.length">
+          <GroupMapAndList
+              :initial-bounds="nearbyGroups"
+              :your-groups="yourGroups"
+              :your-area="yourArea"
+              :your-lat="yourLat"
+              :your-lng="yourLng"
+              :network="network"
+              show-filters
+              :can-manage-tags="showTags"
+              :available-tags="allGroupTags"
           />
         </div>
         <div v-else class="mt-2 mb-2 text-center">
@@ -56,34 +64,18 @@
           <div v-else v-html="__('groups.no_groups_nearest_no_location')" />
         </div>
       </b-tab>
-      <b-tab class="pt-2" lazy>
-        <template slot="title">
-          <b class="text-uppercase d-block d-md-none">{{ __('groups.all_groups_mobile') }}</b>
-          <b class="text-uppercase d-none d-md-block">{{ __('groups.all_groups') }}</b>
-        </template>
-        <GroupsTable
-            :groups="groups"
-            class="mt-3"
-            count
-            search
-            :networks="networks"
-            :network="network"
-            :all-group-tags="allGroupTags"
-            :show-tags="showTags"
-            :tab="currentTab"
-            your-area="yourArea"
-        />
-      </b-tab>
     </b-tabs>
   </div>
 </template>
 <script>
-import GroupsTable from './GroupsTable'
+import GroupsTable from './GroupsTable.vue'
 import auth from '../mixins/auth'
+import GroupMapAndList from "./GroupMapAndList.vue";
+import images from '../mixins/images'
 
 export default {
-  components: {GroupsTable},
-  mixins: [ auth ],
+  components: {GroupMapAndList, GroupsTable},
+  mixins: [ auth, images ],
   props: {
     network: {
       type: Number,
@@ -95,27 +87,25 @@ export default {
       required: false,
       default: 'mine'
     },
-    allGroups: {
-      type: Array,
-      required: false,
-      default: null
-    },
     yourGroups: {
       type: Array,
-      required: false,
-      default: null
+      required: true
     },
     nearbyGroups: {
       type: Array,
-      required: false,
-      default: null
+      required: true
     },
     yourArea: {
       type: String,
       required: false,
       default: null
     },
-    userId: {
+    yourLat: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    yourLng: {
       type: Number,
       required: false,
       default: null
@@ -130,105 +120,64 @@ export default {
       required: false,
       default: false
     },
-    networks: {
-      type: Array,
-      required: true
-    },
-    apiToken: {
-      type: String,
-      required: false,
-      default: null
-    },
     allGroupTags: {
       type: Array,
       required: true
     }
   },
   data () {
+    // Initialize directly from prop so lazy b-tab renders correctly on first mount.
+    // Setting this in created() causes lazy tabs to miss the initial activation.
+    const tabToIndex = ['all', 'network', 'nearby', 'other']
+    const currentTab = tabToIndex.includes(this.tab) ? 1 : 0
     return {
-      currentTab: 0
+      currentTab,
+      mapTabVisited: currentTab === 1
     }
-  },
-  computed: {
-    groups() {
-      let groups = this.$store.getters['groups/list']
-
-      return groups ? groups.sort((a, b) => {
-        return a.name.localeCompare(b.name)
-      }) : []
-    },
-    myGroups() {
-      return this.groups.filter(g => {
-        return g.ingroup
-      })
-    },
-    nearGroups() {
-      return this.groups.filter(g => {
-        return g.nearby
-      })
-    },
   },
   watch: {
-    currentTab(newVal) {
-      // We want to update the URL in the browser.  In a full app this would be done by the router, but hack it in
-      // here.
-      try {
-        let tag = '';
-
-        switch (newVal) {
-          case 1: tag = 'nearby'; break;
-          case 2: tag = 'all'; break;
-          default: tag = 'mine'; break;
+    currentTab: {
+      handler: function (newVal) {
+        if (newVal === 1) {
+          this.mapTabVisited = true
         }
+        // We want to update the URL in the browser.  In a full app this would be done by the router, but hack it in
+        // here.
+        try {
+          let tag = '';
 
-        if (!this.network) {
-          // If we are vieiwng a specific network, don't mess with the URL as it's confusing.
-          window.history.pushState(null, "Groups", "/group/" + tag);
+          switch (newVal) {
+            case 1:
+              tag = 'other';
+              break;
+            case 2:
+              tag = 'all';
+              break;
+            default:
+              tag = 'mine';
+              break;
+          }
+
+          if (!this.network) {
+            // If we are vieiwng a specific network, don't mess with the URL as it's confusing.
+            window.history.pushState(null, "Groups", "/group/" + tag);
+          }
+        } catch (e) {
+          console.error("Failed to update URL")
         }
-      } catch (e) {
-        console.error("Failed to update URL")
-      }
+      },
+      immediate: true
     }
   },
-  created() {
-    // Data is passed from the blade template to us via props.  We put it in the store for all components to use,
-    // and so that as/when it changes then reactivity updates all the views.
-    //
-    // Further down the line this may change so that the data is obtained via an AJAX call and perhaps SSR.
-    let groups = {}
-
-    this.allGroups.forEach(g => {
-      groups[g.idgroups] = g
-    })
-
-    if (this.yourGroups) {
-      this.yourGroups.forEach(g => {
-        groups[g.idgroups].ingroup = true
+  mounted() {
+    if (this.currentTab === 0) {
+      // Fetch our own groups.  We fetch them individually because there aren't that many.
+      this.yourGroups.forEach((g) => {
+        this.$store.dispatch('groups/fetch', {
+          id: g,
+          includeStats: false
+        })
       })
-    }
-
-    if (this.nearbyGroups) {
-      this.yourGroups.forEach(g => {
-        groups[g.idgroups].nearby = true
-      })
-    }
-
-    this.$store.dispatch('groups/setList', {
-      groups: Object.values(groups)
-    })
-
-    // We have three tabs, and might be asked to start on a specific one.
-    switch (this.tab) {
-      case 'nearby':
-        this.currentTab = 1;
-        break;
-      case 'all':
-      case 'network':
-        this.currentTab = 2;
-        break;
-      default:
-        this.currentTab = 0;
-        break;
     }
   }
 }

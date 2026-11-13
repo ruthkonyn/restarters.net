@@ -2,49 +2,40 @@
 
 namespace Tests\Feature;
 
+use App\Events\UserConfirmedEvent;
+use App\Events\UserLeftEvent;
+use App\EventsUsers;
 use App\Group;
-use App\Helpers\Geocoder;
+use App\Helpers\Fixometer;
+use App\Helpers\RepairNetworkService;
+use App\Listeners\AddUserToDiscourseThreadForEvent;
+use App\Listeners\RemoveUserFromDiscourseThreadForEvent;
 use App\Network;
 use App\Notifications\AdminModerationEvent;
 use App\Notifications\NotifyRestartersOfNewEvent;
 use App\Party;
+use App\Role;
+use App\Services\DiscourseService;
 use App\User;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
-
-class GeocoderMock extends Geocoder
-{
-    public function __construct()
-    {
-    }
-
-    public function geocode($location)
-    {
-        return [
-            'latitude' => '1',
-            'longitude' => '1',
-        ];
-    }
-}
+use App\Notifications\EventConfirmed;
+use Illuminate\Validation\ValidationException;
 
 class CreateEventTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->app->bind(Geocoder::class, function () {
-            return new GeocoderMock();
-        });
-    }
-
-    /** @test */
-    public function a_host_without_a_group_cant_create_an_event()
+    /**
+     * @test
+     * @story:PartyController::create
+     */
+    public function a_host_without_a_group_cant_create_an_event(): void
     {
         $this->withoutExceptionHandling();
 
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $this->actingAs($host);
 
         $response = $this->get('/party/create');
@@ -54,16 +45,24 @@ class CreateEventTest extends TestCase
     /**
      * @test
      * @dataProvider roles
+     * @story:EventController::createEventv2
+     * @story:PartyController::create
+     * @story:PartyController::view
+     * @story:GroupController::getEventsForGroupv2
+     * @story:PartyController::index
      */
-    public function a_host_with_a_group_can_create_an_event($data)
+    public function a_host_with_a_group_can_create_an_event($data): void
     {
+        Notification::fake();
         $this->withoutExceptionHandling();
 
         // arrange
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $this->actingAs($host);
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create([
+          'approved' => true
+        ]);
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
 
@@ -72,49 +71,161 @@ class CreateEventTest extends TestCase
         $this->get('/party/create')->assertStatus(200);
 
         // Create a party for the specific group.
-        $eventAttributes = factory(Party::class)->raw();
+        $eventAttributes = Party::factory()->raw();
         $eventAttributes['group'] = $group->idgroups;
+        $eventAttributes['link'] = 'https://therestartproject.org/';
 
         // We want an upcoming event so that we can check it appears in various places.
-        $eventAttributes['event_date'] = date('Y-m-d', strtotime('tomorrow'));
+        $start = Carbon::createFromTimestamp(strtotime('tomorrow 1pm'));
+        $end = Carbon::createFromTimestamp(strtotime('tomorrow 3pm'));
+        $eventAttributes['event_start_utc'] = $start->toIso8601String();
+        $eventAttributes['event_end_utc'] = $end->toIso8601String();
 
-        $this->post('/party/create/', $eventAttributes);
+        $response = $this->post('/api/v2/events?api_token=' . $host->api_token, $this->eventAttributesToAPI($eventAttributes));
+        $response->assertSuccessful();
+
+        // The event_start_utc and event_end_utc will be in the database, but not ISO8601 formatted - that is implicit.
+        $eventAttributes['event_start_utc'] = Carbon::parse($eventAttributes['event_start_utc'])->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $eventAttributes['event_end_utc'] = Carbon::parse($eventAttributes['event_end_utc'])->setTimezone('UTC')->format('Y-m-d H:i:s');
         $this->assertDatabaseHas('events', $eventAttributes);
 
-        // Check that we can view the event, and that it shows the creation success message.
-        $this->get('/party/view/'.Party::latest()->first()->idevents)->
-            assertSee($eventAttributes['venue'])->
-            assertSee(__('events.created_success_message'));
+        // The logged in user should be recorded as the creator.
+        $event = Party::latest()->first();
+        $this->assertEquals($host->id, $event->user_id);
+
+        // The event should show in the future events for this user.
+        $upcoming_events = Party::futureForUser()->get();
+        self::assertEquals(1, $upcoming_events->count());
+        self::assertEquals($event->idevents, $upcoming_events[0]->idevents);
+
+        // Check that we can view the event.
+        $this->get('/party/view/'.$event->idevents)->
+            assertSee($eventAttributes['venue']);
+
+        // Check that the event appears in the API.
+        $response = $this->get("/api/v2/groups/{$group->idgroups}/events");
+        $response->assertSuccessful();
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals(1, count($json['data']));
+        $this->assertEquals($event->idevents, $json['data'][0]['id']);
 
         // Now check whether the event shows/doesn't show correctly for different user roles.
         list($role, $seeEvent, $canModerate) = $data;
 
         if ($role != 'Host') {
             // Need to act as someone else.
-            $this->actingAs(factory(User::class)->states($role)->create());
+            $this->actingAs(User::factory()->{lcfirst($role)}()->create());
         }
 
-        // Check both the group page, and the top-level events page.
-        foreach (['/group/view/'.$group->idgroups, '/party'] as $url) {
-            $response = $this->get($url);
+        // Check the group page.
+        $response = $this->get('/group/view/'.$group->idgroups);
 
-            if ($seeEvent) {
-                // We should be able to see this upcoming event in the Vue properties.  We don't have a neat way
-                // of examining properties yet, so just look for the string.
-                $response->assertSee('requiresModeration&quot;:true');
+        $props = $this->assertVueProperties($response, [
+            [],
+            [
+                ':idgroups' => $group->idgroups,
+            ],
+        ]);
 
-                if ($canModerate) {
-                    $response->assertSee('canModerate&quot;:true');
-                } else {
-                    $response->assertSee('canModerate&quot;:false');
-                }
-            } else {
-                $response->assertSee('requiresModeration&quot;:true');
+        $events = json_decode($props[1][':events'], TRUE);
+
+        if ($seeEvent) {
+            // We should be able to see this upcoming event in the Vue properties.
+            $this->assertEquals(true, $events[0]['requiresModeration']);
+            $this->assertEquals($canModerate, $events[0]['canModerate']);
+            $this->assertEquals(true, $events[0]['attending']);
+            $this->assertEquals(true, $events[0]['isVolunteer']);
+        } else {
+            $this->assertEquals(true, $events[0]['requiresModeration']);
+        }
+
+        // Check the top-level events page.
+        $response = $this->get('/party');
+
+        $props = $this->getVueProperties($response);
+        if ($role == 'Administrator' || $role == 'NetworkCoordinator') {
+            // Should see the moderation list.  The Vue component fetches the events, so we don't check the props.
+            $props = $this->assertVueProperties($response, [
+                [],
+                [
+                    'VueComponent' => 'eventsrequiringmoderation'
+                ],
+                [
+                    'heading-level' => 'h2',
+                ],
+            ]);
+        } else {
+            $props = $this->assertVueProperties($response, [
+                [],
+                [
+                    'heading-level' => 'h2',
+                ],
+            ]);
+        }
+
+        // Approve the event.
+        $event->approve();
+        $this->artisan("queue:work --stop-when-empty");
+
+        // Approval should generate a notification to the host.
+        Notification::assertSentTo(
+            [$host],
+            EventConfirmed::class,
+            function ($notification, $channels, $host) use ($event, $start) {
+                $mailData = $notification->toMail($host)->toArray();
+                self::assertEquals(__('notifications.event_confirmed_subject', [
+                    'time' => $event->event_date_local . ' ' . $event->start_local
+                    ], $host->language), $mailData['subject']);
+
+                // Mail should mention the venue.
+                self::assertMatchesRegularExpression ('/' . $event->venue . '/', $mailData['introLines'][0]);
+                self::assertStringContainsString('#list-email-preferences', $mailData['outroLines'][0]);
+
+                return true;
             }
-        }
+        );
+
+        // Check that the event shows for a restarter.
+        $this->loginAsTestUser(Role::RESTARTER);
+
+        $response = $this->get('/party');
+
+        $props = $this->assertVueProperties($response, [
+            [],
+            [
+                'heading-level' => 'h2',
+            ],
+        ]);
+
+        $events = json_decode($props[1][':initial-events'], TRUE);
+        $this->assertEquals(1, count($events));
+
+        // Should have the 'all' property set because we've not joined the group.
+        $this->assertEquals(true, $events[0]['all']);
+        $this->assertEquals(false, array_key_exists('nearby', $events[0]));
+
+        // Now join the group.
+        $response = $this->get('/group/join/' . $group->idgroups);
+        $this->assertTrue($response->isRedirection());
+
+        $response = $this->get('/party');
+
+        $props = $this->assertVueProperties($response, [
+            [],
+            [
+                'heading-level' => 'h2',
+            ],
+        ]);
+
+        $events = json_decode($props[1][':initial-events'], TRUE);
+        $this->assertEquals(1, count($events));
+
+        // Should not have 'all' or 'nearby' flag - those go in the "Other events" section.
+        $this->assertEquals(false, array_key_exists('all', $events[0]));
+        $this->assertEquals(false, array_key_exists('nearby', $events[0]));
     }
 
-    public function roles()
+    public function roles(): array
     {
         return [
             // Hosts can see but not moderate.
@@ -130,21 +241,24 @@ class CreateEventTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function a_host_can_duplicate_an_event()
+    /**
+     * @test
+     * @story:PartyController::duplicate
+     */
+    public function a_host_can_duplicate_an_event(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
         $this->actingAs($host);
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
 
         // act
-        $party = factory(Party::class)->create([
+        $party = Party::factory()->create([
            'group' => $group->idgroups,
            'latitude'=>'1',
            'longitude'=>'1',
@@ -152,23 +266,53 @@ class CreateEventTest extends TestCase
 
         // Duplicate it - should bring up the page to add a new event, with some info from the first one.
         $response = $this->get('/party/duplicate/'.$party->idevents);
-        $response->assertSee(__('events.add_new_event'));
+        $response->assertSee('duplicate-from');
         $response->assertSee($party->description);
     }
 
-    /** @test */
-    public function emails_sent_when_created()
+
+    public function providerTrueFalse(): array
+    {
+        return [
+            [false],
+            [true],
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider providerTrueFalse
+     * @story:EventController::createEventv2
+     */
+    public function emails_sent_when_created($notify): void
     {
         $this->withoutExceptionHandling();
         Notification::fake();
 
         // Create some admins.
-        $admins = factory(User::class, 5)->states('Administrator')->create();
+        $admins = User::factory()->count(5)->administrator()->create();
+
+        if ($notify) {
+            foreach ($admins as $admin) {
+                $admin->addPreference('admin-moderate-event');
+                $admin->refresh();
+            }
+        } else {
+            // Remove any users with notification preference, which might confuse things.
+            $otheradmins = Fixometer::usersWhoHavePreference('admin-moderate-event');
+            foreach ($otheradmins as $user) {
+                $user->delete();
+            }
+        }
 
         // Create a network with a group.
-        $network = factory(Network::class)->create();
-        $group = factory(Group::class)->create();
+        $network = Network::factory()->create();
+        $group = Group::factory()->create();
         $network->addGroup($group);
+
+        // Remove any other coordinators of the network.
+        $network->coordinators()->delete();
 
         // Make these admins coordinators of the network, so that they should get notified.
         foreach ($admins as $admin) {
@@ -179,78 +323,120 @@ class CreateEventTest extends TestCase
         $this->actingAs($admins[0]);
 
         // Create an event.
-        $event = factory(Party::class)->raw();
+        $event = Party::factory()->raw();
         $event['group'] = $group->idgroups;
-        $response = $this->post('/party/create/', $event);
-        $response->assertStatus(302);
+        $response = $this->post('/api/v2/events?api_token=' . $admins[0]->api_token, $this->eventAttributesToAPI($event));
+        $response->assertSuccessful();
 
-        // Should have been sent to the admins.
-        Notification::assertSentTo(
-           [$admins], AdminModerationEvent::class
-        );
+        if ($notify) {
+            // Should have been sent to the admins.
+            Notification::assertSentTo(
+                [$admins], AdminModerationEvent::class
+            );
+        } else {
+            // Shouldn't.
+            Notification::assertNotSentTo(
+                [$admins], AdminModerationEvent::class
+            );
+        }
     }
 
-    /** @test */
-    public function emails_sent_to_restarters_when_upcoming_event_approved()
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     * @story:EventController::updateEventv2
+     */
+    public function emails_sent_to_restarters_when_upcoming_event_approved(): void
     {
         $this->withoutExceptionHandling();
-        $admin = factory(User::class)->state('Administrator')->create();
+        $admin = User::factory()->administrator()->create();
         $this->actingAs($admin);
         // arrange
         Notification::fake();
 
-        $group = factory(Group::class)->create();
-        $host = factory(User::class)->state('Host')->create();
-        $restarter = factory(User::class)->state('Restarter')->create();
+        $group = Group::factory()->create();
+        $host = User::factory()->host()->create();
+        $restarter = User::factory()->restarter()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
         $group->addVolunteer($restarter);
 
-        $eventData = factory(Party::class)->raw(['group' => $group->idgroups, 'event_date' => '2030-01-01', 'latitude'=>'1', 'longitude'=>'1']);
+        $eventData = Party::factory()->raw([
+            'group' => $group->idgroups,
+            'event_start_utc' => '2100-01-01T10:15:05+05:00',
+            'event_end_utc' => '2100-01-0113:45:05+05:00',
+            'latitude'=>'1',
+            'longitude'=>'1'
+        ]);
 
-        // act
-        $response = $this->post('/party/create/', $eventData);
-        $event = Party::where('event_date', '2030-01-01')->first();
-        $eventData['wordpress_post_id'] = 100;
+        // Approve the event
+        $response = $this->post('/api/v2/events?api_token=' . $admin->api_token, $this->eventAttributesToAPI($eventData));
+        $response->assertSuccessful();
+        $event = Party::latest()->first();
         $eventData['id'] = $event->idevents;
         $eventData['moderate'] = 'approve';
-        $response = $this->post('/party/edit/'.$event->idevents, $eventData);
+        $response1a = $this->patch('/api/v2/events/'.$event->idevents, $this->eventAttributesToAPI($eventData));
+        $this->artisan("queue:work --stop-when-empty");
 
         // assert
         Notification::assertSentTo(
             [$restarter], NotifyRestartersOfNewEvent::class
         );
+
+        Notification::assertSentTo(
+            [$restarter],
+            NotifyRestartersOfNewEvent::class,
+            function ($notification, $channels, $user) use ($group, $host) {
+                $mailData = $notification->toMail($host)->toArray();
+                self::assertEquals(__('notifications.new_event_subject', [
+                    'name' => $group->name,
+                    'time' => '2100-01-01 05:15'
+                ], $user->language), $mailData['subject']);
+                return true;
+            }
+        );
+
         Notification::assertNotSentTo(
             [$host], NotifyRestartersOfNewEvent::class
         );
+
+        // Edit to a bad location for coverage.
+        $eventData['id'] = $event->idevents;
+        $eventData['location'] = 'ForceGeocodeFailure';
+        $this->expectException(ValidationException::class);
+        $this->patch('/api/v2/events/'.$event->idevents, $this->eventAttributesToAPI($eventData));
     }
 
-    /** @test */
-    public function emails_not_sent_to_volunteers_when_past_event_approved()
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     * @story:EventController::updateEventv2
+     */
+    public function emails_not_sent_to_volunteers_when_past_event_approved(): void
     {
         $this->withoutExceptionHandling();
 
-        $admin = factory(User::class)->state('Administrator')->create();
+        $admin = User::factory()->administrator()->create();
         $this->actingAs($admin);
         // arrange
         Notification::fake();
 
-        $group = factory(Group::class)->create();
-        $host = factory(User::class)->state('Host')->create();
-        $restarter = factory(User::class)->state('Restarter')->create();
+        $group = Group::factory()->create();
+        $host = User::factory()->host()->create();
+        $restarter = User::factory()->restarter()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
         $group->addVolunteer($restarter);
 
-        $eventData = factory(Party::class)->raw(['group' => $group->idgroups, 'event_date' => '1930-01-01', 'latitude'=>'1', 'longitude'=>'1']);
+        $eventData = Party::factory()->raw(['group' => $group->idgroups, 'event_date' => '1930-01-01', 'latitude'=>'1', 'longitude'=>'1']);
 
         // act
-        $response = $this->post('/party/create/', $eventData);
-        $event = Party::where('event_date', '1930-01-01')->first();
-        $eventData['wordpress_post_id'] = 100;
-        $eventData['id'] = $event->idevents;
+        $response = $this->post('/api/v2/events?api_token=' . $admin->api_token, $this->eventAttributesToAPI($eventData));
+        $response->assertSuccessful();
+        $event = Party::latest()->first();
+        $eventData = $event->getAttributes();
         $eventData['moderate'] = 'approve';
-        $response = $this->post('/party/edit/'.$event->idevents, $eventData);
+        $response = $this->patch('/api/v2/events/'.$event->idevents, $this->eventAttributesToAPI($eventData));
 
         // assert
         Notification::assertNotSentTo(
@@ -258,29 +444,33 @@ class CreateEventTest extends TestCase
         );
     }
 
-    /** @test */
-    public function emails_sent_to_coordinators_when_event_created()
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     */
+    public function emails_sent_to_coordinators_when_event_created(): void
     {
         $this->withoutExceptionHandling();
         Notification::fake();
 
-        $network = factory(Network::class)->create();
-        $group = factory(Group::class)->create();
+        $network = Network::factory()->create();
+        $group = Group::factory()->create();
         $network->addGroup($group);
 
         // Make an admin who is also a network controller.
-        $admin = factory(User::class)->state('Administrator')->create();
+        $admin = User::factory()->administrator()->create();
         $admin->addPreference('admin-moderate-event');
         $network->addCoordinator($admin);
 
         // Make a separate network controller.
-        $coordinator = factory(User::class)->state('NetworkCoordinator')->create();
+        $coordinator = User::factory()->networkCoordinator()->create();
         $network->addCoordinator($coordinator);
 
-        $eventData = factory(Party::class)->raw(['group' => $group->idgroups]);
+        $eventData = Party::factory()->raw(['group' => $group->idgroups]);
 
         $this->actingAs($admin);
-        $response = $this->post('/party/create/', $eventData);
+        $response = $this->post('/api/v2/events?api_token=' . $admin->api_token, $this->eventAttributesToAPI($eventData));
+        $response->assertSuccessful();
 
         // assert that the notification was sent to both the network coordinator, and the admin, and only once to each.
         Notification::assertSentToTimes(
@@ -291,43 +481,402 @@ class CreateEventTest extends TestCase
         );
     }
 
-    /** @test */
-    public function a_host_can_be_added_later()
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     * @story:EventController::addVolunteer
+     * @story:PartyController::removeVolunteer
+     * @story:GroupController::getVolunteersForGroupv2
+     */
+    public function a_host_can_be_added_later(): void
     {
-        // Disable discourse integration as this doesn't currently work in a test environment.  We are considering
-        // a better solution.
-        config(['restarters.features.discourse_integration' => false]);
-
         $this->withoutExceptionHandling();
+        Queue::fake();
 
-        $host = factory(User::class)->states('Host')->create();
+        $host = User::factory()->host()->create();
+        $host2 = User::factory()->host()->create();
         $this->actingAs($host);
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         $group->addVolunteer($host);
         $group->makeMemberAHost($host);
+        $group->addVolunteer($host2);
+        $group->makeMemberAHost($host2);
 
         // Create the event
-        $response = $this->get('/party/create');
-        $this->get('/party/create')->assertStatus(200);
-
-        $eventAttributes = factory(Party::class)->raw(['group' => $group->idgroups, 'event_date' => '2000-01-01', 'wordpress_post_id' => '99999']);
-        $response = $this->post('/party/create/', $eventAttributes);
+        $eventAttributes = Party::factory()->raw(['group' => $group->idgroups, 'event_date' => '2000-01-01', 'approved' => true]);
+        $response = $this->post('/api/v2/events?api_token=' . $host->api_token, $this->eventAttributesToAPI($eventAttributes));
+        $response->assertSuccessful();
 
         // Find the event id
         $party = $group->parties()->latest()->first();
 
+        // Add the second host.
+        $response = $this->put('/api/events/' . $party->idevents . '/volunteers?api_token=' . $host->api_token, [
+            'volunteer_email_address' => $host2->email,
+            'full_name' => $host2->name,
+            'user' => $host2->id,
+        ]);
+
+        $response->assertSuccessful();
+
         // Remove the host from the event
+        $volunteer = EventsUsers::where('user', $host->id)->first();
         $this->post('/party/remove-volunteer/', [
-            'user_id' => $host->id,
-            'event_id' => $party->idevents,
-        ])->assertStatus(200);
+            'id' => $volunteer->idevents_users,
+        ])->assertSee('true');
+
+        Queue::assertPushed(\Illuminate\Events\CallQueuedListener::class, function ($job) use ($party, $host) {
+            if ($job->class == RemoveUserFromDiscourseThreadForEvent::class) {
+                return true;
+            }
+        });
 
         // Assert that we see the host in the list of volunteers to add to the event.
-        $this->get('/party/view/'.$party->idevents)->assertSeeInOrder(['Group member', '<option value="'.$host->id.'">', '</div>']);
+        $response = $this->get('/api/v2/groups/'. $group->idgroups . '/volunteers');
+        $vols = $response->json()['data'];
+        $this->assertEquals(2, count($vols));
+        $this->assertEquals($host2->id, $vols[1]['user']);
 
         // Assert we can add them back in.
+        $party->discourse_thread = 123;
+        $party->save();
 
-        config(['restarters.features.discourse_integration' => true]);
+        $response = $this->put('/api/events/' . $party->idevents . '/volunteers?api_token=' . $host->api_token, [
+            'volunteer_email_address' => $host->email,
+            'full_name' => $host->name,
+            'user' => $host->id,
+        ]);
+
+        $response->assertSuccessful();
+        $rsp = json_decode($response->getContent(), TRUE);
+        $this->assertEquals('success', $rsp['success']);
+
+        // Check the listener was queued to be called in the background.
+        Queue::assertPushed(\Illuminate\Events\CallQueuedListener::class, function ($job) use ($party, $host) {
+            if ($job->class == AddUserToDiscourseThreadForEvent::class) {
+                return true;
+            }
+        });
+
+        // Manually call the listener for coverage and check it calls through to Discourse.
+        $this->instance(
+            DiscourseService::class,
+            \Mockery::mock(DiscourseService::class, function ($mock) {
+                $mock->shouldReceive('addUserToPrivateMessage')->once();
+                $mock->shouldReceive('removeUserFromPrivateMessage')->once();
+            })
+        );
+
+        $listener = app()->make(AddUserToDiscourseThreadForEvent::class);
+        $event = new UserConfirmedEvent($party->idevents, $host->id);
+        $listener->handle($event);
+
+        $listener = app()->make(RemoveUserFromDiscourseThreadForEvent::class);
+        $event = new UserLeftEvent($party->idevents, $host->id);
+        $listener->handle($event);
+    }
+
+    public function provider()
+    {
+        return [
+            // Check the event has been approved (using the magic value of the WordPress post id used when WordPress is
+            // not being used.
+            [true, true],
+
+            // Check the event is not auto-approved by mistake.
+            [false, false],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provider
+     * @story:EventController::createEventv2
+     */
+    public function an_event_can_be_auto_approved($autoApprove, $approved): void
+    {
+        $network = Network::factory()->create([
+            'auto_approve_events' => $autoApprove,
+        ]);
+
+        $host = User::factory()->administrator()->create();
+        $this->actingAs($host);
+
+        $group = Group::factory()->create();
+        $this->networkService = new RepairNetworkService();
+        $this->networkService->addGroupToNetwork($host, $group, $network);
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        // Create the event
+        $idevents = $this->createEvent($group->idgroups, '2000-01-01');
+        $this->artisan("queue:work --stop-when-empty");
+
+        $party = $group->parties()->latest()->first();
+        $this->assertEquals($idevents, $party->idevents);
+        $this->assertEquals($approved, $party->approved);
+    }
+
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     */
+    public function a_past_event_is_not_upcoming(): void {
+        $host = User::factory()->administrator()->create();
+        $this->actingAs($host);
+
+        $group = Group::factory()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        // Create the event
+        $idevents = $this->createEvent($group->idgroups, '2000-01-01');
+
+        // The event is past and should not show in the future events for this user.
+        $upcoming_events = Party::futureForUser()->get();
+        self::assertEquals(0, $upcoming_events->count());
+
+        // ...but should show as past.
+        $past_events = Party::pastForUser()->get();
+        self::assertEquals(1, $past_events->count());
+        self::assertEquals($idevents, $past_events[0]->idevents);
+    }
+
+    /**
+     * @test
+     * @story:EventController::createEventv2
+     */
+    public function a_future_event_is_upcoming(): void {
+        $host = User::factory()->administrator()->create();
+        $this->actingAs($host);
+
+        $group = Group::factory()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+
+        // Create the event
+        $idevents = $this->createEvent($group->idgroups, '2100-01-01');
+
+        // The event is future and should not show in the past events for this user.
+        $past_events = Party::pastForUser()->get();
+        self::assertEquals(0, $past_events->count());
+
+        // ...but should show as future.
+        $upcoming_events = Party::futureForUser()->get();
+        self::assertEquals(1, $upcoming_events->count());
+        self::assertEquals($idevents, $upcoming_events[0]->idevents);
+    }
+
+    /**
+     * @test
+     * @story:GroupController::deleteVolunteerForGroupv2
+     * @story:EventController::createEventv2
+     * @story:EventController::updateEventv2
+     */
+    public function no_notification_after_leaving(): void {
+        Notification::fake();
+        $this->withoutExceptionHandling();
+
+        $host = User::factory()->host()->create();
+        $this->actingAs($host);
+
+        $restarter = User::factory()->restarter()->create();
+
+        $group = Group::factory()->create([
+          'approved' => true
+        ]);
+
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $group->addVolunteer($restarter);
+
+        // Remove volunteer.
+        $response = $this->delete("/api/v2/groups/{$group->idgroups}/volunteers/{$restarter->id}?api_token=" . $host->api_token);
+        $response->assertSuccessful();
+
+        $eventData = Party::factory()->raw([
+                                                    'group' => $group->idgroups,
+                                                    'event_start_utc' => '2100-01-01T10:15:05+05:00',
+                                                    'event_end_utc' => '2100-01-0113:45:05+05:00',
+                                                    'latitude'=>'1',
+                                                    'longitude'=>'1'
+                                                ]);
+
+        // Create and approve an event.
+        $response = $this->post('/api/v2/events?api_token=' . $host->api_token, $this->eventAttributesToAPI($eventData));
+        $response->assertSuccessful();
+
+        $event = Party::latest()->first();
+        $eventData['id'] = $event->idevents;
+        $eventData['moderate'] = 'approve';
+        $this->patch('/api/v2/events/'.$event->idevents, $this->eventAttributesToAPI($eventData));
+
+        // Shouldn't notify
+        Notification::assertNotSentTo(
+            [$restarter], NotifyRestartersOfNewEvent::class
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider providerTrueFalse
+     * @story:EventController::createEventv2
+     */
+    public function notifications_are_queued_as_expected($notify): void
+    {
+        Notification::fake();
+
+        // At the moment we are queueing (backgrounding) admin notifications but not user notifications.
+        //
+        // Don't call Notification::fake() - we want real notifications.
+        $this->withoutExceptionHandling();
+
+        // Create an admin
+        $admin = User::factory()->administrator()->create();
+
+        // Create a network with a group.
+        $network = Network::factory()->create();
+        $group = Group::factory()->create();
+        $network->addGroup($group);
+
+        // Make the admin coordinators of the network, and decided whether they should get notified.
+        $network->addCoordinator($admin);
+        if ($notify) {
+            $admin->addPreference('admin-moderate-event');
+        }
+
+        // Log in so that we can create an event.
+        $host = User::factory()->host()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $this->actingAs($host);
+
+        // Create an event.
+        $event = Party::factory()->raw();
+        $event['group'] = $group->idgroups;
+        $response = $this->post('/api/v2/events?api_token=' . $host->api_token, $this->eventAttributesToAPI($event));
+        $response->assertSuccessful();
+
+        if ($notify) {
+            Notification::assertSentTo(
+                [$admin], AdminModerationEvent::class
+            );
+        } else {
+            Notification::assertNotSentTo(
+                [$admin], AdminModerationEvent::class
+            );
+        }
+
+        // Approval should generate a notification to the host.
+        $event = Party::latest()->first();
+        $event->approve();
+        $this->artisan("queue:work --stop-when-empty");
+
+        Notification::assertSentTo(
+            [$host], EventConfirmed::class
+        );
+    }
+
+    /**
+     * @test
+     * @story:PartyController::create
+     * @story:EventController::createEventv2
+     * @story:PartyController::edit
+     */
+    public function network_coordinator_other_group(): void {
+        $network = Network::factory()->create();
+
+        // Create a group in the network.
+        $groupInNetwork = Group::factory()->create();
+        $network->addGroup($groupInNetwork);
+
+        $coordinator = User::factory()->networkCoordinator()->create();
+        $network->addCoordinator($coordinator);
+
+        $this->actingAs($coordinator);
+
+        // Create a group not in the network.
+        $idgroup = $this->createGroup();
+        $groupNotInNetwork = Group::findOrFail($idgroup);
+
+        // Both groups should show in the dropdown list for event creation.
+        $response = $this->get('/party/create');
+        $props = $this->getVueProperties($response);
+        $groups = json_decode($props[1][':groups'], TRUE);
+        self::assertEquals(2, count($groups));
+        self::assertEquals($groupNotInNetwork->idgroups, $groups[0]['idgroups']);
+        self::assertEquals($groupInNetwork->idgroups, $groups[1]['idgroups']);
+
+        // Create the event.
+        $eventAttributes = Party::factory()->raw();
+        $eventAttributes['group'] = $idgroup;
+
+        $event_start = Carbon::createFromTimestamp('tomorrow')->setTimezone('UTC');
+        $event_end = Carbon::createFromTimestamp('tomorrow')->setTimezone('UTC')->addHour(2);
+
+        $eventAttributes['event_start_utc'] = $event_start->toIso8601String();
+        $eventAttributes['event_end_utc'] = $event_end->toIso8601String();
+
+        $response = $this->post('/api/v2/events?api_token=' . $coordinator->api_token, $this->eventAttributesToAPI($eventAttributes));
+        $response->assertSuccessful();
+        $idevents = Party::latest()->first()->idevents;
+
+        $response = $this->get('/party/edit/'.$idevents);
+        $response->assertSuccessful();
+    }
+
+    /**
+     * @dataProvider invalidEmailProvider
+     * @story:EventController::createEventv2
+     * @story:EventController::addVolunteer
+     */
+    public function an_invalid_email_is_trapped($email, $valid)
+    {
+        $this->withoutExceptionHandling();
+        Queue::fake();
+
+        $host = User::factory()->host()->create();
+        $host2 = User::factory()->host()->create();
+        $this->actingAs($host);
+
+        $group = Group::factory()->create();
+        $group->addVolunteer($host);
+        $group->makeMemberAHost($host);
+        $group->addVolunteer($host2);
+        $group->makeMemberAHost($host2);
+
+        // Create the event
+        $eventAttributes = Party::factory()->raw([
+            'group' => $group->idgroups, 'event_date' => '2000-01-01', 'approved' => true
+        ]);
+
+        $response = $this->post('/api/v2/events?api_token='.$host->api_token,
+            $this->eventAttributesToAPI($eventAttributes));
+        $response->assertSuccessful();
+
+        // Find the event id
+        $party = $group->parties()->latest()->first();
+
+        if (!$valid) {
+            $this->expectException(ValidationException::class);
+        }
+
+        $this->put('/api/events/'.$party->idevents.'/volunteers?api_token='.$host->api_token, [
+            'volunteer_email_address' => $email,
+            'full_name' => $host2->name,
+            'user' => $host2->id,
+        ]);
+    }
+
+    public function invalidEmailProvider(): array
+    {
+        return [
+            ['test@test.com', true],
+            ['invalidmail', false],
+            ['invalidmail@', false],
+            ['test@test.com, invalidmail', false]
+        ];
     }
 }

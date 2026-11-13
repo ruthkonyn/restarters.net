@@ -14,27 +14,49 @@
           </h3>
         </div>
         <b-btn variant="link" class="pr-1 pl-0">
-          <img class="icon" v-if="expandedItems" src="/images/minus-icon-brand.svg" alt="Collapse" />
-          <img class="icon" v-else src="/images/add-icon-brand.svg" alt="Expand" />
+          <img class="icon" v-if="expandedItems" :src="imageUrl('/images/minus-icon-brand.svg')" alt="Collapse" />
+          <img class="icon" v-else :src="imageUrl('/images/add-icon-brand.svg')" alt="Expand" />
         </b-btn>
       </div>
       <b-collapse id="collapse-item" v-model="expandedItems">
         <b-card no-body>
           <b-card-body class="p-2">
+            <b-form-group :label="__('devices.powered_or_unpowered')">
+              <multiselect
+                  v-model="current_powered_option"
+                  :options="poweredOptions"
+                  track-by="text"
+                  label="text"
+                  :multiple="false"
+                  :allow-empty="false"
+                  selectLabel=""
+                  deselect-label=""
+                  selectedLabel=""
+                  :taggable="false"
+                  :searchable="false"
+                  class="powered-filter"
+              />
+            </b-form-group>
             <b-form-group :label="__('devices.category')">
-              <DeviceCategorySelect :category.sync="current_category" :clusters="clusters" :powered="powered" allow-empty />
+              <DeviceCategorySelect :key="'category-' + current_powered" :category.sync="current_category" :clusters="clusters" :powered="current_powered" icon-variant="none" allow-empty />
             </b-form-group>
-            <b-form-group v-if="powered" :label="__('devices.model')">
-              <DeviceModel :model.sync="current_model" />
+            <b-form-group :label="__('devices.model_or_type')">
+              <DeviceModel :model.sync="current_item_type" :placeholder="__('devices.item_type')" icon-variant="none" class="item-filter" />
             </b-form-group>
-            <b-form-group  v-if="powered" :label="__('devices.brand')">
+            <b-form-group :label="__('devices.brand')">
               <DeviceBrand :brand.sync="current_brand" :brands="brands" allow-empty suppress-brand-warning />
             </b-form-group>
-            <b-form-group v-if="!powered" :label="__('devices.model_or_type')">
-              <DeviceModel :model.sync="current_item_type" />
+            <b-form-group :label="__('devices.model')">
+              <DeviceModel :model.sync="current_model" icon-variant="none" class="model-filter" />
             </b-form-group>
             <div class="w-100 device-select-row">
-              <b-form-group :label="__('devices.status')">
+              <b-form-group :label="__('devices.search_assessment_comments')">
+                <b-input v-model="current_comments" />
+              </b-form-group>
+              <div />
+            </div>
+            <div class="w-100 device-select-row">
+              <b-form-group :label="__('devices.repair_status')">
                 <multiselect
                     v-model="current_status"
                     :options="statusOptions"
@@ -50,18 +72,10 @@
               </b-form-group>
               <div />
             </div>
-            <div class="w-100 device-select-row">
-              <b-form-group :label="__('devices.search_assessment_comments')">
-                <b-input v-model="current_comments" />
-              </b-form-group>
-              <div />
-            </div>
-            <div class="w-100 device-select-row">
-              <div class="d-flex">
-                <b-form-checkbox v-model="current_wiki" size="lg" />
-                <label class="mt-1">{{ __('devices.interesting_case_study') }}</label>
-              </div>
-              <div />
+            <div class="d-flex justify-content-end mt-1">
+              <button type="button" class="btn clear-item-filters clear-filters" @click="clearItems">
+                {{ __('devices.clear_filters') }}
+              </button>
             </div>
           </b-card-body>
         </b-card>
@@ -81,8 +95,8 @@
           </h3>
         </div>
         <b-btn variant="link" class="pr-1 pl-0">
-          <img class="icon" v-if="expandedEvents" src="/images/minus-icon-brand.svg" alt="Collapse" />
-          <img class="icon" v-else src="/images/add-icon-brand.svg" alt="Expand" />
+          <img class="icon" v-if="expandedEvents" :src="imageUrl('/images/minus-icon-brand.svg')" alt="Collapse" />
+          <img class="icon" v-else :src="imageUrl('/images/add-icon-brand.svg')" alt="Expand" />
         </b-btn>
       </div>
       <b-collapse id="collapse-item" v-model="expandedEvents">
@@ -97,6 +111,11 @@
             <b-form-group :label="__('devices.to_date')">
               <b-form-datepicker class="datepicker" v-model="current_to_date" :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"></b-form-datepicker>
             </b-form-group>
+            <div class="d-flex justify-content-end mt-1">
+              <button type="button" class="btn clear-event-filters clear-filters" @click="clearEvents">
+                {{ __('devices.clear_filters') }}
+              </button>
+            </div>
           </b-card-body>
         </b-card>
       </b-collapse>
@@ -104,13 +123,16 @@
   </div>
 </template>
 <script>
-import DeviceCategorySelect from './DeviceCategorySelect'
-import DeviceModel from './DeviceModel'
-import DeviceBrand from './DeviceBrand'
+import DeviceCategorySelect from './DeviceCategorySelect.vue'
+import DeviceModel from './DeviceModel.vue'
+import DeviceBrand from './DeviceBrand.vue'
+import images from '../mixins/images'
+import { today } from '../today'
 import { END_OF_LIFE, FIXED, REPAIRABLE } from '../constants'
 
 export default {
   components: {DeviceBrand, DeviceModel, DeviceCategorySelect},
+  mixins: [images],
   props: {
     clusters: {
       type: Array,
@@ -123,8 +145,10 @@ export default {
       default: null
     },
     powered: {
+      // Null means both powered and unpowered items.
       type: Boolean,
-      required: true
+      required: false,
+      default: null
     },
     startExpandedItems: {
       type: Boolean,
@@ -157,7 +181,8 @@ export default {
       default: null
     },
     status: {
-      type: Number,
+      // One of the repair status strings, e.g. 'Fixed'.
+      type: String,
       required: false,
       default: null
     },
@@ -212,6 +237,41 @@ export default {
         this.$emit('update:status', newVal ? newVal.id : null)
       }
     },
+    current_powered: {
+      get() {
+        return this.powered
+      },
+      set(newVal) {
+        this.$emit('update:powered', newVal)
+
+        // Categories belong to one or the other, so start again with the category.
+        this.current_category = null
+      }
+    },
+    current_powered_option: {
+      get() {
+        return this.poweredOptions.find(o => o.value === this.current_powered)
+      },
+      set(newVal) {
+        this.current_powered = newVal ? newVal.value : null
+      }
+    },
+    poweredOptions () {
+      return [
+        {
+          value: null,
+          text: this.__('devices.both')
+        },
+        {
+          value: true,
+          text: this.__('devices.powered')
+        },
+        {
+          value: false,
+          text: this.__('devices.unpowered')
+        }
+      ]
+    },
     current_comments: {
       get() {
         return this.comments
@@ -224,15 +284,15 @@ export default {
       return [
         {
           id: FIXED,
-          text: this.$lang.get('partials.fixed')
+          text: this.__('partials.fixed')
         },
         {
           id: REPAIRABLE,
-          text: this.$lang.get('partials.repairable')
+          text: this.__('partials.repairable')
         },
         {
           id: END_OF_LIFE,
-          text: this.$lang.get('partials.end_of_life')
+          text: this.__('partials.end_of_life')
         }
       ]
     },
@@ -250,6 +310,12 @@ export default {
     this.current_wiki = this.wiki
   },
   watch: {
+    startExpandedItems (newVal) {
+      this.expandedItems = newVal
+    },
+    startExpandedEvents (newVal) {
+      this.expandedEvents = newVal
+    },
     current_category(newVal) {
       this.$emit('update:category', newVal)
     },
@@ -279,20 +345,42 @@ export default {
     }
   },
   methods: {
+    clearItems() {
+      // Setting powered also clears the category.
+      this.current_powered = null
+      this.current_category = null
+      this.current_item_type = null
+      this.current_brand = null
+      this.current_model = null
+      this.$emit('update:comments', null)
+      this.$emit('update:status', null)
+    },
+    clearEvents() {
+      this.current_group = null
+      this.current_from_date = null
+      this.current_to_date = today()
+    },
     toggleItems() {
       this.expandedItems = !this.expandedItems
+      this.$emit('expandItems', this.expandedItems)
     },
     toggleEvents() {
       this.expandedEvents = !this.expandedEvents
+      this.$emit('expandEvents', this.expandedEvents)
     }
   }
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
+
+// The device inputs leave a column for an info icon, which the filters don't show, so let them fill the width.
+::v-deep .device-select-row {
+  grid-template-columns: auto;
+}
 
 .border {
   border: 1px solid $brand-light !important;
@@ -320,16 +408,12 @@ export default {
   background-color: $brand-grey-darker;
 }
 
-/deep/ .btn-link:hover {
-  color: transparent;
-}
-
-/deep/ .btn:focus, .btn.focus {
+::v-deep .btn:focus, .btn.focus {
   outline: 0;
   -webkit-box-shadow: none
 }
 
-/deep/ legend {
+::v-deep legend {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 0px;
@@ -340,7 +424,7 @@ export default {
   padding: 0 10px;
 }
 
-/deep/ .datepicker {
+::v-deep .datepicker {
   & label {
     padding-bottom: 0;
     border: 0;
@@ -365,5 +449,33 @@ export default {
 
 .clickme {
   user-select: none;
+}
+
+// Placed last so it also wins the specificity tie with the generic .btn:focus rule above.
+.clear-filters {
+  border: 1px solid $brand;
+  border-radius: 0;
+  background-color: $white;
+  color: $brand;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 4px 12px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: $brand;
+    border-color: $brand;
+    color: $white;
+    text-decoration: none;
+  }
+
+  &:focus {
+    background-color: $brand;
+    border-color: $brand;
+    color: $white;
+    box-shadow: 0 0 0 2px rgba($brand, 0.35);
+    outline: 0;
+  }
 }
 </style>

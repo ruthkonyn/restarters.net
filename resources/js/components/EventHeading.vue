@@ -5,7 +5,7 @@
       <EventActions :idevents="idevents" :canedit="canedit" :candelete="candelete" :is-admin="isAdmin" :in-group="inGroup" :is-attending="isAttending" class="d-block d-md-none" />
     </div>
     <div class="border-top-very-thick border-bottom-thin mb-3">
-      <div class="layout mt-4 mb-3 mb-md-3">
+      <div class="eh-layout mt-4 mb-3 mb-md-3">
         <div class="bord d-flex">
           <div class="datebox">
             <span class="day align-top">{{ dayofmonth }}</span> <br />
@@ -20,14 +20,14 @@
         </div>
         <div class="pl-md-4 d-flex maybeborder pt-3 p-md-0 d-flex flex-column justify-content-center">
           <div class="d-flex justify-content-between w-100">
-            <div class="d-flex mr-2" v-if="event.the_group">
+            <div class="d-flex mr-2" v-if="event.group">
               <b-img @error="brokenGroupImage" :src="groupImage" class="groupImage d-none d-md-block" />
               <div class="d-flex flex-wrap ml-md-2">
                 {{ translatedOrganised }}&nbsp;
                 <br class="d-none d-md-block"/>
                 <b>
-                  <a :href="'/group/view/' + event.the_group.idgroups">
-                    {{ event.the_group.name.trim() }}
+                  <a :href="'/group/view/' + event.group.idgroups">
+                    {{ event.group.name.trim() }}
                   </a>
                 </b>
               </div>
@@ -43,8 +43,8 @@
 import { DEFAULT_PROFILE } from '../constants'
 import event from '../mixins/event'
 import moment from 'moment'
-import EventActions from './EventActions'
-import EventTitle from './EventTitle'
+import EventActions from './EventActions.vue'
+import EventTitle from './EventTitle.vue'
 
 export default {
   components: {EventTitle, EventActions},
@@ -81,13 +81,13 @@ export default {
   },
   computed: {
     groupImage() {
-      return this.event.the_group && this.event.the_group.group_image ? ('/uploads/mid_' + this.event.the_group.group_image.image.path) : DEFAULT_PROFILE
+      return this.event.group && this.event.group.group_image ? ('/uploads/mid_' + this.event.group.group_image.image.path) : DEFAULT_PROFILE
     },
     translatedOrganised() {
       // Existing translations may have a :group parameter, so set that empty so that it doesn't appear in the result.
       // We no longer use that parameter because the design has different styling for the translated text and the
       // group name.
-      return this.$lang.get('events.organised_by', {
+      return this.__('events.organised_by', {
         group: ''
       })
     },
@@ -101,9 +101,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .border-top-very-thick {
   border-top: 5px solid $black;
@@ -153,7 +153,7 @@ export default {
   display: flex !important;
 }
 
-.layout {
+.eh-layout {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto auto;

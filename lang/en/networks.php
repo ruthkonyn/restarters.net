@@ -1,0 +1,68 @@
+<?php
+
+return [
+  'networks' => 'Networks',
+  'network' => 'Network',
+  'general' => [
+    'view_reports' => 'View reports',
+    'see_network_reports' => 'See more in your network\'s reports',
+    'networks' => 'Networks',
+    'network' => 'Network',
+    'particular_network' => ':networkName network',
+    'groups' => 'Groups',
+    'about' => 'About',
+    'actions' => 'Network Actions',
+    'coordinators' => 'Network Coordinators',
+    'impact' => 'Impact'
+  ],
+  'stats' => [
+    'groups' => '{1} Group|[0,*] Groups',
+    'events' => '{1} Event|[0,*] Events',
+    'waste_diverted' => 'Waste Diverted',
+    'co2_prevented' => 'CO2 Prevented'
+  ],
+  'tags' => [
+    'title' => 'Group Tags',
+    'no_tags' => 'No tags created yet.',
+    'new_tag_placeholder' => 'New tag name...',
+    'description_placeholder' => 'Description (optional)',
+    'create' => 'Create Tag',
+    'create_error' => 'Failed to create tag. Please try again.',
+    'edit' => 'Edit',
+    'edit_title' => 'Edit Tag',
+    'edit_error' => 'Failed to update tag. Please try again.',
+    'name_label' => 'Name',
+    'description_label' => 'Description',
+    'delete' => 'Delete',
+    'delete_confirm_title' => 'Delete Tag',
+    'delete_confirm_message' => 'Are you sure you want to delete the tag ":name"?',
+    'delete_warning' => '{1} This will remove the tag from :count group.|[2,*] This will remove the tag from :count groups.'
+  ],
+  'index' => [
+    'your_networks' => 'Your networks',
+    'your_networks_explainer' => 'These are the networks for which you are a coordinator.',
+    'your_networks_no_networks' => 'You are not a coordinator of any networks.',
+    'all_networks' => 'All networks',
+    'all_networks_explainer' => 'All networks in the system (admin-only).',
+    'all_networks_no_networks' => 'There are no networks in the system.',
+    'description' => 'Description',
+  ],
+  'show' => [
+    'add_groups_menuitem' => 'Add groups',
+    'add_groups_modal_header' => 'Add groups to :name',
+    'add_groups_select_label' => 'Choose groups to add',
+    'add_groups_save_button' => 'Add',
+    'add_groups_warning_none_selected' => 'No groups selected.',
+    'add_groups_success' => '{1} :number group added.|[2,*] :number groups added.',
+    'none' => 'None',
+  ],
+  'edit' => [
+    'label_reporting_url' => 'Reporting dashboard address',
+    'help_reporting_url' => 'Where this network\'s reports are published. Leave blank if the network has no reports.',
+    'label_logo' => 'Network logo',
+    'button_save' => 'Save changes',
+    'add_new_field' => 'Add new field',
+    'new_field_name' => 'New field name',
+    'add_field' => 'Add field',
+  ],
+];

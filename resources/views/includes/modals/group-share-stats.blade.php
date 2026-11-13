@@ -13,7 +13,7 @@
 
       <div class="modal-body">
 
-        <p>@lang('groups.share_stats_message', ['group' => $group->name])</p>
+        <p>@lang('groups.share_stats_message', ['group' => e($group->name)])</p>
 
         <div id="accordionGroup" class="accordion__share mt-4">
 
@@ -29,11 +29,11 @@
 
                   <div class="form-group">
                       <label for="group_headline_stats_embed">@lang('groups.embed_code_header'):</label>
-                      <input type="text" class="form-control field" id="group_headline_stats_embed" value='<iframe src="{{{ env('APP_URL') }}}/group/stats/{{{ $group->idgroups }}}" frameborder="0" width="100%" height="115"></iframe>'>
+                      <input type="text" class="form-control field" id="group_headline_stats_embed" value='<iframe src="{{{ env('APP_URL') }}}/group/stats/{{{ $group->idgroups }}}" frameborder="0" width="700" height="370"></iframe>'>
                   </div>
                   <small class="after-offset">@lang('groups.headline_stats_message')</small>
 
-                  <iframe src="{{{ env('APP_URL') }}}/group/stats/{{{ $group->idgroups }}}" frameborder="0" width="100%" height="115" id="headlineStats" class="form-control"></iframe>
+                  <iframe src="{{{ env('APP_URL') }}}/group/stats/{{{ $group->idgroups }}}" frameborder="0" width="700" height="370" id="headlineStats" class="form-control"></iframe>
 
               </div>
             </div>
@@ -54,30 +54,11 @@
 
                   <div class="form-group">
                       <label for="group_co2_stats_embed">@lang('groups.embed_code_header'):</label>
-                      <input type="text" class="form-control field" id="group_co2_stats_embed" value='<iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/manufacture" frameborder="0" width="700" height="850"></iframe>'>
+                      <input type="text" class="form-control field" id="group_co2_stats_embed" value='<iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/leaf" frameborder="0" width="700" height="370"></iframe>'>
                   </div>
-                  @if( round($group->co2) > 900 )
-                    <small class="after-offset">@lang('visualisation.message_manufacture_high')</small>
-                  @else
-                    <small class="after-offset">@lang('visualisation.message_manufacture_low')</small>
-                  @endif
 
                   <div class="embed-responsive embed-responsive-21by9">
-                    <iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/manufacture" frameborder="0" width="700" height="850" class="form-control embed-responsive-item"></iframe>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="group_co2_stats_embed">@lang('groups.embed_code_header'):</label>
-                      <input type="text" class="form-control field" id="group_co2_stats_embed" value='<iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/consume" frameborder="0" width="700" height="850"></iframe>'>
-                  </div>
-                  @if( round($group->co2) > 6000 )
-                    <small class="after-offset">@lang('visualisation.message_consume_high')</small>
-                  @else
-                    <small class="after-offset">@lang('visualisation.message_consume_low')</small>
-                  @endif
-
-                  <div class="embed-responsive embed-responsive-21by9">
-                    <iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/consume" frameborder="0" width="700" height="850" class="form-control embed-responsive-item"></iframe>
+                    <iframe src="{{{ env('APP_URL') }}}/outbound/info/group/{{{ $group->idgroups }}}/leaf" frameborder="0" width="700" height="370" class="form-control embed-responsive-item"></iframe>
                   </div>
 
               </div>

@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Device;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ItemCollection;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Notification;
+use Illuminate\Validation\ValidationException;
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+
+#[Feature('Devices', description: 'Repair device tracking and impact measurement')]
+class ItemController extends Controller
+{
+    /**
+     * @OA\Get(
+     *      path="/api/v2/items",
+     *      operationId="listItemsv2",
+     *      tags={"Items"},
+     *      summary="Get suggested list of items which could be used in a Device.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of items",
+     *                type="array",
+     *                @OA\Items(
+     *                   ref="#/components/schemas/Item"
+     *                )
+     *             )
+     *          )
+     *       ),
+     *     )
+     */
+    #[UserStory('As a Guest, I can view suggested item types for device records', persona: 'Guest', theme: 'Browse & search devices')]
+    public static function listItemsv2(Request $request) {
+        // Item types don't change often, so we can cache them.
+        // Allow cache refresh for testing purposes or when running under Playwright
+        // Handle both string 'true' and boolean true for refresh_cache parameter
+        $refreshCacheValue = $request->get('refresh_cache');
+        $refreshCache = $request->has('refresh_cache') &&
+                       ($refreshCacheValue === 'true' || $refreshCacheValue === true || $refreshCacheValue === '1' || $refreshCacheValue === 1);
+        $isPlaywrightTest = $request->hasHeader('X-Playwright-Test');
+
+        // Clear cache first if refresh requested - this is needed because Device::getItemTypes()
+        // also has its own internal cache check that would return stale data
+        if ($refreshCache || $isPlaywrightTest) {
+            \Cache::forget('item_types');
+        }
+
+        if (!$refreshCache && !$isPlaywrightTest && \Cache::has('item_types')) {
+            $items = \Cache::get('item_types');
+        } else {
+            $items = Device::getItemTypes();
+            \Cache::put('item_types', $items, 7200);
+        }
+
+        return [
+            'data' => ItemCollection::make($items)
+        ];
+    }
+}

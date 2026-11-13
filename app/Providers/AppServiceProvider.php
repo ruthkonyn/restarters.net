@@ -4,11 +4,12 @@ namespace App\Providers;
 
 use App\EventsUsers;
 use App\Helpers\Geocoder;
-use App\Party;
+use App\Helpers\RobustTranslator;
+use App\Observers\EventsUsersObserver;
 use Auth;
 use Cache;
-use App\Helpers\Fixometer;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Translation\Translator;
 use OwenIt\Auditing\Models\Audit;
 use Schema;
 
@@ -16,10 +17,8 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // The admin area is unusable without this
         if (app()->isLocal()) {
@@ -36,48 +35,29 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        view()->composer('layouts.header', function ($view) {
-            if (Auth::check()) {
-                if (Cache::has('talk_notification_'.Auth::user()->username)) {
-                    $total_talk_notifications = Cache::get('talk_notification_'.Auth::user()->username);
-                } elseif (! config('restarters.features.discourse_integration')) {
-                    // If we don't have Discourse integration, we will still render the badge, but always have no
-                    // notifications.
-                    $total_talk_notifications = 0;
-                } else {
-                    $client = app('discourse-client');
-                    $response = $client->request('GET', '/notifications.json?username='.Auth::user()->username);
-                    $talk_notifications = json_decode($response->getBody()->getContents(), true);
+        \Illuminate\Pagination\Paginator::useBootstrapThree();
 
-                    if (! empty($talk_notifications) && array_key_exists('notifications', $talk_notifications)) {
-                        $total_talk_notifications = 0;
-                        foreach ($talk_notifications['notifications'] as $notification) {
-                            if ($notification['read'] !== true) {
-                                $total_talk_notifications++;
-                            }
-                        }
-                        Cache::put('talk_notification_'.Auth::user()->username, $total_talk_notifications, 600);
-                    } else {
-                        $total_talk_notifications = null;
-                    }
-                }
-
-                $view->with([
-                    'total_talk_notifications' => $total_talk_notifications,
-                ]);
-            }
-        });
+        EventsUsers::observe(EventsUsersObserver::class);
     }
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->singleton(Geocoder::class, function () {
-            return new Geocoder();
+            return config('restarters.geocoder_stub')
+                ? new \App\Helpers\StubGeocoder()
+                : new Geocoder();
         });
+
+        // Override the existing translator with our own robust one.
+        $this->app->extend('translator', function (Translator $translator) {
+            $trans = new RobustTranslator($translator->getLoader(), $translator->getLocale());
+            $trans->setFallback($translator->getFallback());
+            return $trans;
+        });
+
+        $this->app->register(\L5Swagger\L5SwaggerServiceProvider::class);
     }
 }

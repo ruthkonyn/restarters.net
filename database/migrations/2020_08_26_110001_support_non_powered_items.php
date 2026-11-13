@@ -5,14 +5,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class SupportNonPoweredItems extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         // New cluster for non-powered categories.
         DB::table('clusters')->insert([
@@ -60,10 +58,8 @@ class SupportNonPoweredItems extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('devices', function (Blueprint $table) {
             $table->dropColumn('item_type');
@@ -81,4 +77,4 @@ class SupportNonPoweredItems extends Migration
         // Remove cluster for non-powered categories.
         DB::table('clusters')->where('name', 'Non-Powered Items')->delete();
     }
-}
+};

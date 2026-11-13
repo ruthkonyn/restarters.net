@@ -2,8 +2,13 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
+use App\Helpers\Fixometer;
 use App\Network;
 use App\UserGroups;
 use App\UsersPermissions;
@@ -13,31 +18,33 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 
-class WikiSyncStatus
+class User extends Authenticatable implements Auditable, HasLocalePreference
 {
-    const DoNotCreate = 0;
-    const CreateAtLogin = 1;
-    const Created = 2;
-}
-
-class User extends Authenticatable implements Auditable
-{
+    use HasFactory;
     use Notifiable;
     use SoftDeletes;
     use \OwenIt\Auditing\Auditable;
     // Use the Authorizable trait so that we can call can() on a user to evaluation policies.
     use \Illuminate\Foundation\Auth\Access\Authorizable;
 
+    // Radius within which a group has to be for it to be considered nearby.
+    const NEARBY_KM = 50;
+
     protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
      *
+     * Note: `role` and `api_token` are intentionally excluded from $fillable.
+     * They must be set via direct assignment ($user->role = X; $user->save())
+     * to prevent privilege escalation via mass assignment (security: C2/M1).
+     *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'recovery', 'recovery_expires', 'language', 'repair_network', 'location', 'age', 'gender', 'country', 'newsletter', 'drip_subscriber_id', 'invites', 'biography', 'consent_future_data', 'consent_past_data', 'consent_gdpr', 'number_of_logins', 'latitude', 'longitude', 'last_login_at', 'api_token', 'access_group_tag_id', 'calendar_hash', 'repairdir_role', 'mediawiki', 'username',
+        'name', 'email', 'password', 'recovery', 'recovery_expires', 'language', 'repair_network', 'location', 'age', 'gender', 'country_code', 'newsletter', 'invites', 'biography', 'consent_future_data', 'consent_past_data', 'consent_gdpr', 'number_of_logins', 'latitude', 'longitude', 'last_login_at', 'access_group_tag_id', 'calendar_hash', 'repairdir_role', 'mediawiki', 'username',
     ];
 
     /**
@@ -47,6 +54,9 @@ class User extends Authenticatable implements Auditable
      */
     protected $hidden = [
         'password', 'remember_token',
+        // Credentials and PII that must never appear in serialised API responses or page HTML.
+        'api_token', 'calendar_hash', 'recovery', 'recovery_expires',
+        'mediawiki', 'latitude', 'longitude',
     ];
 
     /**
@@ -58,6 +68,13 @@ class User extends Authenticatable implements Auditable
         'number_of_logins',
         'last_login_at',
         'remember_token',
+        'password',
+        'api_token',
+        'calendar_hash',
+        'recovery',
+        'recovery_expires',
+        'latitude',
+        'longitude',
     ];
 
     /**
@@ -70,7 +87,7 @@ class User extends Authenticatable implements Auditable
         'deleted' => UserDeleted::class,
     ];
 
-    public function role()
+    public function role(): HasOne
     {
         return $this->hasOne(\App\Role::class, 'idroles', 'role');
     }
@@ -81,19 +98,19 @@ class User extends Authenticatable implements Auditable
         return $this->repairdir_role ? $this->repairdir_role : Role::REPAIR_DIRECTORY_NONE;
     }
 
-    public function userSkills()
+    public function userSkills(): HasMany
     {
         return $this->hasMany(\App\UsersSkills::class, 'user', 'id');
     }
 
-    public function skills()
+    public function skills(): BelongsToMany
     {
         return $this->belongsToMany(\App\Skills::class, 'users_skills', 'user', 'skill');
     }
 
     // This is an incorrect relationship, but leaving it here for now as it is used in a strange way in two legacy places and apparently working in those instances somehow.
     // Use skills() for correct belongsToMany relationship.
-    public function skillsold()
+    public function skillsold(): BelongsToMany
     {
         return $this->belongsToMany(\App\UsersSkills::class, 'users_skills', 'user', 'skill');
     }
@@ -110,43 +127,70 @@ class User extends Authenticatable implements Auditable
         }
     }
 
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(\App\Group::class, 'users_groups', 'user', 'group');
     }
 
     /**
-     * Return a list of repair groups near the user.
+     * Return a list of repair groups near the user that they are not already a member of.
      *
-     * @param int $searchRadiusInMiles How far to search for groups
      * @param int $numberOfGroups How many groups to return
-     * @param array $idsOfGroupsToIgnore Any groups that should be excluded from the result
+     * @param string String of minimum creation date
      */
-    public function groupsNearby($searchRadiusInMiles = 150, $numberOfGroups = 10, $idsOfGroupsToIgnore = null)
+    public function groupsNearby(int $numberOfGroups = 10, $createdSince = null, $nearby = self::NEARBY_KM)
     {
         if (is_null($this->latitude) || is_null($this->longitude)) {
-            return null;
+            return [];
         }
 
-        $groupsNearbyQuery = Group::select(
-            DB::raw('*, ( 6371 * acos( cos( radians('.$this->latitude.') ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians('.$this->longitude.') ) + sin( radians('.$this->latitude.') ) * sin( radians( latitude ) ) ) ) AS distance')
-        )->having('distance', '<=', $searchRadiusInMiles);
+        $groupsNearbyQuery = Group::selectRaw(
+            '*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS dist',
+            [$this->latitude, $this->longitude, $this->latitude]
+        )->where(function ($q) {
+            $q->whereNull('archived_at');
 
-        if (! is_null($idsOfGroupsToIgnore)) {
-            $groupsNearbyQuery->whereNotIn('idgroups', $idsOfGroupsToIgnore);
+            // Only show approved groups.
+            $q->where('approved', true);
+        })->having('dist', '<=', $nearby)
+            ->groupBy('idgroups');
+
+        if ($createdSince) {
+            $groupsNearbyQuery->whereDate('created_at', '>=', date('Y-m-d', strtotime($createdSince)));
         }
 
-        return $groupsNearbyQuery->orderBy('distance', 'ASC')
+        $groups = $groupsNearbyQuery->orderBy('dist', 'ASC')
             ->take($numberOfGroups)
             ->get();
+
+        $groups->load('groupImage.image');
+
+        // Expand the image
+        $groupsNearby = [];
+
+        if ($groups) {
+            foreach ($groups as $group) {
+                $group_image = $group->groupImage;
+                if (is_object($group_image) && is_object($group_image->image)) {
+                    $group_image->image->path;
+                }
+
+                // Store for later retrieval.  This is unusual because the value is not stored in the table.
+                $group->setDistanceAttribute($group->dist);
+
+                $groupsNearby[] = $group;
+            }
+        }
+
+        return $groupsNearby;
     }
 
-    public function preferences()
+    public function preferences(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'users_preferences', 'user_id', 'preference_id');
     }
 
-    public function permissions()
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'users_permissions', 'user_id', 'permission_id');
     }
@@ -163,18 +207,18 @@ class User extends Authenticatable implements Auditable
 
     public function getRolePermissions($role)
     {
-        return DB::select(DB::raw('SELECT p.idpermissions, p.permission, r.idroles, r.role FROM permissions AS p
+        return DB::select('SELECT p.idpermissions, p.permission, r.idroles, r.role FROM permissions AS p
                 INNER JOIN roles_permissions AS rp ON rp.permission = p.idpermissions
                 INNER JOIN roles AS r ON rp.role= r.idroles
-                WHERE r.role = :role'), ['role' => $role]);
+                WHERE r.role = :role', ['role' => $role]);
     }
 
     public function getUserGroups($user)
     {
-        return DB::select(DB::raw('SELECT * FROM `'.$this->table.'` AS `u`
+        return DB::select('SELECT * FROM `'.$this->table.'` AS `u`
                 INNER JOIN `users_groups` AS `ug` ON `ug`.`user` = `u`.`id`
                 INNER JOIN `groups` AS `g` ON `ug`.`group` = `g`.`idgroups`
-                WHERE `u`.`id` = :id'), ['id' => $user]);
+                WHERE `u`.`id` = :id', ['id' => $user]);
     }
 
     // Setters
@@ -214,7 +258,7 @@ class User extends Authenticatable implements Auditable
     //     $sql .= implode(' AND ', $clauses);
     //
     //     try {
-    //       return DB::select(DB::raw($sql), $params);
+    //       return DB::select($sql, $params);
     //     } catch (\Illuminate\Database\QueryException $e) {
     //       return false;
     //     }
@@ -225,9 +269,9 @@ class User extends Authenticatable implements Auditable
         //Tested!
 
         if (! $eloquent) {
-            $Users = DB::select(DB::raw('SELECT users.id AS id, users.name, users.email, roles.role FROM users
+            $Users = DB::select('SELECT users.id AS id, users.name, users.email, roles.role FROM users
                   INNER JOIN roles ON roles.idroles = users.role WHERE users.deleted_at IS NULL
-                  ORDER BY users.id ASC')); //INNER JOIN sessions ON sessions.user = users.id, UNIX_TIMESTAMP(sessions.modified_at) AS modified_at
+                  ORDER BY users.id ASC'); //INNER JOIN sessions ON sessions.user = users.id, UNIX_TIMESTAMP(sessions.modified_at) AS modified_at
 
             if (is_array($Users)) {
                 $User = new self;
@@ -245,7 +289,7 @@ class User extends Authenticatable implements Auditable
     public function partyEligible()
     {
         //Tested!
-        return DB::select(DB::raw('SELECT
+        return DB::select('SELECT
                   users.id AS id,
                   users.name,
                   users.email,
@@ -253,13 +297,12 @@ class User extends Authenticatable implements Auditable
               FROM '.$this->table.'
               INNER JOIN roles ON roles.idroles = users.role
               WHERE users.role > 1
-              ORDER BY users.name ASC'));
+              ORDER BY users.name ASC');
     }
 
     public function inGroup($group)
     {
-        //Tested!
-        return DB::select(DB::raw('SELECT
+        return DB::select('SELECT
                     users.id AS id,
                     users.name,
                     users.email,
@@ -269,7 +312,7 @@ class User extends Authenticatable implements Auditable
                 WHERE users.role > 1
                     AND users.id IN
                         (SELECT `user` FROM users_groups WHERE `group` = :group)
-                ORDER BY users.name ASC'), ['group' => $group]);
+                ORDER BY users.name ASC', ['group' => $group]);
     }
 
     public function isInGroup($groupId)
@@ -286,14 +329,14 @@ class User extends Authenticatable implements Auditable
     {
         //Tested!
 
-        $r = DB::select(DB::raw('SELECT COUNT(id) AS emails FROM '.$this->table.' WHERE email = :email'), ['email' => $email]);
+        $r = DB::select('SELECT COUNT(id) AS emails FROM '.$this->table.' WHERE email = :email', ['email' => $email]);
 
         return ($r[0]->emails > 0) ? false : true;
     }
 
     public function scopeNearbyRestarters($query, $latitude, $longitude, $radius = 20)
     {
-        return $query->select(DB::raw('*, ( 6371 * acos( cos( radians('.$latitude.') ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians('.$longitude.') ) + sin( radians('.$latitude.') ) * sin( radians( latitude ) ) ) ) AS distance'))
+        return $query->selectRaw('*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance', [$latitude, $longitude, $latitude])
                         ->whereNotNull('location')
                           ->whereNotNull('latitude')
                             ->whereNotNull('longitude')
@@ -324,9 +367,9 @@ class User extends Authenticatable implements Auditable
     }
 
     /**
-     * @return Date when the user last logged in
+     * @return \Carbon\Carbon when the user last logged in
      */
-    public function lastLogin()
+    public function lastLogin(): \Carbon\Carbon
     {
         return new \Carbon\Carbon($this->last_login_at);
     }
@@ -338,10 +381,15 @@ class User extends Authenticatable implements Auditable
     {
         $this->name = 'Deleted User';
         $this->email = $this->id.'@deleted.invalid';
-        $this->username = $this->id.'-deleted';
 
         // TODO: country, city, gender, age, also required?
         return $this;
+    }
+
+    // Biography is nullable in DB; return '' so SSO payload never sees null.
+    public function getBiographyAttribute($value): string
+    {
+        return $value ?? '';
     }
 
     /**
@@ -360,17 +408,11 @@ class User extends Authenticatable implements Auditable
 
     public function existsOnDiscourse()
     {
-        try {
-            $client = app('discourse-client');
-            $emailToSearchFor = urlencode(trim($this->email));
-            $endpoint = sprintf('/admin/users/list/all.json?email=%s', $emailToSearchFor);
-            $response = $client->request('GET', $endpoint);
-            $discourseResult = json_decode($response->getBody());
-
-            return count($discourseResult) >= 1;
-        } catch (\Exception $ex) {
+        if (! config('restarters.features.discourse_integration')) {
             return false;
         }
+
+        return $this->username != NULL;
     }
 
     /**
@@ -386,36 +428,7 @@ class User extends Authenticatable implements Auditable
         }
     }
 
-    /**
-     * Getter to display the user's repair network with options to provide the network name/slug
-     *
-     * NOT IN USE, decided on a more straightforward approach could be useful in the future
-     * @author Dean Appleton-Claydon
-     * @date   2019-03-22
-     * @param  bool $string
-     * @param  bool $slug
-     * @return mixed either string or int
-     */
-    public function getRepairNetwork($string = false, $slug = false)
-    {
-        if ($string) {
-            if ($this->repair_network === 2) {
-                $network = 'Repair Share';
-            } else {
-                $network = 'Restarters';
-            }
-
-            if ($slug) {
-                return Str::slug($network);
-            }
-
-            return $network;
-        }
-
-        return $this->repair_network;
-    }
-
-    public function groupTag()
+    public function groupTag(): HasOne
     {
         return $this->hasOne(GroupTags::class, 'id', 'access_group_tag_id');
     }
@@ -439,6 +452,9 @@ class User extends Authenticatable implements Auditable
 
         $desired_username = implode('_', $name_parts);
 
+        // Discourse doesn't allow repeated special characters - see https://github.com/discourse/discourse/blob/main/app/models/username_validator.rb.
+        $desired_username = preg_replace('/[-_.]{2,}/', '_', $desired_username);
+
         if (! (self::where('username', '=', $desired_username)->exists())) {
             $username = $desired_username;
         } else { // someone already has the desired username
@@ -446,11 +462,6 @@ class User extends Authenticatable implements Auditable
         }
 
         $this->username = $username;
-    }
-
-    public function isDripSubscriber()
-    {
-        return ! is_null($this->drip_subscriber_id);
     }
 
     public function isRepairDirectoryNone()
@@ -517,14 +528,14 @@ class User extends Authenticatable implements Auditable
         return $network->include_in_zapier;
     }
 
-    public function networks()
-    {
-        return $this->belongsToMany(Network::class, 'user_network', 'user_id', 'network_id');
-    }
-
     public function isCoordinatorOf($network)
     {
         return $this->networks->contains($network);
+    }
+
+    public function networks(): BelongsToMany
+    {
+        return $this->belongsToMany(Network::class, 'user_network', 'user_id', 'network_id');
     }
 
     public function isCoordinatorForGroup($group)
@@ -542,14 +553,12 @@ class User extends Authenticatable implements Auditable
 
     public function groupsInChargeOf()
     {
-        $groupsUserIsInChargeOf = collect([]);
+        $groupsUserIsInChargeOf = Group::join('users_groups', 'groups.idgroups', '=', 'users_groups.group')
+            ->where('user', $this->id)
+            ->where('role', 3)
+            ->get();
 
-        if ($this->hasRole('Host')) {
-            $groupsUserIsInChargeOf = Group::join('users_groups', 'groups.idgroups', '=', 'users_groups.group')
-                                    ->where('user', $this->id)
-                                    ->where('role', 3)
-                                    ->get();
-        } elseif ($this->hasRole('NetworkCoordinator')) {
+        if ($this->hasRole('NetworkCoordinator')) {
             foreach ($this->networks as $network) {
                 foreach ($network->groups as $group) {
                     $groupsUserIsInChargeOf->push($group);
@@ -559,7 +568,7 @@ class User extends Authenticatable implements Auditable
             $groupsUserIsInChargeOf = Group::all();
         }
 
-        return $groupsUserIsInChargeOf;
+        return $groupsUserIsInChargeOf->unique();
     }
 
     public function ensureAPIToken()
@@ -574,5 +583,59 @@ class User extends Authenticatable implements Auditable
         }
 
         return $api_token;
+    }
+
+    /**
+     * Issue a new API token, invalidating the previous one.
+     *
+     * The token is a bearer credential for the whole API and is readable by the client's
+     * JavaScript, so anything that revokes access to the account - a password change or
+     * reset - has to replace it as well.
+     */
+    public function rotateAPIToken()
+    {
+        $api_token = \Illuminate\Support\Str::random(60);
+        $this->api_token = $api_token;
+        $this->save();
+
+        return $api_token;
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(
+            \Illuminate\Notifications\DatabaseNotification::class,
+            'notifiable'
+        )->where('created_at', '>=', now()->subYear())->latest();
+    }
+
+    /**
+     * Get the user's preferred locale.  This is automatically used by email notifications.
+     */
+    public function preferredLocale(): string
+    {
+        // TODO Use of preferredLocale should mean we don't have to explicitly pass the locale.  But that isn't
+        // working.  So at the moment we are passing a locale explicitly in the translations in the notifications
+        // to users (not admins).
+        return $this->language ?? 'en';
+    }
+
+    public static function userCanSeeEvent($user, $event) {
+        // We need to filter based on approved visibility:
+        // - where the group is approved, this event is visible
+        // - where the group is not approved, this event is visible to network coordinators or group hosts.
+        $amHost = $user && $user->hasRole('Host');
+        $admin = $user && $user->hasRole('Administrator');
+
+        $group = Group::find($event->group);
+
+        if (($event->approved && $group->approved) ||
+            $admin ||
+            ($user && $user->isCoordinatorForGroup($group)) ||
+            ($amHost && $user && Fixometer::userIsHostOfGroup($group->idgroups, $user->id))) {
+            return true;
+        }
+
+        return false;
     }
 }

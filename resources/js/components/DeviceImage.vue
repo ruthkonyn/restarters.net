@@ -9,8 +9,8 @@
   </div>
 </template>
 <script>
-import ConfirmModal from './ConfirmModal'
-import DeviceImageModal from './DeviceImageModal'
+import ConfirmModal from './ConfirmModal.vue'
+import DeviceImageModal from './DeviceImageModal.vue'
 export default {
   components: {DeviceImageModal, ConfirmModal},
   props: {
@@ -32,7 +32,6 @@ export default {
       this.$refs.confirm.show()
     },
     zoom() {
-      console.log("Zoom")
       this.$refs.modal.show()
     }
   }

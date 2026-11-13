@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use App;
+use App\Attributes\Feature;
+use App\Attributes\NoStory;
+use App\Attributes\UserStory;
 use App\Device;
-use App\DripEvent;
 use App\Events\PasswordChanged;
 use App\Events\UserLanguageUpdated;
 use App\Events\UserRegistered;
@@ -13,7 +18,6 @@ use App\Group;
 use App\Helpers\Fixometer;
 use App\Http\Controllers\PartyController;
 use App\Invite;
-use App\Mail\RegistrationWelcome;
 use App\Network;
 use App\Notifications\AdminNewUser;
 use App\Notifications\ResetPassword;
@@ -44,14 +48,14 @@ use Lang;
 use LaravelLocalization;
 use Notification;
 
+#[Feature('Users', description: 'User accounts, profiles, and authentication')]
 class UserController extends Controller
 {
     /**
      * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index($id = null)
+    #[UserStory('As a Restarter, I can view my profile or another user\'s profile', persona: 'Restarter', theme: 'Profile management')]
+    public function index($id = null): View
     {
         if (is_null($id)) {
             $id = Auth::id();
@@ -68,10 +72,12 @@ class UserController extends Controller
         ]);
     }
 
-    public function getProfileEdit($id = null)
+    #[UserStory('As a Restarter, I can access the form to edit my profile', persona: 'Restarter', theme: 'Profile management')]
+    public function getProfileEdit($id = null): View
     {
         if (is_null($id)) {
             $user = Auth::user();
+            $id = $user->id;
         } elseif (! Fixometer::hasRole(Auth::user(), 'Administrator') &&
             ! Auth::user()->isRepairDirectorySuperAdmin() &&
             ! Auth::user()->isRepairDirectoryRegionalAdmin() &&
@@ -122,7 +128,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function getNotifications()
+    #[UserStory('As a Restarter, I can view my notifications', persona: 'Restarter', theme: 'Notifications')]
+    public function getNotifications(): View
     {
         $user = Auth::user();
         $notifications = $user->notifications()->paginate(10);
@@ -133,7 +140,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function postProfileInfoEdit(Request $request, App\Helpers\Geocoder $geocoder)
+    #[UserStory('As a Restarter, I can update my profile information', persona: 'Restarter', theme: 'Profile management')]
+    public function postProfileInfoEdit(Request $request, App\Helpers\Geocoder $geocoder): RedirectResponse
     {
         $rules = [
         'name'            => 'required|string|max:255',
@@ -148,16 +156,13 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if ($request->input('id') !== null) {
-            $id = $request->input('id');
-        } else {
-            $id = Auth::id();
-        }
+        $id = $request->input('id', Auth::id());
+        $this->authorize('update', User::findOrFail($id));
 
         User::find($id)->update([
         'email'    => $request->input('email'),
         'name'     => $request->input('name'),
-        'country'  => $request->input('country'),
+        'country_code' => $request->input('country'),
         'location' => $request->input('townCity'),
         'age'      => $request->input('age'),
         'gender'   => $request->input('gender'),
@@ -166,12 +171,8 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if ($user->isDripSubscriber()) {
-            DripEvent::createOrUpdateSubscriber($user, true, auth()->user()->email, request()->input('email'));
-        }
-
         if (! empty($user->location)) {
-            $geocoded = $geocoder->geocode("{$user->location}, {$user->country}");
+            $geocoded = $geocoder->geocode("{$user->location}, " . Fixometer::getCountryFromCountryCode($user->country_code));
             if (! empty($geocoded)) {
                 $user->latitude = $geocoded['latitude'];
                 $user->longitude = $geocoded['longitude'];
@@ -186,41 +187,41 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('message', 'User Profile Updated!');
+        return redirect()->back()->with('message', __('profile.profile_updated'));
     }
 
-    public function postProfilePasswordEdit(Request $request)
+    #[UserStory('As a Restarter, I can change my password', persona: 'Restarter', theme: 'Profile management')]
+    public function postProfilePasswordEdit(Request $request): RedirectResponse
     {
-        if ($request->input('id') !== null) {
-            $id = $request->input('id');
-        } else {
-            $id = Auth::id();
-        }
-
-        $user = User::find($id);
+        $id = $request->input('id', Auth::id());
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
 
         if ($request->input('new-password') !== $request->input('new-password-repeat')) {
-            return redirect()->back()->with('error', 'New Passwords do not match!');
+            return redirect()->back()->with('error', __('profile.password_new_mismatch'));
         }
 
         if ($request->input('new-password') == $request->input('new-password-repeat') && Hash::check($request->input('current-password'), $user->password)) {
+            $oldPassword = $user->password;
             $user->setPassword(Hash::make($request->input('new-password')));
             $user->save();
 
-            $user->update([
-            'recovery' => substr(bin2hex(openssl_random_pseudo_bytes(32)), 0, 24),
-            'recovery_expires' => strftime('%Y-%m-%d %X', time() + (24 * 60 * 60)),
-            ]);
+            // Changing your password used to mint a fresh 24 hour recovery token as a side
+            // effect, which left a live password-reset code on every account that had ever
+            // changed its password.  Rotate the API token instead, so a token stolen before
+            // the change stops working.
+            $user->rotateAPIToken();
 
-            event(new PasswordChanged($user));
+            event(new PasswordChanged($user, $oldPassword));
 
-            return redirect()->back()->with('message', 'User Password Updated!');
+            return redirect()->back()->with('message', __('profile.password_changed'));
         }
 
-        return redirect()->back()->with('error', 'Current Password does not match!');
+        return redirect()->back()->with('error', __('profile.password_old_mismatch'));
     }
 
-    public function postProfileRepairDirectory(Request $request)
+    #[UserStory('As a Repair Directory SuperAdmin or RegionalAdmin, I can change a user\'s Repair Directory role', persona: 'RepairDirectoryAdmin', theme: 'Admin user management')]
+    public function postProfileRepairDirectory(Request $request): RedirectResponse
     {
         $rules = [
             'role' => 'required|digits_between:'.Role::REPAIR_DIRECTORY_SUPERADMIN.','.Role::REPAIR_DIRECTORY_EDITOR,
@@ -237,7 +238,7 @@ class UserController extends Controller
         $user = User::find($id);
 
         // Check that we are allowed to change the role, based on our own role.
-        $this->authorize('changeRepairDirRole', [Auth::user(), $user, $role]);
+        $this->authorize('changeRepairDirRole', [$user, $role]);
 
         $user->update([
             'repairdir_role' => $role,
@@ -245,10 +246,11 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('message', 'User Profile Updated!');
+        return redirect()->back()->with('message', __('profile.profile_updated'));
     }
 
-    public function storeLanguage(Request $request)
+    #[UserStory('As a Restarter, I can change my preferred language', persona: 'Restarter', theme: 'Language preferences')]
+    public function storeLanguage(Request $request): RedirectResponse
     {
         if ($request->input('id') !== null) {
             $userId = $request->input('id');
@@ -257,7 +259,8 @@ class UserController extends Controller
         }
 
         $newLanguage = $request->input('user_language');
-        $user = User::find($userId);
+        $user = User::findOrFail($userId);
+        $this->authorize('update', $user);
         $user->language = $newLanguage;
         $user->save();
 
@@ -274,7 +277,9 @@ class UserController extends Controller
         return redirect()->back()->with('message', Lang::get('profile.language_updated'));
     }
 
-    public function postSoftDeleteUser(Request $request)
+    #[UserStory('As a Restarter, I can delete my own account', persona: 'Restarter', theme: 'Account management')]
+    #[UserStory('As an Admin, I can delete a user\'s account', persona: 'Admin', theme: 'Admin user management')]
+    public function postSoftDeleteUser(Request $request): RedirectResponse
     {
         if ($request->input('id') !== null) {
             $id = $request->input('id');
@@ -282,24 +287,25 @@ class UserController extends Controller
             $id = Auth::id();
         }
 
-        $user = User::find($id);
+        $user = User::findOrFail($id);
+        $this->authorize('delete', $user);
+
         $old_user_name = $user->name;
         $user_id = $user->id;
-
-        if ($user->isDripSubscriber()) {
-            $user->drip_subscriber_id = null;
-        }
 
         $user->delete(); // Will be anonymised automatically by event handlers
 
         if (Auth::id() !== $user_id) {
-            return redirect('user/all')->with('danger', $old_user_name.'\'s account has been soft deleted');
+            return redirect('user/all')->with('danger', __('profile.soft_deleted', [
+                'name' => e($old_user_name)
+            ]));
         } else {
             return redirect('login');
         }
     }
 
-    public function postProfilePreferencesEdit(Request $request)
+    #[UserStory('As a Restarter, I can update my notification preferences', persona: 'Restarter', theme: 'Profile management')]
+    public function postProfilePreferencesEdit(Request $request): RedirectResponse
     {
         if ($request->input('id') !== null) {
             $id = $request->input('id');
@@ -307,7 +313,8 @@ class UserController extends Controller
             $id = Auth::id();
         }
 
-        $user = User::find($id);
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
 
         if ($request->input('invites') !== null) :
             $user->invites = 1; else :
@@ -316,10 +323,11 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('message', 'User Preferences Updated!');
+        return redirect()->back()->with('message', Lang::get('profile.preferences_updated'));
     }
 
-    public function postProfileTagsEdit(Request $request)
+    #[UserStory('As a Restarter, I can update my repair skills', persona: 'Restarter', theme: 'Profile management')]
+    public function postProfileTagsEdit(Request $request): RedirectResponse
     {
         if ($request->input('id') !== null) {
             $id = $request->input('id');
@@ -327,10 +335,12 @@ class UserController extends Controller
             $id = Auth::id();
         }
 
-        $user = User::find($id);
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
 
         $skills = $request->input('tags');
         $user->skillsold()->sync($skills);
+        $user->refresh();
 
         $roleBasedOnSkills = Fixometer::skillsDetermineRole($skills);
 
@@ -341,97 +351,77 @@ class UserController extends Controller
         return redirect()->back()->with('message', Lang::get('profile.skills_updated'));
     }
 
-    public function postProfilePictureEdit(Request $request)
+    #[UserStory('As a Restarter, I can upload a new profile picture', persona: 'Restarter', theme: 'Profile management')]
+    public function postProfilePictureEdit(Request $request): RedirectResponse
     {
-        if ($request->input('id') !== null) {
-            $id = $request->input('id');
-        } else {
-            $id = Auth::id();
-        }
+        $id = $request->input('id', Auth::id());
+        $this->authorize('update', User::findOrFail($id));
 
         if (isset($_FILES) && ! empty($_FILES)) {
-            // $file = $request->file('profilePhoto');
-            // $path = 'images/' . $file->getClientOriginalName();
-            // $image = Image::make($file)
-            // // ->resize(320, 240)
-            // ->orientate()
-            // ->save($path);
-
             $file = new FixometerFile;
             $file->upload('profilePhoto', 'image', $id, env('TBL_USERS'), false, true);
 
-            return redirect()->back()->with('message', 'Profile Picture Updated!');
+            return redirect()->back()->with('message', __('profile.picture_success'));
         }
 
-        return redirect()->back()->with('error', 'Failed to upload profile picture!');
+        return redirect()->back()->with('error', __('profile.picture_error'));
     }
 
-    public function postAdminEdit(Request $request)
+    #[UserStory('As an Admin, I can edit a user\'s role, groups, and permissions', persona: 'Admin', theme: 'Admin user management')]
+    public function postAdminEdit(Request $request): RedirectResponse
     {
-        if ($request->input('id') !== null) {
-            $user_id = $request->input('id');
-        } else {
-            $user_id = Auth::id();
+        if (! Auth::user()->hasRole('Administrator')) {
+            abort(403);
         }
 
+        $user_id = $request->input('id', Auth::id());
         $user = User::find($user_id);
 
-        // Set role for User
-        $user->update([
-        'role' => $request->input('user_role'),
-        ]);
+        $oldRole = $user->role;
 
-        // Sync relevant pivots
-        $user->groups()->sync($request->input('assigned_groups'));
+        // Set role for User — assign directly since role is not mass-assignable
+        $user->role = $request->input('user_role');
+        $user->save();
+
+        // If we are demoting from NetworkCoordinator, remove them from the list of coordinators for
+        // any networks they are currently coordinating.
+        if ($oldRole == Role::NETWORK_COORDINATOR && ($user->role == Role::HOST || $user->role == Role::RESTARTER)) {
+            $user->networks()->detach();
+        }
+
+        // The user may have previously been removed from the group, which will mean they have an entry in
+        // users_groups with deleted_at set.  Zap that if present so that sync() then works.  sync() doesn't
+        // handle soft deletes itself.
+        $groups = $request->input('assigned_groups');
+
+        foreach ($groups as $idgroups) {
+            $in_group = UserGroups::where('user', $user_id)->where('group', $idgroups)->withTrashed()->first();
+
+            if ($in_group && $in_group->trashed()) {
+                $in_group->restore();
+            }
+        }
+
+        // Then sync relevant pivots
+        $user->groups()->sync($groups);
         $user->preferences()->sync($request->input('preferences'));
         $user->permissions()->sync($request->input('permissions'));
 
-        return redirect()->back()->with('message', 'Admin settings updated');
+        return redirect()->back()->with('message', __('profile.admin_success'));
     }
 
-    public function postEdit(Request $request)
-    {
-        $user = User::find($request->input('id'));
-
-        $check_password = Hash::check($request->input('password'), $user->password);
-
-        if (! is_null($request->input('new-password')) && ! $check_password) {
-            return redirect()
-            ->back()
-            ->withErrors('Incorrect old password - please try again');
-        }
-
-        Validator::make($request->all(), [
-        'name' => 'required|max:255',
-        'email' => 'required|unique:users,email,'.$user->id.'|max:255',
-        'location' => 'max:191',
-        'new-password' => 'confirmed',
-        ])->validate();
-
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->age = $request->input('age');
-        $user->gender = $request->input('gender');
-        $user->location = $request->input('location');
-        if (! empty($request->input('new-password'))) {
-            $user->setPassword(Hash::make($request->input('new-password')));
-        }
-        $user->save();
-
-        return redirect()->back()->with('success', 'Profile updated');
-    }
-
-    /**
-     * @ToDo : test and delete commented
-     */
-    public function recover()
+    #[UserStory('As a Guest, I can request a password recovery email', persona: 'Guest', theme: 'Authentication')]
+    public function recover(Request $request): View
     {
         $User = new User;
 
-        if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' && isset($_POST['email']) && ! empty($_POST['email'])) {
-            $email = $_POST['email'];
+        $email = $request->get('email');
+
+        if ($request->getMethod() == 'POST' && $email) {
             if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $response['danger'] = 'Please input a <strong>valid</strong> email.';
+                $response['danger'] = __('passwords.invalid');
+
+                // Don't log to Sentry - legitimate user error.
             } else {
                 $user = $User->where('email', $email)->first();
 
@@ -448,39 +438,50 @@ class UserController extends Controller
 
                     // update record
                     $user->update([
-                    'recovery' => $data['recovery'],
-                    'recovery_expires' => $data['recovery_expires'],
+                        'recovery' => $data['recovery'],
+                        'recovery_expires' => $data['recovery_expires'],
                     ]);
 
                     User::find($id)->notify(new ResetPassword([
-                      'url' => env('APP_URL').'/user/reset?recovery='.$data['recovery'],
+                      'url' => url('/user/reset?recovery='.$data['recovery']),
                     ]));
 
-                    $response['success'] = 'Email Sent! Please check your inbox and follow instructions';
+                    $response['success'] = __('passwords.sent');
                 } else {
-                    $response['danger'] = 'This email is not in our database.';
+                    $response['danger'] = __('passwords.user');
+
+                    // Don't log to Sentry - legitimate user error.
                 }
             }
 
             return view('auth.forgot-password', [//user.recover
-            'title' => 'Account recovery',
-            'response' => $response,
+                'title' => __('passwords.recover_title'),
+                'response' => $response,
             ]);
         }
 
         return view('auth.forgot-password', [//user.recover
-        'title' => 'Account recovery',
+            'title' => __('passwords.recover_title'),
         ]);
     }
 
-    public function reset()
+    #[UserStory('As a Guest, I can reset my password using a recovery code', persona: 'Guest', theme: 'Authentication')]
+    public function reset(Request $request)
     {
         $User = new User;
+        $user = null;
 
-        if (! isset($_GET['recovery']) || empty($_GET['recovery'])) {
+        $recovery = $request->input('recovery');
+
+        // Only a plain, non-empty string can be a recovery code.  Anything else - an array
+        // in particular - must be rejected before it reaches the query.  filter_var()
+        // returns false for an array, Laravel binds false as the integer 0, and MySQL
+        // then compares the VARCHAR column to 0 numerically, which coerces every
+        // non-numeric token in the table to 0 and matches a real user's live code.
+        if (!is_string($recovery) || $recovery === '') {
+            $recovery = null;
             $valid_code = false;
         } else {
-            $recovery = filter_var($_GET['recovery'], FILTER_SANITIZE_STRING);
             $user = $User->where('recovery', '=', $recovery)->first();
 
             if (is_object($user) && strtotime($user->recovery_expires) > time()) {
@@ -490,55 +491,57 @@ class UserController extends Controller
             }
         }
 
-        if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' && isset($_POST['password']) && ! empty($_POST['password']) && isset($_POST['confirm_password']) && ! empty($_POST['confirm_password'])) {
-            $recovery = $_POST['recovery'];
-            $pwd = $_POST['password'];
-            $cpwd = $_POST['confirm_password'];
-            if (empty($recovery) || ! filter_var($recovery, FILTER_SANITIZE_STRING)) {
-                $response['danger'] = 'Recovery code invalid.';
+        $pwd = $request->post('password');
+        $cpwd = $request->post('confirm_password');
+        $response = null;
+        $email = null;
+
+        if ($request->getMethod() == 'POST' && $pwd && $cpwd) {
+            if (!$valid_code) {
+                $response['danger'] = __('passwords.token');
+                \Sentry\CaptureMessage($response['danger']);
             } elseif ($pwd !== $cpwd) {
-                $response['danger'] = 'The passwords do not match';
+                $response['danger'] = __('passwords.match');
+
+                // Don't log to Sentry - legitimate user error.
             } else {
-                $user = $User->where('recovery', '=', $recovery)->first();
-                if (! empty($user)) {
-                    $data = [
-                    'password' => crypt($pwd, '$1$'.strrev(md5(env('APP_KEY')))),
-                    ];
-                    $update = $user->update($data);
-                    if ($update) {
-                        return redirect('login')->with('success', 'Password updated, please login to continue');
-                    } else {
-                        $response['danger'] = 'Could not update the password.';
-                    }
+                $email = $user->email;
+                $oldPassword = $user->password;
+
+                // Spend the recovery code as part of the same update, so a link can't be
+                // replayed for the rest of its 24 hour window.
+                $update = $user->update([
+                    'password' => Hash::make($pwd),
+                    'recovery' => null,
+                    'recovery_expires' => null,
+                ]);
+
+                if ($update) {
+                    // A password reset is the remedy for a compromised account, so it has to
+                    // invalidate the API token too - otherwise a stolen token outlives it.
+                    $user->rotateAPIToken();
+
+                    event(new PasswordChanged($user, $oldPassword));
+                    return redirect('login')->with('success', __('passwords.updated'));
                 } else {
-                    $response['danger'] = 'No account matches the recovery code';
+                    $response['danger'] = __('passwords.failed');
+                    \Sentry\CaptureMessage($response['danger']);
                 }
             }
-        }
-
-        if (! isset($recovery)) {
-            $recovery = null;
-        }
-
-        if (! isset($response)) {
-            $response = null;
-        }
-
-        if (isset($user)) {
-            $email = $user->email;
         } else {
-            $email = null;
+            $email = $user ? $user->email : null;
         }
 
-        return view('auth.reset-password', [//user.reset
-        'title' => 'Account recovery',
-        'recovery' => $recovery,
-        'valid_code' => $valid_code,
-        'response' => $response,
-        'email' => $email,
+        return view('auth.reset-password', [
+            'title' => 'Account recovery',
+            'recovery' => $recovery,
+            'valid_code' => $valid_code,
+            'response' => $response,
+            'email' => $email,
         ]);
     }
 
+    #[UserStory('As an Admin, I can view and search all users on the platform', persona: 'Admin', theme: 'Admin user management')]
     public function all()
     {
         $user = User::find(Auth::id());
@@ -552,7 +555,7 @@ class UserController extends Controller
                 $user['permissions'] = $User->getRolePermissions($user->role);
                 $user['groups'] = $user->groups;
                 $user['lastLogin'] = $user->lastLogin();
-                $user['country'] = Fixometer::getCountryFromCountryCode($user->country);
+                $user['country'] = Fixometer::getCountryFromCountryCode($user->country_code);
 
                 return $user;
             });
@@ -574,6 +577,7 @@ class UserController extends Controller
         }
     }
 
+    #[UserStory('As an Admin, I can filter and search the user list', persona: 'Admin', theme: 'Admin user management')]
     public function search(Request $request)
     {
         $user = User::find(Auth::id());
@@ -623,7 +627,7 @@ class UserController extends Controller
                 $user['permissions'] = $User->getRolePermissions($user->role);
                 $user['groups'] = $user->groups;
                 $user['lastLogin'] = $user->lastLogin();
-                $user['country'] = Fixometer::getCountryFromCountryCode($user->country);
+                $user['country'] = Fixometer::getCountryFromCountryCode($user->country_code);
 
                 return $user;
             });
@@ -645,6 +649,7 @@ class UserController extends Controller
         }
     }
 
+    #[UserStory('As an Admin, I can create a new user account', persona: 'Admin', theme: 'Admin user management')]
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -659,133 +664,101 @@ class UserController extends Controller
 
             $User = new User;
 
-            if ($request->getMethod() == 'POST') {
-                $error = [];
+            $error = [];
 
-                // We got data! Elaborate.
-                $name = $request->get('name');
-                $email = $request->get('email');
-                $role = $request->get('role');
-                if (!$request->has('modal')) {
-                    $groups = $request->get('groups');
-                }
-
-                // dbga($group);
-
-                if (empty($name)) {
-                    $error['name'] = 'Please input a name.';
-                }
-
-                if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $error['email'] = 'Please input a <strong>valid</strong> email.';
-                }
-                /*
-                if(empty($pwd) || empty($cpwd) || !($pwd === $cpwd)){
-                $error['password'] = 'The password cannot be empty and must match with the confirmation field.';
-            }
-            */
-                if (empty($role)) {
-                    $error['role'] = 'Please select a role for the User.';
-                }
-
-                if (empty($group)) {
-                    $group = null;
-                }
-                if (! $User->checkEmail($email)) {
-                    $error['email'] = 'This email is already in use in our database. Please use another one.';
-                }
-
-                if (empty($error)) {
-                    // random password
-                    $pwd = bin2hex(openssl_random_pseudo_bytes(8));
-
-                    // No errors. We can proceed and create the User.
-                    $data = ['name'     => $name,
-                    'email'    => $email,
-                    'password' => crypt($pwd, '$1$'.strrev(md5(env('APP_KEY')))),
-                    'role'     => $role,
-                    'calendar_hash' => Str::random(15),
-                    //'group'    => $group
-                      ];
-
-                    // add password recovery data
-                    $bytes = 32;
-                    $data['recovery'] = substr(bin2hex(openssl_random_pseudo_bytes($bytes)), 0, 24);
-                    // add date timestamp
-                    $data['recovery_expires'] = strftime('%Y-%m-%d %X', time() + (24 * 60 * 60));
-
-                    $idUser = $User->create($data)->id;
-                    if ($idUser) {
-                        if (isset($groups) && ! empty($groups)) {
-                            $Usersgroups = new UserGroups;
-                            $Usersgroups->createUsersGroups($idUser, $groups);
-                        }
-
-                        if (isset($_FILES) && ! empty($_FILES)) {
-                            $file = new FixometerFile;
-                            $file->upload('profile', 'image', $idUser, env('TBL_USERS'), false, true);
-                        }
-                    }
-                    if ($idUser) {
-                        //Send out email
-
-                        // send email to User
-                        // $message = "<p>Hi,</p>" .
-                        //          "<p>This is an automatic email to let you know that we have just created an account for you on the <strong>" . APPNAME . "</strong>.</p>" .
-                        //          "<p>Please click on this link to set your password: <a href=\"" . env('APP_URL') . "/user/reset/?recovery=" . $data['recovery'] . "\">" . BASE_URL . "/user/reset/?recovery=" . $data['recovery'] . "</a>.</p>" .
-                        //          "<p>If the link doesn't work, please copy and paste it in the address bar of your browser.</p>" .
-                        //          "<p>The link will be active for the next 24 hours.</p>" .
-                        // "<p>If you have any issues, please contact <a href='mailto:" . env('SUPPORT_CONTACT_EMAIL') . "'>" . env('SUPPORT_CONTACT_EMAIL') . "</a>.</p>" .
-                        //          "<p>Thanks for using the " . env('APP_NAME') . "!</p>" .
-                        //          "<p><em>The Restart Project</em></p>";
-                        // $subject = env('APP_NAME') . ": Account created - please set your password";
-                        // $headers = "From: " . env('APP_EMAIL') . "\r\n";
-                        // $headers .= "MIME-Version: 1.0\r\n";
-                        // $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-                        // $headers .= "Bcc: " . env('SUPPORT_CONTACT_EMAIL') . "\r\n";
-                        //
-                        // $sender = mail($email, $subject, $message, $headers);
-
-                        $response['success'] = 'User created correctly.  <strong>NB No email has been sent to the user.</strong>';
-                    } else {
-                        $response['danger'] = 'User could not be created';
-                    }
-                } else {
-                    $response['danger'] = 'User could <strong>not</strong> be created. Please look at the reported errors, correct them, and try again.';
-                }
-
-                if (! isset($data)) {
-                    $data = null;
-                }
-
-                if (! isset($_POST['modal'])) {
-                    return view('user.create', [
-                        'title' => 'New User',
-                        'user' => $user,
-                        'header' => true,
-                        'roles' => $Roles,
-                        'groups' => $Groups,
-                        'response' => $response,
-                        'error' => $error,
-                        'originalData' => $data,
-                      ]);
-                } else {
-                    return redirect()->back()->with('success', 'User Successfully Created!');
-                }
+            // We got data! Elaborate.
+            $name = $request->get('name');
+            $email = $request->get('email');
+            $role = $request->get('role');
+            if (! $request->has('modal')) {
+                $groups = $request->get('groups');
             }
 
-            return view('user.create', [
-            'title' => 'New User',
-            'user' => $user,
-            'header' => true,
-            'roles' => $Roles,
-            'groups' => $Groups,
-            ]);
+            if (empty($name)) {
+                $error['name'] = 'Please input a name.';
+            }
+
+            if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error['email'] = 'Please input a <strong>valid</strong> email.';
+            }
+
+            if (empty($role)) {
+                $error['role'] = 'Please select a role for the User.';
+            }
+
+            if (empty($group)) {
+                $group = null;
+            }
+            if (! $User->checkEmail($email)) {
+                $error['email'] = 'This email is already in use in our database. Please use another one.';
+            }
+
+            if (empty($error)) {
+                // random password
+                $pwd = bin2hex(openssl_random_pseudo_bytes(8));
+
+                // No errors. We can proceed and create the User.
+                $data = ['name'     => $name,
+                'email'    => $email,
+                'password' => Hash::make($pwd),
+                'role'     => $role,
+                'calendar_hash' => Str::random(15),
+                //'group'    => $group
+                  ];
+
+                // add password recovery data
+                $bytes = 32;
+                $data['recovery'] = substr(bin2hex(openssl_random_pseudo_bytes($bytes)), 0, 24);
+                // add date timestamp
+                $data['recovery_expires'] = strftime('%Y-%m-%d %X', time() + (24 * 60 * 60));
+
+                $idUser = $User->create($data)->id;
+                if ($idUser) {
+                    if (isset($groups) && ! empty($groups)) {
+                        $Usersgroups = new UserGroups;
+                        $Usersgroups->createUsersGroups($idUser, $groups);
+                    }
+
+                    if (isset($_FILES) && ! empty($_FILES)) {
+                        $file = new FixometerFile;
+                        $file->upload('profile', 'image', $idUser, env('TBL_USERS'), false, true);
+                    }
+                }
+                if ($idUser) {
+                    $response['success'] = 'User created correctly.  <strong>NB No email has been sent to the user.</strong>';
+                } else {
+                    $response['danger'] = 'User could not be created';
+                    \Sentry\CaptureMessage($response['danger']);
+                }
+            } else {
+                $response['danger'] = 'User could <strong>not</strong> be created. Please look at the reported errors, correct them, and try again.';
+                \Sentry\CaptureMessage($response['danger']);
+            }
+
+            if (! isset($data)) {
+                $data = null;
+            }
+
+            if (! isset($_POST['modal'])) {
+                return view('user.create', [
+                    'title' => 'New User',
+                    'user' => $user,
+                    'header' => true,
+                    'roles' => $Roles,
+                    'groups' => $Groups,
+                    'response' => $response,
+                    'error' => $error,
+                    'originalData' => $data,
+                  ]);
+            } else {
+                return redirect()->back()->with('success', __('profile.create_success'));
+            }
         } else {
             header('Location: /user/forbidden');
         }
     }
 
+    #[UserStory('As an Admin, I can edit any user\'s account details', persona: 'Admin', theme: 'Admin user management')]
     public function edit($id, Request $request)
     {
         global $fixometer_languages;
@@ -793,117 +766,115 @@ class UserController extends Controller
         $user = Auth::user();
         $User = new User;
 
-        // Administrators can edit users.
-        if (Fixometer::hasRole($user, 'Administrator') || Fixometer::hasRole($user, 'Host')) {
-            $Roles = new Role;
-            $Roles = $Roles->findAll();
+        // Administrators can edit any user; users can edit themselves. (Hosts may NOT edit
+        // arbitrary users - that was an account-takeover vector.) Centralised in UserPolicy.
+        $editingUser = User::findOrFail($id);
+        $this->authorize('update', $editingUser);
 
-            $Groups = new Group;
-            $Groups = $Groups->findAll();
+        $Roles = new Role;
+        $Roles = $Roles->findAll();
 
-            $data = $request->post();
+        $Groups = new Group;
+        $Groups = $Groups->findAll();
 
-            if (! Fixometer::hasRole($User->find($id), 'Administrator')) {
-                $sent_groups = $data['groups'];
-            }
+        $sent_groups = $request->input('groups', []);
 
-            $error = false;
-            // check for email in use
-            $editingUser = $User->find($id);
-            if ($editingUser->email !== $data['email'] && ! $User->checkEmail($data['email'])) {
-                $error['email'] = 'The email you entered is already in use in our database. Please use another one.';
-            }
+        $data = $request->only([
+            'name', 'email', 'location', 'age', 'gender', 'country_code',
+            'biography', 'language', 'newsletter', 'invites',
+        ]);
 
-            if (! empty($data['new-password'])) {
-                if ($data['new-password'] !== $data['password-confirm']) {
-                    $error['password'] = 'The passwords are not identical!';
-                } else {
-                    $data['password'] = crypt($data['new-password'], '$1$'.strrev(md5(env('APP_KEY'))));
-                }
-            }
+        $error = false;
+        // check for email in use
+        if ($editingUser->email !== $data['email'] && ! $User->checkEmail($data['email'])) {
+            $error['email'] = 'The email you entered is already in use in our database. Please use another one.';
+        }
 
-            unset($data['new-password']);
-            unset($data['password-confirm']);
-
-            unset($data['groups']);
-            unset($data['profile']);
-            unset($data['id']);
-
-            if (! is_array($error)) {
-                $u = $User->find($id)->update($data);
-
-                $ug = new UserGroups;
-                if (isset($sent_groups)) {
-                    $ug->createUsersGroups($id, $sent_groups);
-                }
-
-                if (isset($_FILES) && ! empty($_FILES)) {
-                    $file = new FixometerFile;
-                    $file->upload('profile', 'image', $id, env('TBL_USERS'), false, true);
-                }
-
-                if (! $u) {
-                    $response['danger'] = 'Something went wrong. Please check the data and try again.';
-                } else {
-                    $response['success'] = 'User updated!';
-                    if (Fixometer::hasRole($user, 'Host')) {
-                        // Use @ for phpunit tests.
-                        @header('Location: /host?action=ue&code=200');
-                    }
-                }
-
-                $userdata = User::find($id);
-
-                $usergroups = [];
-                $ugroups = $User->getUserGroups($id);
-                foreach ($ugroups as $g) {
-                    $usergroups[] = $g->group;
-                }
-
-                $userdata->groups = $usergroups;
-
-                return view('user.edit', [
-                'title' => 'Edit User',
-                'langs' => $fixometer_languages,
-                'user' => $user,
-                'header' => true,
-                'response' => $response,
-                'roles' => $Roles,
-                'groups' => $Groups,
-                'data' => $userdata,
-                ]);
+        if ($request->filled('new-password')) {
+            if ($request->input('new-password') !== $request->input('password-confirm')) {
+                $error['password'] = 'The passwords are not identical!';
             } else {
-                $userdata = User::find($id);
-
-                $usergroups = [];
-                $ugroups = $User->getUserGroups($id);
-                foreach ($ugroups as $g) {
-                    $usergroups[] = $g->group;
-                }
-
-                $userdata->groups = $usergroups;
-
-                return view('user.edit', [
-                'title' => 'Edit User',
-                'langs' => $fixometer_languages,
-                'user' => $user,
-                'header' => true,
-                'error' => $error,
-                'roles' => $Roles,
-                'groups' => $Groups,
-                'data' => $userdata,
-                ]);
+                $data['password'] = Hash::make($request->input('new-password'));
             }
+        }
+
+        if (! is_array($error)) {
+            $u = $User->find($id)->update($data);
+
+            $ug = new UserGroups;
+            if (isset($sent_groups)) {
+                $ug->createUsersGroups($id, $sent_groups);
+            }
+
+            if (isset($_FILES) && ! empty($_FILES)) {
+                $file = new FixometerFile;
+                $file->upload('profile', 'image', $id, env('TBL_USERS'), false, true);
+            }
+
+            if (! $u) {
+                $response['danger'] = 'Something went wrong. Please check the data and try again.';
+                \Sentry\CaptureMessage($response['danger']);
+            } else {
+                $response['success'] = 'User updated!';
+                if ($user->id == $id && ! Fixometer::hasRole($user, 'Administrator')) {
+                    // Regular users editing themselves should return empty response
+                    return response('');
+                }
+            }
+
+            $userdata = User::find($id);
+
+            $usergroups = [];
+            $ugroups = $User->getUserGroups($id);
+            foreach ($ugroups as $g) {
+                $usergroups[] = $g->group;
+            }
+
+            $userdata->groups = $usergroups;
+
+            return view('user.edit', [
+            'title' => 'Edit User',
+            'langs' => $fixometer_languages,
+            'user' => $user,
+            'header' => true,
+            'response' => $response,
+            'roles' => $Roles,
+            'groups' => $Groups,
+            'data' => $userdata,
+            ]);
+        } else {
+            $userdata = User::find($id);
+
+            $usergroups = [];
+            $ugroups = $User->getUserGroups($id);
+            foreach ($ugroups as $g) {
+                $usergroups[] = $g->group;
+            }
+
+            $userdata->groups = $usergroups;
+
+            return view('user.edit', [
+            'title' => 'Edit User',
+            'langs' => $fixometer_languages,
+            'user' => $user,
+            'header' => true,
+            'error' => $error,
+            'roles' => $Roles,
+            'groups' => $Groups,
+            'data' => $userdata,
+            ]);
         }
     }
 
-    public function logout()
+    #[UserStory('As a Restarter, I can log out of my account', persona: 'Restarter', theme: 'Authentication')]
+    public function logout(): RedirectResponse
     {
         Auth::logout();
 
         return redirect('/login');
     }
 
+    #[UserStory('As a Guest, I can view the registration page', persona: 'Guest', theme: 'Registration & onboarding')]
     public function getRegister($hash = null)
     {
         if (Auth::check() && Auth::user()->hasUserGivenConsent()) {
@@ -919,17 +890,18 @@ class UserController extends Controller
 
         return view('auth.register-new', [
             'skills' => Fixometer::allSkills(),
-            'co2Total' => $stats['co2Total'][0]->total_footprints,
-            'wasteTotal' => $stats['co2Total'][0]->total_weights,
-            'partiesCount' => count($stats['allparties']),
+            'co2Total' => $stats['waste_stats'][0]->powered_footprint + $stats['waste_stats'][0]->unpowered_footprint,
+            'wasteTotal' => $stats['waste_stats'][0]->powered_waste + $stats['waste_stats'][0]->unpowered_waste,
+            'partiesCount' => $stats['partiesCount'],
             'deviceCount' => $deviceCount,
             'showNewsletterSignup' => $showNewsletterSignup,
         ]);
     }
 
-    public function postRegister(Request $request, $hash = null)
+    #[UserStory('As a Guest, I can register a new account', persona: 'Guest', theme: 'Registration & onboarding')]
+    public function postRegister(Request $request, $hash = null): RedirectResponse
     {
-        $geocoder = new \App\Helpers\Geocoder();
+        $geocoder = app(\App\Helpers\Geocoder::class);
 
         if (Auth::check()) { //Existing users don't need all the same rules
             $rules = [
@@ -968,7 +940,7 @@ class UserController extends Controller
 
         if (Auth::check()) { //Existing users are to update
             $user = User::find(Auth::user()->id);
-            $user->country = $request->input('country');
+            $user->country_code = $request->input('country');
             $user->location = $request->input('city');
             $user->gender = $request->input('gender');
             $user->age = $request->input('age');
@@ -980,16 +952,19 @@ class UserController extends Controller
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
-                'role' => $role,
                 'recovery' => substr(bin2hex(openssl_random_pseudo_bytes(32)), 0, 24),
                 'recovery_expires' => strftime('%Y-%m-%d %X', time() + (24 * 60 * 60)),
-                'country' => $request->input('country'),
+                'country_code' => $request->input('country'),
                 'location' => $request->input('city'),
                 'gender' => $request->input('gender'),
                 'age' => $request->input('age'),
                 'calendar_hash' => Str::random(15),
                 'username' => '',
             ]);
+
+            // role excluded from $fillable (security: C2/M1); set via direct assignment
+            $user->role = $role;
+            $user->save();
         }
 
         $user->generateAndSetUsername();
@@ -1004,15 +979,6 @@ class UserController extends Controller
             $user->newsletter = 1;
         } else {
             $subscribed = false;
-        }
-
-        if (env('DRIP_API_TOKEN') !== null && env('DRIP_API_TOKEN') !== '') {
-            $activeRepairNetworkId = session()->get('repair_network');
-            $network = Network::find($activeRepairNetworkId);
-            if (! is_null($network) && $network->users_push_to_drip) {
-                $drip_subscribe_user = DripEvent::createOrUpdateSubscriber($user, $subscribed);
-                $user->drip_subscriber_id = $drip_subscribe_user->id;
-            }
         }
 
         // 'invites' refers to receiving notifications about groups or events near the user.
@@ -1056,7 +1022,7 @@ class UserController extends Controller
                 EventsUsers::create([
                   'user' => $user->id,
                   'event' => $acceptance->record_id,
-                  'status' => 1,
+                  'status' => '1',
                   'role' => 4,
                 ]);
                 $acceptance->delete();
@@ -1064,20 +1030,10 @@ class UserController extends Controller
                 UserGroups::create([
                   'user' => $user->id,
                   'group' => $acceptance->record_id,
-                  'status' => 1,
+                  'status' => '1',
                   'role' => 4,
                 ]);
                 $acceptance->delete();
-            }
-        }
-
-        // Send post-registration welcome email.
-        if (env('FEATURE__REGISTRATION_WELCOME_EMAIL') === true) {
-            try {
-                $firstName = $user->getFirstName();
-                Mail::to($user)->send(new RegistrationWelcome($firstName));
-            } catch (\Exception $ex) {
-                Log::error('Failed to send post-registration welcome email: '.$ex->getMessage());
             }
         }
 
@@ -1103,6 +1059,7 @@ class UserController extends Controller
         }
     }
 
+    #[UserStory('As a Restarter, I can complete my onboarding process', persona: 'Restarter', theme: 'Registration & onboarding')]
     public function getOnboardingComplete()
     {
         $user = Auth::user();
@@ -1115,18 +1072,22 @@ class UserController extends Controller
         return 'true';
     }
 
-    public function postEmail(Request $request)
+    #[NoStory(reason: 'AJAX email validation helper')]
+    public function postEmail(Request $request): JsonResponse
     {
         if (User::where('email', '=', $request->get('email'))->exists()) {
             return response()->json(['message' =>  __('auth.email_address_validation')]);
         }
+        
+        return response()->json(['message' => 'Email is available']);
     }
 
-    public static function getThumbnail(Request $request)
+    #[NoStory(reason: 'MediaWiki thumbnail integration')]
+    public static function getThumbnail(Request $request): JsonResponse
     {
         $user = User::where('mediawiki', $request->input('wiki_username'))->first();
 
-        if (!$user) {
+        if (! $user) {
             abort('404', 'Wiki user not found');
         }
 
@@ -1139,11 +1100,12 @@ class UserController extends Controller
         return response()->json($thumbnailPath);
     }
 
-    public function getUserMenus(Request $request)
+    #[NoStory(reason: 'MediaWiki menu integration')]
+    public function getUserMenus(Request $request): JsonResponse
     {
         $user = User::where('mediawiki', $request->input('wiki_username'))->first();
 
-        if (!$user) {
+        if (! $user) {
             abort('404', 'Wiki user not found');
         }
 
@@ -1160,18 +1122,18 @@ class UserController extends Controller
                 $items['Users'] = route('users');
                 $items['Roles'] = route('roles');
                 $items[Lang::get('networks.general.networks')] = route('networks.index');
+            }
 
-                if ($user->hasPermission('verify-translation-access')) {
-                    $items['Translations'] = url('/translations/view/admin');
-                }
+            if ($user->hasPermission('verify-translation-access')) {
+                $items['Translations'] = url('/translations/view/admin');
+            }
 
-                if ($user->hasRole('NetworkCoordinator')) {
-                    if (count($user()->networks) == 1) {
-                        $network = Auth::user()->networks->first();
-                        $items[Lang::get('networks.general.particular_network', ['networkName' => $network->name])] = route('networks.show', $network->id);
-                    } else {
-                        $items[Lang::get('networks.general.networks')] = route('networks.index');
-                    }
+            if ($user->hasRole('NetworkCoordinator')) {
+                if (count($user->networks) == 1) {
+                    $network = Auth::user()->networks->first();
+                    $items[Lang::get('networks.general.particular_network', ['networkName' => $network->name])] = route('networks.show', $network->id);
+                } else {
+                    $items[Lang::get('networks.general.networks')] = route('networks.index');
                 }
             }
 
@@ -1180,11 +1142,8 @@ class UserController extends Controller
             $menus['Administrator'] = $adminMenu;
         }
 
-        if ($user->hasRole('Administrator') || $user->hasRole('Host')) {
+        if ($user->hasRole('Administrator') || $user->hasRole('NetworkCoordinator') || $user->hasRole('Host')) {
             $items = [];
-            if ($user->hasRole('Administrator')) {
-                $items[Lang::get('general.time_reporting')] = url('/reporting/time-volunteered?a');
-            }
             $items[Lang::get('general.party_reporting')] = url('/search');
 
             $reportingMenu = [

@@ -39,8 +39,11 @@ class EventRequestReviewEmailTest extends TestCase
         parent::setUp();
     }
 
-    /** @test */
-    public function a_request_review_email_is_sent_to_volunteer()
+    /**
+     * @test
+     * @story:PartyController::getContributions
+     */
+    public function a_request_review_email_is_sent_to_volunteer(): void
     {
         Notification::fake();
 
@@ -58,10 +61,10 @@ class EventRequestReviewEmailTest extends TestCase
 
     protected function init_event_and_dependencies()
     {
-        $this->admin = factory(User::class)->states('Administrator')->create();
-        $this->group = factory(Group::class)->create();
-        $this->volunteer = factory(User::class)->create();
-        $this->event = factory(Party::class)->create([
+        $this->admin = User::factory()->administrator()->create();
+        $this->group = Group::factory()->create();
+        $this->volunteer = User::factory()->create();
+        $this->event = Party::factory()->create([
             'group' => $this->group->getKey(),
         ]);
 
@@ -74,8 +77,6 @@ class EventRequestReviewEmailTest extends TestCase
             'role' => 4,
             'full_name' => null,
         ]);
-
-        $this->event->increment('volunteers');
 
         $this->assertTrue($this->group->isVolunteer($this->volunteer->getKey()));
         $this->assertTrue($this->event->isVolunteer($this->volunteer->getKey()));

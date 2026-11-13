@@ -1,8 +1,10 @@
 <template>
   <div class="pl-4 pr-4">
-    <div class="pt-2 pb-2 blackbord d-flex justify-content-between" v-if="attendee.volunteer">
+    <div class="pt-2 pb-2 blackbord d-flex justify-content-between">
       <div class="d-flex w-100">
-        <b-img-lazy :src="profile" class="profile mr-2" rounded="circle" @error.native="brokenProfileImage" />
+        <a :href="link">
+          <b-img-lazy :src="profile" class="profile mr-2" rounded="circle" @error.native="brokenProfileImage" />
+        </a>
         <div class="namewidth flex-grow-1">
           <div class="d-flex flex-column">
             <div :class="{
@@ -10,21 +12,21 @@
             'font-weight-bold': host,
             'd-flex': true,
             'flex-wrap': true
-            }" :title="attendee.volunteer.name">
-            <span class="pr-1 overflow-hidden ellipsis">
-              {{ attendee.volunteer.name }}
-            </span>
+            }" :title="name">
+            <a :href="link" class="pr-1 overflow-hidden ellipsis text-black">
+              {{ name }}
+            </a>
               <span class="host" v-if="host">
               {{ __('partials.host') }}
             </span>
             </div>
-          <div :id="'skills-' + attendee.volunteer.id" data-toggle="popover" data-placement="top" :data-content="skillList" :class="{
+          <div :id="'skills-' + attendee.idevents_users" data-toggle="popover" data-placement="top" :data-content="skillList" :class="{
              'small': true,
              'd-flex': true,
              'clickme' : true,
              'text-muted': noskills
             }">
-              <b-img-lazy src="/images/star.svg" :class="{
+              <b-img-lazy :src="imageUrl('/images/star.svg')" :class="{
              'star': true,
              'mr-1': true,
              'faded': noskills
@@ -34,7 +36,7 @@
         </div>
       </div>
       <b-btn variant="none" v-if="attendee.confirmed && canedit" @click="confirm" class="p-0">
-        <b-img src="/icons/delete_ico_red.svg" />
+        <b-img :src="imageUrl('/icons/delete_ico_red.svg')" />
       </b-btn>
     </div>
     <b-alert variant="danger" v-if="error">
@@ -45,10 +47,13 @@
 </template>
 <script>
 import { DEFAULT_PROFILE, HOST } from '../constants'
-import ConfirmModal from './ConfirmModal'
+import ConfirmModal from './ConfirmModal.vue'
+import images from '../mixins/images'
+import { apiErrorMessage } from '../misc/apiError'
 
 export default {
   components: {ConfirmModal},
+  mixins: [images],
   props: {
     attendee: {
       type: Object,
@@ -66,6 +71,22 @@ export default {
     }
   },
   computed: {
+    link() {
+      if (this.attendee.user) {
+        return '/profile/' + this.attendee.user
+      } else {
+        return null
+      }
+    },
+    name() {
+      if (this.attendee.volunteer) {
+        // Volunteer registered on Restarters.
+        return this.attendee.volunteer.name
+      } else {
+        // Not registered.
+        return this.attendee.fullName
+      }
+    },
     profile() {
       return this.attendee ? this.attendee.profilePath : DEFAULT_PROFILE
     },
@@ -73,25 +94,34 @@ export default {
       return this.attendee.role === HOST
     },
     noskills() {
-      return !this.attendee.volunteer.user_skills || !this.attendee.volunteer.user_skills.length
+      return !this.attendee.volunteer || !this.attendee.volunteer.user_skills || !this.attendee.volunteer.user_skills.length
     },
     skillCount() {
       let ret = null
-      let skills = this.attendee.volunteer.user_skills
-      ret = (skills && skills.length ? skills.length : '0') + ' ' + this.$lang.choice('partials.skills', skills.length)
+
+      if (this.attendee.volunteer) {
+        let skills = this.attendee.volunteer.user_skills
+        ret = (skills && skills.length ? skills.length : '0') + ' ' + this.__('partials.skills', { count: skills.length })
+      } else {
+        ret = '0 ' + this.__('partials.skills', { count: 0 })
+      }
+
       return ret
     },
     skillList() {
       let ret = null
-      let skills = this.attendee.volunteer.user_skills
 
-      if (skills) {
-        let names = []
-        skills.forEach((s) => {
-          names.push(s.skill_name.skill_name)
-        })
+      if (this.attendee.volunteer) {
+        let skills = this.attendee.volunteer.user_skills
 
-        ret = names.join(', ')
+        if (skills) {
+          let names = []
+          skills.forEach((s) => {
+            names.push(s.skill_name.skill_name)
+          })
+
+          ret = names.join(', ')
+        }
       }
 
       return ret
@@ -104,11 +134,10 @@ export default {
     async remove() {
       try {
         await this.$store.dispatch('attendance/remove', {
-          userId: this.attendee.user,
-          idevents: this.attendee.event,
+          id: this.attendee.idevents_users
         })
       } catch (e) {
-        this.error = e.message
+        this.error = apiErrorMessage(e)
       }
     },
     confirm() {

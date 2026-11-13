@@ -43,7 +43,7 @@
                   @foreach ($skills[$key] as $skill)
                     <div class="col-6 col-lg-3">
                         <input @if( is_array(old('skills')) && in_array($skill->id, old('skills')) ) checked @endif type="checkbox" name="skills[]" id="skill-{{ $skill->id }}" class="styled-checkbox" value="{{ $skill->id }}">
-                        <label for="skill-{{ $skill->id }}" class="btn btn-checkbox"><span>@lang($skill->skill_name)</span></label>
+                        <label for="skill-{{ $skill->id }}" class="btn btn-checkbox"><span>{{ __($skill->skill_name) }}</span></label>
                     </div>
                   @endforeach
               </div>
@@ -77,30 +77,31 @@
                                 <div class="invalid-feedback">@lang('general.your_name_validation')</div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="form-group emailtest">
-                                <label for="email">@lang('auth.email_address'):<sup>*</sup></label>
-                                @if( Auth::check() )
-                                  <input type="email" class="form-control field is-valid" id="registeremail" name="email" value="{{{ Auth::user()->email }}}" disabled aria-required="true">
-                                  <div class="invalid-feedback">
-                                    Please choose a username.
-                                  </div>
-                                @else
-                                  <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }} field" id="registeremail" name="email" value="{{{ old('email') }}}" required aria-required="true">
-                                @endif
-                                <div class="invalid-feedback"></div>
-                            </div>
+                        <div class="col-lg-6 vue">
+                            @if( Auth::check() )
+                                <div class="form-group emailtest">
+                                    <label for="email">@lang('auth.email_address'):<sup>*</sup></label>
+                                    <input type="email" class="form-control field is-valid" id="registeremail" name="email" value="{{{ Auth::user()->email }}}" disabled aria-required="true">
+                                    <div class="invalid-feedback">
+                                        Please choose a username.
+                                    </div>
+                                </div>
+                            @else
+                                <emailvalidation
+                                    label="@lang('auth.email_address')"
+                                    value="{{{ old('email') }}}"
+                                    :has-error="{{ $errors->has('email') ? 'true' : 'false' }}"
+                                ></emailvalidation>
+                            @endif
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="age">@lang('registration.age'):<sup>*</sup></label>
-                                <div class="form-control form-control__select">
-                                    <select id="age" name="age" required aria-required="true" class="field select2">
-                                        @foreach(App\Helpers\Fixometer::allAges() as $age)
-                                          <option @if( old('age') == $age ) selected @endif value="{{ $age }}">{{ $age }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <select id="age" name="age" required aria-required="true" class="form-control">
+                                    @foreach(App\Helpers\Fixometer::allAges() as $age)
+                                      <option @if( old('age') == $age ) selected @endif value="{{ $age }}">{{ $age }}</option>
+                                    @endforeach
+                                </select>
                                 <div class="invalid-feedback">@lang('registration.age_validation')</div>
                                 <small id="age_help" class="form-text text-muted">@lang('registration.age_help')</small>
                             </div>
@@ -108,14 +109,13 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="country">@lang('registration.country'):<sup>*</sup></label>
-                                <div class="form-control form-control__select">
-                                    <select id="country" name="country" required aria-required="true" class="field select2">
-                                        <option value=""></option>
-                                        @foreach (App\Helpers\Fixometer::getAllCountries() as $country_code => $country_name)
-                                          <option value="{{ $country_code }}" @if( old('country') == $country_code ) selected @endif>{{ $country_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <select id="country" name="country" required aria-required="true" class="form-control">
+                                    <option value=""></option>
+                                    <?php $countries = App\Helpers\Fixometer::getAllCountries(); asort($countries); ?>
+                                    @foreach ($countries as $country_code => $country_name)
+                                      <option value="{{ $country_code }}" @if( old('country') == $country_code ) selected @endif>{{ $country_name }}</option>
+                                    @endforeach
+                                </select>
                                 <div class="invalid-feedback">@lang('registration.country_validation')</div>
                                 <small id="country_help" class="form-text text-muted">@lang('registration.country_help')</small>
                             </div>
@@ -124,7 +124,6 @@
                             <div class="form-group">
                                 <label for="gender">@lang('registration.gender'):</label>
                                 <input type="text" class="form-control field" id="gender" name="gender" value="{{{ old('gender') }}}">
-                                <div class="invalid-feedback">@lang('registration.gender_validation')</div>
                                 <small id="gender_help" class="form-text text-muted">@lang('registration.gender_help')</small>
                             </div>
                         </div>

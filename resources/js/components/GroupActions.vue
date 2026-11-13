@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="canedit">
-      <b-dropdown variant="primary" :text="__('groups.group_actions')" class="deepnowrap">
+      <b-dropdown variant="primary" :text="__('groups.group_actions')" class="deepnowrap" id="groupactions">
         <b-dropdown-item :href="'/group/edit/' + idgroups" v-if="canedit">
           {{ __('groups.edit_group') }}
         </b-dropdown-item>
@@ -11,13 +11,16 @@
         <b-dropdown-item  data-toggle="modal" data-target="#invite-to-group" v-if="canedit">
           {{ __('groups.invite_volunteers') }}
         </b-dropdown-item>
-        <b-dropdown-item :href="'/group/nearby/' + idgroups" v-if="canedit">
-          {{ __('groups.volunteers_nearby') }}
-        </b-dropdown-item>
         <b-dropdown-item  data-toggle="modal" data-target="#group-share-stats" v-if="canedit">
           {{ __('groups.share_group_stats') }}
         </b-dropdown-item>
-        <b-dropdown-item data-toggle="modal" @click="leaveGroup" v-if="ingroup">
+        <b-dropdown-item v-if="reportingUrl" :href="reportingUrl" target="_blank" rel="noopener" link-class="group-reporting-action">
+          {{ __('groups.view_reports') }}
+        </b-dropdown-item>
+        <b-dropdown-item :href="'/export/devices/group/' + idgroups">
+          {{ __('devices.export_group_data') }}
+        </b-dropdown-item>
+        <b-dropdown-item data-toggle="modal" @click="leaveGroup" v-if="ingroup" class="leavegroup">
           {{ __('groups.leave_group_button') }}
         </b-dropdown-item>
         <b-dropdown-item :href="'/group/join/' + idgroups" v-else>
@@ -28,6 +31,9 @@
         </b-dropdown-item>
         <b-dropdown-item v-if="canSeeDelete && !canPerformDelete" disabled>
           {{ __('groups.delete_group') }}
+        </b-dropdown-item>
+        <b-dropdown-item @click="archiveGroup" v-if="canPerformArchive" :disabled="group.archived_at">
+          {{ __('groups.archive_group') }}
         </b-dropdown-item>
       </b-dropdown>
     </div>
@@ -42,6 +48,9 @@
         <b-dropdown-item  data-toggle="modal" data-target="#group-share-stats">
           {{ __('groups.share_group_stats') }}
         </b-dropdown-item>
+        <b-dropdown-item v-if="reportingUrl" :href="reportingUrl" target="_blank" rel="noopener" link-class="group-reporting-action">
+          {{ __('groups.view_reports') }}
+        </b-dropdown-item>
         <b-dropdown-item data-toggle="modal" @click="leaveGroup" v-if="ingroup">
           {{ __('groups.leave_group_button') }}
         </b-dropdown-item>
@@ -51,11 +60,14 @@
     <ConfirmModal :key="'deletegroupmodal-' + idgroups" ref="confirmDelete" @confirm="deleteConfirmed" :message="__('groups.delete_group_confirm', {
       name: group.name
     })" />
+    <ConfirmModal :key="'archivegroupmodal-' + idgroups" ref="confirmArchive" @confirm="archiveConfirmed" :message="__('groups.archive_group_confirm', {
+      name: group.name
+    })" />
   </div>
 </template>
 <script>
 import group from '../mixins/group'
-import ConfirmModal from './ConfirmModal'
+import ConfirmModal from './ConfirmModal.vue'
 
 export default {
   components: {ConfirmModal},
@@ -74,6 +86,16 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    canPerformArchive: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    reportingUrl: {
+      type: String,
+      required: false,
+      default: null
     },
   },
   computed: {
@@ -95,8 +117,36 @@ export default {
     deleteGroup() {
       this.$refs.confirmDelete.show()
     },
+    archiveGroup() {
+      this.$refs.confirmArchive.show()
+    },
     async deleteConfirmed() {
-      window.location = '/group/delete/' + this.idgroups
+      // Deleting is a POST so that it carries a CSRF token - navigating to a GET URL
+      // meant any page could trigger it in an admin's browser.
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = '/group/delete/' + this.idgroups
+
+      const token = document.createElement('input')
+      token.type = 'hidden'
+      token.name = '_token'
+      token.value = this.$store.getters['auth/CSRF']
+      form.appendChild(token)
+
+      document.body.appendChild(form)
+      form.submit()
+    },
+    async archiveConfirmed() {
+      // Send only the archive date: the API updates just the fields it's given.  Sending the whole group back
+      // posted object fields such as network_data as the string "[object Object]".
+      await this.$store.dispatch('groups/edit', {
+        id: this.idgroups,
+        archived_at: (new Date()).toISOString()
+      })
+
+      await this.$store.dispatch('groups/fetch', {
+        id: this.idgroups
+      })
     }
   }
 }

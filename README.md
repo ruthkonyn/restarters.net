@@ -8,8 +8,7 @@ events, to bring down the barriers to repair.
 
 It combines together three core modules: 
 
-* The Fixometer - our engine for capturing the impact of our community repair
-  activities
+* The Fixometer - our engine for organising community repair events and recording their impact 
 * Restarters Talk - a space for local and global discussion of community repair
 * Restarters Wiki - a collectively produced knowledge base of advice and support
   for community repair
@@ -32,7 +31,15 @@ we'll make sure it ends up in the right place.)
 
 ## Tech
 
-More details on the tech side of things in the [dev wiki](https://github.com/therestartproject/restarters.net/wiki).
+Developer documentation lives in the [`docs/`](docs/) folder:
+
+- [Local development setup](docs/local-development.md)
+- [Fly.io deployment](docs/fly-deployment.md)
+- [Contributing / branching workflow](docs/contributing.md)
+- [External integrations](docs/integrations.md) (Discourse, MediaWiki, WordPress)
+- [Queue and email](docs/queue-and-email.md)
+- [Frontend architecture](docs/frontend-architecture.md) (Vue, Vite, API)
+- [Operational procedures](docs/operations.md)
 
 ## Methodology
 
@@ -49,7 +56,7 @@ The first version of the tool (2015) was the core Fixometer engine. This was
 made possible with modest funding from the Innovation in Waste Prevention Fund,
 Defra-funded and administered by WRAP. Subsequent development has been financed
 by the Shuttleworth Foundation, and by Nesta and the Department for Digital,
-Culture, Media & Sport.
+Culture, Media & Sport.  
 
 [![CircleCI](https://circleci.com/gh/TheRestartProject/restarters.net/tree/develop.svg?style=svg)](https://circleci.com/gh/TheRestartProject/restarters.net/?branch=develop)
 

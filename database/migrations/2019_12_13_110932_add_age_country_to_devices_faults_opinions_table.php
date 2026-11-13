@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAgeCountryToDevicesFaultsOpinionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         if (Schema::hasTable('devices_faults_opinions')) {
             if (! Schema::hasColumn('devices_faults_opinions', 'age')) {
@@ -41,14 +39,12 @@ class AddAgeCountryToDevicesFaultsOpinionsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('devices_faults_opinions', function (Blueprint $table) {
             $table->dropColumn('age');
             $table->dropColumn('country');
         });
     }
-}
+};

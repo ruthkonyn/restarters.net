@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Group;
+use App\Helpers\Fixometer;
 use App\Http\Controllers\Controller;
 use App\Role;
 use App\User;
 use App\UserGroups;
 use Auth;
 use Illuminate\Http\Request;
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
 
+#[Feature('Groups', description: 'Community repair group management and membership')]
 class UserGroupsController extends Controller
 {
     /**
@@ -19,6 +23,7 @@ class UserGroupsController extends Controller
      *
      * Only Administrators allowed to access this endpoint.
      */
+    #[UserStory('As an Admin, I can list group membership changes for Zapier integration', persona: 'Admin', theme: 'Admin & integrations')]
     public static function changes(Request $request)
     {
         $authenticatedUser = Auth::user();
@@ -83,7 +88,7 @@ class UserGroupsController extends Controller
         $group = Group::find($userGroupAssociation->group);
         $userGroupChange['group_name'] = $group->name;
         $userGroupChange['group_area'] = $group->area;
-        $userGroupChange['group_country'] = $group->country;
+        $userGroupChange['group_country'] = Fixometer::getCountryFromCountryCode($group->country_code);
 
         return $userGroupChange;
     }
@@ -91,11 +96,10 @@ class UserGroupsController extends Controller
     /**
      * Leave the specified group.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function leave(Request $request, $id)
+    #[UserStory('As a Restarter, I can leave a group I belong to', persona: 'Restarter', theme: 'Manage volunteers')]
+    public function leave(Request $request, int $id)
     {
         $authenticatedUser = Auth::user();
         if (! $authenticatedUser) {
@@ -107,11 +111,12 @@ class UserGroupsController extends Controller
             ->where('status', 1)
             ->first();
 
-        if (! $member) {
-            abort(404, 'Not a member');
+        // If we don't find the membership, it could be because they have never been a member, but it could
+        // also be because they have just left.  We've seen this in Sentry on the live system, perhaps due to
+        // double-clicking or user error.  In this case it's better to return success.
+        if ($member) {
+            $member->delete();
         }
-
-        $member->delete();
 
         $group = Group::where('idgroups', $id)->first();
 

@@ -1,29 +1,41 @@
 <template>
   <div>
-    <CollapsibleSection class="lineheight" collapsed :count="upcoming.length" count-badge :heading-level="headingLevel">
+    <AlertBanner v-if="banner" />
+    <CollapsibleSection class="lineheight" collapsed :count="upcomingOrActive.length" count-badge :heading-level="headingLevel">
       <template slot="title">
-        <div class="d-flex justify-content-between w-100">
-        <div>
-          <span v-if="group">{{ group.name }}</span> {{ translatedTitle }}
-          <b-btn v-if="calendarCopyUrl" class="ml-2" variant="primary" @click="showCalendar">
-            <b-img-lazy src="/images/subs_cal_ico.svg" />
-          </b-btn>
-        </div>
+        <div class="d-flex flex-wrap flex-column flex-md-row">
+          <div v-if="group">{{ group.name }}</div>
+          <div class="ml-1">{{ translatedTitle }}</div>
+          <div>
+            <b-btn v-if="calendarCopyUrl" class="ml-0 ml-md-2" variant="primary" @click="showCalendar">
+              <b-img-lazy :src="imageUrl('/images/subs_cal_ico.svg')" />
+            </b-btn>
+          </div>
         </div>
       </template>
       <template slot="title-right">
-        <b-btn variant="primary" href="/party/create" class="align-self-center text-nowrap" v-if="addButton">
-          {{ __('events.add_new_event') }}
-        </b-btn>
+        <div class="d-flex flex-wrap w-100 justify-content-end mt-1 mt-md-0">
+          <b-btn variant="primary" :href="'/export/groups/' + idgroups + '/events'" class="d-none d-md-block align-self-center text-nowrap mr-2" v-if="addButton">
+            {{ __('groups.export_event_list') }}
+          </b-btn>
+          <b-btn variant="primary" href="/party/create" class="align-self-center text-nowrap mr-2 mr-md-0" v-if="addButton">
+            <span class="d-none d-md-block">
+              {{ __('events.add_new_event') }}
+            </span>
+            <span class="d-block d-md-none">
+              {{ __('dashboard.add_event') }}
+            </span>
+          </b-btn>
+        </div>
       </template>
       <template slot="content">
         <b-tabs class="ourtabs w-100">
-          <GroupEventsTab active :limit="limit" :events="upcoming" :canedit="canedit" :add-group-name="addGroupName" title="groups.upcoming_active" noneMessage="groups.no_upcoming_events" />
+          <GroupEventsTab active :limit="limit" :events="upcomingOrActive" :canedit="canedit" :add-group-name="addGroupName" title="groups.upcoming_active" noneMessage="groups.no_upcoming_events" />
           <GroupEventsTab :limit="limit" :events="past" :canedit="canedit" :add-group-name="addGroupName" title="groups.past" noneMessage="groups.no_past_events" past />
         </b-tabs>
       </template>
     </CollapsibleSection>
-    <CollapsibleSection class="lineheight mt-4" collapsed :count="upcoming.length" count-badge :heading-level="headingLevel" v-if="showOther">
+    <CollapsibleSection class="lineheight mt-4" collapsed :count="upcomingOrActive.length" count-badge :heading-level="headingLevel" v-if="showOther">
       <template slot="title">
         <div class="d-flex justify-content-between w-100">
           <div>
@@ -33,7 +45,7 @@
       </template>
       <template slot="content">
         <b-tabs class="ourtabs w-100">
-          <GroupEventsTab active :limit="limit" :events="nearby" :canedit="canedit" :add-group-name="addGroupName" title="groups.nearby" noneMessage="groups.no_other_nearby_events" />
+          <GroupEventsTab active :limit="limit" :events="nearby" :canedit="canedit" :add-group-name="addGroupName" title="groups.nearby" :noneMessage="nearbyNoneMessage" />
           <GroupEventsTab :limit="limit" :events="all" :canedit="canedit" :add-group-name="addGroupName" title="groups.all" noneMessage="groups.no_other_events" filters />
         </b-tabs>
       </template>
@@ -50,18 +62,21 @@
 </template>
 <script>
 import group from '../mixins/group'
+import images from '../mixins/images'
 import moment from 'moment'
-import CalendarAddModal from './CalendarAddModal'
-import GroupEventsTab from './GroupEventsTab'
-import CollapsibleSection from './CollapsibleSection'
+import CalendarAddModal from './CalendarAddModal.vue'
+import GroupEventsTab from './GroupEventsTab.vue'
+import CollapsibleSection from './CollapsibleSection.vue'
+import AlertBanner from './AlertBanner.vue'
 
 export default {
   components: {
     CollapsibleSection,
     GroupEventsTab,
     CalendarAddModal,
+    AlertBanner,
   },
-  mixins: [ group ],
+  mixins: [ group, images ],
   props: {
     idgroups: {
       type: Number,
@@ -108,26 +123,30 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    location: {
+      type: String,
+      required: false,
+      default: null
+    },
+    banner: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   computed: {
     events() {
-      return this.$store.getters['events/getByGroup'](this.idgroups).sort((a,b) => new moment(a.event_date).format('YYYYMMDD') - new moment(b.event_date).format('YYYYMMDD'))
+      return this.$store.getters['events/getByGroup'](this.idgroups).sort((a,b) => new moment(a.event_start_utc).unix() - new moment(b.event_start_utc).unix())
     },
     reverse() {
-      return this.$store.getters['events/getByGroup'](this.idgroups).sort((a,b) => new moment(b.event_date).format('YYYYMMDD') - new moment(a.event_date).format('YYYYMMDD'))
+      return this.$store.getters['events/getByGroup'](this.idgroups).sort((a,b) => new moment(b.event_start_utc).unix() - new moment(a.event_start_utc).unix())
     },
     past() {
-      return this.reverse.filter(e => {
-        const start = new moment(e.event_date + ' ' + e.start)
-        return start.isBefore()
-      })
+      return this.reverse.filter(e => e.finished && !e.nearby && !e.all)
     },
-    upcoming() {
-      return this.events.filter(e => {
-        const start = new moment(e.event_date + ' ' + e.start)
-        return start.isAfter() && !e.nearby && !e.all
-      })
+    upcomingOrActive() {
+      return this.events.filter(e => (e.upcoming || e.inprogress) && !e.nearby && !e.all)
     },
     nearby() {
       return this.events.filter(e => e.nearby)
@@ -135,24 +154,35 @@ export default {
     all() {
       return this.events.filter(e => e.all)
     },
+    nearbyNoneMessage() {
+      if (this.location) {
+        // We have a location, so we can say that there are no other nearby events.
+        return this.__('groups.no_other_nearby_events')
+      } else {
+        // We don't have a location - nudge to add one.
+        return this.__('events.no_location')
+      }
+    },
     translatedTitle() {
-      // If we have a group then we are putting the name elsewhere and just want "events" (force the plural).  Otherwise
-      // "Your events".
-      let ret = this.group ? this.$lang.choice('groups.events', {
-        value: 2
-      }) : this.$lang.get('events.your_events')
+      // If we have a group then we are putting the name elsewhere and just want "events" (force the plural).
+      // The group name comes first, so "events" is lower case, to match the sentence case of the rest of the
+      // page.  Otherwise "Your events" starts the heading, so it is capitalised.
+      if (this.group) {
+        const events = this.__('events.events')
+        return events.charAt(0).toLowerCase() + events.slice(1)
+      }
 
-      ret = ret.charAt(0).toUpperCase() + ret.slice(1)
-      return ret
+      const ret = this.__('events.your_events')
+      return ret.charAt(0).toUpperCase() + ret.slice(1)
     },
     translatedCalendarTitle() {
-      return this.$lang.get('groups.calendar_copy_title', {
-        group: this.group ? this.group.name : this.$lang.get('groups.groups_title1').toLowerCase()
+      return this.__('groups.calendar_copy_title', {
+        group: this.group ? this.group.name : this.__('groups.groups_title1').toLowerCase()
       })
     },
     translatedCalendarDescription() {
-      return this.$lang.get('groups.calendar_copy_description', {
-        group: this.group ? this.group.name : this.$lang.get('groups.groups_title1').toLowerCase()
+      return this.__('groups.calendar_copy_description', {
+        group: this.group ? this.group.name : this.__('groups.groups_title1').toLowerCase()
       })
     },
   },
@@ -198,7 +228,7 @@ export default {
   border-top: 5px solid $black;
 }
 
-/deep/ .fontsize {
+::v-deep .fontsize {
   //Override standard sizes for cosmetic purposes.
   font-size: 18px !important;
 }

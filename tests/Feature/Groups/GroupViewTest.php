@@ -3,56 +3,97 @@
 namespace Tests\Feature\Groups;
 
 use App\Device;
+use App\Group;
 use App\Party;
 use App\Role;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\TestCase;
 
 class GroupViewTest extends TestCase
 {
-    public function testBasic()
+    /** @story:GroupController::view */
+    public function testBasic(): void
     {
         // Check we can create a group and view it.
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $id = $this->createGroup();
         $this->assertNotNull($id);
+
+        // Create an event and a fixed device, as this will be used in stats info returned from GroupController.
+        // We want the fixed device to be in a category with a cluster.
+        $event = Party::factory()->create([
+            'group' => $id,
+            'event_start_utc' => Carbon::parse('1pm tomorrow')->toIso8601String(),
+            'event_end_utc' => Carbon::parse('3pm tomorrow')->toIso8601String()
+        ]);
+        $device = Device::factory()->fixed()->create([
+            'category' => 11,
+            'category_creation' => 11,
+            'event' => $event->idevents,
+        ]);
+
+        // View with id.
         $response = $this->get("/group/view/$id");
 
-        $this->assertVueProperties($response, [
+        $props = $this->assertVueProperties($response, [
+            [],
             [
                 ':idgroups' => $id,
                 ':canedit' => 'true',
                 ':can-see-delete' => 'true',
-                ':can-perform-delete' => 'true',
-                ':top-devices' => '[]',
-                ':events' => '[]',
+                ':can-perform-delete' => 'false',
+                ':top-devices' => json_encode([
+                    [
+                        'counter' => 1,
+                        'name' => 'Desktop computer'
+                    ]
+                ]),
             ],
         ]);
+        $this->assertEquals(1, count(json_decode($props[1][':events'], TRUE)));
     }
 
-    public function testInvalidGroup()
+    /** @story:GroupController::view */
+    public function testInvalidGroup(): void
     {
         $this->loginAsTestUser(Role::RESTARTER);
         $this->expectException(NotFoundHttpException::class);
         $this->get('/group/view/undefined');
     }
 
-    public function testCanDelete()
+    /** @story:GroupController::view */
+    public function testInvalidGroup2(): void
+    {
+        $this->loginAsTestUser(Role::RESTARTER);
+        $this->expectException(NotFoundHttpException::class);
+        $this->get('/group/view/1');
+    }
+
+    /**
+     * @story:GroupController::view
+     * @story:ApiController::getDevices
+     * @story:OutboundController::info
+     */
+    public function testCanDelete(): void
     {
         $this->loginAsTestUser(Role::ADMINISTRATOR);
         $id = $this->createGroup();
         $this->assertNotNull($id);
 
         // Create a past event
-        $event = factory(Party::class)->states('moderated')->create([
-                                                                        'event_date' => Carbon::yesterday(),
+        $event = Party::factory()->moderated()->create([
+                                                                        'event_start_utc' => '2000-01-01T10:15:05+05:00',
+                                                                        'event_end_utc' => '2000-01-0113:45:05+05:00',
                                                                         'group' => $id,
                                                                     ]);
 
         // Groups are deletable unless they have an event with a device.
         $response = $this->get("/group/view/$id");
         $this->assertVueProperties($response, [
+            [],
             [
                 ':idgroups' => $id,
                 ':can-see-delete' => 'true',
@@ -60,12 +101,13 @@ class GroupViewTest extends TestCase
             ],
         ]);
 
-        $response = $this->post('/device/create', factory(Device::class)->raw([
-                                                                                  'event_id' => $event->idevents,
-                                                                                  'quantity' => 1,
-                                                                              ]));
+        $iddevices = $this->createDevice($event->idevents,
+            'misc', null, 1.5, 0, '',
+            Device::REPAIR_STATUS_FIXED_STR, null, null, 111);
+
         $response = $this->get("/group/view/$id");
         $this->assertVueProperties($response, [
+            [],
             [
                 ':idgroups' => $id,
                 ':can-see-delete' => 'true',
@@ -73,12 +115,20 @@ class GroupViewTest extends TestCase
             ],
         ]);
 
+        # Check the device shows in the API.
+        $rsp2 = $this->get('/api/devices/1/10?sortBy=iddevices&sortDesc=asc&powered=false');
+        $ret = json_decode($rsp2->getContent(), true);
+        self::assertEquals(1, $ret['count']);
+        self::assertEquals(1, count($ret['items']));
+        self::assertEquals($event->idevents, $ret['items'][0]['eventid']);
+
         // Only administrators can delete.
         foreach (['Restarter', 'Host', 'NetworkCoordinator'] as $role) {
-            $user = factory(\App\User::class)->states($role)->create();
+            $user = \App\User::factory()->{lcfirst($role)}()->create();
             $this->actingAs($user);
             $response = $this->get("/group/view/$id");
             $this->assertVueProperties($response, [
+                [],
                 [
                     ':idgroups' => $id,
                     ':can-see-delete' => 'false',
@@ -86,5 +136,347 @@ class GroupViewTest extends TestCase
                 ],
             ]);
         }
+
+        // Test stats API.
+        foreach (['fixometer', 'consume', 'manufacture'] as $format) {
+            $response = $this->get("/api/outbound/info/party/{$event->idevents}/$format");
+            $stats = json_decode($response->getContent(), TRUE);
+            self::assertEquals(1, $stats['co2']);
+
+            $response = $this->get("/api/outbound/info/group/{$id}/$format");
+            $stats = json_decode($response->getContent(), TRUE);
+            self::assertEquals(1, $stats['co2']);
+        }
+    }
+
+    /** @story:GroupController::view */
+    public function testInProgressVisible(): void {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup();
+        $this->assertNotNull($id);
+
+        Party::factory()->moderated()->create([
+                                                                    'event_start_utc' => Carbon::parse('1 hour ago')->toIso8601String(),
+                                                                    'event_end_utc' => Carbon::parse('4pm tomorrow')->toIso8601String(),
+                                                                    'group' => $id,
+                                                                ]);
+
+        // Event should show in list for group.
+        $response = $this->get("/group/view/$id");
+        $props = $this->getVueProperties($response);
+        $events = json_decode($props[1][':events'], true);
+        self::assertEquals(Party::latest()->first()->idevents, $events[0]['idevents']);
+    }
+
+    public function testGroupIndexNextEventIsEagerLoaded(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+
+        // Create two groups, each with a different upcoming event.
+        $id1 = $this->createGroup('Group Alpha');
+        $id2 = $this->createGroup('Group Beta');
+
+        $tomorrow = Carbon::parse('1pm tomorrow');
+        $nextWeek = Carbon::parse('1pm next week');
+
+        Party::factory()->create([
+            'group' => $id1,
+            'approved' => true,
+            'event_start_utc' => $tomorrow->toIso8601String(),
+            'event_end_utc' => $tomorrow->addHours(2)->toIso8601String(),
+        ]);
+        Party::factory()->create([
+            'group' => $id2,
+            'approved' => true,
+            'event_start_utc' => $nextWeek->toIso8601String(),
+            'event_end_utc' => $nextWeek->addHours(2)->toIso8601String(),
+        ]);
+
+        // Groups are fetched via API (not server-rendered) — test that next_event is returned.
+        $response = $this->get('/api/v2/groups/summary?includeNextEvent=true');
+        $response->assertSuccessful();
+
+        $groups = $response->json('data');
+        $group1 = collect($groups)->firstWhere('id', $id1);
+        $group2 = collect($groups)->firstWhere('id', $id2);
+
+        $this->assertNotNull($group1, "Group Alpha (id=$id1) not found in API response");
+        $this->assertNotNull($group2, "Group Beta (id=$id2) not found in API response");
+        $this->assertNotNull($group1['next_event'], 'Group Alpha should have a next_event');
+        $this->assertNotNull($group2['next_event'], 'Group Beta should have a next_event');
+    }
+
+    public function testGroupsPageFramesTheCountryForAUserWithNoTown(): void
+    {
+        // A user who has only set their country has no coordinates, so
+        // groupsNearby() can't help - the map used to open on the whole world.
+        // Frame the groups in their country instead.
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup('Group In Country', 'https://therestartproject.org', 'London');
+
+        $group = Group::find($id);
+        $group->country_code = 'GB';
+        $group->latitude = 54.19;
+        $group->longitude = -3.09;
+        $group->approved = true;
+        $group->save();
+
+        $user = \App\User::factory()->restarter()->create([
+            'country_code' => 'GB',
+            'location' => null,
+            'latitude' => null,
+            'longitude' => null,
+        ]);
+        $this->actingAs($user);
+
+        $props = $this->getVueProperties($this->get('/group/other'));
+        $bounds = json_decode($props[1][':nearby-groups'], true);
+
+        // [[min_lat, min_lng], [max_lat, max_lng]] - a real box, not the inverted
+        // world box [[90,180],[-90,-180]] that means "no location".
+        $this->assertLessThanOrEqual($bounds[1][0], $bounds[0][0], 'Should be a real bounding box, not the inverted world box');
+        $this->assertEqualsWithDelta(54.19, $bounds[0][0], 0.001);
+        $this->assertEqualsWithDelta(-3.09, $bounds[0][1], 0.001);
+    }
+
+    public function testGroupsPageFallsBackToTheWorldWhenTheCountryHasNoGroups(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup('Group Somewhere Else');
+
+        $group = Group::find($id);
+        $group->country_code = 'GB';
+        $group->latitude = 54.19;
+        $group->longitude = -3.09;
+        $group->save();
+
+        // Country with no groups in it: nothing to frame, so we fall back to the
+        // inverted world box, which the map reads as "show me everything".
+        $user = \App\User::factory()->restarter()->create([
+            'country_code' => 'NZ',
+            'location' => null,
+            'latitude' => null,
+            'longitude' => null,
+        ]);
+        $this->actingAs($user);
+
+        $props = $this->getVueProperties($this->get('/group/other'));
+        $bounds = json_decode($props[1][':nearby-groups'], true);
+
+        $this->assertEquals([[90, 180], [-90, -180]], $bounds);
+    }
+
+    public function testNextEventIsTheSoonestNotTheFurthestAway(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+
+        // A group with more than one upcoming event.  The existing coverage only
+        // ever gave a group a single future event, which can't tell "soonest" from
+        // "furthest away" - and the summary API was returning the latter.
+        $id = $this->createGroup('Group With Two Events');
+
+        $soon = Carbon::parse('1pm tomorrow');
+        $later = Carbon::parse('1pm +5 months');
+
+        // Created furthest-first, so a test that happens to pass on insertion order
+        // rather than on the ordering we asked for would still fail here.
+        Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => $later->toIso8601String(),
+            'event_end_utc' => $later->copy()->addHours(2)->toIso8601String(),
+        ]);
+        $soonest = Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => $soon->toIso8601String(),
+            'event_end_utc' => $soon->copy()->addHours(2)->toIso8601String(),
+        ]);
+
+        // The upcoming events are cached globally, not per group.
+        Cache::forget('future_approved_events');
+
+        $response = $this->get('/api/v2/groups/summary?includeNextEvent=true');
+        $response->assertSuccessful();
+
+        $group = collect($response->json('data'))->firstWhere('id', $id);
+        $this->assertNotNull($group, "Group (id=$id) not found in API response");
+        $this->assertNotNull($group['next_event'], 'Group should have a next_event');
+        $this->assertEquals($soonest->idevents, $group['next_event']['id'], 'next_event should be the soonest upcoming event, not the furthest away');
+    }
+
+    public function testNextEventIgnoresUnapprovedEvents(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+
+        // The group page only ever counts approved events as the "next" one
+        // (Group::getNextUpcomingEvent), but the summary API used to take any
+        // future event - so an unapproved event showed on the public map as the
+        // group's next event while the group's own page ignored it.
+        $id = $this->createGroup('Group With An Unapproved Event');
+
+        $soon = Carbon::parse('1pm tomorrow');
+        $later = Carbon::parse('1pm +3 months');
+
+        Party::factory()->create([
+            'group' => $id,
+            'approved' => false,
+            'event_start_utc' => $soon->toIso8601String(),
+            'event_end_utc' => $soon->copy()->addHours(2)->toIso8601String(),
+        ]);
+        $approved = Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => $later->toIso8601String(),
+            'event_end_utc' => $later->copy()->addHours(2)->toIso8601String(),
+        ]);
+
+        Cache::forget('future_approved_events');
+
+        $response = $this->get('/api/v2/groups/summary?includeNextEvent=true');
+        $response->assertSuccessful();
+
+        $group = collect($response->json('data'))->firstWhere('id', $id);
+        $this->assertNotNull($group, "Group (id=$id) not found in API response");
+        $this->assertNotNull($group['next_event'], 'Group should have a next_event');
+        $this->assertEquals($approved->idevents, $group['next_event']['id'], 'next_event should skip the unapproved event and use the approved one');
+    }
+
+    public function testNextEventIsNullWhenTheOnlyUpcomingEventIsUnapproved(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+
+        $id = $this->createGroup('Group With Only An Unapproved Event');
+
+        $soon = Carbon::parse('1pm tomorrow');
+        Party::factory()->create([
+            'group' => $id,
+            'approved' => false,
+            'event_start_utc' => $soon->toIso8601String(),
+            'event_end_utc' => $soon->copy()->addHours(2)->toIso8601String(),
+        ]);
+
+        Cache::forget('future_approved_events');
+
+        $response = $this->get('/api/v2/groups/summary?includeNextEvent=true');
+        $response->assertSuccessful();
+
+        $group = collect($response->json('data'))->firstWhere('id', $id);
+        $this->assertNotNull($group, "Group (id=$id) not found in API response");
+        $this->assertNull($group['next_event'], 'An unapproved event must not be advertised as the next event');
+    }
+
+    public function testFutureScopeReturnsSoonestFirst(): void
+    {
+        // The summary API relies on Party::future() coming back in ascending date
+        // order.  scopeUndeleted() applies a DESC order and orderBy() appends, so
+        // this needs an explicit reorder() to hold.
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup('Group For Scope Ordering');
+
+        foreach (['1pm +3 months', '1pm tomorrow', '1pm +5 months'] as $when) {
+            $at = Carbon::parse($when);
+            Party::factory()->create([
+                'group' => $id,
+                'approved' => true,
+                'event_start_utc' => $at->toIso8601String(),
+                'event_end_utc' => $at->copy()->addHours(2)->toIso8601String(),
+            ]);
+        }
+
+        $starts = Party::future()->forGroup($id)->get()->pluck('event_start_utc')->map(function ($d) {
+            return Carbon::parse($d)->timestamp;
+        })->all();
+
+        $sorted = $starts;
+        sort($sorted);
+        $this->assertEquals($sorted, $starts, 'Party::future() should return the soonest event first');
+    }
+
+    public function testGroupIndexQueryCountScalesWithO1NotN(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+
+        // Create 3 groups with upcoming events, tags, etc.
+        for ($i = 0; $i < 3; $i++) {
+            $id = $this->createGroup("Perf Group $i");
+            $event = Party::factory()->create([
+                'group' => $id,
+                'approved' => true,
+                'event_start_utc' => Carbon::parse('1pm tomorrow')->toIso8601String(),
+                'event_end_utc' => Carbon::parse('3pm tomorrow')->toIso8601String(),
+            ]);
+        }
+
+        // Warm up (first request may have extra overhead).
+        $this->get('/group');
+
+        DB::enableQueryLog();
+        $this->get('/group')->assertSuccessful();
+        $queriesFor3 = count(DB::getQueryLog());
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+
+        // Add 3 more groups.
+        for ($i = 3; $i < 6; $i++) {
+            $id = $this->createGroup("Perf Group $i");
+            Party::factory()->create([
+                'group' => $id,
+                'approved' => true,
+                'event_start_utc' => Carbon::parse('1pm tomorrow')->toIso8601String(),
+                'event_end_utc' => Carbon::parse('3pm tomorrow')->toIso8601String(),
+            ]);
+        }
+
+        DB::enableQueryLog();
+        $this->get('/group')->assertSuccessful();
+        $queriesFor6 = count(DB::getQueryLog());
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+
+        // With N+1 fixed, doubling the groups should not double the queries.
+        // Allow some small variance but reject obvious N+1 growth.
+        $this->assertLessThan(
+            $queriesFor3 * 1.5,
+            $queriesFor6,
+            "Query count grew too much when adding more groups — possible N+1. 3 groups: $queriesFor3, 6 groups: $queriesFor6"
+        );
+    }
+
+    public function testNextUpcomingPartyRelationship(): void
+    {
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $id = $this->createGroup();
+        $group = Group::find($id);
+
+        // No events yet.
+        $this->assertNull($group->nextUpcomingParty);
+
+        // Create a past event — should not appear.
+        Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => Carbon::parse('1pm yesterday')->toIso8601String(),
+            'event_end_utc' => Carbon::parse('3pm yesterday')->toIso8601String(),
+        ]);
+        $group->refresh();
+        $this->assertNull($group->nextUpcomingParty);
+
+        // Create two future events — should return the earlier one.
+        $sooner = Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => Carbon::parse('1pm tomorrow')->toIso8601String(),
+            'event_end_utc' => Carbon::parse('3pm tomorrow')->toIso8601String(),
+        ]);
+        Party::factory()->create([
+            'group' => $id,
+            'approved' => true,
+            'event_start_utc' => Carbon::parse('1pm next week')->toIso8601String(),
+            'event_end_utc' => Carbon::parse('3pm next week')->toIso8601String(),
+        ]);
+
+        $group->refresh();
+        $this->assertEquals($sooner->idevents, $group->nextUpcomingParty->idevents);
     }
 }

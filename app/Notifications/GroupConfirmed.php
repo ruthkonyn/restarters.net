@@ -2,36 +2,28 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class GroupConfirmed extends Notification implements ShouldQueue
+class GroupConfirmed extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-    protected $user;
+    protected $group;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($arr, $user = null)
+    public function __construct($group)
     {
-        $this->arr = $arr;
-        $this->user = $user;
+        $this->group = $group;
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -39,31 +31,38 @@ class GroupConfirmed extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
-        if ($this->user !== null && $this->user->invites == 1) {
-            return (new MailMessage)
-                  ->subject('Group Confirmed')
-                  ->greeting('Hello!')
-                  ->line('Your group \''.$this->arr['group_name'].'\' has been confirmed by an admin.')
-                  ->action('View Group', $this->arr['group_url'])
-                  ->line('If you would like to stop receiving these emails, please visit <a href="'.$this->arr['preferences'].'">your preferences</a> on your account.');
-        }
+        $locale = $notifiable->language;
+
+        return (new MailMessage)
+            ->subject(__('notifications.group_confirmed_subject', [], $locale))
+            ->greeting(__('notifications.greeting', [], $notifiable->language))
+            ->line(
+                __('notifications.group_confirmed_line1', [
+                    'name' => $this->group->name
+                ], $locale)
+            )
+            ->action(__('notifications.view_group', [], $locale), url('/group/view/' . $this->group->idgroups))
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
-
+            'name' => $this->group->name,
+            'url' => url('/group/view/' . $this->group->idgroups)
         ];
     }
 }

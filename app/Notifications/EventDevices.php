@@ -2,34 +2,16 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class EventDevices extends Notification implements ShouldQueue
+class EventDevices extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr)
-    {
-        $this->arr = $arr;
-    }
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -37,31 +19,41 @@ class EventDevices extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
-        if ($notifiable !== null && $notifiable->invites == 1) {
+        if ($notifiable !== null && $notifiable->invites == 1)
+        {
+            $locale = $notifiable->language;
             return (new MailMessage)
-                  ->subject('Contribute Devices')
-                  ->greeting('Hello!')
-                  ->line('Thank you for hosting the event \''.$this->arr['event_venue'].'\', please help us outline what devices were bought to the event and the status of their repair. This will help us improve the quality of our data.')
-                  ->action('Contribute data', $this->arr['event_url'])
-                  ->line('If you would like to stop receiving these emails, please visit <a href="'.$this->arr['preferences'].'/'.$notifiable->id.'">your preferences</a> on your account.');
+                ->subject(__('notifications.event_devices_subject', [], $locale))
+                ->greeting(__('notifications.greeting', [], $locale))
+                ->line(
+                    __('notifications.event_devices_line1', [
+                        'event' => $this->arr['event_venue']
+                    ], $locale)
+                )
+                ->action(__('notifications.event_devices_action', [], $locale), $this->arr['event_url'])
+                ->line(
+                    __('notifications.email_preferences', [
+                        'url' => url('/user/edit/' . $notifiable->id)
+                    ], $locale)
+                );
         }
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
+        $locale = $notifiable->language;
         return [
-
+            'title' => __('notifications.event_devices_title', [], $locale),
+            'name' => $this->arr['event_venue'],
         ];
     }
 }

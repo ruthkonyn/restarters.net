@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use Illuminate\Http\RedirectResponse;
 use App\Brands;
-use Auth;
 use App\Helpers\Fixometer;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
+#[Feature('Administration', description: 'Platform administration and configuration')]
 class BrandsController extends Controller
 {
+    #[UserStory('As an Admin, I can view all device brands', persona: 'Admin', theme: 'Reference data')]
     public function index()
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
@@ -24,18 +29,8 @@ class BrandsController extends Controller
         ]);
     }
 
-    public function getCreateBrand()
-    {
-        if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
-            return redirect('/user/forbidden');
-        }
-
-        return view('brands.create', [
-        'title' => 'Add Brand',
-        ]);
-    }
-
-    public function postCreateBrand(Request $request)
+    #[UserStory('As an Admin, I can create a new device brand', persona: 'Admin', theme: 'Reference data')]
+    public function postCreateBrand(Request $request): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -45,9 +40,10 @@ class BrandsController extends Controller
         'brand_name' => $request->input('brand_name'),
         ]);
 
-        return Redirect::to('brands/edit/'.$brand->id)->with('success', 'Brand successfully created!');
+        return Redirect::to('brands/edit/'.$brand->id)->with('success', __('brands.create_success'));
     }
 
+    #[UserStory('As an Admin, I can access the form to edit a device brand', persona: 'Admin', theme: 'Reference data')]
     public function getEditBrand($id)
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
@@ -62,7 +58,8 @@ class BrandsController extends Controller
         ]);
     }
 
-    public function postEditBrand($id, Request $request)
+    #[UserStory('As an Admin, I can update a device brand', persona: 'Admin', theme: 'Reference data')]
+    public function postEditBrand($id, Request $request): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -72,10 +69,11 @@ class BrandsController extends Controller
         'brand_name' => $request->input('brand-name'),
         ]);
 
-        return Redirect::back()->with('success', 'Brand successfully updated!');
+        return Redirect::back()->with('success', __('brands.update_success'));
     }
 
-    public function getDeleteBrand($id)
+    #[UserStory('As an Admin, I can delete a device brand', persona: 'Admin', theme: 'Reference data')]
+    public function getDeleteBrand($id): RedirectResponse
     {
         if (! Fixometer::hasRole(Auth::user(), 'Administrator')) {
             return redirect('/user/forbidden');
@@ -83,6 +81,6 @@ class BrandsController extends Controller
 
         Brands::find($id)->delete();
 
-        return Redirect::back()->with('message', 'Brand deleted!');
+        return Redirect::back()->with('message', __('brands.delete_success'));
     }
 }

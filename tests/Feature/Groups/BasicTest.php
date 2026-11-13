@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Groups;
 
+use App\Group;
+use App\User;
 use DB;
 use Hash;
 use Mockery;
@@ -9,27 +11,51 @@ use Tests\TestCase;
 
 class BasicTest extends TestCase
 {
-    public function testPageLoads()
+    /**
+     * @dataProvider tabProvider
+     * @story:GroupController::mine
+     * @story:GroupController::all
+     * @story:GroupController::nearby
+     */
+    public function testPageLoads($url, $tab): void
     {
         // Test the dashboard page loads.  Most of the work is done inside Vue, so a basic test is just that the
         // Vue component exists.
-        $this->loginAsTestUser();
-        $response = $this->get('/group');
+        $group = Group::factory()->create([
+                                                   'latitude' => 50.6325574,
+                                                   'longitude' => 5.5796662,
+                                                   'approved' => true,
+                                               ]);
+        $user = User::factory()->create([
+                                                 'latitude' => 50.6325574,
+                                                 'longitude' => 5.5796662,
+                                                 'location' => 'London'
+                                             ]);
+        $this->actingAs($user);
 
-        $this->assertVueProperties($response, [
+        $response = $this->get('/group'. $url);
+
+        $props = $this->assertVueProperties($response, [
+            [],
             [
                 // Can't assert on all-group-tags dev systems might have varying info.
-                ':all-groups' => '[]',
-                ':your-groups' => '[]',
-                ':nearby-groups' => '[]',
                 'your-area' => 'London',
-                ':can-create' => 'false',
-                ':user-id' => '1',
-                'tab' => 'mine',
+                ':can-create' => 'true',
+                'tab' => $tab,
                 ':network' => 'null',
-                ':networks' => '[{"id":1,"name":"Restarters","description":null,"website":null,"default_language":"en","timezone":"Europe\\/London","created_at":"2021-05-24 12:19:37","updated_at":"2021-05-24 12:19:37","events_push_to_wordpress":0,"include_in_zapier":0,"users_push_to_drip":0,"shortname":"restarters","discourse_group":null}]',
                 ':show-tags' => 'false',
             ],
         ]);
+    }
+
+
+    public static function tabProvider(): array {
+        return [
+            ['', 'mine'],
+            ['/all', 'other'],
+            ['/mine', 'mine'],
+            ['/nearby','other'],
+            ['/other', 'other'],
+        ];
     }
 }

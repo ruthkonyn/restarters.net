@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Mediawiki\Api\Service\UserCreator;
+use Addwiki\Mediawiki\Api\Service\UserCreator;
 use Mockery;
 use Msurguy\Honeypot\HoneypotFacade as Honeypot;
 use Tests\TestCase;
@@ -27,8 +27,11 @@ class WikiLoginTests extends TestCase
         DB::statement('SET foreign_key_checks=1');
     }
 
-    /** @test */
-    public function if_flagged_for_creation_create_when_logging_in()
+    /**
+     * @test
+     * @story:LoginController::login
+     */
+    public function if_flagged_for_creation_create_when_logging_in(): void
     {
         $this->withoutExceptionHandling();
         Honeypot::disable();
@@ -38,7 +41,7 @@ class WikiLoginTests extends TestCase
         }));
 
         // Given we have a user with the flag set to sync them.
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $user->wiki_sync_status = WikiSyncStatus::CreateAtLogin;
         $user->save();
 
@@ -51,8 +54,11 @@ class WikiLoginTests extends TestCase
         $this->assertEquals(WikiSyncStatus::Created, $user->wiki_sync_status);
     }
 
-    /** @test */
-    public function if_not_flagged_for_creation()
+    /**
+     * @test
+     * @story:LoginController::login
+     */
+    public function if_not_flagged_for_creation(): void
     {
         $this->withoutExceptionHandling();
         Honeypot::disable();
@@ -62,7 +68,7 @@ class WikiLoginTests extends TestCase
         }));
 
         // Given we have a user with the flag set to not create
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $user->wiki_sync_status = WikiSyncStatus::DoNotCreate;
         $user->save();
 
@@ -75,8 +81,11 @@ class WikiLoginTests extends TestCase
         $this->assertEquals(WikiSyncStatus::DoNotCreate, $user->wiki_sync_status);
     }
 
-    /** @test */
-    public function if_already_created()
+    /**
+     * @test
+     * @story:LoginController::login
+     */
+    public function if_already_created(): void
     {
         $this->withoutExceptionHandling();
         Honeypot::disable();
@@ -86,7 +95,7 @@ class WikiLoginTests extends TestCase
         }));
 
         // Given we have a user who has already been created in the wiki
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $user->wiki_sync_status = WikiSyncStatus::Created;
         $user->save();
 
@@ -99,8 +108,11 @@ class WikiLoginTests extends TestCase
         $this->assertEquals(WikiSyncStatus::Created, $user->wiki_sync_status);
     }
 
-    /** @test */
-    public function if_wiki_user_changes_password()
+    /**
+     * @test
+     * @story:UserController::postProfilePasswordEdit
+     */
+    public function if_wiki_user_changes_password(): void
     {
         $this->withoutExceptionHandling();
 
@@ -109,7 +121,7 @@ class WikiLoginTests extends TestCase
         }));
 
         // Given we have a user who has already been created in the wiki
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $user->wiki_sync_status = WikiSyncStatus::Created;
         $user->save();
         $this->actingAs($user);
@@ -118,5 +130,30 @@ class WikiLoginTests extends TestCase
         $response = $this->post('/profile/edit-password', ['current-password' => 'secret', 'new-password' => 'f00', 'new-password-repeat' => 'f00']);
 
         // Then the user's wiki password should be changed to match
+    }
+
+    /**
+     * @test
+     * @story:LoginController::login
+     */
+    public function login_succeeds_when_wiki_unavailable()
+    {
+        $this->withoutExceptionHandling();
+        Honeypot::disable();
+
+        // Bind null for UserCreator to simulate Wiki being unavailable
+        $this->instance(UserCreator::class, null);
+
+        // Given we have a user
+        $user = User::factory()->create();
+        $user->wiki_sync_status = WikiSyncStatus::CreateAtLogin;
+        $user->save();
+
+        // When user logs in
+        $response = $this->post('/login', ['email' => $user->email, 'password'=> 'secret', 'my_name' => 'foo', 'my_time' => 1]);
+
+        // Then the login should succeed (redirects to dashboard)
+        $response->assertStatus(302);
+        $this->assertAuthenticatedAs($user);
     }
 }

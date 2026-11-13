@@ -1,10 +1,19 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(App\GroupTags::class, function (Faker $faker) {
-    return [
-        'tag_name' => $faker->word,
-        'description' => $faker->sentence,
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class GroupTagsFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     */
+    public function definition(): array
+    {
+        return [
+        'tag_name' => $this->faker->word(),
+        'description' => $this->faker->sentence(),
     ];
-});
+    }
+}

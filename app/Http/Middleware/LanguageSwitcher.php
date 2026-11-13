@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
 use App;
 use Auth;
 use Closure;
@@ -13,12 +15,8 @@ class LanguageSwitcher
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         // A query string parameter of locale overrides all other places to attempt to determine the locale.
         if ($request->exists('locale')) {
@@ -27,9 +25,10 @@ class LanguageSwitcher
             if (in_array($locale, LaravelLocalization::getSupportedLanguagesKeys())) {
                 $this->setLocale($locale);
             }
-        } elseif (session('locale')) {
+        // We have a 'UT' locale for testing.
+        } elseif (session('locale') && session('locale') != 'UT') {
             // Otherwise, check if locale session already exists.
-            // If it does, continue to maintian that locale.
+            // If it does, continue to maintain that locale.
             App::setLocale(session('locale'));
             LaravelLocalization::setLocale(session('locale'));
         } else {

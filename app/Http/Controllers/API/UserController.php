@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use Cache;
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use App\Attributes\NoStory;
 
+#[Feature('Users', description: 'User accounts, profiles, and authentication')]
 class UserController extends Controller
 {
     /**
@@ -17,6 +23,7 @@ class UserController extends Controller
      *
      * Only Administrators can access this API call.
      */
+    #[UserStory('As an Admin, I can list user audit changes for Zapier integration', persona: 'Admin', theme: 'Data exports')]
     public static function changes(Request $request)
     {
         $authenticatedUser = Auth::user();
@@ -71,6 +78,8 @@ class UserController extends Controller
             'access_group_tag_id',
             'mediawiki',
             'wiki_sync_status',
+            'latitude',
+            'longitude',
         ]);
 
         $userChange = $user->toArray();
@@ -89,36 +98,46 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Get notification counts for a user.
      */
-    public function update(Request $request, $id)
+    #[NoStory(reason: 'Internal notification count endpoint')]
+    public function notifications(Request $request, int $id): JsonResponse
     {
-        $authenticatedUser = Auth::user();
-        if (! $authenticatedUser->hasRole('Administrator')) {
-            return abort(403, 'The authenticated user is not authorized to update this resource');
+        $user = User::findOrFail($id);
+        $restartersNotifications = $user->unreadNotifications()->count();
+        $discourseNotifications = 0;
+
+        if (config('restarters.features.discourse_integration')) {
+            if (Cache::has('talk_notification_' . $user->username)) {
+                $discourseNotifications = Cache::get('talk_notification_' . $user->username);
+            } else {
+                try {
+                    if (config('restarters.features.discourse_integration')) {
+                        $client = app('discourse-client');
+                        $response = $client->request('GET', '/notifications.json?username=' . $user->username);
+                        $talk_notifications = json_decode($response->getBody()->getContents(), true);
+
+                        if (!empty($talk_notifications) && array_key_exists('notifications', $talk_notifications)) {
+                            foreach ($talk_notifications['notifications'] as $notification) {
+                                if ($notification['read'] !== true) {
+                                    $discourseNotifications++;
+                                }
+                            }
+
+                            Cache::put('talk_notification_' . $user->username, $discourseNotifications, 60);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Discourse unavailable - fail gracefully with 0 notifications
+                    \Log::warning('Discourse notifications unavailable: ' . $e->getMessage());
+                }
+            }
         }
 
-        $user = User::find($id);
-        if ($user === null) {
-            abort(404, 'Resource not found');
-        }
-
-        $changesMade = false;
-
-        if ($request->has('username')) {
-            $user->username = $request->input('username');
-            $changesMade = true;
-        }
-
-        if ($changesMade) {
-            $user->save();
-        }
-
-        // Zapier seems to require some response body.
-        return response()->json(['success' => 'success'], 200);
+        return response()->json([
+                                    'success' => 'success',
+                                    'restarters' => $restartersNotifications,
+                                    'discourse' => $discourseNotifications
+                                ], 200);
     }
 }

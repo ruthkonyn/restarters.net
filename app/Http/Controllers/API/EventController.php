@@ -2,19 +2,38 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\JsonResponse;
+use App\Events\EditEvent;
+use App\EventsUsers;
 use App\Group;
-use App\Helpers\FootprintRatioCalculator;
+use App\Helpers\Fixometer;
 use App\Http\Controllers\Controller;
+use App\Invite;
+use App\Network;
+use App\Notifications\AdminModerationEvent;
+use App\Role;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Notification;
+use App\Notifications\JoinGroup;
 use App\Party;
+use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use App\Attributes\NoStory;
 
+#[Feature('Events', description: 'Community repair event management')]
 class EventController extends Controller
 {
-    /** ToDo Test */
-    public function getEventsByUsersNetworks(Request $request, $date_from = null, $date_to = null)
+    #[UserStory('As a NetworkCoordinator, I can list events across my networks', persona: 'NetworkCoordinator', theme: 'Find & browse events')]
+    public function getEventsByUsersNetworks(Request $request, $date_from = null, $date_to = null, $timezone = 'UTC')
     {
         $authenticatedUser = Auth::user();
+        set_time_limit(240);
 
         $groups = [];
         foreach ($authenticatedUser->networks as $network) {
@@ -23,21 +42,26 @@ class EventController extends Controller
             }
         }
         $parties = Party::join('groups', 'groups.idgroups', '=', 'events.group')
-                  ->join('group_network', 'group_network.group_id', '=', 'groups.idgroups')
-                  ->join('networks', 'networks.id', '=', 'group_network.network_id')
-                  ->join('user_network', 'networks.id', '=', 'user_network.network_id')
-                  ->join('users', 'users.id', '=', 'user_network.user_id');
+            ->join('group_network', 'group_network.group_id', '=', 'groups.idgroups')
+            ->join('networks', 'networks.id', '=', 'group_network.network_id')
+            ->join('user_network', 'networks.id', '=', 'user_network.network_id')
+            ->join('users', 'users.id', '=', 'user_network.user_id')
+            ->orderBy('event_start_utc', 'ASC');
 
-        if (! empty($date_from) && ! empty($date_to)) {
-            $parties = $parties->where('events.event_date', '>=', date('Y-m-d', strtotime($date_from)))
-           ->where('events.event_date', '<=', date('Y-m-d', strtotime($date_to)));
+        if (!empty($date_from) && !empty($date_to)) {
+            $start = Carbon::parse($date_from, $timezone);
+            $start->setTimezone('UTC');
+            $end = Carbon::parse($date_to, $timezone);
+            $end->setTimezone('UTC');
+            $parties = $parties->where('events.event_start_utc', '>=', $start->toIso8601String())
+                ->where('events.event_end_utc', '<=', $end->toIso8601String());
         }
 
         $parties = $parties->where([
-             ['users.api_token', $authenticatedUser->api_token],
-         ])
-         ->select('events.*')
-         ->get();
+            ['users.api_token', $authenticatedUser->api_token],
+        ])
+            ->select('events.*')
+            ->get();
 
         // If no parties are found, through 404 error
         if (empty($parties)) {
@@ -48,71 +72,737 @@ class EventController extends Controller
         foreach ($groups as $group) {
             $groupStats = $group->getGroupStats();
             $groups_array->push([
-               'id' => $group->idgroups,
-               'name' => $group->name,
-               'area' => $group->area,
-               'postcode' => $group->postcode,
-               'description' => $group->free_text,
-               'image_url' => $group->groupImagePath(),
-               'volunteers' => $group->volunteers,
-               'participants' => $groupStats['pax'],
-               'hours_volunteered' => $groupStats['hours'],
-               'parties_thrown' => $groupStats['parties'],
-               'waste_prevented' => $groupStats['waste'],
-               'co2_emissions_prevented' => $groupStats['co2'],
-           ]);
+                'id' => $group->idgroups,
+                'name' => $group->name,
+                'area' => $group->area,
+                'timezone' => $group->timezone,
+                'postcode' => $group->postcode,
+                'description' => $group->free_text,
+                'image_url' => $group->groupImagePath(),
+                'volunteers' => $group->volunteers,
+                'participants' => $groupStats['participants'],
+                'hours_volunteered' => $groupStats['hours_volunteered'],
+                'parties_thrown' => $groupStats['parties'],
+                'waste_prevented' => $groupStats['waste_total'],
+                'co2_emissions_prevented' => $groupStats['co2_total'],
+            ]);
         }
 
         $collection = collect([]);
+
+        // Send these to getEventStats() to speed things up a bit.
+        $eEmissionRatio = \App\Helpers\LcaStats::getEmissionRatioPowered();
+        $uEmissionratio = \App\Helpers\LcaStats::getEmissionRatioUnpowered();
+
         foreach ($parties as $key => $party) {
             $group = $groups_array->filter(function ($group) use ($party) {
                 return $group['id'] == $party->group;
             })->first();
 
-            $eventStats = $party->getEventStats();
+            $eventStats = $party->getEventStats($eEmissionRatio, $uEmissionratio);
             // Push Party to Collection
             $collection->push([
-             'id' => $party->idevents,
-             'group' => [$group],
-             'area' => $group['area'],
-             'postcode' => $group['postcode'],
-             'event_date' => $party->event_date,
-             'start_time' => $party->start,
-             'end_time' => $party->end,
-             'name' => $party->venue,
-             'location' => [
-                 'value' => $party->location,
-                 'latitude' => $party->latitude,
-                 'longitude' => $party->longitude,
-                 'area' => $group['area'],
-                 'postcode' => $group['postcode'],
-             ],
-             'description' => $party->free_text,
-             'user' => $party_user = collect(),
-             'impact' => [
-                 'participants' => $party->pax,
-                 'volunteers' => $eventStats['volunteers'],
-                 'waste_prevented' => $eventStats['ewaste'],
-                 'co2_emissions_prevented' => $eventStats['co2'],
-                 'devices_fixed' => $eventStats['fixed_devices'],
-                 'devices_repairable' => $eventStats['repairable_devices'],
-                 'devices_dead' => $eventStats['dead_devices'],
-             ],
-             'widgets' => [
-                 'headline_stats' => url("/party/stats/{$party->idevents}/wide"),
-                 'co2_equivalence_visualisation' => url("/outbound/info/party/{$party->idevents}/manufacture"),
-             ],
-             'hours_volunteered' => $party->hoursVolunteered(),
-             'created_at' => new \Carbon\Carbon($party->created_at),
-             'updated_at' => new \Carbon\Carbon($party->max_updated_at_devices_updated_at),
-           ]);
+                'id' => $party->idevents,
+                'group' => [$group],
+                'area' => $group['area'],
+                'postcode' => $group['postcode'],
+                'timezone' => $party->timezone,
+                'event_date' => $party->event_date_local,
+                'start_time' => $party->start_local,
+                'end_time' => $party->end_local,
+                'name' => $party->venue,
+                'link' => $party->link,
+                'online' => $party->online,
+                'location' => [
+                    'value' => $party->location,
+                    'latitude' => $party->latitude,
+                    'longitude' => $party->longitude,
+                    'area' => $group['area'],
+                    'postcode' => $group['postcode'],
+                ],
+                'description' => $party->free_text,
+                'user' => $party_user = collect(),
+                'impact' => [
+                    'participants' => $party->pax,
+                    'volunteers' => $eventStats['volunteers'],
+                    'waste_prevented' => $eventStats['waste_powered'],
+                    'co2_emissions_prevented' => $eventStats['co2_powered'],
+                    'devices_fixed' => $eventStats['fixed_devices'],
+                    'devices_repairable' => $eventStats['repairable_devices'],
+                    'devices_dead' => $eventStats['dead_devices'],
+                ],
+                'widgets' => [
+                    'headline_stats' => url("/party/stats/{$party->idevents}/wide"),
+                    'co2_equivalence_visualisation' => url(
+                        "/outbound/info/party/{$party->idevents}/manufacture"
+                    ),
+                ],
+                'hours_volunteered' => $party->hoursVolunteered(),
+                'created_at' => new \Carbon\Carbon($party->created_at),
+             'updated_at' => (new \Carbon\Carbon($party->max_updated_at_devices_updated_at)),
+            ]);
 
-            if (! empty($party->owner)) {
+            if (!empty($party->owner)) {
                 $party_user->put('id', $party->owner->id);
                 $party_user->put('name', $party->owner->name);
             }
         }
 
         return $collection;
+    }
+
+    #[UserStory('As a Host, I can add a volunteer to my event', persona: 'Host', theme: 'Attendance & volunteers')]
+    public function addVolunteer(Request $request, $idevents): JsonResponse
+    {
+        $request->validate([
+            'volunteer_email_address' => ['nullable', 'email'],
+        ]);
+
+        $party = Party::findOrFail($idevents);
+
+        if (!Fixometer::userHasEditPartyPermission($idevents)) {
+            abort(403);
+        }
+
+        $volunteer_email_address = $request->input('volunteer_email_address');
+
+        // Retrieve name if one exists.  If no name exists and user is null as well then this volunteer is anonymous.
+        if ($request->has('full_name')) {
+            $full_name = $request->input('full_name');
+        } else {
+            $full_name = null;
+        }
+
+        $eventRole = Role::RESTARTER;
+
+        if ($request->has('user') && $request->input('user') !== 'not-registered') {
+            // User is null, this volunteer is either anonymous or no user exists.
+            $user = $request->input('user');
+
+            if ($user) {
+                $u = User::find($user);
+
+                // A host of the group who is added to an event becomes a host of the event.
+                $eventRole = $u && Fixometer::userIsHostOfGroup($party->group, $user) ? Role::HOST : Role::RESTARTER;
+            }
+        } else {
+            $user = null;
+        }
+
+        // Check if user was invited but not RSVPed.
+        $invitedUserQuery = EventsUsers::where('event', $idevents)
+            ->where('user', $user)
+            ->where('status', '<>', '1')
+            ->whereNotNull('status')
+            ->where('role', $eventRole);
+        $userWasInvited = $invitedUserQuery->count() == 1;
+
+        if ($userWasInvited) {
+            $invitedUser = $invitedUserQuery->first();
+            $invitedUser->status = '1';
+            $invitedUser->save();
+        } else {
+            // Let's add the volunteer.
+            EventsUsers::create([
+                'event' => $idevents,
+                'user' => $user,
+                'status' => '1',
+                'role' => $eventRole,
+                'full_name' => $full_name,
+            ]);
+        }
+
+        if (!is_null($volunteer_email_address)) {
+            // Send email.
+            $from = User::find(Auth::user()->id);
+
+            $hash = substr(bin2hex(openssl_random_pseudo_bytes(32)), 0, 24);
+            $url = url('/user/register/'.$hash);
+
+            $invite = Invite::create([
+                'record_id' => $party->theGroup->idgroups,
+                'email' => $volunteer_email_address,
+                'hash' => $hash,
+                'type' => 'group',
+            ]);
+
+            Notification::send(
+                $invite,
+                new JoinGroup([
+                    'name' => $from->name,
+                    'group' => $party->theGroup->name,
+                    'url' => $url,
+                    'message' => null,
+                ])
+            );
+        }
+
+        return response()->json([
+            'success' => 'success'
+        ]);
+    }
+
+
+    #[UserStory('As a Guest, I can view confirmed volunteers for an event', persona: 'Guest', theme: 'Attendance & volunteers')]
+    #[UserStory('As a ThirdParty, I can retrieve volunteer data for an event via the API', persona: 'ThirdParty', theme: 'Attendance & volunteers')]
+    public function listVolunteers(Request $request, $idevents): JsonResponse
+    {
+        $party = Party::findOrFail($idevents);
+
+        // Get the user that the API has been authenticated as.
+        $user = auth('api')->user();
+
+        // Only show emails to users who have edit permission on this event.
+        $showEmails = $user && Fixometer::userHasEditPartyPermission($idevents, $user->id);
+        $volunteers = $party->expandVolunteers($party->allConfirmedVolunteers()->get(), $showEmails);
+
+        return response()->json([
+            'success' => 'success',
+            'volunteers' => $volunteers
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/events/{id}",
+     *      operationId="getEvent",
+     *      tags={"Events"},
+     *      summary="Get Event",
+     *      description="Returns information about an event.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Event id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                ref="#/components/schemas/Event"
+     *              )
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Event not found",
+     *      ),
+     *     )
+     */
+
+    #[UserStory('As a Guest, I can view event details via the API', persona: 'Guest', theme: 'Find & browse events')]
+    #[UserStory('As a ThirdParty, I can retrieve event details to display on my platform', persona: 'ThirdParty', theme: 'Find & browse events')]
+    public function getEventv2(Request $request, $idevents)
+    {
+        $party = Party::findOrFail($idevents);
+
+        // Events on approved groups are public, but an event on a group still awaiting
+        // moderation is not - and the resource returns its exact lat/lng, which for a
+        // pending group may be someone's home address.  This is the same rule the web
+        // event page applies; getEventsForGroupv2 already gates on the group too.
+        $user = Auth::user() ?: auth('api')->user();
+
+        if (! Fixometer::userHasViewPartyPermission($idevents, $user ? $user->id : null, $party)) {
+            abort(404);
+        }
+
+        return \App\Http\Resources\Party::make($party);
+    }
+
+    private function getUser()
+    {
+        // We want to allow this call to work if a) we are logged in as a user, or b) we have a valid API token.
+        //
+        // This is a slightly odd thing to do, but it is necessary to get both the PHPUnit tests and the
+        // real client use of the API to work.
+        $user = Auth::user();
+
+        if (!$user) {
+            $user = auth('api')->user();
+        }
+
+        if (!$user) {
+            throw new AuthenticationException();
+        }
+
+        return $user;
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/moderate/events",
+     *      operationId="getEventsModeratev2",
+     *      tags={"Events"},
+     *      summary="Get Events for Moderation",
+     *      description="Only available for Administrators and Network Coordinators.",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *             type="array",
+     *             description="An array of groups",
+     *             @OA\Items(
+     *                 ref="#/components/schemas/Event"
+     *             )
+     *          )
+     *       ),
+     *     )
+     */
+    #[UserStory('As a NetworkCoordinator, I can view events pending moderation in my networks', persona: 'NetworkCoordinator', theme: 'Create & manage events')]
+    #[UserStory('As an Admin, I can view all events pending moderation', persona: 'Admin', theme: 'Create & manage events')]
+    public function moderateEventsv2(Request $request)
+    {
+        // Get the user that the API has been authenticated as.
+        $user = $this->getUser();
+        $ret = [];
+        $networks = [];
+
+        if ($user->hasRole('Administrator')) {
+            $networks = Network::all();
+        } else {
+            if ($user->hasRole('NetworkCoordinator')) {
+                $networks = $user->networks;
+            }
+        }
+
+        $events = [];
+
+        foreach ($networks as $network) {
+            $events = array_merge($events, $network->eventsRequiringModeration());
+        }
+
+        usort($events, function ($a, $b) {
+            return strtotime($a->event_start_utc) - strtotime($b->event_start_utc);
+        });
+
+        $ret = \App\Http\Resources\Party::collection(collect($events));
+
+        return response()->json($ret);
+    }
+
+    /**
+     * @OA\Post(
+     *      path="/api/v2/events",
+     *      operationId="createEvent",
+     *      tags={"Events"},
+     *      summary="Create Event",
+     *      description="Creates an event.",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                required={"start","end","title","description","location","lat","lng"},
+     *                @OA\Property(
+     *                   property="groupid",
+     *                   title="id",
+     *                   description="Unique identifier of the group to which the event belongs",
+     *                   format="int64",
+     *                   example=1
+     *                ),
+     *                @OA\Property(
+     *                   property="start",
+     *                   ref="#/components/schemas/Event/properties/start",
+     *                ),
+     *                @OA\Property(
+     *                   property="end",
+     *                   ref="#/components/schemas/Event/properties/start",
+     *                ),
+     *                @OA\Property(
+     *                   property="timezone",
+     *                   ref="#/components/schemas/Event/properties/timezone",
+     *                ),
+     *                @OA\Property(
+     *                   property="title",
+     *                   ref="#/components/schemas/Event/properties/title",
+     *                ),
+     *                @OA\Property(
+     *                   property="description",
+     *                   ref="#/components/schemas/Event/properties/description",
+     *                ),
+     *                @OA\Property(
+     *                   property="location",
+     *                   ref="#/components/schemas/Event/properties/location",
+     *                ),
+     *                @OA\Property(
+     *                   property="online",
+     *                   ref="#/components/schemas/Event/properties/online",
+     *                ),
+     *                @OA\Property(
+     *                   property="link",
+     *                   ref="#/components/schemas/Event/properties/link",
+     *                ),
+     *                @OA\Property(
+     *                   description="Network-defined JSON data",
+     *                   property="network_data",
+     *                   @OA\Schema()
+     *                ),
+     *             )
+     *         )
+     *    ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="Successful operation",
+     *        @OA\JsonContent(
+     *            @OA\Property(
+     *              property="data",
+     *              title="data",
+     *              ref="#/components/schemas/Event"
+     *            )
+     *        ),
+     *     )
+     *  )
+     */
+    #[UserStory('As a Host, I can create an event via the API', persona: 'Host', theme: 'Create & manage events')]
+    public function createEventv2(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+
+        list($groupid, $start, $end, $title, $description, $location, $timezone, $latitude, $longitude, $online, $link, $network_data) = $this->validateEventParams(
+            $request,
+            true
+        );
+
+        $group = Group::findOrFail($groupid);
+
+        // Check whether the event should be auto-approved, if all of the networks it belongs to
+        // allow it.
+        $autoapprove = $group->auto_approve;
+
+        if (!Fixometer::userCanCreateEvents($user)) {
+            abort(403);
+        }
+
+        // Being a host of *some* group is not enough - the event has to be on a group you
+        // have authority over.  Without this, any host could attach events to any group,
+        // and because event visibility is inherited from the group's approved flag those
+        // events go public with no moderation.  Admins are covered by
+        // userHasEditGroupPermission; network coordinators are checked separately because
+        // their authority comes from the group's networks rather than users_groups.
+        if (!Fixometer::userHasEditGroupPermission($groupid, $user->id) && !$user->isCoordinatorForGroup($group)) {
+            abort(403);
+        }
+
+        // Convert the timezone to UTC, because the timezone is not itself stored in the DB.
+        $event_start_utc = Carbon::parse($start)->setTimezone('UTC')->toIso8601String();
+        $event_end_utc = Carbon::parse($end)->setTimezone('UTC')->toIso8601String();
+        $hours = Carbon::parse($event_start_utc)->diffInHours(Carbon::parse($event_end_utc));
+
+        // timezone needs to be the first attribute set, because it is used in mutators for later attributes.
+        $data = [
+            'timezone' => $timezone,
+            'event_start_utc' => $event_start_utc,
+            'event_end_utc' => $event_end_utc,
+            'free_text' => $description,
+            'link' => $link,
+            'venue' => $title,
+            'location' => $location,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'group' => $groupid,
+            'hours' => $hours,
+            'user_id' => $user->id,
+            'created_at' => date('Y-m-d H:i:s'),
+            'shareable_code' => Fixometer::generateUniqueShareableCode(\App\Party::class, 'shareable_code'),
+            'online' => $online,
+            'network_data' => $network_data,
+        ];
+
+        $party = Party::create($data);
+        $idParty = $party->idevents;
+
+        EventsUsers::create([
+            'event' => $idParty,
+            'user' => $user->id,
+            'status' => '1',
+            'role' => Role::HOST,
+        ]);
+
+        // Notify relevant users.
+        $usersToNotify = Fixometer::usersWhoHavePreference('admin-moderate-event');
+
+        foreach ($party->associatedNetworkCoordinators() as $coordinator) {
+            // If the user is an admin, we allow them to turn off the notification.
+            // Network coordinators must always receive them, for fear of events languishing unapproved.
+            // So only add network coordinators who aren't admins, and rely on usersWhoHavePreference to have
+            // added relevant admins.
+            if (!$coordinator->hasRole('Administrator')) {
+                $usersToNotify->push($coordinator);
+            }
+        }
+
+        Notification::send(
+            $usersToNotify->unique(),
+            new AdminModerationEvent([
+                'event_venue' => $title,
+                'event_url' => url('/party/edit/'.$idParty),
+            ])
+        );
+
+        if (isset($_FILES) && !empty($_FILES) && is_array($_FILES['file']['name'])) {
+            $File = new FixometerFile;
+            $files = Fixometer::rearrange($_FILES['file']);
+            foreach ($files as $upload) {
+                $File->upload($upload, 'image', $idParty, env('TBL_EVENTS'));
+            }
+        }
+
+        if ($autoapprove) {
+            Log::info("Auto-approve event $idParty");
+            Party::find($idParty)->approve();
+        }
+
+        if (isset($_FILES) && !empty($_FILES)) {
+            $file = new \FixometerFile();
+            $file->upload('image', 'image', $idParty, env('TBL_EVENTS'), false, true, true);
+        }
+
+        return response()->json([
+            'id' => $idParty,
+        ]);
+    }
+
+    /**
+     * @OA\Patch(
+     *      path="/api/v2/events/{id}",
+     *      operationId="editEvent",
+     *      tags={"Events"},
+     *      summary="Edit Event",
+     *      description="Edits an event.  The event of a group cannot be changed after creation.  Only the fields sent are changed; a field sent empty or null is cleared.",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                @OA\Property(
+     *                   property="start",
+     *                   ref="#/components/schemas/Event/properties/start",
+     *                ),
+     *                @OA\Property(
+     *                   property="end",
+     *                   ref="#/components/schemas/Event/properties/start",
+     *                ),
+     *                @OA\Property(
+     *                   property="timezone",
+     *                   ref="#/components/schemas/Event/properties/timezone",
+     *                ),
+     *                @OA\Property(
+     *                   property="title",
+     *                   ref="#/components/schemas/Event/properties/title",
+     *                ),
+     *                @OA\Property(
+     *                   property="description",
+     *                   ref="#/components/schemas/Event/properties/description",
+     *                ),
+     *                @OA\Property(
+     *                   property="location",
+     *                   ref="#/components/schemas/Event/properties/location",
+     *                ),
+     *                @OA\Property(
+     *                   property="online",
+     *                   ref="#/components/schemas/Event/properties/online",
+     *                ),
+     *                @OA\Property(
+     *                   property="link",
+     *                   ref="#/components/schemas/Event/properties/link",
+     *                ),
+     *             )
+     *         )
+     *    ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="Successful operation",
+     *        @OA\JsonContent(
+     *            @OA\Property(
+     *              property="data",
+     *              title="data",
+     *              ref="#/components/schemas/Event"
+     *            )
+     *        ),
+     *     )
+     *  )
+     */
+    #[UserStory('As a Host, I can update my event via the API', persona: 'Host', theme: 'Create & manage events')]
+    public function updateEventv2(Request $request, $idEvents): JsonResponse
+    {
+        $user = $this->getUser();
+
+        list($groupid, $start, $end, $title, $description, $location, $timezone, $latitude, $longitude, $online, $link, $network_data) = $this->validateEventParams(
+            $request,
+            false
+        );
+
+        if (!Fixometer::userHasEditPartyPermission($idEvents, $user->id)) {
+            abort(403);
+        }
+
+        $party = Party::findOrFail($idEvents);
+
+        // Only update the fields the request sends, as for groups.  Fields sent empty or null are cleared.
+        // We don't let the user change the group that an event is on.
+        $update = [];
+
+        if ($request->has('start') || $request->has('end')) {
+            // Convert the timezone to UTC, because the timezone is not itself stored in the DB.  The duration
+            // depends on both ends, so recalculate it from whichever end was not sent.
+            $event_start_utc = Carbon::parse($start ?? $party->event_start_utc)->setTimezone('UTC')->toIso8601String();
+            $event_end_utc = Carbon::parse($end ?? $party->event_end_utc)->setTimezone('UTC')->toIso8601String();
+            $update['event_start_utc'] = $event_start_utc;
+            $update['event_end_utc'] = $event_end_utc;
+            $update['hours'] = Carbon::parse($event_start_utc)->diffInHours(Carbon::parse($event_end_utc));
+        }
+
+        $fields = [
+            'free_text' => ['description', $description],
+            'online' => ['online', $online],
+            'venue' => ['title', $title],
+            'link' => ['link', $link],
+            'timezone' => ['timezone', $timezone],
+            'network_data' => ['network_data', $network_data],
+        ];
+
+        foreach ($fields as $column => [$key, $value]) {
+            if ($request->has($key)) {
+                $update[$column] = $value;
+            }
+        }
+
+        if ($request->has('location')) {
+            // The coordinates come from geocoding the location.
+            $update['location'] = $location;
+            $update['latitude'] = $latitude;
+            $update['longitude'] = $longitude;
+        }
+
+        $party->update($update);
+
+        if ($request->has('moderate') && $request->input('moderate') == 'approve' && Fixometer::userCanApproveEvent($idEvents, $user->id)) {
+            $party->approve();
+        }
+
+        event(new EditEvent($party, $update));
+
+        return response()->json([
+            'id' => $idEvents,
+        ]);
+    }
+
+    private function validateEventParams(Request $request, $create): array
+    {
+        // We don't validate max lengths of other strings, to avoid duplicating the length information both here
+        // and in the migrations.  If we wanted to do that we should extract the length dynamically from the
+        // schema, which is possible but not trivial.
+        if ($create) {
+            $request->validate([
+                'groupid' => 'required|integer',
+                                   'start' => ['required', 'date_format:Y-m-d\TH:i:sP,Y-m-d\TH:i:s\Z'],
+                                   'end' => ['required', 'date_format:Y-m-d\TH:i:sP,Y-m-d\TH:i:s\Z'],
+                'title' => ['required', 'max:255'],
+                'description' => ['required'],
+                'location' => [
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!$request->filled('online') && !$value) {
+                            $fail(__('events.validate_location'));
+                        }
+                    },
+                ],
+                'online' => ['boolean'],
+            ]);
+        } else {
+            // An update only changes the fields sent, so these are only required when they are sent.
+            $request->validate([
+                'start' => ['sometimes', 'required', 'date_format:Y-m-d\TH:i:sP,Y-m-d\TH:i:s\Z'],
+                'end' => ['sometimes', 'required', 'date_format:Y-m-d\TH:i:sP,Y-m-d\TH:i:s\Z'],
+                'title' => ['sometimes', 'required', 'max:255'],
+                'description' => ['sometimes', 'required'],
+                'location' => [
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!$request->filled('online') && !$value) {
+                            $fail(__('events.validate_location'));
+                        }
+                    },
+                ],
+                'online' => ['boolean'],
+            ]);
+        }
+
+        $groupid = $request->input('groupid');
+        $start = $request->input('start');
+        $end = $request->input('end');
+        $title = $request->input('title');
+        $description = $request->input('description');
+        $location = $request->input('location');
+        $timezone = $request->input('timezone');
+        $online = $request->input('online', false);
+        $link = $request->input('link', null);
+        $network_data = $request->input('network_data');
+
+        $latitude = null;
+        $longitude = null;
+
+        if ($timezone && !in_array($timezone, \DateTimeZone::listIdentifiers(\DateTimeZone::ALL_WITH_BC))) {
+            throw ValidationException::withMessages(['location ' => __('partials.validate_timezone')]);
+        }
+
+        if (!empty($location)) {
+            $geocoder = app(\App\Helpers\Geocoder::class);
+            $geocoded = $geocoder->geocode($location);
+
+            if (empty($geocoded)) {
+                throw ValidationException::withMessages(['location ' => __('events.geocode_failed')]);
+            }
+
+            $latitude = $geocoded['latitude'];
+            $longitude = $geocoded['longitude'];
+        }
+
+        return [
+            $groupid,
+            $start,
+            $end,
+            $title,
+            $description,
+            $location,
+            $timezone,
+            $latitude,
+            $longitude,
+            $online,
+            $link,
+            $network_data
+        ];
     }
 }

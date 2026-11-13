@@ -18,15 +18,18 @@ class ViewUsersTest extends TestCase
         DB::statement('SET foreign_key_checks=1');
 
         // Given we're logged in as an admin
-        $admin = factory(User::class)->states('Administrator')->create();
+        $admin = User::factory()->administrator()->create();
         $this->actingAs($admin);
     }
 
-    /** @test */
-    public function an_admin_can_view_list_of_users()
+    /**
+     * @test
+     * @story:UserController::all
+     */
+    public function an_admin_can_view_list_of_users(): void
     {
         // Given we have users in the database
-        $users = factory(User::class, 10)->create();
+        $users = User::factory()->count(10)->create();
 
         // When we visit the list of users
         $response = $this->get('/user/all');
@@ -35,11 +38,14 @@ class ViewUsersTest extends TestCase
         $response->assertSeeText($users[0]->name);
     }
 
-    /** @test */
-    public function an_admin_can_see_how_many_total_users_in_the_list()
+    /**
+     * @test
+     * @story:UserController::all
+     */
+    public function an_admin_can_see_how_many_total_users_in_the_list(): void
     {
         // Given we have users in the database
-        $users = factory(User::class, 41)->create();
+        $users = User::factory()->count(41)->create();
 
         // When we visit the list of users
         $response = $this->get('/user/all');
@@ -48,12 +54,15 @@ class ViewUsersTest extends TestCase
         $response->assertSeeText(42);
     }
 
-    /** @test */
-    public function admin_can_see_users_last_login_time()
+    /**
+     * @test
+     * @story:UserController::all
+     */
+    public function admin_can_see_users_last_login_time(): void
     {
         // Given we have a user who has just logged in
         $lastLogin = new \Carbon\Carbon();
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'updated_at' => $lastLogin,
         ]);
 
@@ -64,12 +73,15 @@ class ViewUsersTest extends TestCase
         $response->assertSeeText($lastLogin->diffForHumans(null, true));
     }
 
-    /** @test */
-    public function admin_can_see_users_last_login_time_on_filtered_results()
+    /**
+     * @test
+     * @story:UserController::search
+     */
+    public function admin_can_see_users_last_login_time_on_filtered_results(): void
     {
         // Given we have a user who has just logged in
         $lastLogin = new \Carbon\Carbon();
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'updated_at' => $lastLogin,
         ]);
 
@@ -80,33 +92,61 @@ class ViewUsersTest extends TestCase
         $response->assertSeeText($lastLogin->diffForHumans(null, true));
     }
 
-    /** @test */
-    public function admin_can_sort_user_list_by_last_login()
+    /**
+     * @test
+     * @story:UserController::search
+     */
+    public function admin_can_sort_user_list_by_last_login(): void
     {
         // Given we have users with various login times
         $dateOfMostRecentLogin = new Carbon();
         $dateOfLeastRecentLogin = new Carbon('-1 year');
 
-        $userWithMostRecentLogin = factory(User::class)->create([
+        $userWithMostRecentLogin = User::factory()->create([
             'last_login_at' => $dateOfMostRecentLogin,
         ]);
-        $otherUsers = factory(User::class, 42)->create([
+        $otherUsers = User::factory()->count(42)->create([
             'last_login_at' => new Carbon('-1 month'),
         ]);
-        $userWithLeastRecentLogin = factory(User::class)->create([
+        $userWithLeastRecentLogin = User::factory()->create([
             'last_login_at' => $dateOfLeastRecentLogin,
         ]);
 
-        // When we visit the list of users and sort it by last login descending
-        $response = $this->get('/user/all/search?sort=last_login_at&sortdir=desc');
+        // Try this a few times because we might be unlucky and hit a second boundary.
+        $found = false;
 
-        // Then the first result is the most recent login
-        $response->assertSeeText($dateOfMostRecentLogin->diffForHumans(null, true));
+        for ($i = 0; $i < 10; $i++) {
+            // When we visit the list of users and sort it by last login descending
+            $response = $this->get('/user/all/search?sort=last_login_at&sortdir=desc');
+            $datestr = $dateOfMostRecentLogin->diffForHumans(null, true);
+
+            if (stripos($response->getContent(), $datestr) !== false) {
+                // Then the first result is the most recent login
+                $found = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
 
         // When we visit the list of users and sort it by last login descending
         $response = $this->get('/user/all/search?sort=last_login_at&sortdir=asc');
 
         // Then the first result is the most recent login
-        $response->assertSeeText($dateOfLeastRecentLogin->diffForHumans(null, true));
+        $found = false;
+
+        for ($i = 0; $i < 10; $i++) {
+            // When we visit the list of users and sort it by last login descending
+            $response = $this->get('/user/all/search?sort=last_login_at&sortdir=asc');
+            $datestr = $dateOfLeastRecentLogin->diffForHumans(null, true);
+
+            if (stripos($response->getContent(), $datestr) !== false) {
+                // Then the first result is the most recent login
+                $found = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
     }
 }

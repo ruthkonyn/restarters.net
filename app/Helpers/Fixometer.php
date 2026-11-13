@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App;
 use App\Barrier;
+use App\Group;
 use App\Party;
 use App\Permissions;
 use App\Role;
@@ -20,22 +21,8 @@ use Request;
 
 class Fixometer
 {
-    public static function allAges($range = false)
+    public static function allAges()
     {
-        if ($range) {
-            return [
-                '' => 'N/A',
-                (intval(date('Y')) - 20).'-'.(intval(date('Y')) - 16) => '16-20',
-                (intval(date('Y')) - 30).'-'.(intval(date('Y')) - 21) => '21-30',
-                (intval(date('Y')) - 40).'-'.(intval(date('Y')) - 31) => '31-40',
-                (intval(date('Y')) - 50).'-'.(intval(date('Y')) - 41) => '41-50',
-                (intval(date('Y')) - 60).'-'.(intval(date('Y')) - 51) => '51-60',
-                (intval(date('Y')) - 70).'-'.(intval(date('Y')) - 61) => '61-70',
-                (intval(date('Y')) - 80).'-'.(intval(date('Y')) - 71) => '71-80',
-                (intval(date('Y')) - 90).'-'.(intval(date('Y')) - 81) => '81-90',
-                (intval(date('Y')) - 100).'-'.(intval(date('Y')) - 91) => '91-100',
-            ];
-        }
         $ages = ['' => ''];
 
         for ($i = intval(date('Y')) - 18; $i > intval(date('Y', strtotime('- 100 years'))); $i--) {
@@ -55,35 +42,25 @@ class Fixometer
         return Permissions::all();
     }
 
-    /** checks if user has a role **/
     public static function hasRole($user, $role)
     {
-        if (Auth::guest()) {
-            return false;
-        }
-
         if (is_null($user)) {
+            // Use currently logged in user.
             $user = Auth::user();
         }
 
-        $usersRole = $user->role()->first()->role;
-        if ($usersRole == 'Root') {
-            return true;
-        }
-        if ($usersRole == ucwords($role)) {
-            return true;
-        }
+        if ($user) {
+            $usersRole = $user->role()->first()->role;
 
+            if ($usersRole == 'Root') {
+                return true;
+            }
+
+            if ($usersRole == ucwords($role)) {
+                return true;
+            }
+        }
         return false;
-    }
-
-    public static function barChartValue($portion, $total)
-    {
-        if ((int) $portion > 0) {
-            return round((($portion / $total) * 100), 2) - 15;
-        }
-
-        return -15;
     }
 
     public static function featureIsEnabled($feature)
@@ -91,12 +68,85 @@ class Fixometer
         return $feature === true;
     }
 
-    public static function dateFormat($timestamp)
+    public static function userHasViewPartyPermission($partyId, $userId = null, $party = null)
     {
-        return date('D, j M Y, H:i', $timestamp);
+        $party = $party ? $party : Party::findOrFail($partyId);
+        $group = $party->theGroup;
+
+        if ($group->approved) {
+            // Events on approved groups are always visible, whether or not the event has been approved.
+            return true;
+        }
+
+        // The group is not approved.  Events are only visible to:
+        // - administrators
+        // - (relevant) network coordinators
+        // - hosts of the relevant group
+        if (is_null($userId)) {
+            if (empty(Auth::user())) {
+                return false;
+            } else {
+                $userId = Auth::user()->id;
+            }
+        }
+
+        $user = User::findOrFail($userId);
+
+        if (self::hasRole($user, 'Administrator')) {
+            return true;
+        }
+
+        if (self::hasRole($user, 'NetworkCoordinator')) {
+            $group = $party->theGroup;
+            foreach ($group->networks as $network) {
+                if ($network->coordinators->contains($user)) {
+                    return true;
+                }
+            }
+        }
+
+        if (self::userIsHostOfGroup($group->idgroups, $userId)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function userHasEditPartyPermission($partyId, $userId = null)
+    {
+        $party = Party::findOrFail($partyId);
+        $group = $party->theGroup;
+
+        if (is_null($userId)) {
+            if (empty(Auth::user())) {
+                return false;
+            } else {
+                $userId = Auth::user()->id;
+            }
+        }
+
+        $user = User::findOrFail($userId);
+
+        if (self::hasRole($user, 'Administrator')) {
+            return true;
+        }
+
+        if (self::hasRole($user, 'NetworkCoordinator')) {
+            foreach ($group->networks as $network) {
+                if ($network->coordinators->contains($user)) {
+                    return true;
+                }
+            }
+        }
+
+        if (self::userIsHostOfGroup($group->idgroups, $userId)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function userHasDeletePartyPermission($partyId, $userId = null)
     {
         if (is_null($userId)) {
             if (empty(Auth::user())) {
@@ -111,27 +161,25 @@ class Fixometer
         if (self::hasRole($user, 'Administrator')) {
             return true;
         }
+
+        $group = Party::find($partyId)->theGroup;
+
+        if (self::hasRole($user, 'Host') && self::userIsHostOfGroup($group->idgroups, $userId)) {
+            return true;
+        }
+
         if (self::hasRole($user, 'NetworkCoordinator')) {
-            $group = Party::find($partyId)->theGroup;
             foreach ($group->networks as $network) {
                 if ($network->coordinators->contains($user)) {
                     return true;
                 }
             }
         }
-        if (self::hasRole($user, 'Host')) {
-            $group_id_of_event = Party::where('idevents', $partyId)->value('group');
-            if (self::userIsHostOfGroup($group_id_of_event, $userId)) {
-                return true;
-            } elseif (empty(DB::table('events_users')->where('event', $partyId)->where('user', $user->id)->first())) {
-                return false;
-            }
-        }
 
         return false;
     }
 
-    public static function userCanApproveEvent($eventId, $userId = null)
+    public static function userCanApproveEvent($eventId, $userId = null, $groupId = null)
     {
         if (is_null($userId)) {
             $userId = Auth::user()->id;
@@ -141,8 +189,14 @@ class Fixometer
         if (self::hasRole($user, 'Administrator')) {
             return true;
         }
+
         if (self::hasRole($user, 'NetworkCoordinator')) {
-            $group = Party::find($eventId)->theGroup;
+            if ($groupId) {
+                $group = Group::find($groupId);
+            } else {
+                $group = Party::find($eventId)->theGroup;
+            }
+
             foreach ($group->networks as $network) {
                 if ($network->coordinators->contains($user)) {
                     return true;
@@ -158,10 +212,20 @@ class Fixometer
         if (is_null($userId)) {
             $userId = Auth::user()->id;
         }
+        $user = User::find($userId);
 
         // Admins can do anything.
-        if (self::hasRole(Auth::user(), 'Administrator')) {
+        if (self::hasRole($user, 'Administrator')) {
             return true;
+        }
+
+        if (self::hasRole($user, 'NetworkCoordinator')) {
+            $group = Party::find($partyId)->theGroup;
+            foreach ($group->networks as $network) {
+                if ($network->coordinators->contains($user)) {
+                    return true;
+                }
+            }
         }
 
         // Hosts of a group can do anything with events from that group.
@@ -180,12 +244,12 @@ class Fixometer
 
     public static function userCanCreateEvents($user)
     {
-        if (Auth::guest()) {
-            return false;
-        }
-
         if (is_null($user)) {
             $user = Auth::user();
+        }
+
+        if (!$user) {
+            return false;
         }
 
         $usersRole = $user->role()->first()->role;
@@ -195,9 +259,9 @@ class Fixometer
             return true;
         }
 
-        $userIsHostOfAGroup = UserGroups::where('user', Auth::user()->id)
-                            ->where('role', 3)
-                            ->count() > 0;
+        $userIsHostOfAGroup = UserGroups::where('user', $user->id)
+            ->where('role', 3)
+            ->count() > 0;
 
         if ($userIsHostOfAGroup) {
             return true;
@@ -209,11 +273,11 @@ class Fixometer
     public static function userIsHostOfGroup($groupId, $userId)
     {
         $user_group_association = DB::table('users_groups')
-                                ->where('group', $groupId)
-                                ->where('user', $userId)
-                                ->where('role', 3)
-                                ->whereNull('deleted_at')
-                                ->first();
+            ->where('group', $groupId)
+            ->where('user', $userId)
+            ->where('role', 3)
+            ->whereNull('deleted_at')
+            ->first();
 
         if (! empty($user_group_association)) {
             return true;
@@ -262,60 +326,6 @@ class Fixometer
 
               </div>';
         }
-    }
-
-    /**
-     * verify that an array index exists and is not empty or null.
-     * can also do some type control.
-     * */
-    public static function verify($var, $strict = false, $type = 'string')
-    {
-        if (! isset($var) || empty($var) || is_null($var)) {
-            return false;
-        }
-        if ($strict) {
-            switch ($type) {
-                    case 'number':
-                        if (is_numeric($var)) {
-                            return true;
-                        }
-
-                        break;
-                    case 'string':
-                        return true;
-
-                      break;
-                    case 'array':
-                        if (is_array($var)) {
-                            return true;
-                        }
-
-                        break;
-                    default:
-                        return false;
-
-                      break;
-                }
-        } else {
-            return true;
-        }
-    }
-
-    public static function dbDateNoTime($string)
-    {
-        $d = explode('/', $string);
-
-        return implode('-', array_reverse($d));
-    }
-
-    public static function translate($key)
-    {
-        $translation = __(App::getLocale().'.'.$key);
-        if (strpos($translation, App::getLocale().'.') !== false) {
-            return $key;
-        }
-
-        return $translation;
     }
 
     /**
@@ -374,12 +384,12 @@ class Fixometer
 
             try {
                 if ($return_rows) {
-                    return DB::select(DB::raw($sql), ['id' => $id, 'object' => $object]);
+                    return DB::select($sql, ['id' => $id, 'object' => $object]);
                 }
 
-                return count(DB::select(DB::raw($sql), ['id' => $id, 'object' => $object])) > 0 ? true : false;
+                return count(DB::select($sql, ['id' => $id, 'object' => $object])) > 0 ? true : false;
             } catch (\Illuminate\Database\QueryException $e) {
-                return db($e);
+                return $return_rows ? [] : false;
             }
         }
     }
@@ -422,12 +432,12 @@ class Fixometer
                   `xref`.`reference_type` = :object AND
                   `xref`.`reference` = :id ';
 
-            DB::delete(DB::raw($sql), ['id' => $id, 'object' => $object]);
+            DB::delete($sql, ['id' => $id, 'object' => $object]);
 
             /** delete image from db **/
             $sql = 'DELETE FROM `images` WHERE `images`.`idimages` = :image';
 
-            DB::delete(DB::raw($sql), ['image' => $image->idimages]);
+            DB::delete($sql, ['image' => $image->idimages]);
 
             /** delete image from disk **/
             unlink($_SERVER['DOCUMENT_ROOT'].'/uploads/'.$image->path);
@@ -439,259 +449,19 @@ class Fixometer
         return Role::where('idroles', $id)->first()->role;
     }
 
-    public static function getAllCountries()
+    public static function getAllCountries($locale = null)
     {
-        return [
-            'AF' => 'Afghanistan',
-            'AX' => 'Åland Islands',
-            'AL' => 'Albania',
-            'DZ' => 'Algeria',
-            'AS' => 'American Samoa',
-            'AD' => 'Andorra',
-            'AO' => 'Angola',
-            'AI' => 'Anguilla',
-            'AQ' => 'Antarctica',
-            'AG' => 'Antigua and Barbuda',
-            'AR' => 'Argentina',
-            'AM' => 'Armenia',
-            'AW' => 'Aruba',
-            'AU' => 'Australia',
-            'AT' => 'Austria',
-            'AZ' => 'Azerbaijan',
-            'BS' => 'Bahamas',
-            'BH' => 'Bahrain',
-            'BD' => 'Bangladesh',
-            'BB' => 'Barbados',
-            'BY' => 'Belarus',
-            'BE' => 'Belgium',
-            'BZ' => 'Belize',
-            'BJ' => 'Benin',
-            'BM' => 'Bermuda',
-            'BT' => 'Bhutan',
-            'BO' => 'Bolivia, Plurinational State of',
-            'BQ' => 'Bonaire, Sint Eustatius and Saba',
-            'BA' => 'Bosnia and Herzegovina',
-            'BW' => 'Botswana',
-            'BV' => 'Bouvet Island',
-            'BR' => 'Brazil',
-            'IO' => 'British Indian Ocean Territory',
-            'BN' => 'Brunei Darussalam',
-            'BG' => 'Bulgaria',
-            'BF' => 'Burkina Faso',
-            'BI' => 'Burundi',
-            'KH' => 'Cambodia',
-            'CM' => 'Cameroon',
-            'CA' => 'Canada',
-            'CV' => 'Cape Verde',
-            'KY' => 'Cayman Islands',
-            'CF' => 'Central African Republic',
-            'TD' => 'Chad',
-            'CL' => 'Chile',
-            'CN' => 'China',
-            'CX' => 'Christmas Island',
-            'CC' => 'Cocos (Keeling) Islands',
-            'CO' => 'Colombia',
-            'KM' => 'Comoros',
-            'CG' => 'Congo',
-            'CD' => 'Congo, the Democratic Republic of the',
-            'CK' => 'Cook Islands',
-            'CR' => 'Costa Rica',
-            'CI' => "Côte d'Ivoire",
-            'HR' => 'Croatia',
-            'CU' => 'Cuba',
-            'CW' => 'Curaçao',
-            'CY' => 'Cyprus',
-            'CZ' => 'Czech Republic',
-            'DK' => 'Denmark',
-            'DJ' => 'Djibouti',
-            'DM' => 'Dominica',
-            'DO' => 'Dominican Republic',
-            'EC' => 'Ecuador',
-            'EG' => 'Egypt',
-            'SV' => 'El Salvador',
-            'GQ' => 'Equatorial Guinea',
-            'ER' => 'Eritrea',
-            'EE' => 'Estonia',
-            'ET' => 'Ethiopia',
-            'FK' => 'Falkland Islands (Malvinas)',
-            'FO' => 'Faroe Islands',
-            'FJ' => 'Fiji',
-            'FI' => 'Finland',
-            'FR' => 'France',
-            'GF' => 'French Guiana',
-            'PF' => 'French Polynesia',
-            'TF' => 'French Southern Territories',
-            'GA' => 'Gabon',
-            'GM' => 'Gambia',
-            'GE' => 'Georgia',
-            'DE' => 'Germany',
-            'GH' => 'Ghana',
-            'GI' => 'Gibraltar',
-            'GR' => 'Greece',
-            'GL' => 'Greenland',
-            'GD' => 'Grenada',
-            'GP' => 'Guadeloupe',
-            'GU' => 'Guam',
-            'GT' => 'Guatemala',
-            'GG' => 'Guernsey',
-            'GN' => 'Guinea',
-            'GW' => 'Guinea-Bissau',
-            'GY' => 'Guyana',
-            'HT' => 'Haiti',
-            'HM' => 'Heard Island and McDonald Islands',
-            'VA' => 'Holy See (Vatican City State)',
-            'HN' => 'Honduras',
-            'HK' => 'Hong Kong',
-            'HU' => 'Hungary',
-            'IS' => 'Iceland',
-            'IN' => 'India',
-            'ID' => 'Indonesia',
-            'IR' => 'Iran, Islamic Republic of',
-            'IQ' => 'Iraq',
-            'IE' => 'Ireland',
-            'IM' => 'Isle of Man',
-            'IL' => 'Israel',
-            'IT' => 'Italy',
-            'JM' => 'Jamaica',
-            'JP' => 'Japan',
-            'JE' => 'Jersey',
-            'JO' => 'Jordan',
-            'KZ' => 'Kazakhstan',
-            'KE' => 'Kenya',
-            'KI' => 'Kiribati',
-            'KP' => "Korea, Democratic People's Republic of",
-            'KR' => 'Korea, Republic of',
-            'KW' => 'Kuwait',
-            'KG' => 'Kyrgyzstan',
-            'LA' => "Lao People's Democratic Republic",
-            'LV' => 'Latvia',
-            'LB' => 'Lebanon',
-            'LS' => 'Lesotho',
-            'LR' => 'Liberia',
-            'LY' => 'Libya',
-            'LI' => 'Liechtenstein',
-            'LT' => 'Lithuania',
-            'LU' => 'Luxembourg',
-            'MO' => 'Macao',
-            'MK' => 'Macedonia, the former Yugoslav Republic of',
-            'MG' => 'Madagascar',
-            'MW' => 'Malawi',
-            'MY' => 'Malaysia',
-            'MV' => 'Maldives',
-            'ML' => 'Mali',
-            'MT' => 'Malta',
-            'MH' => 'Marshall Islands',
-            'MQ' => 'Martinique',
-            'MR' => 'Mauritania',
-            'MU' => 'Mauritius',
-            'YT' => 'Mayotte',
-            'MX' => 'Mexico',
-            'FM' => 'Micronesia, Federated States of',
-            'MD' => 'Moldova, Republic of',
-            'MC' => 'Monaco',
-            'MN' => 'Mongolia',
-            'ME' => 'Montenegro',
-            'MS' => 'Montserrat',
-            'MA' => 'Morocco',
-            'MZ' => 'Mozambique',
-            'MM' => 'Myanmar',
-            'NA' => 'Namibia',
-            'NR' => 'Nauru',
-            'NP' => 'Nepal',
-            'NL' => 'Netherlands',
-            'NC' => 'New Caledonia',
-            'NZ' => 'New Zealand',
-            'NI' => 'Nicaragua',
-            'NE' => 'Niger',
-            'NG' => 'Nigeria',
-            'NU' => 'Niue',
-            'NF' => 'Norfolk Island',
-            'MP' => 'Northern Mariana Islands',
-            'NO' => 'Norway',
-            'OM' => 'Oman',
-            'PK' => 'Pakistan',
-            'PW' => 'Palau',
-            'PS' => 'Palestinian Territory, Occupied',
-            'PA' => 'Panama',
-            'PG' => 'Papua New Guinea',
-            'PY' => 'Paraguay',
-            'PE' => 'Peru',
-            'PH' => 'Philippines',
-            'PN' => 'Pitcairn',
-            'PL' => 'Poland',
-            'PT' => 'Portugal',
-            'PR' => 'Puerto Rico',
-            'QA' => 'Qatar',
-            'RE' => 'Réunion',
-            'RO' => 'Romania',
-            'RU' => 'Russian Federation',
-            'RW' => 'Rwanda',
-            'BL' => 'Saint Barthélemy',
-            'SH' => 'Saint Helena, Ascension and Tristan da Cunha',
-            'KN' => 'Saint Kitts and Nevis',
-            'LC' => 'Saint Lucia',
-            'MF' => 'Saint Martin (French part)',
-            'PM' => 'Saint Pierre and Miquelon',
-            'VC' => 'Saint Vincent and the Grenadines',
-            'WS' => 'Samoa',
-            'SM' => 'San Marino',
-            'ST' => 'Sao Tome and Principe',
-            'SA' => 'Saudi Arabia',
-            'SN' => 'Senegal',
-            'RS' => 'Serbia',
-            'SC' => 'Seychelles',
-            'SL' => 'Sierra Leone',
-            'SG' => 'Singapore',
-            'SX' => 'Sint Maarten (Dutch part)',
-            'SK' => 'Slovakia',
-            'SI' => 'Slovenia',
-            'SB' => 'Solomon Islands',
-            'SO' => 'Somalia',
-            'ZA' => 'South Africa',
-            'GS' => 'South Georgia and the South Sandwich Islands',
-            'SS' => 'South Sudan',
-            'ES' => 'Spain',
-            'LK' => 'Sri Lanka',
-            'SD' => 'Sudan',
-            'SR' => 'Suriname',
-            'SJ' => 'Svalbard and Jan Mayen',
-            'SZ' => 'Swaziland',
-            'SE' => 'Sweden',
-            'CH' => 'Switzerland',
-            'SY' => 'Syrian Arab Republic',
-            'TW' => 'Taiwan, Province of China',
-            'TJ' => 'Tajikistan',
-            'TZ' => 'Tanzania, United Republic of',
-            'TH' => 'Thailand',
-            'TL' => 'Timor-Leste',
-            'TG' => 'Togo',
-            'TK' => 'Tokelau',
-            'TO' => 'Tonga',
-            'TT' => 'Trinidad and Tobago',
-            'TN' => 'Tunisia',
-            'TR' => 'Turkey',
-            'TM' => 'Turkmenistan',
-            'TC' => 'Turks and Caicos Islands',
-            'TV' => 'Tuvalu',
-            'UG' => 'Uganda',
-            'UA' => 'Ukraine',
-            'AE' => 'United Arab Emirates',
-            'GB' => 'United Kingdom',
-            'US' => 'United States',
-            'UM' => 'United States Minor Outlying Islands',
-            'UY' => 'Uruguay',
-            'UZ' => 'Uzbekistan',
-            'VU' => 'Vanuatu',
-            'VE' => 'Venezuela, Bolivarian Republic of',
-            'VN' => 'Viet Nam',
-            'VG' => 'Virgin Islands, British',
-            'VI' => 'Virgin Islands, U.S.',
-            'WF' => 'Wallis and Futuna',
-            'EH' => 'Western Sahara',
-            'YE' => 'Yemen',
-            'ZM' => 'Zambia',
-            'ZW' => 'Zimbabwe',
-        ];
+        $ret = [];
+
+        if (!$locale) {
+            $locale = \App::getLocale();
+        }
+
+        foreach (\Lang::get('countries', [], $locale) as $key => $value) {
+            $ret[ $key ] = $value;
+        }
+
+        return $ret;
     }
 
     public static function getCountryFromCountryCode($countryCode)
@@ -705,23 +475,19 @@ class Fixometer
         return '';
     }
 
-    public static function checkDistance($object, $user)
-    {
-        $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins='.$object->latitude.','.$object->longitude.'&destinations='.$user->latitude.','.$user->longitude;
-
-        $json = file_get_contents($url);
-        $json = json_decode($json);
-
-        if (is_object($json) && ! empty($json->{'rows'})) {
-            try {
-                $distance = str_replace(' mi', '', $json->{'rows'}[0]->{'elements'}[0]->{'distance'}->{'text'});
-                $distance = floatval(str_replace(',', '', $distance));
-            } catch (\Exception $e) {
-                return false;
-            }
-
-            return $distance;
+    public static function translateCountry($country, $countries = null) {
+        // Countries are stored in the DB as English names, so we need to translate them.
+        if (!$countries) {
+            // This can be passed by the caller to speed things up in a loop.
+            $countries = array_flip(App\Helpers\Fixometer::getAllCountries('en'));
         }
+
+        if (array_key_exists($country, $countries)) {
+            $code = $countries[$country];
+            $country = \Lang::get('countries.' . $code, [], \App::getLocale());
+        }
+
+        return $country;
     }
 
     public static function skillCategories()
@@ -755,48 +521,89 @@ class Fixometer
     public static function categoryCluster()
     {
         return [
-            '1' => 'Computers and Home Office',
-            '2' => 'Computers',
-            '3' => 'Home Office',
-            '4' => 'Test',
-        ];
+            1 => 'Computers and Home Office',
+            2 => 'Electronic Gadgets',
+            3 => 'Home Entertainment',
+            4 => 'Kitchen and Household Items',
+          ];
     }
 
-    public static function loginRegisterStats()
+    const STATS_TTL = 86400;      // 24 hours — always serve from cache
+    const STATS_FRESH_TTL = 7200; // 2 hours — background refresh when this expires
+
+    private static function isStatsValid($stats): bool
     {
-        $Party = new \App\Party;
-        $Device = new \App\Device;
+        return is_array($stats)
+            && array_key_exists('partiesCount', $stats)
+            && array_key_exists('waste_stats', $stats)
+            && is_array($stats['device_count_status'] ?? null);
+    }
 
-        $stats = [];
-        if (\Cache::has('all_stats')) {
+    public static function loginRegisterStats(): array
+    {
+        $stats = \Cache::get('all_stats');
+
+        if (! static::isStatsValid($stats)) {
+            // Cold start — compute synchronously, but only once across concurrent workers.
+            \Cache::lock('all_stats_computing', 60)->block(30, function () {
+                if (static::isStatsValid(\Cache::get('all_stats'))) {
+                    return; // another worker just computed valid stats
+                }
+                $fresh = static::computeStats();
+                \Cache::put('all_stats', $fresh, self::STATS_TTL);
+                \Cache::put('all_stats_fresh', true, self::STATS_FRESH_TTL);
+            });
             $stats = \Cache::get('all_stats');
-
-            // We've seen a Sentry problem which I can only see happening if there was invalid data in the cache.
-            if (! $stats ||
-                ! array_key_exists('allparties', $stats) ||
-                ! array_key_exists('co2Total', $stats) ||
-                ! array_key_exists('device_count_status', $stats)
-            ) {
-                $stats = [];
+        } elseif (\Cache::missing('all_stats_fresh')) {
+            // Stale — serve immediately, dispatch one background refresh.
+            if (\Cache::lock('all_stats_refreshing', self::STATS_FRESH_TTL)->get()) {
+                dispatch(new \App\Jobs\RefreshLoginStats());
             }
         }
 
-        if ($stats == []) {
-            $stats['allparties'] = $Party->ofThisGroup('admin', true, false);
-            $stats['co2Total'] = $Device->getWeights();
-            $stats['device_count_status'] = $Device->statusCount();
-            \Cache::put('all_stats', $stats, 7200);
+        return static::decorateStats($stats);
+    }
+
+    public static function computeStats(): array
+    {
+        $device = new \App\Device;
+
+        return [
+            'partiesCount' => \App\Party::where('event_end_utc', '<', now())->count(),
+            'waste_stats' => \App\Helpers\LcaStats::getWasteStats(),
+            'device_count_status' => $device->statusCount(),
+        ];
+    }
+
+    private static function decorateStats(array $stats): array
+    {
+        $stats['deviceCount'] = 0;
+        foreach ($stats['device_count_status'] as $statusRow) {
+            if ($statusRow->status == \App\Device::REPAIR_STATUS_FIXED) {
+                $stats['deviceCount'] = $statusRow->counter;
+                break;
+            }
         }
+
+        $stats['co2Total'] = ($stats['waste_stats'][0]->powered_footprint ?? 0)
+            + ($stats['waste_stats'][0]->unpowered_footprint ?? 0);
+        $stats['wasteTotal'] = ($stats['waste_stats'][0]->powered_waste ?? 0)
+            + ($stats['waste_stats'][0]->unpowered_waste ?? 0);
 
         return $stats;
     }
 
     public static function userHasEditGroupPermission($group_id, $user_id, $role = 3)
     {
+        // Admins can do anything.
+        if (self::hasRole(User::find($user_id), 'Administrator')) {
+            return true;
+        }
+
         return ! empty(\App\UserGroups::where('group', $group_id)
-                                  ->where('user', $user_id)
-                                    ->where('role', $role)
-                                      ->first());
+            ->where('user', $user_id)
+            ->where('role', $role)
+            ->first());
     }
 
     public static function buildSortQuery($columnName)
@@ -840,43 +647,20 @@ class Fixometer
         return $role;
     }
 
-    /** checks if user has preference **/
-    public static function hasPreference($slug)
-    {
-
-      // Check if guest
-        if (Auth::guest()) {
-            return false;
-        }
-
-        // Check if preference exists
-        $has_preference = UsersPreferences::join('preferences', 'preferences.id', '=', 'users_preferences.preference_id')
-                                      ->where('users_preferences.user_id', Auth::user()->id)
-                                        ->where('preferences.slug', $slug)
-                                          ->first();
-
-        // Does user have it?
-        if (empty($has_preference)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /** checks if user has preference **/
+    /** checks if user has permission **/
     public static function hasPermission($slug)
     {
 
-      // Check if guest
+        // Check if guest
         if (Auth::guest()) {
             return false;
         }
 
         // Check if Permission Exists
         $has_permission = UsersPermissions::join('permissions', 'permissions.idpermissions', '=', 'users_permissions.permission_id')
-                                      ->where('users_permissions.user_id', Auth::user()->id)
-                                        ->where('permissions.slug', $slug)
-                                          ->first();
+            ->where('users_permissions.user_id', Auth::user()->id)
+            ->where('permissions.slug', $slug)
+            ->first();
 
         // Does user have it?
         if (empty($has_permission)) {
@@ -890,15 +674,14 @@ class Fixometer
      * Returns users who have a particular preference by slug
      *
      * @param $slug
-     * @return Collection
      */
-    public static function usersWhoHavePreference($slug)
+    public static function usersWhoHavePreference($slug): Collection
     {
         return User::join('users_preferences', 'users_preferences.user_id', '=', 'users.id')
-                      ->join('preferences', 'preferences.id', '=', 'users_preferences.preference_id')
-                        ->where('preferences.slug', $slug)
-                          ->select('users.*')
-                            ->get();
+            ->join('preferences', 'preferences.id', '=', 'users_preferences.preference_id')
+            ->where('preferences.slug', $slug)
+            ->select('users.*')
+            ->get();
     }
 
     public static function notificationClasses($modal)
@@ -906,8 +689,6 @@ class Fixometer
         $modal = str_replace("App\Notifications\\", '', $modal);
 
         $user_array = [
-            //'AccountCreated', doesn't appear to be in use
-            //'NewRegister',
             'AdminNewUser',
             'ResetPassword',
         ];
@@ -918,7 +699,6 @@ class Fixometer
             'EventRepairs',
             'JoinEvent',
             'AdminModerationEvent',
-            'NotifyHostRSVPInvitesMade',
             'NotifyRestartersOfNewEvent',
             'RSVPEvent',
             'AdminWordPressCreateEventFailure',
@@ -937,7 +717,6 @@ class Fixometer
 
         $device_array = [
             'NotifyAdminNoDevices',
-            'ReviewNotes',
             'AdminAbnormalDevices',
         ];
 
@@ -955,46 +734,6 @@ class Fixometer
     public static function allBarriers()
     {
         return Barrier::all();
-    }
-
-    /**
-     * Simplifies the logic on blade template for displaying the column drop down
-     * @return array
-     * @author Dean Appleton-Claydon
-     */
-    public static function filterColumns()
-    {
-        return [
-            // 'deviceID' => '#', - shouldn't really hide this column as this allows someone to view or edit the device!
-            'category' => 'Category',
-            'brand' => 'Brand',
-            'model' => 'Model',
-            'problem' => 'Comment',
-            'group_name' => 'Group',
-            'event_date' => 'Date',
-            //'location' => 'Location', no column for this
-            'repair_status' => 'State',
-        ];
-    }
-
-    /**
-     * Simplifies the logic in the blade templates around display device columns
-     * @param  string $column           checks to see whether column exists in session array
-     * @param  array $user_preferences array from session
-     * @return bool                   true or false!
-     * @author Dean Appleton-Claydon
-     */
-    public static function checkColumn($column, $user_preferences)
-    {
-        if (! is_null($user_preferences) && is_array($user_preferences)) {
-            if (in_array($column, $user_preferences)) {
-                return true;
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -1016,28 +755,5 @@ class Fixometer
         } while ($model::where($column, $random)->exists());
 
         return $random;
-    }
-
-    /**
-     * [validateBetweenDates description]
-     * Check if date is between two dates...
-     *
-     * @author Christopher Kelker - @date 2019-04-05
-     * @editor  Christopher Kelker
-     * @version 1.0.0
-     * @param   [type]      $date_to_check
-     * @param   [type]      $date_from
-     * @param   [type]      $date_to
-     * @return  [type]
-     */
-    public static function validateBetweenDates($date_to_check, $date_from, $date_to)
-    {
-        $date_to_check = date('Y-m-d', strtotime($date_to_check));
-        $date_from = date('Y-m-d', strtotime($date_from));
-        $date_to = date('Y-m-d', strtotime($date_to));
-
-        // If $date_to_check is equal to one of or in between the
-        // two dates then return true, else false
-        return ($date_to_check >= $date_from) && ($date_to_check <= $date_to);
     }
 }

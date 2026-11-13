@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class MobifixOraSetup extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('devices_faults_mobiles_ora_opinions', function (Blueprint $table) {
             $table->increments('id');
@@ -238,14 +236,12 @@ class MobifixOraSetup extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('devices_faults_mobiles_ora_adjudicated');
         Schema::dropIfExists('devices_faults_mobiles_ora_opinions');
         Schema::dropIfExists('fault_types_mobiles');
         Schema::dropIfExists('devices_mobifix_ora');
     }
-}
+};

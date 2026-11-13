@@ -3,15 +3,13 @@
 namespace App\Listeners;
 
 use App\Events\EventDeleted;
-use App\Notifications\DeleteEventFromWordpressFailed;
 use App\Helpers\Fixometer;
+use App\Notifications\DeleteEventFromWordpressFailed;
 use HieuLe\WordpressXmlrpcClient\WordpressClient;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Notification;
 
-class DeleteEventFromWordPress
+class DeleteEventFromWordPress extends BaseEvent
 {
     protected $wpClient;
 
@@ -27,15 +25,17 @@ class DeleteEventFromWordPress
 
     /**
      * Handle the event.
-     *
-     * @param  EventDeleted  $event
-     * @return void
      */
-    public function handle(EventDeleted $event)
+    public function handle(EventDeleted $event): void
     {
         // Slightly confusing name clash - usually we refer to community repair events as 'events' in the system.  Here explicitly calling it repairEvent.
 
         $repairEvent = $event->repairEvent;
+
+        if ($repairEvent->theGroup->archived_at) {
+            // Suppress notifications for archived groups.
+            return;
+        }
 
         try {
             if ($repairEvent->shouldPushToWordPress() && ! empty($repairEvent->wordpress_post_id)) {

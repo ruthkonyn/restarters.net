@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AuditIssue extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('audits', function (Blueprint $table) {
             $table->string('old_values', '4294967295')->change();
@@ -23,10 +21,8 @@ class AuditIssue extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('audits', function (Blueprint $table) {
             $table->string('old_values', '16777215')->change();
@@ -35,4 +31,4 @@ class AuditIssue extends Migration
             $table->string('new_values', '16777215')->change();
         });
     }
-}
+};

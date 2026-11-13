@@ -1,14 +1,13 @@
 <template>
   <div>
-    <VueEditor class="editor" v-model="value" :editor-options="editorOptions" />
-    <input type="hidden" v-model="valueCorrected" :name="name" />
+    <VueEditor v-model="currentValue" :editor-options="editorOptions" :class="{ 'editor': true, editorHasError: hasError }" />
+    <input type="hidden" v-model="currentValue" :name="name" />
   </div>
 </template>
 <script>
-const Quill = require('vue2-editor').Quill
+import { Quill, VueEditor } from 'vue2-editor'
+import { htmlEditButton } from 'quill-html-edit-button'
 window.Quill = Quill
-const htmlEditButton = require('quill-html-edit-button').htmlEditButton
-const VueEditor = require('vue2-editor').VueEditor
 Quill.register('modules/htmlEditButton', htmlEditButton)
 
 // Importing this registers a clipboard handler that sanitizes on paste.
@@ -23,16 +22,20 @@ export default {
       type: String,
       required: true
     },
-    initialValue: {
+    value: {
       type: String,
       required: false,
       default: null
+    },
+    hasError: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data: function() {
     return {
-      value: null,
-      valueCorrected: null,
+      currentValue: null,
       editorOptions: {
         modules: {
           htmlEditButton: {},
@@ -60,45 +63,60 @@ export default {
     }
   },
   watch: {
-    value(newVal) {
-      console.log("Correct", newVal)
-      // We have an odd problem on Linux where we get <p><br>.
-      if (newVal) {
-        newVal = newVal.replace('<p><br>', '<p>');
-        console.log("Corrected", newVal)
-      }
+    currentValue: {
+      handler(newVal) {
+        if (newVal) {
+          // We have an odd problem on Linux where we get <p><br>.
+          newVal = newVal.replace('<p><br>', '<p>');
+        }
 
-      this.valueCorrected = newVal
+        this.$emit('update:value', newVal)
+      },
+      immediate: true
+    },
+    value: {
+      handler(newVal) {
+        if (newVal) {
+          // There's an odd problem where divs aren't handled well - see https://github.com/davidroyer/vue2-editor/issues/313.
+          // This is a workaround.
+          newVal = newVal.replace('<div', '<p').replace('/div>', '/p>')
+        }
+
+        this.currentValue = newVal
+      },
+      immediate: true
     }
   },
   mounted() {
-    this.value = this.initialValue
-    this.valueCorrected = this.initialValue
-  },
-  methods: {
+    this.currentValue = this.value
   }
 }
 </script>
 <style scoped lang="scss">
-/deep/ .ql-editor,  /deep/ .ql-container {
+@import 'resources/global/css/_variables';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
+
+::v-deep .ql-editor,  ::v-deep .ql-container {
   min-height: 300px !important;
   max-height: 300px !important;
   height: 300px !important;
 }
 
-/deep/ .ql-header[value="4"]::before {
+::v-deep .ql-header[value="4"]::before {
   content: 'H4'
 }
 
-/deep/ .ql-header[value="5"]::before {
+::v-deep .ql-header[value="5"]::before {
   content: 'H5'
 }
 
-/deep/ .ql-header[value="6"]::before {
+::v-deep .ql-header[value="6"]::before {
   content: 'H6'
 }
 
-/deep/ .ql-snow .ql-editor {
+::v-deep .ql-snow .ql-editor {
   h4 {
     font-size: 1.5rem;
   }
@@ -107,6 +125,20 @@ export default {
   }
   h6 {
     font-size: 1rem;
+  }
+}
+
+.editorHasError {
+  ::v-deep .ql-toolbar {
+    border-top: 2px solid $brand-danger !important;
+    border-left: 2px solid $brand-danger !important;
+    border-right: 2px solid $brand-danger !important;
+  }
+
+  ::v-deep .ql-container {
+    border-bottom: 2px solid $brand-danger !important;
+    border-left: 2px solid $brand-danger !important;
+    border-right: 2px solid $brand-danger !important;
   }
 }
 </style>

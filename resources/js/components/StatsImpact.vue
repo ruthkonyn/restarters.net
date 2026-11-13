@@ -3,29 +3,53 @@
     <h2 class="mt-2 mb-2">
       {{ __('events.environmental_impact') }}
       <span v-b-popover.html="__('events.impact_calculation')">
-        <b-img class="ml-2 icon-info clickable" src="/icons/info_ico_green.svg" />
+        <b-img class="ml-2 icon-info clickable" :src="imageUrl('/icons/info_ico_green.svg')" />
       </span>
     </h2>
     <div class="impact-container">
-      <StatsValue :count="stats.ewaste + stats.unpowered_waste" icon="trash" size="md" title="partials.waste_prevented" unit="kg" class="impact-waste" />
-      <div v-if="notincluded" class="d-flex justify-content-end">
+      <StatsValue
+        :count="Math.ceil(stats.waste_total)"
+        icon="trash"
+        size="md"
+        title="partials.waste_prevented"
+        unit="kg"
+        class="impact-waste"
+      />
+      <div v-if="showNotIncluded && notincluded" class="d-flex justify-content-end">
         <div class="impact-notincluded">
           <div class="impact-notincluded-content p-1">
             {{ notincluded }}
           </div>
         </div>
       </div>
-      <StatsValue :count="stats.co2" icon="cloud_empty" size="lg" title="partials.co2" subtitle="partials.powered_only" :description="equivalent_consumer(stats.co2)" unit="kg" class="impact-co2" />
+      <StatsValue
+            :count="Math.round(stats.co2_total)"
+            icon="cloud_empty"
+            size="lg"
+            title="partials.co2"
+            :description="equivalent_consumer(Math.round(stats.co2_total))"
+            :popover="popover_consumer(Math.round(stats.co2_total))"
+            unit="kg"
+            class="impact-co2"
+            :aside="asideCo2"
+            share
+            @share="share"
+      />
+      <StatsShareModal
+        ref="shareModal"
+        :count="Math.round(stats.co2_total)" />
     </div>
   </div>
 </template>
 <script>
-import StatsValue from './StatsValue'
+import StatsValue from './StatsValue.vue'
 import co2equivalent from '../mixins/co2equivalent'
+import images from '../mixins/images'
+const StatsShareModal = () => import('./StatsShareModal.vue')
 
 export default {
-  components: {StatsValue},
-  mixins: [ co2equivalent ],
+  components: {StatsValue, StatsShareModal},
+  mixins: [ co2equivalent, images ],
   props: {
     stats: {
       required: true,
@@ -34,6 +58,18 @@ export default {
     statsEntity: {
       required: true,
       type: String
+    },
+    showNotIncluded: {
+      // The note on what the figures leave out.
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    asideCo2: {
+      // Show the CO2e stat with its description alongside it, rather than below it.
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   computed: {
@@ -42,19 +78,22 @@ export default {
       let ret = []
 
       if (this.stats.dead_devices) {
-        ret.push(this.$lang.choice('partials.to_be_recycled', this.stats.dead_devices, {
+        ret.push(this.__('partials.to_be_recycled', {
+          count: this.stats.dead_devices,
           value: this.stats.dead_devices
         }))
       }
 
       if (this.stats.repairable_devices) {
-        ret.push(this.$lang.choice('partials.to_be_repaired', this.stats.repairable_devices, {
+        ret.push(this.__('partials.to_be_repaired', {
+          count: this.stats.repairable_devices,
           value: this.stats.repairable_devices
         }))
       }
 
       if (this.stats.no_weight) {
-        ret.push(this.$lang.choice('partials.no_weight', this.stats.no_weight, {
+        ret.push(this.__('partials.no_weight', {
+          count: this.stats.no_weight,
           value: this.stats.no_weight
         }))
       }
@@ -62,24 +101,30 @@ export default {
       if (!ret.length) {
         return null
       } else if (ret.length === 1) {
-        const intro = this.$lang.choice(langSource + '.not_counting', this.stats.no_weight)
+        // events.not_counting, groups.not_counting
+        const intro = this.__(langSource + '.not_counting', { count: ret.length })
         return intro + ' ' + ret[0] + '.'
       } else {
-        const intro = this.$lang.choice(langSource + '.not_counting', this.stats.no_weight)
+        const intro = this.__(langSource + '.not_counting', { count: ret.length })
         const first = ret.slice(0, -1)
         const last = ret[ret.length - 1]
 
-        return intro + ' ' + first.join(', ') + ' ' + this.$lang.get('and') + ' ' + last + '.'
+        return intro + ' ' + first.join(', ') + ' ' + this.__('and') + ' ' + last + '.'
       }
+    }
+  },
+  methods: {
+    share() {
+      this.$refs.shareModal.show()
     }
   }
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .impact-container {
   display: grid;

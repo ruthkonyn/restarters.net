@@ -5,18 +5,20 @@
     </template>
     <template slot="content">
       <read-more :html="event.free_text" class="mt-2 readmore small" :max-chars="440" :more-str="__('events.read_more')" :less-str="__('events.read_less')" />
+      <p v-if="!event.approved" class="small text-muted">
+        {{ __('partials.event_requires_moderation_by_an_admin') }}.
+      </p>
     </template>
   </CollapsibleSection>
 </template>
 <script>
 import map from '../mixins/map'
 import event from '../mixins/event'
-import ExternalLink from './ExternalLink'
-import CollapsibleSection from './CollapsibleSection'
-import ReadMore from './ReadMore'
+import CollapsibleSection from './CollapsibleSection.vue'
+import ReadMore from './ReadMore.vue'
 
 export default {
-  components: {ReadMore, CollapsibleSection, ExternalLink},
+  components: {ReadMore, CollapsibleSection},
   mixins: [ map, event ],
   props: {
     idevents: {

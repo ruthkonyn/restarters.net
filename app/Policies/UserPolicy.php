@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Helpers\Fixometer;
 use App\Role;
 use App\User;
-use App\Helpers\Fixometer;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -12,14 +12,33 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
+     * Determine whether the acting user may modify the target user's account/profile.
+     *
+     * This is the canonical "self or administrator" rule. Every endpoint that mutates a
+     * user record (profile info, password, picture, skills, language, preferences and the
+     * admin edit() form) authorises through here so the check can never be omitted piecemeal.
+     */
+    public function update(User $user, User $target): bool
+    {
+        return $user->id == $target->id || Fixometer::hasRole($user, 'Administrator');
+    }
+
+    /**
+     * Determine whether the acting user may delete (soft-delete) the target user's account.
+     */
+    public function delete(User $user, User $target): bool
+    {
+        return $user->id == $target->id || Fixometer::hasRole($user, 'Administrator');
+    }
+
+    /**
      * Determine whether one user can change the Repair Directory role of another to a specific value.
      *
      * @param  \App\User  $user
      * @param  \App\User  $user
-     * @param  int  $role
      * @return mixed
      */
-    public function changeRepairDirRole(User $perpetrator, User $victim, $role)
+    public function changeRepairDirRole(User $perpetrator, User $victim, int $role)
     {
         // We have rules for whether you can change the Repair Directory role.  Code is structured for readability
         // of these rules, rather than a single big if.
@@ -53,7 +72,6 @@ class UserPolicy
     /**
      * Determine whether this user can view the Repair Directory settings for users
      *
-     * @param  \App\User  $user
      * @return mixed
      */
     public function viewRepairDirectorySettings(User $user)
@@ -64,7 +82,6 @@ class UserPolicy
     /**
      * Determine whether this user can see the Admin menu.
      *
-     * @param  \App\User  $user
      * @return mixed
      */
     public function viewAdminMenu(User $user)
@@ -79,7 +96,6 @@ class UserPolicy
     /**
      * Determine whether this user can access the Repair Directory via the menu.
      *
-     * @param  \App\User  $user
      * @return mixed
      */
     public function accessRepairDirectory(User $user)

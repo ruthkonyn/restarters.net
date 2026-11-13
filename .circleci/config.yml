@@ -1,47 +1,433 @@
-version: 2
+version: 2.1
 
-dependencies:
-  pre:
-    - curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    - sudo dpkg -i google-chrome.deb
-    - sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-    - rm google-chrome.deb
 jobs:
   build:
-    docker:
-      - image: circleci/php:7.4-node-browsers
-        name: restarters.test
-        environment:
-          - DB_CONNECTION: mysql
-          - DB_HOST: 127.0.0.1
-          - DB_PORT: 3306
-          - DB_DATABASE: restarters_db
-          - DB_USERNAME: restarters
-          - DB_PASSWORD: s3cr3t
-      - image: circleci/mysql:5.7.33
-        environment:
-          # You can connect once ssh'd in using  mysql -u root -p -h 127.0.0.1
-          - MYSQL_ROOT_PASSWORD: s3cr3t
-          - MYSQL_DATABASE: restarters_db
-          - MYSQL_USER: restarters
-          - MYSQL_PASSWORD: s3cr3t
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large
+    environment:
+      - TZ: "UTC"
+
     steps:
       - checkout
-      - run: sudo apt update
-      - run: sudo apt install openssl zip unzip git libxml2-dev libzip-dev zlib1g-dev libcurl4-openssl-dev iputils-ping default-mysql-client vim libpng-dev libgmp-dev libjpeg62-turbo-dev
-      - run: sudo docker-php-ext-configure gd --with-jpeg
-      - run: sudo docker-php-ext-install zip pdo pdo_mysql xmlrpc curl gd zip
-      - run: cp .env.example .env
+      
+      # Install Task
+      - run:
+          name: Install Task
+          command: |
+            sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+            task --version
 
-      - run: wget https://getcomposer.org/composer-1.phar; rm -rf vendor; php composer-1.phar install
-      - run: npm install
+      # Set up environment file
+      - run:
+          name: Setup environment
+          command: |
+            cp .env.example .env
+            
+            # Configure for Docker Compose setup
+            sed -i 's/DB_HOST=.*$/DB_HOST=restarters_db/g' .env
+            sed -i 's/DB_DATABASE=.*$/DB_DATABASE=restarters_db_test/g' .env
+            sed -i 's/DB_USERNAME=.*$/DB_USERNAME=restarters/g' .env
+            sed -i 's/DB_PASSWORD=.*$/DB_PASSWORD=s3cr3t/g' .env
+            
+            # Configure Discourse integration
+            sed -i 's/FEATURE__DISCOURSE_INTEGRATION=.*$/FEATURE__DISCOURSE_INTEGRATION=true/g' .env
+            sed -i 's/DISCOURSE_URL=.*$/DISCOURSE_URL=http:\/\/restarters_discourse/g' .env
+            sed -i 's/DISCOURSE_APIKEY=.*$/DISCOURSE_APIKEY=fb71f38ca2b8b7cd6a041e57fd8202c9937088f0ecae7db40722bd758dda92fc/g' .env
+            sed -i 's/DISCOURSE_APIUSER=.*$/DISCOURSE_APIUSER=someuser/g' .env
+            
+            # Configure for testing
+            sed -i 's/APP_DEBUG=.*$/APP_DEBUG=false/g' .env
+            sed -i 's/SESSION_DOMAIN=.*$/SESSION_DOMAIN=localhost/g' .env
+            sed -i 's/HONEYPOT_DISABLE=.*$/HONEYPOT_DISABLE=TRUE/g' .env
+            sed -i 's/APP_URL=.*$/APP_URL=http:\/\/localhost:8001/g' .env
+            
+            # Add environment variables from CircleCI
+            echo "" >> .env
+            echo "GOOGLE_API_CONSOLE_KEY=$GOOGLE_API_CONSOLE_KEY" >> .env
+            echo "MAPBOX_TOKEN=$MAPBOX_TOKEN" >> .env
 
-      - run: php artisan key:generate
-      - run: php artisan migrate
+            # CircleCI does not give project environment variables to jobs built
+            # from forked pull requests, so those runs have no geocoding key.
+            # Without this every group creation 422s on geocode_failed and the
+            # whole Playwright suite fails at its first createGroup(), which
+            # reads as the contributor having broken something.
+            if [ -z "$GOOGLE_API_CONSOLE_KEY" ]; then
+              echo "No geocoding key available - using the stub geocoder."
+              echo "GEOCODER_STUB=true" >> .env
+            fi
 
-      - run: wget -O phpunit https://phar.phpunit.de/phpunit-7.phar ; chmod +x phpunit
+      # Start Docker services using Task
+      - run:
+          name: Start Docker services
+          command: |
+            # Set environment variable for CircleCI detection
+            export CIRCLECI=true
+            # Enable Docker Compose bake for build optimization
+            export COMPOSE_BAKE=true
+            # Start all services using Task
+            task docker:up-all
+          no_output_timeout: 10m
 
-      - run: export XDEBUG_MODE=coverage;./phpunit -d memory_limit=512M --bootstrap vendor/autoload.php -dxdebug.coverage_enable=1 --coverage-clover tests/clover.xml --configuration ./phpunit.xml
+      # Wait for core services to be ready (MySQL + web app). Discourse is started
+      # via docker:up-all but its readiness is checked separately (non-blocking).
+      # docker_run.sh runs npm install + npx playwright install + migrate:fresh --seed
+      # on every startup, which can take 20-25 min on cold CI machines. We poll
+      # directly here with a 25-minute ceiling rather than using the Taskfile helper
+      # (which only allows 10 min) to avoid blocking on that limit.
+      - run:
+          name: Wait for services
+          command: |
+            # Wait for MySQL first
+            echo "Waiting for MySQL..."
+            for i in $(seq 1 60); do
+              docker exec restarters_db mysqladmin ping -h localhost -u root -ps3cr3t --silent >/dev/null 2>&1 && echo "✓ MySQL ready" && break
+              [ $i -eq 60 ] && echo "❌ MySQL not ready" && exit 1
+              echo "  MySQL attempt $i/60..."; sleep 5
+            done
 
-      # Coveralls is pernickety about the location it uploads from existing.
-      - run: mkdir build; mkdir build/logs; php vendor/bin/php-coveralls -v -x tests/clover.xml
+            # Wait up to 35 minutes for the web app. docker_run.sh does composer
+            # install + npm install + migrate:fresh + seed on every startup.
+            # Also detect crash-loops: if the container restarts, bail immediately
+            # and print logs so we can diagnose the failure.
+            echo "Waiting for web application (up to 35 min)..."
+            initial_restart=$(docker inspect --format='{{.RestartCount}}' restarters 2>/dev/null || echo "0")
+            for i in $(seq 1 420); do
+              current_restart=$(docker inspect --format='{{.RestartCount}}' restarters 2>/dev/null || echo "0")
+              if [ "$current_restart" -gt "$initial_restart" ]; then
+                echo "❌ Container restarted ($initial_restart → $current_restart) — crash-loop detected, showing logs:"
+                docker logs restarters --tail=100 2>&1 || true
+                exit 1
+              fi
+              curl -f -s http://localhost:8001 >/dev/null 2>&1 && echo "✓ Web app ready after $((i*5))s" && break
+              if [ $i -eq 420 ]; then
+                echo "❌ Web app not ready after 35 minutes — container logs:"
+                docker logs restarters --tail=100 2>&1 || true
+                exit 1
+              fi
+              [ $((i % 12)) -eq 0 ] && echo "  Still waiting... ($((i*5))s elapsed)"
+              sleep 5
+            done
+          no_output_timeout: 38m
+
+      # Setup database and application
+      - run:
+          name: Setup application
+          command: |
+            # Grant timezone access - run directly on MySQL container
+            docker exec restarters_db mysql -u root -ps3cr3t -e "GRANT SELECT ON mysql.time_zone_name TO 'restarters'@'%';"
+
+            # Setup additional configuration needed for CI (most setup already done by docker_run.sh)
+            # Set MySQL function creators using session variable (compatible with MySQL 5.7)
+            docker exec restarters_db mysql -u root -ps3cr3t -e "SET GLOBAL log_bin_trust_function_creators = 1;"
+
+            # Disable ONLY_FULL_GROUP_BY for compatibility with getItemTypes() query
+            docker exec restarters_db mysql -u root -ps3cr3t -e "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
+
+            # Generate additional Laravel artifacts for testing
+            docker exec restarters php artisan l5-swagger:generate
+
+      # Setup Discourse API (PostgreSQL must be ready; Discourse web app not required)
+      - run:
+          name: Setup Discourse
+          command: |
+            # Wait for PostgreSQL (separate from Discourse web app - starts faster)
+            echo "Waiting for PostgreSQL..."
+            attempt=0
+            until docker exec postgresql pg_isready -U postgres >/dev/null 2>&1; do
+              attempt=$((attempt + 1))
+              if [ $attempt -ge 60 ]; then
+                echo "PostgreSQL did not become ready in time - skipping Discourse setup"
+                exit 0
+              fi
+              echo "  PostgreSQL not ready, waiting... (attempt $attempt/60)"
+              sleep 5
+            done
+            echo "✓ PostgreSQL is ready"
+
+            # Add API key to Discourse - run directly on PostgreSQL container
+            docker exec postgresql psql -U postgres -c "INSERT INTO api_keys (id, user_id, created_by_id, created_at, updated_at, allowed_ips, hidden, last_used_at, revoked_at, description, key_hash, truncated_key) VALUES (1, NULL, 1, '2021-10-25 13:56:20.033338', '2021-10-25 13:56:20.033338', NULL, false, NULL, NULL, 'Restarters', 'd89e9dfacfb611fbaf004807648187ce7ed474df44dcb0ada230fab5c8dd6a5b', '9fd7');" bitnami_discourse
+
+            # Configure Discourse settings (only if Discourse web app is up)
+            docker exec restarters php artisan discourse:setting personal_message_enabled_groups 10 || echo "Warning: discourse:setting failed - Discourse may not be fully started"
+
+      # Fail fast if a controller method lacks a #[UserStory]/#[NoStory] annotation or the specs manifest is stale
+      - run:
+          name: Check living specs
+          command: docker exec restarters php artisan specs:extract --check
+
+      # Run PHPUnit tests
+      - run:
+          name: Run PHPUnit tests
+          command: |
+            # Run PHPUnit tests using Task for consistency with local development
+            task docker:test:phpunit
+            # Copy test results to host
+            docker cp restarters:/tmp/phpunit-results.xml /tmp/test-results/phpunit/results.xml
+          no_output_timeout: 45m
+
+      # Run Jest tests
+      - run:
+          name: Run Jest tests
+          command: |
+            # Run Jest tests using Task for consistency with local development
+            task docker:test:jest
+            # Copy test results to host if they exist
+            docker cp restarters:/tmp/test-results/junit.xml /tmp/test-results/jest/junit.xml || echo "Jest results not found, skipping"
+
+      # Run main Playwright tests (excluding autocomplete)
+      - run:
+          name: Run main Playwright tests
+          command: |
+            # Run Playwright tests using Task for consistency with local development
+            task docker:test:playwright
+          no_output_timeout: 10m
+
+      # Copy test results and artifacts
+      - run:
+          name: Copy Playwright artifacts
+          command: |
+            # Create test results directory on host
+            mkdir -p /tmp/test-results/playwright
+            mkdir -p /tmp/test-results/logs
+
+            # List what's available in the playwright container
+            docker exec restarters_playwright bash -c "ls -la /tmp/test-results/* || echo 'No playwright directories found'"
+
+            # Copy test results and artifacts from playwright container to host
+            docker cp restarters_playwright:/tmp/test-results/. /tmp/test-results/playwright/ || echo "Playwright HTML report not found"
+
+            # Copy Vite log from restarters container for debugging
+            docker cp restarters:/tmp/vite.log /tmp/test-results/logs/vite.log || echo "Vite log not found"
+          when: always
+
+      # Store artifacts
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: playwright-test-results
+      
+      - store_test_results:
+          path: /tmp/test-results
+
+  deploy-fly-dev:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: Install flyctl
+          command: |
+            curl -L https://fly.io/install.sh | sh || true
+            echo 'export PATH=/home/circleci/.fly/bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Deploy to restarters-dev
+          command: |
+            export FLY_API_TOKEN="FlyV1 $FLY_API_TOKEN"
+            flyctl deploy --config fly.dev.toml --remote-only
+          no_output_timeout: 15m
+      - run:
+          name: Verify dev came up, and fail if it did not
+          command: |
+            export FLY_API_TOKEN="FlyV1 $FLY_API_TOKEN"
+            BASE=https://restarters-dev.fly.dev
+
+            # preview-startup.sh publishes its own outcome at /_preview_status -
+            # phase starting -> restoring -> migrating -> ready, or failed with a
+            # detail. It was written for this job to read and nothing ever did,
+            # so a deploy could report success while the site was unusable: on
+            # 2026-09-03 dev served every page as a 500 for weeks because it
+            # pointed at a decommissioned database app, and this job was green
+            # throughout.
+            #
+            # Deliberately not probing robots.txt. It is static, it is the Fly
+            # health check path, and the warming nginx serves it during the
+            # restore - so it is 200 in every one of the states worth catching.
+            #
+            # A cold boot restores the whole production backup, which took ~19
+            # minutes on 2026-09-03, so allow well past that.
+            deadline=$(( $(date +%s) + 2100 ))
+            phase=""
+
+            while [ "$(date +%s)" -lt "$deadline" ]; do
+              body=$(curl -sS --max-time 20 "$BASE/_preview_status" || true)
+              phase=$(printf '%s' "$body" | sed -n 's/.*"phase":"\([a-z]*\)".*/\1/p')
+
+              case "$phase" in
+                ready)
+                  echo "Restore and migrations reported ready."
+                  break
+                  ;;
+                failed)
+                  echo "=============================================="
+                  echo "Dev start-up FAILED: $body"
+                  echo "=============================================="
+                  flyctl logs --app restarters-dev --no-tail 2>&1 | tail -60 || true
+                  exit 1
+                  ;;
+                "")
+                  # No status at all: the machine is not running
+                  # preview-startup.sh, which is exactly the misconfiguration
+                  # that caused the 2026-09-03 outage.
+                  echo "waiting - no /_preview_status yet"
+                  ;;
+                *)
+                  echo "waiting - phase=$phase"
+                  ;;
+              esac
+              sleep 20
+            done
+
+            if [ "$phase" != ready ]; then
+              echo "Dev never reached ready (last phase: '${phase:-none}'). Failing."
+              flyctl status --app restarters-dev || true
+              flyctl logs --app restarters-dev --no-tail 2>&1 | tail -60 || true
+              exit 1
+            fi
+
+            # The real app is serving, not the warming page: during warming
+            # nginx answers everything except robots.txt and _preview_status
+            # with a 503, and the gate at /_login is PHP, so a 200 here means
+            # nginx and PHP-FPM are both up on the deployed image.
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$BASE/_login" || echo 000)
+            if [ "$code" != "200" ]; then
+              echo "Dev reported ready but /_login returned $code - the app is not serving."
+              flyctl logs --app restarters-dev --no-tail 2>&1 | tail -60 || true
+              exit 1
+            fi
+
+            echo "Dev is up: restore ok, migrations ok, app serving."
+          no_output_timeout: 40m
+
+  deploy-fly-prod:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: Install flyctl
+          command: |
+            curl -L https://fly.io/install.sh | sh || true
+            echo 'export PATH=/home/circleci/.fly/bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Deploy to restarters (production)
+          command: |
+            export FLY_API_TOKEN="FlyV1 $FLY_API_TOKEN"
+            # Deliberately not failing the job here.  A rolling deploy that
+            # times out waiting for health checks leaves the machine on the new
+            # image but out of the proxy pool, which with a single machine is a
+            # total outage - and that is precisely when we must not stop and
+            # walk away.  The verify step below decides whether the site is
+            # actually serving, and that is the thing we care about.
+            if flyctl deploy --app restarters --remote-only; then
+              echo ok > /tmp/deploy-result
+            else
+              echo failed > /tmp/deploy-result
+              echo "flyctl reported failure; the verify step will check whether production is serving."
+            fi
+          no_output_timeout: 15m
+      - run:
+          name: Verify production is serving, restarting once if not
+          command: |
+            export FLY_API_TOKEN="FlyV1 $FLY_API_TOKEN"
+
+            # Two probes, because they answer different questions.
+            #
+            # robots.txt is static: a 200 means nginx is up and the proxy has an
+            # instance to route to.  That is also the path the Fly health check
+            # uses - which is exactly why it cannot be the only probe.  On
+            # 2026-09-03 restarters-dev served robots.txt, and reported a passing
+            # health check, while every database-backed page returned 500,
+            # because it was pointed at a database app that no longer existed.
+            serving() {
+              for _ in $(seq 1 "$1"); do
+                code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+                       https://restarters.net/robots.txt || echo 000)
+                [ "$code" = "200" ] && return 0
+                sleep 10
+              done
+              return 1
+            }
+
+            # homepage_data is public, cheap and aggregates over the database, so
+            # it answers the question that matters: does the app actually work?
+            working() {
+              for _ in $(seq 1 "$1"); do
+                body=$(curl -sS --max-time 20 https://restarters.net/api/homepage_data || true)
+                case "$body" in *'"items_fixed"'*) return 0 ;; esac
+                sleep 10
+              done
+              return 1
+            }
+
+            if working 12; then
+              echo "Production is serving and talking to the database."
+              [ "$(cat /tmp/deploy-result)" = failed ] && \
+                echo "NOTE: flyctl exited non-zero but the site is up - check the deploy log above."
+              exit 0
+            fi
+
+            # Up, but not working: the machine is serving and a restart will not
+            # fix a bad config or an unreachable database.  Restarting here would
+            # just cycle a healthy-looking machine and hide the real fault.
+            if serving 3; then
+              echo "=============================================="
+              echo "Production is serving but NOT working - the app"
+              echo "answers robots.txt while /api/homepage_data does"
+              echo "not.  That is a config or database fault, which"
+              echo "a restart cannot fix.  Needs a human."
+              echo "=============================================="
+              flyctl status --app restarters || true
+              flyctl logs --app restarters --no-tail 2>&1 | tail -50 || true
+              exit 1
+            fi
+
+            echo "=============================================="
+            echo "Production is NOT serving after the deploy."
+            echo "=============================================="
+            flyctl status --app restarters || true
+
+            # On 2026-09-02 a deploy timed out waiting for health checks and
+            # left the machine started but critical for 43 minutes; restarting
+            # that same image brought it straight back.  Try that once per
+            # machine before giving up, re-checking after each so we stop as
+            # soon as the site returns - and never loop, because a restart that
+            # does not help means something a restart cannot fix.
+            command -v jq >/dev/null 2>&1 || sudo apt-get install -y jq
+            for id in $(flyctl machines list --app restarters --json | jq -r '.[].id'); do
+              echo "Restarting machine $id"
+              flyctl machine restart "$id" --app restarters || true
+              # Recovered means working, not merely answering robots.txt.
+              if working 18; then
+                echo "=============================================="
+                echo "RECOVERED after restarting $id."
+                echo "The deploy could not bring this machine up healthy on"
+                echo "its own - worth finding out why rather than relying on"
+                echo "this path."
+                echo "=============================================="
+                exit 0
+              fi
+            done
+
+            echo "Still not working after restarting. Production needs a human."
+            flyctl status --app restarters || true
+            flyctl logs --app restarters --no-tail 2>&1 | tail -50 || true
+            exit 1
+          no_output_timeout: 15m
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: production
+      - deploy-fly-dev:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+      - deploy-fly-prod:
+          filters:
+            branches:
+              only: production

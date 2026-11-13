@@ -2,7 +2,7 @@
   <CollapsibleSection class="lineheight" collapsed :count="deviceCount" always-show-count count-class="text-black font-weight-normal">
     <template slot="title">
       <div class="d-flex">
-        <b-img class="d-none d-md-block icon" src="/images/tv.svg" />&nbsp;{{ __('devices.title_items_at_event') }}
+        <b-img class="d-none d-md-block icon" :src="imageUrl('/images/tv.svg')" />&nbsp;{{ __('devices.title_items_at_event') }}
       </div>
     </template>
     <template slot="content">
@@ -16,22 +16,22 @@
                 </div>
                 <div class="d-flex">
                   <div class="mr-3 lower">
-                    <b-img src="/images/trash_brand.svg" class="icon" />
-                    {{ Math.round(stats.ewaste) }} kg
+                    <b-img :src="imageUrl('/images/trash_brand.svg')" class="icon" />
+                    {{ Math.round(stats.waste_powered) }} kg
                   </div>
                   <div class="mr-1 lower">
-                    <b-img src="/images/co2_brand.svg" class="icon" />
-                    {{ Math.round(stats.co2) }} kg
+                    <b-img :src="imageUrl('/images/co2_brand.svg')" class="icon" />
+                    {{ Math.round(stats.co2_powered) }} kg
                   </div>
                 </div>
               </div>
             </template>
             <p v-html="__('devices.description_powered')" />
-            <EventDeviceList :devices="powered" :powered="true" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" :clusters="clusters" />
-            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4" @click="addingPowered = true">
-              <b-img class="icon mb-1" src="/images/add-icon.svg" /> {{ __('partials.add_device_powered') }}
+            <EventDeviceList :devices="powered" :powered="true" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :clusters="clusters" />
+            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4 add-powered-device-desktop" @click="addPowered($event)">
+              <b-img class="icon mb-1" :src="imageUrl('/images/add-icon.svg')" /> {{ __('partials.add_device_powered') }}
             </b-btn>
-            <EventDevice v-if="addingPowered" :powered="true" :add="true" :edit="false" :clusters="clusters" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" @close="addingPowered = false" />
+            <EventDevice v-if="addingPowered" :powered="true" :add="true" :edit="false" :clusters="clusters" :eventid="idevents" :brands="brands" :barrier-list="barrierList" @close="closePowered" />
           </b-tab>
           <b-tab title-item-class="w-50" class="pt-2">
             <template slot="title">
@@ -39,18 +39,25 @@
                 <div>
                   <b>{{ __('devices.title_unpowered') }}</b> ({{ unpowered.length }})
                 </div>
-                <div class="lower">
-                  <b-img src="/images/trash_brand.svg" class="icon" />
-                  {{ Math.round(stats.unpowered_waste) }} kg
+                <div class="d-flex">
+                  <div class="mr-3 lower">
+                    <b-img :src="imageUrl('/images/trash_brand.svg')" class="icon" />
+                    {{ Math.round(stats.waste_unpowered) }} kg
+                  </div>
+                  <div class="mr-1 lower">
+                    <b-img :src="imageUrl('/images/co2_brand.svg')" class="icon" />
+                    {{ Math.round(stats.co2_unpowered) }} kg
+                  </div>
                 </div>
+
               </div>
             </template>
             <p v-html="__('devices.description_unpowered')" />
-            <EventDeviceList :devices="unpowered" :powered="false" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" :clusters="clusters" />
-            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4" @click="addingUnpowered = true">
-              <b-img class="icon mb-1" src="/images/add-icon.svg" /> {{ __('partials.add_device_unpowered') }}
+            <EventDeviceList :devices="unpowered" :powered="false" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :clusters="clusters" />
+            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4 add-unpowered-device-desktop" @click="addUnpowered($event)">
+              <b-img class="icon mb-1" :src="imageUrl('/images/add-icon.svg')" /> {{ __('partials.add_device_unpowered') }}
             </b-btn>
-            <EventDevice v-if="addingUnpowered" :powered="false" :add="true" :edit="false" :clusters="clusters" :idevents="idevents" :event="event" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" @close="addingUnpowered = false"/>
+            <EventDevice v-if="addingUnpowered" :powered="false" :add="true" :edit="false" :clusters="clusters" :eventid="idevents" :event="event" :brands="brands" :barrier-list="barrierList" @close="closeUnpowered"/>
           </b-tab>
         </b-tabs>
       </div>
@@ -64,49 +71,53 @@
             </div>
           </template>
           <template slot="title-right">
-            <div class="d-flex text-brand small">
-              <div class="ml-2 mr-1 pt-1 lower align-self-center">
-                <b-img src="/images/trash_brand.svg" class="icon" />
-                {{ Math.round(stats.ewaste) }}
+            <div class="d-flex text-brand small text-center">
+              <div class="ml-2 mr-1 pt-1 lower small">
+                <b-img :src="imageUrl('/images/trash_brand.svg')" class="icon" />
+                {{ Math.round(stats.waste_powered) }}
               </div>
-              <div class="ml-1 mr-1 lower pt-1 small align-self-center">
-                <b-img src="/images/co2_brand.svg" class="icon" />
-                {{ Math.round(stats.co2) }}
+              <div class="ml-1 mr-1 lower pt-1 small">
+                <b-img :src="imageUrl('/images/co2_brand.svg')" class="icon" />
+                {{ Math.round(stats.co2_powered) }}
               </div>
             </div>
           </template>
           <template slot="content">
             <p v-html="__('devices.description_powered')" />
-            <EventDeviceList :devices="powered" :powered="true" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" :clusters="clusters" />
-            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4" @click="addingPowered = true">
-              <b-img class="icon mb-1" src="/images/add-icon.svg" /> {{ __('partials.add_device_powered') }}
+            <EventDeviceList :devices="powered" :powered="true" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :clusters="clusters" />
+            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4 add-powered-device-mobile" @click="addPowered($event)">
+              <b-img class="icon mb-1" :src="imageUrl('/images/add-icon.svg')" /> {{ __('partials.add_device_powered') }}
             </b-btn>
-            <EventDevice v-if="addingPowered" :powered="true" :add="true" :edit="false" :clusters="clusters" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" @close="addingPowered = false" />
+            <EventDevice v-if="addingPowered" :powered="true" :add="true" :edit="false" :clusters="clusters" :eventid="idevents" :brands="brands" :barrier-list="barrierList" @close="addingPowered = false" />
           </template>
         </CollapsibleSection>
         <CollapsibleSection class="lineheight" collapsed :count="unpowered.length" always-show-count count-class="text-black font-weight-normal small">
           <template slot="title">
             <div class="d-flex justify-content-between small ml-1 align-self-center">
               <div>
-                <b>{{ __('partials.add_device_unpowered') }}</b>
+                <b>{{ __('devices.title_unpowered') }}</b>
               </div>
             </div>
           </template>
           <template slot="title-right">
-            <div class="d-flex text-brand small">
-              <div class="ml-2 mr-1 pt-1 lower align-self-center">
-                <b-img src="/images/trash_brand.svg" class="icon" />
-                {{ Math.round(stats.unpowered_waste) }}
+            <div class="d-flex text-brand small text-center">
+              <div class="ml-2 mr-1 pt-1 lower small">
+                <b-img :src="imageUrl('/images/trash_brand.svg')" class="icon" />
+                {{ Math.round(stats.waste_unpowered) }}
+              </div>
+              <div class="ml-1 mr-1 lower pt-1 small">
+                <b-img :src="imageUrl('/images/co2_brand.svg')" class="icon" />
+                {{ Math.round(stats.co2_unpowered) }}
               </div>
             </div>
           </template>
           <template slot="content">
             <p v-html="__('devices.description_unpowered')" />
-            <EventDeviceList :devices="unpowered" :powered="false" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" :clusters="clusters" />
-            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4" @click="addingUnpowered = true">
-              <b-img class="icon mb-1" src="/images/add-icon.svg" /> {{ __('partials.add_device_unpowered') }}
+            <EventDeviceList :devices="unpowered" :powered="false" :canedit="canedit" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :clusters="clusters" />
+            <b-btn variant="primary" v-if="canedit" class="mb-4 ml-4 add-unpowered-device-desktop" @click="addUnpowered($event)">
+              <b-img class="icon mb-1" :src="imageUrl('/images/add-icon.svg')" /> {{ __('partials.add_device_unpowered') }}
             </b-btn>
-            <EventDevice v-if="addingUnpowered" :powered="false" :add="true" :edit="false" :clusters="clusters" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" @close="addingUnpowered = false" />
+            <EventDevice v-if="addingUnpowered" :powered="false" :add="true" :edit="false" :clusters="clusters" :eventid="idevents" :brands="brands" :barrier-list="barrierList" @close="addingUnpowered = false" />
           </template>
         </CollapsibleSection>
       </div>
@@ -115,15 +126,14 @@
 </template>
 <script>
 import event from '../mixins/event'
-import ExternalLink from './ExternalLink'
-import CollapsibleSection from './CollapsibleSection'
-import EventDeviceList from './EventDeviceList'
-import EventDeviceSummary from './EventDeviceSummary'
-import EventDevice from './EventDevice'
+import images from '../mixins/images'
+import CollapsibleSection from './CollapsibleSection.vue'
+import EventDeviceList from './EventDeviceList.vue'
+import EventDevice from './EventDevice.vue'
 
 export default {
-  components: {EventDevice, EventDeviceSummary, EventDeviceList, CollapsibleSection, ExternalLink},
-  mixins: [ event ],
+  components: {EventDevice, EventDeviceList, CollapsibleSection},
+  mixins: [ event, images ],
   props: {
     idevents: {
       type: Number,
@@ -154,11 +164,6 @@ export default {
       required: false,
       default: null
     },
-    itemTypes: {
-      type: Array,
-      required: false,
-      default: null
-    },
   },
   data () {
     return {
@@ -171,7 +176,18 @@ export default {
       return this.$store.getters['events/getStats'](this.idevents)
     },
     allDevices() {
-      return this.$store.getters['devices/byEvent'](this.idevents) || []
+      console.log('All devices', this.$store.getters['devices/byEvent'](this.idevents) || [])
+      const deviceIds = this.$store.getters['devices/byEvent'](this.idevents) || []
+      const devices = []
+
+      deviceIds.forEach((id) => {
+        const device = this.$store.getters['devices/byId'](id)
+        if (device) {
+          devices.push(device)
+        }
+      })
+
+      return devices
     },
     powered() {
       return this.allDevices.filter((d) => {
@@ -193,18 +209,42 @@ export default {
     //
     // Further down the line this initial data might be provided either by an API call from the client to the server,
     // or from Vue server-side rendering, where the whole initial state is passed to the client.
-    this.$store.dispatch('devices/set', {
-      idevents: this.idevents,
+    this.$store.dispatch('devices/setForEvent', {
+      eventid: this.idevents,
       devices: this.devices
     })
+  },
+  methods: {
+    async addPowered(event) {
+      this.addingPowered = true
+      await this.$nextTick()
+      event.target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    },
+    async addUnpowered(event) {
+      this.addingUnpowered = true
+      await this.$nextTick()
+      event.target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    },
+    closePowered() {
+      this.addingPowered = false
+    },
+    closeUnpowered() {
+      this.addingUnpowered = false
+    }
   }
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .lineheight {
   line-height: 2;

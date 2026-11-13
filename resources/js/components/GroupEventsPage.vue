@@ -1,5 +1,6 @@
 <template>
   <div v-if="group">
+    <AlertBanner />
     <GroupEvents
         heading-level="h1"
         heading-sub-level="h2"
@@ -7,16 +8,18 @@
         :canedit="canedit"
         :calendar-copy-url="calendarCopyUrl"
         add-button
+        :location="location"
     />
   </div>
 </template>
 <script>
-import GroupEvents from './GroupEvents'
+import GroupEvents from './GroupEvents.vue'
 import auth from '../mixins/auth'
+import AlertBanner from './AlertBanner.vue'
 
 export default {
   components: {
-    GroupEvents
+    GroupEvents, AlertBanner
   },
   mixins: [ auth ],
   props: {
@@ -41,7 +44,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
-    }
+    },
+    location: {
+      type: String,
+      required: true
+    },
   },
   computed: {
     group() {

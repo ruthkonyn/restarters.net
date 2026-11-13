@@ -33,10 +33,8 @@ class LanguageSync extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         // We want to sync the language preference from restarters to mediawiki.
         //
@@ -50,7 +48,7 @@ class LanguageSync extends Command
         if (! env('WIKI_DB')) {
             $this->error('Wiki integration not enabled');
         } else {
-            $dsn = 'mysql:host=localhost;port=3306;dbname='.env('WIKI_DB').';charset=utf8';
+            $dsn = 'mysql:host='.env('WIKI_HOST', 'localhost') . ';port=3306;dbname='.env('WIKI_DB').';charset=utf8';
             $mwdb = new \PDO($dsn, env('WIKI_DB_USER'), env('WIKI_DB_PASSWORD'), [
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci',
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,

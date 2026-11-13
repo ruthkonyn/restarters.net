@@ -2,70 +2,46 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class AdminNewUser extends Notification implements ShouldQueue
+class AdminNewUser extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr)
-    {
-        $this->arr = $arr;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        if ($notifiable->invites == 1) {
-            return ['mail', 'database'];
-        }
-
-        return ['database'];
-    }
-
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $locale = $notifiable->language;
         return (new MailMessage)
-                      ->subject('New User Registration')
-                      ->greeting('Hello!')
-                      ->line('A new user "'.$this->arr['name'].'" has joined the Restarters community.')
-                      ->action('View profile', url('/profile/'.$this->arr['id']))
-                      ->line('If you would like to stop receiving these emails, please visit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
+            ->subject(__('notifications.new_user_subject', [], $locale))
+            ->greeting(__('notifications.greeting', [], $notifiable->language))
+            ->line(
+                __('notifications.new_user_line1', [
+                    'name' => $this->arr['name']
+                ], $notifiable->locale)
+            )
+            ->action(__('notifications.view_profile', [], $locale), url('/profile/' . $this->arr['id']))
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $notifiable->locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
+        $locale = $notifiable->language;
         return [
-            'title' => 'New user has joined the community:',
+            'title' => __('notifications.new_user_title', [], $locale),
             'name' => $this->arr['name'],
-            'url' => url('/profile/'.$this->arr['id']),
+            'url' => url('/profile/' . $this->arr['id']),
         ];
     }
 }

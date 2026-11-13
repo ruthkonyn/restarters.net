@@ -2,12 +2,14 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Xref extends Model
 {
     protected $table = 'xref';
+    protected $primaryKey = 'idxref';
 
     public $timestamps = false;
 
@@ -17,8 +19,6 @@ class Xref extends Model
     protected $refType;
 
     private $index;
-    private $search_id;
-    private $search_type;
 
     /**
      * The attributes that are mass assignable.
@@ -26,34 +26,6 @@ class Xref extends Model
      * @var array
      */
     protected $fillable = ['object', 'object_type', 'reference', 'reference_type'];
-
-    /**
-     * returns object with cross-references to selected
-     * ID and TABLE.
-     * @ $index can be 'object' || 'reference'
-     *   this selects in which direction to look
-     * */
-    public function findXref()
-    {
-        if ($this->index !== false) {
-            $sql = 'SELECT * FROM `'.$this->table.'`
-                    WHERE `'.$this->index.'` = :id
-                    AND `'.$this->index.'_type` = :type';
-
-            try {
-                return DB::select(DB::raw($sql), ['id' => $this->search_id, 'type' => $this->search_type]);
-            } catch (\Illuminate\Database\QueryException $e) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public function findFullXref()
-    {
-        //switch ($table
-    }
 
     public function createXref($clear = true)
     {
@@ -64,7 +36,7 @@ class Xref extends Model
             $sql = 'INSERT INTO `'.$this->table.'`(`object`, `object_type`, `reference`, `reference_type`) VALUES (:obj, :objType, :ref, :refType)';
 
             try {
-                return DB::insert(DB::raw($sql), ['obj' => $this->obj, 'objType' => $this->objType, 'ref' => $this->ref, 'refType' => $this->refType]);
+                return DB::insert($sql, ['obj' => $this->obj, 'objType' => $this->objType, 'ref' => $this->ref, 'refType' => $this->refType]);
             } catch (\Illuminate\Database\QueryException $e) {
                 return false;
             }
@@ -79,7 +51,7 @@ class Xref extends Model
             $sql = 'DELETE FROM `'.$this->table.'` WHERE `reference` = :id AND `reference_type` = :type AND `object_type` = :objectType';
 
             try {
-                return DB::delete(DB::raw($sql), ['id' => $this->ref, 'type' => $this->refType, 'objectType' => $this->objType]);
+                return DB::delete($sql, ['id' => $this->ref, 'type' => $this->refType, 'objectType' => $this->objType]);
             } catch (\Illuminate\Database\QueryException $e) {
                 return false;
             }
@@ -93,14 +65,26 @@ class Xref extends Model
         $sql = 'DELETE FROM `'.$this->table.'` WHERE `object` = :id AND `object_type` = :type';
 
         try {
-            return DB::delete(DB::raw($sql), ['id' => $this->obj, 'type' => $this->objType]);
+            return DB::delete($sql, ['id' => $this->obj, 'type' => $this->objType]);
         } catch (\Illuminate\Database\QueryException $e) {
             return false;
         }
     }
 
-    public function image()
+    public function image(): HasOne
     {
         return $this->hasOne(\App\Images::class, 'idimages', 'object');
+    }
+
+
+    public function copy($reference) {
+        error_log("Copy {$this->idxref} to {$reference}");
+
+        return Xref::create([
+                         'object' => $this->object,
+                         'object_type' => $this->object_type,
+                         'reference' => $reference,
+                         'reference_type' => $this->reference_type,
+                     ]);
     }
 }

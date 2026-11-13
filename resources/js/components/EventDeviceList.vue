@@ -4,16 +4,13 @@
       <b-thead>
         <b-tr>
           <b-th>
+            {{ __('devices.item_type_short') }}
+          </b-th>
+          <b-th>
             {{ __('devices.category') }}
           </b-th>
           <b-th v-if="powered" class="d-none d-md-table-cell">
               {{ __('devices.brand') }}
-          </b-th>
-          <b-th v-if="powered">
-            {{ __('devices.model') }}
-          </b-th>
-          <b-th v-if="!powered">
-            {{ __('devices.item_type') }}
           </b-th>
           <b-td v-if="!powered" class="d-table-cell d-md-none" />
           <b-th class="d-none d-md-table-cell">
@@ -28,19 +25,19 @@
           <b-th class="d-none d-md-table-cell">
             {{ __('devices.spare_parts') }}
           </b-th>
-          <b-th v-if="canedit" class="d-none d-md-table-cell">
+          <b-th v-if="canedit">
           </b-th>
         </b-tr>
       </b-thead>
       <b-tbody class="borders">
-        <EventDeviceSummary v-for="device in devices" :key="'device-' + device.iddevices" :device="device" :canedit="canedit" :powered="powered" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :itemTypes="itemTypes" :clusters="clusters" />
+        <EventDeviceSummary v-for="device in devices" :key="'device-' + device.id" :id="device.id" :canedit="canedit" :powered="powered" :idevents="idevents" :brands="brands" :barrier-list="barrierList" :clusters="clusters" />
       </b-tbody>
     </b-table-simple>
   </div>
 </template>
 <script>
 import event from '../mixins/event'
-import EventDeviceSummary from './EventDeviceSummary'
+import EventDeviceSummary from './EventDeviceSummary.vue'
 
 export default {
   components: {EventDeviceSummary},
@@ -79,19 +76,14 @@ export default {
       required: false,
       default: null
     },
-    itemTypes: {
-      type: Array,
-      required: false,
-      default: null
-    },
   },
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .borders {
   border-bottom: 2px solid black;

@@ -1,0 +1,35 @@
+<?php
+
+return [
+  'email_address_validation' => 'Er bestaat al een account met dit e-mailadres. Heb je geprobeerd in te loggen?',
+  'login' => 'Inloggen',
+  'delete_account' => 'Account verwijderen',
+  'failed' => 'Dit e-mailadres is niet geregistreerd in het systeem of het wachtwoord is onjuist.',
+
+  'email_address' => 'E-mailadres',
+  'sign_in' => 'Ik weet het weer. Laat me inloggen',
+  'forgotten_pw' => 'Wachtwoord vergeten?',
+  'forgotten_pw_text' => 'Dat overkomt ons allemaal. Voer gewoon je e-mailadres in om een bericht te ontvangen om je wachtwoord opnieuw in te stellen.',
+  'reset' => 'Opnieuw instellen',
+  'password' => 'Wachtwoord',
+  'repeat_password' => 'Wachtwoord herhalen',
+  'repeat_password_validation' => 'Wachtwoorden komen niet overeen of hebben minder dan zes tekens',
+  'forgot_password' => 'Wachtwoord vergeten',
+  'change_password' => 'Wachtwoord wijzigen',
+  'change_password_text' => 'Houd je account veilig en wijzig regelmatig je wachtwoord.',
+  'reset_password' => 'Wachtwoord opnieuw instellen',
+  'create_account' => 'Een account aanmaken',
+  'current_password' => 'Huidig wachtwoord',
+  'new_password' => 'Nieuw wachtwoord',
+  'new_repeat_password' => 'Nieuw wachtwoord herhalen',
+  'delete_account_text' => 'Ik begrijp dat het verwijderen van mijn account al mijn persoonlijke gegevens verwijdert en
+dat dit een permanente actie is.',
+  'save_preferences' => 'Voorkeuren opslaan',
+  'set_preferences' => 'Klik hier om je e-mailvoorkeuren voor ons discussieplatform in te stellen',
+  'profile_admin' => 'Alleen voor beheerders',
+  'profile_admin_text' => 'Hier kunnen beheerders de rol van een gebruiker of de bijbehorende groepen wijzigen',
+  'user_role' => 'Gebruikersrol',
+  'assigned_groups' => 'Toegewezen aan groepen',
+  'save_user' => 'Gebruiker opslaan',
+  'login_before_using_shareable_link' => 'Om je uitnodiging te voltooien, maak hieronder een account aan, of als je al een account hebt <a href=":login_url">log dan hier in</a>.',
+];

@@ -1,7 +1,9 @@
 /node_modules
+/.worktrees
 /public/storage
 /public/uploads
 /public/devices.csv
+/public/exports
 /public/report.html
 npm-debug.log
 yarn-error.log
@@ -23,5 +25,20 @@ restarters-anonymised.sql
 /public/global
 /public/js/app.js
 /public/js/wiki.js
+/public/js/resources_js_*.js
 /public/css/app.css
+/public/hot
+/public/messages.js
 /public/css/wiki.css
+/.claude/settings.local.json
+/public/build/
+/storage/api-docs/api-docs.json
+/.phpunit.result.cache
+/playwright-report/
+/events.csv
+/public/repair-data*.csv
+/uploads/*.jpg
+.mcp.json
+
+# PHPUnit coverage output, regenerated on every test run.
+tests/clover.xml

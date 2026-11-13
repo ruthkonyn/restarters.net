@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API;
+use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 /*
@@ -13,68 +16,127 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-Route::get('/homepage_data', function () {
+Route::get('/homepage_data', function () { // Used from DeviceController, tested.
     return App\Http\Controllers\ApiController::homepage_data();
 });
 
-Route::get('/party/{id}/stats', function ($id) {
+Route::get('/party/{id}/stats', function ($id) { // Used from TRP.org.
     return App\Http\Controllers\ApiController::partyStats($id);
 });
 
-Route::get('/group/{id}/stats', function ($id) {
+Route::get('/group/{id}/stats', function ($id) { // Used from TRP.org.
     return App\Http\Controllers\ApiController::groupStats($id);
 });
 
-Route::get('/{api_token}/event/group-tag/{group_tag_id}', function ($api_token, $group_tag_id) {
-    if ($api_token == env('API_KEY')) {
-        return App\Http\Controllers\ApiController::getEventsByGroupTag($group_tag_id);
-    }
-
-    return response()->json([
-        'message' => 'Invalid API key',
-    ]);
-});
-
-Route::get('/outbound/info/{type}/{id}/{format?}', function ($type, $id, $format = 'fixometer') {
+Route::get('/outbound/info/{type}/{id}/{format?}', function ($type, $id, $format = 'fixometer') { // Used from share plugins, tested.
     return App\Http\Controllers\OutboundController::info($type, $id, $format);
 });
 
-Route::get('/group-tag/stats/{group_tag_id}/{format?}', function ($group_tag_id, $format = 'row') {
-    return App\Http\Controllers\GroupController::statsByGroupTag($group_tag_id, $format);
+Route::middleware('auth:api')->group(function () {
+    Route::get('/users/me', [ApiController::class, 'getUserInfo']); // Not used but worth keeping and tested.
+    Route::get('/users', [ApiController::class, 'getUserList']);  // Not used but worth keeping and tested.
+    Route::get('/users/changes', [API\UserController::class, 'changes']); // Used by Zapier
+
+    Route::get('/networks/{network}/stats/', [API\NetworkController::class, 'stats']); // Used by RepairTogether.
+
+    Route::prefix('/groups')->group(function() {
+
+        Route::get('/', [API\GroupController::class, 'getGroupList']); // Not used but worth keeping and tested.
+        Route::get('/changes', [API\GroupController::class, 'getGroupChanges']); // Used by Zapier
+        Route::get('/network/', [API\GroupController::class, 'getGroupsByUsersNetworks']); // Used by Repair Together.
+    });
+
+    Route::prefix('/events')->group(function() {
+        Route::get('/network/{date_from?}/{date_to?}', [API\EventController::class, 'getEventsByUsersNetworks']); // Used by Repair Together.
+        Route::get('{id}/volunteers', [API\EventController::class, 'listVolunteers']);
+        Route::put('{id}/volunteers', [API\EventController::class, 'addVolunteer']);
+    });
+
+    Route::get('/usersgroups/changes', [API\UserGroupsController::class, 'changes']); // Used by Zapier
+    Route::delete('/usersgroups/{id}', [API\UserGroupsController::class, 'leave']); // Used by Vue client.
 });
 
-// API calls to get Group(s)/Event(s) Info relevant
-Route::group(['middleware' => 'checkAPIAccess'], function () {
-    Route::get('/{api_token}/group/{group}/{date_from?}/{date_to?}', 'GroupController@getGroupByKeyAndId');
-    Route::get('/{api_token}/groups/group-tag/', 'GroupController@getGroupsByKey');
+Route::get('/devices/{page}/{size}', [App\Http\Controllers\ApiController::class, 'getDevices']); // Used by Vue client.
 
-    Route::get('/{api_token}/event/{party}/', 'PartyController@getEventByKeyAndId');
-    Route::get('/{api_token}/events/group-tag/{date_from?}/{date_to?}', 'PartyController@getEventsByKey');
+// Notifications info.  We don't authenticate this, as API keys don't exist for all users.  There's no real privacy
+// issue with exposing the number of outstanding notifications.
+Route::get('/users/{id}/notifications', [API\UserController::class, 'notifications']);
+
+// Top Talk topics.  Doesn't need authentication either.
+Route::get('/talk/topics/{tag?}', [API\DiscourseController::class, 'discussionTopics']);
+
+// Timezones
+Route::get('/timezones', [App\Http\Controllers\ApiController::class, 'timezones']);
+
+// We are working towards a new and more coherent API.
+Route::prefix('v2')->group(function() {
+    Route::middleware(\App\Http\Middleware\APISetLocale::class)->group(function() {
+        Route::prefix('/groups')->group(function() {
+            Route::get('/summary', [API\GroupController::class, 'listSummaryv2']);
+            Route::get('/names', [API\GroupController::class, 'listNamesv2']);
+            Route::get('/tags', [API\GroupController::class, 'listTagsv2']);
+            Route::get('{id}/events', [API\GroupController::class, 'getEventsForGroupv2']);
+            Route::get('{id}', [API\GroupController::class, 'getGroupv2']);
+            Route::post('', [API\GroupController::class, 'createGroupv2']);
+            Route::patch('{id}', [API\GroupController::class, 'updateGroupv2']);
+
+            Route::get('{id}/volunteers', [API\GroupController::class, 'getVolunteersForGroupv2']);
+            Route::middleware('auth:api')->group(function ()
+            {
+                Route::patch('{id}/volunteers/{iduser}', [API\GroupController::class, 'patchVolunteerForGroupv2']);
+                Route::delete('{id}/volunteers/{iduser}', [API\GroupController::class, 'deleteVolunteerForGroupv2']);
+            });
+        });
+
+        Route::prefix('/events')->group(function() {
+            Route::get('{id}', [API\EventController::class, 'getEventv2']);
+            Route::post('', [API\EventController::class, 'createEventv2']);
+            Route::patch('{id}', [API\EventController::class, 'updateEventv2']);
+        });
+
+        Route::prefix('/networks')->group(function() {
+            Route::get('/', [API\NetworkController::class, 'getNetworksv2']);
+            Route::get('{id}', [API\NetworkController::class, 'getNetworkv2']);
+            Route::get('{id}/groups', [API\NetworkController::class, 'getNetworkGroupsv2']);
+            Route::get('{id}/events', [API\NetworkController::class, 'getNetworkEventsv2']);
+            Route::get('{id}/tags', [API\NetworkController::class, 'getNetworkTagsv2']);
+            Route::get('{id}/stats', [API\NetworkController::class, 'getNetworkStatsv2']);
+            Route::middleware('auth:api')->group(function() {
+                Route::post('{id}/tags', [API\NetworkController::class, 'createNetworkTagv2']);
+                Route::put('{id}/tags/{tagId}', [API\NetworkController::class, 'updateNetworkTagv2']);
+                Route::delete('{id}/tags/{tagId}', [API\NetworkController::class, 'deleteNetworkTagv2']);
+            });
+        });
+
+        Route::prefix('/moderate')->group(function() {
+            Route::middleware('auth:api')->group(function ()
+            {
+                Route::get('/groups', [API\GroupController::class, 'moderateGroupsv2']);
+                Route::get('/events', [API\EventController::class, 'moderateEventsv2']);
+            });
+        });
+
+        Route::get('/items', [API\ItemController::class, 'listItemsv2']);
+
+        Route::prefix('/alerts')->group(function() {
+            Route::get('/', [API\AlertController::class, 'listAlertsv2']);
+            Route::put('/', [API\AlertController::class, 'addAlertv2']);
+            Route::patch('/{id}', [API\AlertController::class, 'updateAlertv2']);
+        });
+
+        Route::prefix('/devices')->group(function() {
+            Route::get('{id}', [API\DeviceController::class, 'getDevicev2']);
+            Route::post('', [API\DeviceController::class, 'createDevicev2']);
+            Route::patch('{id}', [API\DeviceController::class, 'updateDevicev2']);
+            Route::delete('{id}', [API\DeviceController::class, 'deleteDevicev2']);
+        });
+
+        // Open Repair Data Standard export.  Administrator only, gated in the
+        // controller the same way UserController::changes is - this is a bulk
+        // export of volunteer-written text across every approved group, and
+        // auth:api alone only establishes who the caller is, not whether they
+        // should have it.  Returns 503 until ORDS_ID_PREFIX and
+        // ORDS_DATA_PROVIDER are set; see config/ords.php for why.
+        Route::get('/repairs', [API\RepairController::class, 'listRepairsv2'])->middleware('auth:api');
+    });
 });
-
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::get('/users/me', 'ApiController@getUserInfo');
-    Route::get('/users', 'ApiController@getUserList');
-    Route::get('/users/changes', 'API\UserController@changes');
-    Route::put('/users/{id}', 'API\UserController@update');
-
-    Route::get('/networks/{network}/stats/', 'API\NetworkController@stats');
-
-    Route::get('/groups', 'API\GroupController@getGroupList');
-    Route::get('/groups/changes', 'API\GroupController@getGroupChanges');
-    Route::get('/groups/group-tag/', 'API\GroupController@getGroupsByUserGroupTag');
-    Route::get('/groups/network/', 'API\GroupController@getGroupsByUsersNetworks');
-
-    Route::get('/events/network/{date_from?}/{date_to?}', 'API\EventController@getEventsByUsersNetworks');
-
-    Route::get('/usersgroups/changes', 'API\UserGroupsController@changes');
-    Route::delete('/usersgroups/{id}', 'API\UserGroupsController@leave');
-});
-
-Route::get('/groups/{group}/events', 'API\GroupController@getEventsForGroup');
-
-Route::get('/devices/{page}/{size}', [App\Http\Controllers\ApiController::class, 'getDevices']);

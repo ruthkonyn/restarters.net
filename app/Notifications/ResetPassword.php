@@ -2,34 +2,16 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class ResetPassword extends Notification implements ShouldQueue
+class ResetPassword extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr)
-    {
-        $this->arr = $arr;
-    }
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -37,26 +19,26 @@ class ResetPassword extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $locale = $notifiable->language;
+
         return (new MailMessage)
-                    ->subject('Reset password')
-                    ->greeting('Hello!')
-                    ->line('You are receiving this email because we received a password reset request for your account.')
-                    ->action('Reset password', $this->arr['url'])
-                    ->line('If you did not request a password reset, no further action is required.');
+            ->subject(__('notifications.password_reset_subject', [], $locale))
+            ->greeting(__('notifications.greeting', [], $locale))
+            ->line(__('notifications.password_reset_line1', [], $locale))
+            ->action(__('notifications.password_reset_action', [], $locale), $this->arr['url'] . "&locale=" . $locale)
+            ->line(__('notifications.password_reset_noaction', [], $locale));
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
 

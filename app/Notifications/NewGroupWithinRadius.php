@@ -2,68 +2,48 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class NewGroupWithinRadius extends Notification implements ShouldQueue
+class NewGroupWithinRadius extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr)
-    {
-        $this->arr = $arr;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        if ($notifiable->invites == 1) {
-            return ['mail', 'database'];
-        }
-
-        return ['database'];
-    }
-
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $locale = $notifiable->language;
         return (new MailMessage)
-                    ->subject('There\'s a new repair group near to you')
-                    ->greeting('Hello!')
-                    ->line('A new group near to you, '.$this->arr['group_name'].', has just become active on Restarters.net.')
-                    ->action('Find out more about '.$this->arr['group_name'], $this->arr['group_url'])
-                    ->line('If you would like to stop receiving these emails, please visit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
+            ->subject(__('notifications.new_group_subject', [], $locale))
+            ->greeting(__('notifications.greeting', [], $notifiable->language))
+            ->line(
+                __('notifications.new_group_line1', [
+                    'name' => $this->arr['group_name']
+                ], $locale)
+            )
+            ->action(
+                __('notifications.new_group_action', [
+                    'name' => $this->arr['group_name']
+                ], $locale),
+                $this->arr['group_url']
+            )
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
-            'title' => 'A new repair group near you:',
+            'title' => __('notifications.new_group_title', [], $notifiable->language),
             'name' => $this->arr['group_name'],
             'url' => $this->arr['group_url'],
         ];

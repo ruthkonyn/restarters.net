@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddWordpressPushToNetworksTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('networks', function (Blueprint $table) {
             $table->boolean('events_push_to_wordpress')->notNullable()->default(false);
@@ -20,13 +18,11 @@ class AddWordpressPushToNetworksTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('networks', function (Blueprint $table) {
             $table->dropColumn('events_push_to_wordpress');
         });
     }
-}
+};

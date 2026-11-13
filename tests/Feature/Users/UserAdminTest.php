@@ -6,10 +6,10 @@ use App\Events\UserUpdated;
 use App\Role;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserAdminTest extends TestCase
 {
@@ -17,26 +17,28 @@ class UserAdminTest extends TestCase
     {
         return [
             [
-                'Administrator', TRUE
+                'Administrator', true,
             ],
             [
-                'NetworkCoordinator', FALSE
+                'NetworkCoordinator', false,
             ],
             [
-                'Host', FALSE
+                'Host', false,
             ],
             [
-                'Restarter', FALSE
+                'Restarter', false,
             ],
         ];
     }
 
     /**
-     *@dataProvider provider
+     * @dataProvider provider
+     * @story:UserController::all
      */
-    public function testUsersPage($role, $cansee) {
+    public function testUsersPage($role, $cansee): void
+    {
         // Fetch the list of all users and check that we're in it.
-        $admin = factory(User::class)->states($role)->create();
+        $admin = User::factory()->{lcfirst($role)}()->create();
         $this->actingAs($admin);
 
         $response = $this->get('/user/all');
@@ -47,5 +49,21 @@ class UserAdminTest extends TestCase
         } else {
             $response->assertDontSee('Create new user');
         }
+    }
+
+    /** @story:UserController::postSoftDeleteUser */
+    public function testSoftDelete(): void {
+        $user = User::factory()->restarter()->create();
+        $this->loginAsTestUser(Role::ADMINISTRATOR);
+        $response = $this->post('/user/soft-delete', [
+            'id' => $user->id
+        ]);
+        $response->assertSessionHas('danger');
+        $this->assertTrue($response->isRedirection());
+
+        $response = $this->post('/user/soft-delete');
+        $this->assertTrue($response->isRedirection());
+        $redirectTo = $response->getTargetUrl();
+        $this->assertNotFalse(strpos($redirectTo, '/login'));
     }
 }

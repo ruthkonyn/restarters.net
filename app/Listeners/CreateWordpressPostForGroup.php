@@ -4,15 +4,13 @@ namespace App\Listeners;
 
 use App\Events\ApproveGroup;
 use App\Group;
-use App\Notifications\AdminWordPressCreateGroupFailure;
 use App\Helpers\Fixometer;
+use App\Notifications\AdminWordPressCreateGroupFailure;
 use HieuLe\WordpressXmlrpcClient\WordpressClient;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Notification;
 
-class CreateWordpressPostForGroup
+class CreateWordpressPostForGroup extends BaseEvent
 {
     /**
      * Create the event listener.
@@ -26,55 +24,36 @@ class CreateWordpressPostForGroup
 
     /**
      * Handle the event.
-     *
-     * @param  ApproveGroup  $event
-     * @return void
      */
-    public function handle(ApproveGroup $event)
+    public function handle(ApproveGroup $event): void
     {
         $id = $event->group->idgroups;
         $data = $event->data;
 
         $group = Group::find($id);
 
-        if (! empty($group)) {
+        if (empty($group)) {
             Log::error('Group not found');
+
+            return;
         }
 
+        if ($group->archived_at) {
+            // Suppress notifications for archived groups.
+            return;
+        }
+
+        $group->approved = true;
+        $group->save();
+
         if (! $group->eventsShouldPushToWordpress()) {
-            $group->update(['wordpress_post_id' => '99999']);
             Log::info('Approved - but groups in this network are not published to WordPress');
 
             return;
         }
 
         try {
-            if (isset($data['moderate']) && $data['moderate'] == 'approve') {
-                // TODO: host.  Groups don't just have one host.  Is host
-                // displayed on the front-end anywhere?
-                // TODO: receiving area field from posted data.  It's currently not in the interface.
-
-                $custom_fields = [
-                    ['key' => 'group_city', 'value' => $group->area],
-                    ['key' => 'group_country', 'value' => $group->country],
-                    ['key' => 'group_website', 'value' => $group->website],
-                    ['key' => 'group_hash', 'value' => $id],
-                    ['key' => 'group_avatar_url', 'value' => $data['group_avatar']],
-                    ['key' => 'group_latitude', 'value' => $group->latitude],
-                    ['key' => 'group_longitude', 'value' => $group->longitude],
-                ];
-
-                $content = [
-                    'post_type' => 'group',
-                    'post_title' => $group->name,
-                    'post_content' => $group->free_text,
-                    'custom_fields' => $custom_fields,
-                ];
-
-                $wpid = $this->wpClient->newPost($group->name, $data['free_text'], $content);
-
-                $group->update(['wordpress_post_id' => $wpid]);
-            }
+            $this->createGroupOnWordpress($group);
         } catch (\Exception $e) {
             Log::error('An error occurred during Wordpress group creation: '.$e->getMessage());
 
@@ -83,6 +62,36 @@ class CreateWordpressPostForGroup
             'group_name' => $group->name,
             'group_url' => url('/group/edit/'.$group->idgroups),
             ]));
+        }
+    }
+
+    /**
+     * @param $group
+     * @param $id
+     */
+    public function createGroupOnWordpress($group): void
+    {
+        if (!$group->wordpress_post_id) {
+            $custom_fields = [
+                ['key' => 'group_city', 'value' => $group->area],
+                ['key' => 'group_country', 'value' => Fixometer::getCountryFromCountryCode($group->country_code)],
+                ['key' => 'group_website', 'value' => $group->website],
+                ['key' => 'group_hash', 'value' => $group->idgroups],
+                ['key' => 'group_avatar_url', 'value' => $group->groupImagePath()],
+                ['key' => 'group_latitude', 'value' => $group->latitude],
+                ['key' => 'group_longitude', 'value' => $group->longitude],
+            ];
+
+            $content = [
+                'post_type' => 'group',
+                'post_title' => $group->name,
+                'post_content' => $group->free_text,
+                'custom_fields' => $custom_fields,
+            ];
+
+            $wpid = $this->wpClient->newPost($group->name, $group->free_text, $content);
+
+            $group->update(['wordpress_post_id' => $wpid]);
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="layout pl-2 pr-2">
+  <div class="gestf-layout pl-2 pr-2">
     <b-form-input
         v-model="searchTitle"
         type="search"
@@ -13,7 +13,6 @@
         track-by="country"
         label="country"
         :multiple="false"
-        :allow-empty="false"
         deselect-label=""
         :taggable="false"
         selectLabel=""
@@ -100,11 +99,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
-.layout {
+.gestf-layout {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto;
@@ -120,7 +119,7 @@ export default {
   padding: 0 10px;
 }
 
-/deep/ .datepicker {
+::v-deep .datepicker {
   & label {
     padding-bottom: 0;
     border: 0;

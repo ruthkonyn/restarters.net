@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
-class SendAdminModerateEventPhotosNotification
+class SendAdminModerateEventPhotosNotification extends BaseEvent
 {
     /**
      * Ensure uploads within this timespan (in minutes) will only result in one notification being sent
@@ -33,17 +33,19 @@ class SendAdminModerateEventPhotosNotification
      */
     protected $party;
 
-    /**
-     * @param EventImagesUploaded $event
-     */
-    public function handle(EventImagesUploaded $event)
+    public function handle(EventImagesUploaded $event): void
     {
         $this->event = $event;
         $this->party = $event->party;
 
+        if ($this->party->theGroup->archived_at) {
+            // Suppress notifications for archived groups.
+            return;
+        }
+
         Fixometer::usersWhoHavePreference('admin-moderate-event-photos')->each(function (User $user) {
             if ($this->shouldSendNotification($user)) {
-                Notification::send($user, new AdminModerationEventPhotos([
+                $user->notify(new AdminModerationEventPhotos([
                     'event_id' => $this->party->idevents,
                     'event_venue' => $this->party->venue,
                     'event_url' => url('/party/view/'.$this->party->idevents),

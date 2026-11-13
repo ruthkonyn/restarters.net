@@ -7,6 +7,7 @@
         @yield('extra-meta')
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
         <title>
             @hasSection('title')
@@ -19,11 +20,9 @@
         @yield('extra-css')
 
         <!-- Styles -->
+        @vite(['resources/sass/app.scss', 'resources/global/css/app.scss'])
         @if( isset($iframe) )
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/iframe.css') }}" rel="stylesheet">
-        @else
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         @endif
   </head>
 <body>

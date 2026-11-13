@@ -1,9 +1,9 @@
 <template>
-  <div class="layout md-primary-black">
+  <div class="fld-layout md-primary-black">
     <div class="title mb-2 ml-3">
       {{ __('devices.latest_data') }}
       <span class="icon mt-2 mb-2">
-        <b-img src="/images/clap_doodle.svg" class="img" />
+        <b-img :src="imageUrl('/images/clap_doodle.svg')" class="img" />
       </span>
     </div>
     <div class="description pt-4 m-3 font-weight-bold">
@@ -13,6 +13,8 @@
   </div>
 </template>
 <script>
+import images from '../mixins/images'
+
 export default {
   props: {
     latestData: {
@@ -20,11 +22,13 @@ export default {
       required: true
     }
   },
+  mixins: [images],
   computed: {
     translatedWastePrevented() {
-      return this.$lang.get('devices.group_prevented', {
+      // Round up to avoid 0kg.
+      return this.__('devices.group_prevented', {
         idevents: this.latestData.id_events,
-        amount: this.latestData.waste_prevented
+        amount: Math.ceil(this.latestData.waste_prevented)
       })
     }
   }
@@ -32,16 +36,16 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
-.layout {
+.fld-layout {
   display: grid;
   align-items: center;
   padding: 5px;
   grid-template-columns: 1fr;
-  grid-template-rows: 55px 54px auto;
+  grid-template-rows: 55px 54px fit-content;
   background-color: $brand-light;
   color: black;
   border: 1px solid black;
@@ -58,14 +62,15 @@ export default {
 }
 
 .img {
-  height: 46px;
+  height: 38px;
+  margin-bottom: 13px;
 }
 
 .icon {
   height: 41px;
 }
 
-/deep/ a {
+::v-deep a {
   color: black;
   text-decoration: underline;
 }

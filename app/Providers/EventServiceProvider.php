@@ -5,13 +5,17 @@ namespace App\Providers;
 use App\Events\DeviceCreatedOrUpdated;
 use App\Events\EventDeleted;
 use App\Events\EventImagesUploaded;
+use App\Events\UserConfirmedEvent;
 use App\Events\UserDeleted;
 use App\Events\UserEmailUpdated;
 use App\Events\UserFollowedGroup;
 use App\Events\UserLanguageUpdated;
+use App\Events\UserLeftEvent;
 use App\Events\UserRegistered;
 use App\Events\UserUpdated;
 use App\Listeners\AddUserToDiscourseGroup;
+use App\Listeners\AddUserToDiscourseThreadForEvent;
+use App\Listeners\RemoveUserFromDiscourseThreadForEvent;
 use App\Listeners\AnonymiseSoftDeletedUser;
 use App\Listeners\DeleteEventFromWordPress;
 use App\Listeners\DeviceUpdatedAt;
@@ -39,6 +43,7 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\ApproveEvent::class => [
             \App\Listeners\CreateWordpressPostForEvent::class,
             \App\Listeners\CreateDiscourseThreadForEvent::class,
+            \App\Listeners\NotifyApprovedEvent::class
         ],
 
         \App\Events\EditEvent::class => [
@@ -51,6 +56,7 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\ApproveGroup::class => [
             \App\Listeners\CreateWordpressPostForGroup::class,
+            \App\Listeners\CreateDiscourseGroupForGroup::class,
         ],
 
         \App\Events\EditGroup::class => [
@@ -86,6 +92,14 @@ class EventServiceProvider extends ServiceProvider
         DeviceCreatedOrUpdated::class => [
             DeviceUpdatedAt::class,
         ],
+
+        UserConfirmedEvent::class => [
+            AddUserToDiscourseThreadForEvent::class
+        ],
+
+        UserLeftEvent::class => [
+            RemoveUserFromDiscourseThreadForEvent::class
+        ]
     ];
 
     /**
@@ -99,15 +113,21 @@ class EventServiceProvider extends ServiceProvider
 
     /**
      * Register any events for your application.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        parent::boot();
 
-        if (env('FEATURE__WIKI_INTEGRATION') === true) {
+        if (env('FEATURE__WIKI_INTEGRATION') === true && !empty(env('WIKI_URL'))) {
             Event::listen('Illuminate\Auth\Events\Login', \App\Listeners\LogInToWiki::class);
         }
     }
+
+    /**
+     * Determine if events and listeners should be automatically discovered.
+     */
+    public function shouldDiscoverEvents(): bool
+    {
+        return false;
+    }
 }
+

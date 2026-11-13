@@ -77,18 +77,16 @@
             <div class="form-row">
               <div class="form-group col">
                 <label for="inputCountry">Country:</label>
-                <div class="form-control form-control__select">
-                    <select id="country" name="country" class="field select2">
-                        <option value=""></option>
-                        @foreach (App\Helpers\Fixometer::getAllCountries() as $country_code => $country_name)
-                          @if (isset($country) && $country_code == $country)
-                            <option value="{{ $country_code }}" selected>{{ $country_name }}</option>
-                          @else
-                            <option value="{{ $country_code }}">{{ $country_name }}</option>
-                          @endif
-                        @endforeach
-                    </select>
-                </div>
+                <select id="country" name="country" class="form-control">
+                    <option value=""></option>
+                    @foreach (App\Helpers\Fixometer::getAllCountries() as $country_code => $country_name)
+                      @if (isset($country) && $country_code == $country)
+                        <option value="{{ $country_code }}" selected>{{ $country_name }}</option>
+                      @else
+                        <option value="{{ $country_code }}">{{ $country_name }}</option>
+                      @endif
+                    @endforeach
+                </select>
               </div>
             </div>
             <div class="form-row">
@@ -100,7 +98,7 @@
                     @if (isset($role) && $r->idroles == $role)
                       <option value="{{ $r->idroles }}" selected>{{ $r->role }}</option>
                     @else
-                      <option value="{{ $r->idroles }}">@lang($r->role)</option>
+                      <option value="{{ $r->idroles }}">{{ __($r->role) }}</option>
                     @endif
                   @endforeach
                 </select>
@@ -109,17 +107,15 @@
             <div class="form-row">
               <div class="form-group col">
                 <label for="permission">Permission:</label>
-                <div class="form-control form-control__select">
-                <select id="permissions" name="permissions[]" class="form-control select2-tags" multiple data-live-search="true" title="Choose permissions...">
-                      @foreach (App\Helpers\Fixometer::allPermissions() as $p)
-                        @if (isset($permissions) && in_array($p->idpermissions, $permissions))
-                          <option value="{{ $p->idpermissions }}" selected>{{ $p->permission }}</option>
-                        @else
-                          <option value="{{ $p->idpermissions }}">{{ $p->permission }}</option>
-                        @endif
-                      @endforeach
-                    </select>
-                </div>
+                <select id="permissions" name="permissions[]" class="form-control" multiple size="6" data-live-search="true" title="Choose permissions...">
+                  @foreach (App\Helpers\Fixometer::allPermissions() as $p)
+                    @if (isset($permissions) && in_array($p->idpermissions, $permissions))
+                      <option value="{{ $p->idpermissions }}" selected>{{ $p->permission }}</option>
+                    @else
+                      <option value="{{ $p->idpermissions }}">{{ $p->permission }}</option>
+                    @endif
+                  @endforeach
+                </select>
               </div>
             </div>
 
@@ -166,9 +162,9 @@
                       <td>
 
                           @if(App\Helpers\Fixometer::hasRole($user, 'Administrator'))
-                          <a href="/user/edit/<?php echo $u->id; ?>"><?php echo $u->name; ?></a>
+                          <a href="/user/edit/{{ $u->id }}">{{ $u->name }}</a>
                           @else
-                          <?php echo $u->name; ?>
+                          {{ $u->name }}
                           @endif
 
                       </td>
@@ -185,7 +181,7 @@
                         </span>
                       </td>
                       <td>
-                          @lang($u->role)
+                          {{ __($u->role) }}
                       </td>
                       <td class="d-none d-sm-table-cell">
                         @if (!empty($u->location))
@@ -194,7 +190,7 @@
                           N/A
                         @endif
                       </td>
-                      <td class="d-none d-sm-table-cell">{{ $u->country }}</td>
+                      <td class="d-none d-sm-table-cell">{{ \App\Helpers\Fixometer::getCountryFromCountryCode($u->country_code) }}</td>
                       <td class="d-none d-sm-table-cell text-center">
                         @if (isset($u->groups) && $u->groups->count() > 0)
                             <span class="popover-usergroups" data-toggle="popover" data-html="true" data-content="@include('partials.usergroups-popover')">{{ $u->groups->count() }}</span>

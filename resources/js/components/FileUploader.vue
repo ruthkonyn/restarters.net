@@ -1,16 +1,19 @@
 <template>
   <div>
     <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-sending="sendingEvent" class="ourdropzone" useCustomSlot @vdropzone-success-multiple="success">
-      <b-img src="/images/upload_ico_grey.svg" />
+      <b-img :src="imageUrl('/images/upload_ico_grey.svg')" />
       <div class="dz-message d-none" />
     </vue-dropzone>
   </div>
 </template>
 <script>
-import vue2Dropzone from 'vue2-dropzone'
-// import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import images from '../mixins/images'
 
 export default {
+  mixins: [images],
+  components: {
+    vueDropzone: () => import('vue2-dropzone').then(m => m.VueDropzone || m.default || m)
+  },
   props: {
     url: {
       type: String,
@@ -19,10 +22,12 @@ export default {
     previewsContainer: {
       type: String,
       required: true
-    }
-  },
-  components: {
-    vueDropzone: vue2Dropzone
+    },
+    maxFiles: {
+      type: Number,
+      required: false,
+      default: 1
+    },
   },
   computed: {
     dropzoneOptions () {
@@ -35,9 +40,13 @@ export default {
         addRemoveLinks: false,
         thumbnailWidth: 120,
         thumbnailHeight: 120,
+        maxFiles: this.maxFiles,
+        resizeWidth: 800,
+        resizeHeight: 800,
         thumbnailMethod: 'contain',
         previewsContainer: this.previewsContainer,
         dictRemoveFile: null,
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
         previewTemplate:
             '<div>' +
             ' <div class="dz-preview dz-file-preview">' +

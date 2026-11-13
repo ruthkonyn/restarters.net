@@ -3,23 +3,26 @@
     <b-col md="7">
       <div class="form-group">
         <label :for="$id('address-autocomplete')">{{ __('events.field_event_venue') }}:</label>
-        <vue-google-autocomplete
+        <places-autocomplete
             :id="$id('address-autocomplete')"
             name="location"
             classname="form-control"
             :placeholder="__('events.field_venue_placeholder')"
             @placechanged="placeChanged"
-            aria-describedby="locationHelpBlock"
+            @change="resetValues"
             types="geocode"
             ref="autocomplete"
-        >
-        </vue-google-autocomplete>
-        <p class="text-danger" v-if="error">{{ error }}</p>
-
-        <small id="locationHelpBlock" class="form-text text-muted">
+            :class="{ hasError: hasError, 'm-0': true }"
+        />
+        <small id="locationHelpBlock">
+          <span class="form-text text-danger" v-if="hasError">
+            {{ __('events.address_error') }}
+          </span>
+          <span v-else>
           {{ __('events.field_venue_helper') }}
+          </span>
         </small>
-        <b-btn variant="primary" size="sm" v-if="groupLocation && !online" @click="useGroup" class="mt-2" :disabled="currentValue === groupLocation">
+        <b-btn variant="primary" size="sm" v-if="groupLocation && !online" @click="useGroup" class="mt-2">
           {{ __('events.field_venue_use_group') }}
         </b-btn>
       </div>
@@ -40,7 +43,7 @@
 </template>
 <script>
 import Vue from 'vue'
-import VueGoogleAutocomplete from 'vue-google-autocomplete'
+import PlacesAutocomplete from './PlacesAutocomplete.vue'
 import UniqueId from 'vue-unique-id';
 import map from '../mixins/map'
 
@@ -51,39 +54,56 @@ export default {
   props: {
     value: {
       type: String,
-      required: true
-    },
-    error: {
-      type: String,
       required: false,
       default: null
+    },
+    lat: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    lng: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    hasError: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     allGroups: {
       type: Array,
       required: false,
       default: null
     },
+    selectedGroup: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    online: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   components: {
-    VueGoogleAutocomplete
+    PlacesAutocomplete
   },
   data () {
     return {
       currentValue: null,
       location: null,
       timer: null,
-      online: false,
-      idgroups: null,
-      lat: null,
-      lng: null
     }
   },
   computed: {
     group() {
       let ret = null
-      if (this.idgroups) {
+      if (this.selectedGroup) {
         this.groups.forEach(g => {
-          if (parseInt(this.idgroups) === parseInt(g.idgroups)) {
+          if (parseInt(this.selectedGroup) === parseInt(g.idgroups)) {
             ret = g
           }
         })
@@ -131,30 +151,39 @@ export default {
       groups: Object.values(groups)
     })
   },
-  mounted() {
-    this.currentValue = this.value
-    this.$refs.autocomplete.update(this.currentValue)
-    this.checkOtherInputs()
+  watch: {
+    value: {
+      handler: function (val) {
+        this.currentValue = val
+        this.$refs.autocomplete.update(this.currentValue)
+      },
+      immediate: true
+    },
   },
   beforeDestroy () {
     clearTimeout(this.timer)
   },
   methods: {
-    placeChanged(addressData, placeResultData) {
+    async placeChanged(addressData, placeResultData) {
+      // nextTick which means the change event will get processed before we emit our new values.
+      await this.$nextTick()
       this.currentValue = placeResultData.formatted_address
-      this.lat = addressData.latitude
-      this.lng = addressData.longitude
-
-      // The formatted address returned can be slightly different from the value displayed.  Force them to be
-      // the same so that we can disable the Use group button.
-      this.$nextTick(() => {
-        this.$refs.autocomplete.update(this.currentValue)
-      })
+      this.$emit('update:value', this.currentValue)
+      this.$emit('update:lat', addressData.latitude)
+      this.$emit('update:lng', addressData.longitude)
+    },
+    resetValues() {
+      // This means that if the input changes, we will assume it's invalid unless we subsequently (because of
+      // the nextTick above) get a valid placeChanged event.
+      this.$emit('update:value', null)
+      this.$emit('update:lat', null)
+      this.$emit('update:lng', null)
     },
     useGroup() {
       this.$refs.autocomplete.update(this.groupLocation)
-      this.lat = this.groupLat
-      this.lng = this.groupLng
+      this.$emit('update:value', this.groupLocation)
+      this.$emit('update:lat', parseFloat(this.groupLat))
+      this.$emit('update:lng', parseFloat(this.groupLng))
     },
     checkOtherInputs() {
       // This is a workaround until the whole form is converted to Vue.
@@ -171,6 +200,7 @@ export default {
         this.timer = null
       }
     }
+
   }
 }
 </script>

@@ -21,8 +21,11 @@ class CharsetTest extends TestCase
         parent::setUp();
     }
 
-    /** @test */
-    public function test_charset_db_insert()
+    /**
+     * @test
+     * @story:PartyController::view
+     */
+    public function test_charset_db_insert(): void
     {
         DB::statement('SET foreign_key_checks=0');
 
@@ -164,7 +167,7 @@ class CharsetTest extends TestCase
         $response->assertSeeText($device->brand);
         $response->assertSeeText($device->model);
         $response->assertSeeText($device->problem);
-        file_put_contents(storage_path().'/logs/DAT21-event.html', $response->content());
+        // file_put_contents(storage_path().'/logs/DAT21-event.html', $response->content());
 
         DB::statement('SET foreign_key_checks=1');
     }

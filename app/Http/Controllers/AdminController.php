@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\NoStory;
+use App\Attributes\UserStory;
+use Illuminate\View\View;
 use App\Device;
 use App\Party;
 
+/**
+ * Embedded at https://therestartproject.org/impact
+ */
+#[Feature('Platform', description: 'Platform-wide statistics and public impact data')]
 class AdminController extends Controller
 {
-    public static function stats($section = 1, $paragraph_only = false)
+    #[UserStory('As a Guest, I can view the platform\'s global repair impact statistics', persona: 'Guest', theme: 'Landing page')]
+    public static function stats($section = 1, $paragraph_only = false): View
     {
         if ($section == 1) {
             $stats = self::getStats1();
@@ -20,11 +29,12 @@ class AdminController extends Controller
         return view('admin.stats', $stats);
     }
 
+    #[NoStory(reason: 'Internal stats aggregation helper')]
     public static function getStats1()
     {
         $Device = new Device;
 
-        $allparties = Party::pastEvents()
+        $allparties = Party::past()
             ->with('devices.deviceCategory')
             ->get();
 
@@ -56,22 +66,50 @@ class AdminController extends Controller
             }
         }
 
+        // statusCount() and findMostSeen() might not return 3 values, depending on what entries are in the DB.  So make sure that we
+        // always have values, otherwise the blade fails (for example on Circle, where the DB is empty).
+        $statusCount = [];
+        $mostSeen = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $statusCount[$i] = [
+                'counter' => 0
+            ];
+            $mostSeen[$i] = [
+                'name' => null,
+                'counter' => 0
+            ];
+        }
+
+        $i = 0;
+
+        foreach ($Device->statusCount() as $status) {
+            $statusCount[$i++]['counter'] = $status->counter;
+        }
+
+        $i = 0;
+
+        foreach ($Device->findMostSeen(1, null, null) as $top) {
+            $mostSeen[$i]['name'] = $top->name;
+            $mostSeen[$i++]['counter'] = $top->counter;
+        }
+
         return [
             'pax' => $participants,
             'hours' => $hours_volunteered,
-            'device_count_status' => $Device->statusCount(),
-            'top' => $Device->findMostSeen(1, null, null),
+            'device_count_status' => $statusCount,
+            'top' => $mostSeen,
         ];
     }
 
+    #[NoStory(reason: 'Internal stats aggregation helper')]
     public static function getStats2()
     {
-        $Device = new Device;
-        $co2Total = $Device->getWeights();
-
+        $stats = \App\Helpers\LcaStats::getWasteStats();
+        // preference is for powered only
         return [
-            'co2Total' => $co2Total[0]->total_footprints,
-            'wasteTotal' => $co2Total[0]->total_weights,
+            'co2Total' => $stats[0]->powered_footprint, // + $stats[0]->unpowered_footprint,
+            'wasteTotal' => $stats[0]->powered_waste, // + $stats[0]->unpowered_waste,
         ];
     }
 }

@@ -24,18 +24,16 @@
 
         <div class="form-group col-lg-6">
             <label for="country">@lang('profile.country'):<sup>*</sup></label>
-            <div class="form-control form-control__select">
-                <select id="country" name="country" required aria-required="true" class="field select2">
-                    <option value=""></option>
-                    @foreach (App\Helpers\Fixometer::getAllCountries() as $key => $value)
-                        @if ($user->country == $key)
-                        <option value="{{ $key }}" selected>{{ $value }}</option>
-                        @else
-                        <option value="{{ $key }}">{{ $value }}</option>
-                        @endif
-                    @endforeach
-                </select>
-            </div>
+            <select id="country" name="country" required aria-required="true" class="form-control">
+                <option value=""></option>
+                @foreach (App\Helpers\Fixometer::getAllCountries() as $key => $value)
+                    @if ($user->country_code == $key)
+                    <option value="{{ $key }}" selected>{{ $value }}</option>
+                    @else
+                    <option value="{{ $key }}">{{ $value }}</option>
+                    @endif
+                @endforeach
+            </select>
             <div class="invalid-feedback">@lang('registration.country_validation')</div>
         </div>
     </div>
@@ -53,17 +51,15 @@
 
         <div class="form-group col-lg-6">
             <label for="age">@lang('registration.age'):</label>
-            <div class="form-control form-control__select">
-                <select id="age" name="age" required aria-required="true" class="field select2">
-                    @foreach(App\Helpers\Fixometer::allAges() as $age)
-                    @if ( $user->age == $age )
-                        <option value="{{ $age }}" selected>{{ $age }}</option>
-                    @else
-                        <option value="{{ $age }}">{{ $age }}</option>
-                    @endif
-                    @endforeach
-                </select>
-            </div>
+            <select id="age" name="age" required aria-required="true" class="form-control">
+                @foreach(App\Helpers\Fixometer::allAges() as $age)
+                @if ( $user->age == $age )
+                    <option value="{{ $age }}" selected>{{ $age }}</option>
+                @else
+                    <option value="{{ $age }}">{{ $age }}</option>
+                @endif
+                @endforeach
+            </select>
             <div class="invalid-feedback">@lang('registration.age_validation')</div>
         </div>
 
@@ -81,7 +77,7 @@
     <div class="form-row">
         <div class="form-group col-lg-12">
         <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">Save profile</button>
+            <button type="submit" class="btn btn-primary">@lang('profile.save_profile')</button>
         </div>
         </div>
     </div>
@@ -105,21 +101,19 @@
 
         <div class="form-group">
             <label for="tags[]">@lang('general.your_repair_skills'):</label>
-            <div class="form-control form-control__select">
-            <select id="tags" name="tags[]" class="select2-tags" multiple>
+            <select id="tags" name="tags[]" class="form-control" multiple size="10">
                 @foreach( App\Helpers\Fixometer::skillCategories() as $key => $skill_category )
-                    <optgroup label="@lang($skill_category)">
+                    <optgroup label="{{ __($skill_category) }}">
                     @foreach ($skills[$key] as $skill)
                         @if ( !empty($user_skills) && in_array($skill->id, $user_skills))
-                        <option value="{{ $skill->id }}" selected>@lang($skill->skill_name)</option>
+                        <option value="{{ $skill->id }}" selected>{{ __($skill->skill_name) }}</option>
                         @else
-                        <option value="{{ $skill->id }}">@lang($skill->skill_name)</option>
+                        <option value="{{ $skill->id }}">{{ __($skill->skill_name) }}</option>
                         @endif
                     @endforeach
                     </optgroup>
                 @endforeach
             </select>
-            </div>
         </div>
 
         <div class="form-row">
@@ -139,8 +133,8 @@
 
     <div class="col-lg-6 d-flex col-bottom" id="change-photo">
     <div class="edit-panel">
-        <h4>@lang('general.change_photo')</h4>
-        <p>@lang('general.change_photo_text')</p>
+        <h4>@lang('profile.change_photo')</h4>
+        <p>@lang('profile.change_photo')</p>
         <form action="/profile/edit-photo" method="post" enctype="multipart/form-data">
         @csrf
 
@@ -148,7 +142,7 @@
 
         <div class="form-row">
             <div class="form-group col-lg-12">
-            <label for="profilePhoto">@lang('general.profile_picture'):</label>
+            <label for="profilePhoto">@lang('profile.profile_picture'):</label>
             <input type="file" class="form-control" id="profilePhoto" name="profilePhoto">
             <!-- <input type="file" class="form-control file" name="profile"data-show-upload="false" data-show-caption="true"> -->
             </div>
@@ -162,7 +156,7 @@
             </div>
             <div class="form-group col-lg-8">
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">@lang('general.change_photo')</button>
+                <button type="submit" class="btn btn-primary">@lang('profile.change_photo')</button>
             </div>
             </div>
         </div>

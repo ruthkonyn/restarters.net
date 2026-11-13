@@ -6,14 +6,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDefaultNetwork extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         // This is the default 'Restarters' network - that which
         // groups will be a member of by default, if not part of
@@ -34,11 +32,9 @@ class CreateDefaultNetwork extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         DB::table('networks')->where('id', 1)->delete();
     }
-}
+};

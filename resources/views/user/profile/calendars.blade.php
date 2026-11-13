@@ -41,11 +41,11 @@
 
     <h5 class="mb-3">@lang('profile.calendars.events_by_area')</h5>
 
-    <div class="input-group input-group-select2 mb-3">
-        <select class="form-control select2-with-input-group" id="inputGroupSelect02">
+    <div class="input-group mb-3">
+        <select class="form-control" id="inputGroupSelect02">
         @php($first_option=null)
         @foreach ($all_group_areas as $area)
-            @if($loop->first)
+            @if(!$first_option)
             @php( $first_option = $area )
             @endif
             <option value="{{ $area }}">{{ $area }}</option>

@@ -21,38 +21,54 @@
       @endif
 
       <?php
-        $all_groups = $groups;
-        $can_create = App\Helpers\Fixometer::hasRole(Auth::user(), 'Administrator') || App\Helpers\Fixometer::hasRole(Auth::user(), 'Host');
-        $show_tags = App\Helpers\Fixometer::hasRole(Auth::user(), 'Administrator');
+        // Any logged-in user can create a group.
+        $can_create = Auth::user() ? true : false;
+
+        // Show tags to both Administrators and Network Coordinators
+        $show_tags = App\Helpers\Fixometer::hasRole(Auth::user(), 'Administrator') ||
+                     App\Helpers\Fixometer::hasRole(Auth::user(), 'NetworkCoordinator');
 
         $user = Auth::user();
         $myid = $user ? $user->id : null;
-        $api_token = NULL;
-
-        if ($user) {
-            $api_token = $user->ensureAPIToken();
-        }
       ?>
 
-      <div class="vue-placeholder vue-placeholder-large">
+        @if ( App\Helpers\Fixometer::hasRole(Auth::user(), 'Administrator') || App\Helpers\Fixometer::hasRole(Auth::user(), 'NetworkCoordinator'))
+          <?php
+
+          // If we are a network coordinator, only show our network.
+          $ns = App\Helpers\Fixometer::hasRole($user, 'NetworkCoordinator') ? $user->networks : \App\Network::all();
+          $networkids = [];
+
+          foreach ($ns as $n) {
+            $networkids[] = $n->id;
+          }
+
+          ?>
+          <div class="vue-placeholder vue-placeholder-large">
+            <div class="vue-placeholder-content">@lang('partials.loading')...</div>
+          </div>
+          <div class="vue">
+            <GroupsRequiringModeration :networks="{{ json_encode($networkids) }}"/>
+          </div>
+        @endif
+
+        <div class="vue-placeholder vue-placeholder-large">
         <div class="vue-placeholder-content">@lang('partials.loading')...</div>
       </div>
 
       <div class="vue">
         <GroupsPage
           csrf="{{ csrf_token() }}"
-          :all-groups="{{ json_encode($all_groups, JSON_INVALID_UTF8_IGNORE) }}"
           :your-groups="{{ json_encode($your_groups, JSON_INVALID_UTF8_IGNORE) }}"
-          :nearby-groups="{{ json_encode($groups_near_you, JSON_INVALID_UTF8_IGNORE) }}"
+          :nearby-groups="{{ json_encode($nearby_groups, JSON_INVALID_UTF8_IGNORE) }}"
           your-area="{{ $your_area }}"
+          :your-lat="{{ $your_lat !== null ? $your_lat : 'null' }}"
+          :your-lng="{{ $your_lng !== null ? $your_lng : 'null' }}"
           :can-create="{{ $can_create ? 'true' : 'false' }}"
-          :user-id="{{ $myid }}"
           tab="{{ $tab }}"
           :network="{{ $network ? $network : 'null' }}"
-          :networks="{{ json_encode($networks, JSON_INVALID_UTF8_IGNORE) }}"
           :all-group-tags="{{ json_encode($all_group_tags, JSON_INVALID_UTF8_IGNORE) }}"
           :show-tags="{{ $show_tags ? 'true' : 'false' }}"
-          api-token="{{ $api_token }}"
         />
       </div>
 

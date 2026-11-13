@@ -4,17 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableCharsets extends Migration
+return new class extends Migration
 {
     private $charset = 'utf8mb4';
     private $collate = 'utf8mb4_unicode_ci';
 
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Log::info('START MIGRATE AlterTableCharsets');
 
@@ -32,10 +30,8 @@ class AlterTableCharsets extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         $tables = $this->_tableCharsets();
         foreach ($tables as $table) {
@@ -135,10 +131,8 @@ class AlterTableCharsets extends Migration
 
     /**
      * Report char issues.
-     *
-     * @return void
      */
-    private function _report($prefix = '', $suffix = '')
+    private function _report($prefix = '', $suffix = ''): void
     {
         $tables = $this->_dataTables();
         $format = 'SELECT
@@ -151,7 +145,7 @@ class AlterTableCharsets extends Migration
             $key = $fields['key'];
             foreach ($fields['fields'] as $field) {
                 $qry = sprintf($format, $table, $field, $key);
-                $result = DB::select(DB::raw($qry));
+                $result = DB::select($qry);
                 $log = [];
                 foreach ($result as $v) {
                     $log[$v->id] = $v->val;
@@ -223,4 +217,4 @@ class AlterTableCharsets extends Migration
          * */
         ];
     }
-}
+};

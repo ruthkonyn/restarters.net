@@ -2,12 +2,42 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Group;
 use Illuminate\Database\Eloquent\Model;
 
 class Network extends Model
 {
-    public function groups()
+    use HasFactory;
+
+    /**
+     * The network description is rendered with v-html in NetworkPage.vue, so sanitise it
+     * on write for the same reason as Group::setFreeTextAttribute().
+     */
+    public function setDescriptionAttribute($val)
+    {
+        $this->attributes['description'] = is_null($val) ? null : \Stevebauman\Purify\Facades\Purify::clean($val);
+    }
+
+    /**
+     * Get tags belonging to this network.
+     */
+    public function tags(): HasMany
+    {
+        return $this->hasMany(GroupTags::class, 'network_id', 'id');
+    }
+
+    /**
+     * Get all tags available to this network (network-specific + global).
+     */
+    public function availableTags()
+    {
+        return GroupTags::availableForNetwork($this->id);
+    }
+
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'group_network', 'network_id', 'group_id');
     }
@@ -22,7 +52,7 @@ class Network extends Model
         return $this->groups->contains($group);
     }
 
-    public function coordinators()
+    public function coordinators(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_network', 'network_id', 'user_id');
     }
@@ -30,64 +60,68 @@ class Network extends Model
     public function addCoordinator($coordinator)
     {
         $this->coordinators()->syncWithoutDetaching($coordinator->id);
+
+        // Set us to a network coordinator (but don't demote us from admin).
+        if ($coordinator->role != Role::ADMINISTRATOR) {
+            $coordinator->role = Role::NETWORK_COORDINATOR;
+            $coordinator->save();
+        }
     }
 
     public function eventsRequiringModeration()
     {
         $groups = $this->groups;
-        $events = collect([]);
+        $events = [];
 
         foreach ($groups as $group) {
-            $events->push($group->parties()->whereNull('wordpress_post_id')->whereNull('deleted_at')->get());
+            $events = array_merge($events, $group->parties()->where('approved', false)->whereNull('deleted_at')->get()->all());
         }
 
-        return $events->flatten(1);
+        return $events;
     }
 
-    public function logo()
+    public function sizedLogo($size)
     {
-        return $this->hasOne(\App\Xref::class, 'reference', 'id')
-                    ->where('reference_type', config('restarters.xref_types.networks'))
-                    ->where('object_type', 5);
+        $logo = preg_replace('/\\.([^.\\s]{3,4})$/', "-$size.$1", $this->logo);
+        return $logo;
     }
 
     public function groupsNotIn()
     {
-        $networkGroupsIds = $this->groups->pluck('idgroups')->toArray();
+        $networkGroupsIds = $this->groups()->withoutGlobalScopes()->without(['networks', 'group_tags'])->pluck('groups.idgroups')->toArray();
 
-        return Group::all()->filter(function ($group) use ($networkGroupsIds) {
-            return ! in_array($group->idgroups, $networkGroupsIds);
-        });
+        // Only the id and name are needed (for the "add groups" picker).  Skip the member-count global scopes
+        // and the networks/tags eager loads, which are expensive across every group on the platform.
+        $query = Group::withoutGlobalScopes()->without(['networks', 'group_tags'])->select(['idgroups', 'name'])->orderBy('name');
+
+        if (! empty($networkGroupsIds)) {
+            $query->whereNotIn('idgroups', $networkGroupsIds);
+        }
+
+        return $query->get();
     }
 
     public function stats()
     {
-        $stats = [
-            'pax' => 0,
-            'hours' => 0,
-            'parties' => 0,
-            'co2' => 0,
-            'waste' => 0,
-            'ewaste' => 0,
-            'unpowered_waste' => 0,
-            'fixed_devices' => 0,
-            'fixed_powered' => 0,
-            'fixed_unpowered' => 0,
-            'repairable_devices' => 0,
-            'dead_devices' => 0,
-            'no_weight' => 0,
-            'devices_powered' => 0,
-            'devices_unpowered' => 0,
-        ];
+        $eEmissionRatio = \App\Helpers\LcaStats::getEmissionRatioPowered();
+        $uEmissionratio = \App\Helpers\LcaStats::getEmissionRatioUnpowered();
 
-        $emissionRatio = \App\Helpers\FootprintRatioCalculator::calculateRatio();
-        foreach ($this->groups as $group) {
-            $singleGroupStats = $group->getGroupStats($emissionRatio);
+        // Impact stats include archived groups (their past events still count); the group tally does not.
+        $groups = $this->groups()->withoutGlobalScopes()->without(['networks', 'group_tags'])
+            ->get(['groups.idgroups', 'groups.archived_at']);
 
+        $allStats = \App\Group::bulkGroupStats($groups, $eEmissionRatio, $uEmissionratio);
+
+        $stats = \App\Group::getGroupStatsArrayKeys();
+
+        foreach ($allStats as $singleGroupStats) {
             foreach ($singleGroupStats as $key => $value) {
                 $stats[$key] = $stats[$key] + $value;
             }
         }
+
+        $stats['parties'] = $stats['parties'] ?? 0;
+        $stats['groups'] = $groups->whereNull('archived_at')->count();
 
         return $stats;
     }

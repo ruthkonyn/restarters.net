@@ -2,15 +2,12 @@
 
 namespace App\Listeners;
 
-use App\User;
 use Carbon\Carbon;
 use Cookie;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Log;
 
+// Don't extend BaseEvent - we don't want to queue because this needs to happen before we return to the client.
 class LogSuccessfulLogin
 {
     /**
@@ -25,11 +22,8 @@ class LogSuccessfulLogin
 
     /**
      * Handle the event.
-     *
-     * @param  Login  $event
-     * @return void
      */
-    public function handle(Login $event)
+    public function handle(Login $event): void
     {
         $user = $event->user;
 

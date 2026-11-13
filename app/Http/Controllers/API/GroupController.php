@@ -2,11 +2,38 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\JsonResponse;
+use App\Events\ApproveGroup;
+use App\Events\EditGroup;
 use App\Group;
+use App\GroupTags;
+use App\Helpers\Fixometer;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PartySummaryCollection;
+use App\Http\Resources\TagCollection;
+use App\Http\Resources\VolunteerCollection;
+use App\Network;
+use App\Notifications\AdminModerationGroup;
+use App\Notifications\GroupConfirmed;
+use App\Notifications\NewGroupWithinRadius;
+use App\EventsUsers;
+use App\Party;
+use App\Role;
+use App\Rules\Timezone;
+use App\User;
+use App\UserGroups;
 use Auth;
+use Carbon\Carbon;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Notification;
+use Illuminate\Validation\ValidationException;
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use App\Attributes\NoStory;
 
+#[Feature('Groups', description: 'Community repair group management and membership')]
 class GroupController extends Controller
 {
     /**
@@ -17,6 +44,7 @@ class GroupController extends Controller
      *
      * Only Administrators can access this API call.
      */
+    #[UserStory('As an Admin, I can list group audit changes for Zapier integration', persona: 'Admin', theme: 'Admin & integrations')]
     public static function getGroupChanges(Request $request)
     {
         $authenticatedUser = Auth::user();
@@ -39,26 +67,22 @@ class GroupController extends Controller
         return response()->json($groupChanges);
     }
 
-    /**
-     * To provide a more uniform API, this is just a wrapper around
-     * the method in the GroupController for now.
-     *
-     * That method should be moved out of the controller.
-     */
-    public static function getGroupsByUserGroupTag(Request $request)
+    #[UserStory('As a NetworkCoordinator, I can list all groups in my networks via the API', persona: 'NetworkCoordinator', theme: 'Network membership')]
+    public static function getGroupsByUsersNetworks(Request $request): JsonResponse
     {
         $authenticatedUser = Auth::user();
 
-        $groupController = new \App\Http\Controllers\GroupController();
+        $bbox = $minLat = $minLng = $maxLat = $maxLng = null;
 
-        $groups = $groupController->getGroupsByKey($request, $authenticatedUser->api_token);
-
-        return response()->json($groups);
-    }
-
-    public static function getGroupsByUsersNetworks(Request $request)
-    {
-        $authenticatedUser = Auth::user();
+        if ($request->has('bbox')) {
+            $bbox = $request->get('bbox');
+            if (preg_match('/(.*?),(.*?),(.*?),(.*)/', $bbox, $matches)) {
+                $minLat = floatval($matches[1]);
+                $minLng = floatval($matches[2]);
+                $maxLat = floatval($matches[3]);
+                $maxLng = floatval($matches[4]);
+            }
+        }
 
         $groups = [];
 
@@ -68,76 +92,95 @@ class GroupController extends Controller
             }
         }
 
+        $allGroupStats = Group::bulkGroupStats($groups);
+
         // New Collection Instance
         $collection = collect([]);
 
         foreach ($groups as $group) {
-            $groupStats = $group->getGroupStats();
-            $collection->push([
-                'id' => $group->idgroups,
-                'name' => $group->name,
-                'location' => [
-                    'value' => $group->location,
-                    'country' => $group->country,
-                    'latitude' => $group->latitude,
-                    'longitude' => $group->longitude,
-                    'area' => $group->area,
-                    'postcode' => $group->postcode,
-                ],
-                'website' => $group->website,
-                'facebook' => $group->facebook,
-                'description' => $group->free_text,
-                'image_url' => $group->groupImagePath(),
-                'upcoming_parties' => $upcoming_parties_collection = collect([]),
-                'past_parties' => $past_parties_collection = collect([]),
-                'impact' => [
-                    'volunteers' => $groupStats['pax'],
-                    'hours_volunteered' => $groupStats['hours'],
-                    'parties_thrown' => $groupStats['parties'],
-                    'waste_prevented' => $groupStats['waste'],
-                    'co2_emissions_prevented' => $groupStats['co2'],
-                ],
-                'widgets' => [
-                    'headline_stats' => url("/group/stats/{$group->idgroups}"),
-                    'co2_equivalence_visualisation' => url("/outbound/info/group/{$group->idgroups}/manufacture"),
-                ],
-                'created_at' => new \Carbon\Carbon($group->created_at),
-                'updated_at' => new \Carbon\Carbon($group->max_updated_at_devices_updated_at),
+            // If we have a bounding box, check that the group is within it.
+            if (! $bbox || (
+                $group->latitude !== null && $group->longitude !== null &&
+                $group->latitude >= $minLat && $group->latitude <= $maxLat &&
+                $group->longitude >= $minLng && $group->longitude <= $maxLng
+                )) {
+                $groupStats = $allGroupStats[$group->idgroups];
+                $collection->push([
+                                      'id' => $group->idgroups,
+                                      'name' => $group->name,
+                                      'timezone' => $group->timezone,
+                                      'location' => [
+                                          'value' => $group->location,
+                                          'country' => Fixometer::getCountryFromCountryCode($group->country_code),
+                                          'country_code' => $group->country_code,
+                                          'latitude' => $group->latitude,
+                                          'longitude' => $group->longitude,
+                                          'area' => $group->area,
+                                          'postcode' => $group->postcode,
+                                      ],
+                                      'website' => $group->website,
+                                      'facebook' => $group->facebook,
+                                      'description' => $group->free_text,
+                                      'image_url' => $group->groupImagePath(),
+                                      'upcoming_parties' => $upcoming_parties_collection = collect([]),
+                                      'past_parties' => $past_parties_collection = collect([]),
+                                      'impact' => [
+                                        'volunteers' => $groupStats['participants'],
+                                        'hours_volunteered' => $groupStats['hours_volunteered'],
+                                          'parties_thrown' => $groupStats['parties'],
+                                          'waste_prevented' => round($groupStats['waste_total']),
+                                          'co2_emissions_prevented' => round($groupStats['co2_total']),
+                                      ],
+                                      'widgets' => [
+                                          'headline_stats' => url("/group/stats/{$group->idgroups}"),
+                                          'co2_equivalence_visualisation' => url("/outbound/info/group/{$group->idgroups}/manufacture"),
+                                      ],
+                                      'created_at' => new \Carbon\Carbon($group->created_at),
+                                      'updated_at' => new \Carbon\Carbon($group->max_updated_at_devices_updated_at),
+                                      'network_data' => $group->network_data
+                                  ]);
 
-              ]);
+                foreach ($group->upcomingParties() as $event) {
+                    $upcoming_parties_collection->push([
+                                                           'event_id' => $event->idevents,
+                                                           'event_date' => $event->event_date_local,
+                                                           'start_time' => $event->start_local,
+                                                           'end_time' => $event->end_local,
+                                                           'timezone' => $event->timezone,
+                                                           'name' => $event->venue,
+                                                           'link' => $event->link,
+                                                           'online' => $event->online,
+                                                           'description' => $event->free_text,
+                                                           'location' => [
+                                                               'value' => $event->location,
+                                                               'latitude' => $event->latitude,
+                                                               'longitude' => $event->longitude,
+                                                           ],
+                                                           'created_at' => $event->created_at,
+                                                           'updated_at' => $event->updated_at,
+                                                       ]);
+                }
 
-            foreach ($group->upcomingParties() as $event) {
-                $upcoming_parties_collection->push([
-                    'event_id' => $event->idevents,
-                    'event_date' => $event->event_date,
-                    'start_time' => $event->start,
-                    'end_time' => $event->end,
-                    'name' => $event->venue,
-                    'location' => [
-                        'value' => $event->location,
-                        'latitude' => $event->latitude,
-                        'longitude' => $event->longitude,
-                    ],
-                    'created_at' => $event->created_at,
-                    'updated_at' => $event->updated_at,
-                ]);
-            }
-
-            foreach ($group->pastParties() as $key => $event) {
-                $past_parties_collection->push([
-                    'event_id' => $event->idevents,
-                    'event_date' => $event->event_date,
-                    'start_time' => $event->start,
-                    'end_time' => $event->end,
-                    'name' => $event->venue,
-                    'location' => [
-                        'value' => $event->location,
-                        'latitude' => $event->latitude,
-                        'longitude' => $event->longitude,
-                    ],
-                    'created_at' => $event->created_at,
-                    'updated_at' => $event->updated_at,
-                ]);
+                foreach ($group->pastParties() as $key => $event) {
+                    $past_parties_collection->push([
+                                                       'event_id' => $event->idevents,
+                                                       'event_date' => $event->event_date_local,
+                                                       'start_time' => $event->start_local,
+                                                       'end_time' => $event->end_local,
+                                                       'timezone' => $event->timezone,
+                                                       'name' => $event->venue,
+                                                       'link' => $event->link,
+                                                       'online' => $event->online,
+                                                       'description' => $event->free_text,
+                                                       'location' => [
+                                                           'value' => $event->location,
+                                                           'latitude' => $event->latitude,
+                                                           'longitude' => $event->longitude,
+                                                       ],
+                                                       'created_at' => $event->created_at,
+                                                       'updated_at' => $event->updated_at,
+                                                   ]);
+                }
             }
         }
 
@@ -147,6 +190,7 @@ class GroupController extends Controller
     /**
      * Get all of the audits related to groups from the audits table.
      */
+    #[NoStory(reason: 'Internal audit helper for Zapier')]
     public static function getGroupAudits($dateFrom = null)
     {
         $query = \OwenIt\Auditing\Models\Audit::where('auditable_type', \App\Group::class);
@@ -165,6 +209,7 @@ class GroupController extends Controller
      * Map from the group and audit information as recorded by the audits library,
      * into the format needed for Zapier.
      */
+    #[NoStory(reason: 'Internal Zapier formatting helper')]
     public static function mapDetailsAndAuditToChange($group, $groupAudit)
     {
         $group->makeHidden(['updated_at', 'wordpress_post_id', 'ShareableLink', 'shareable_code']);
@@ -180,7 +225,8 @@ class GroupController extends Controller
         return $groupChange;
     }
 
-    public static function getGroupList()
+    #[UserStory('As a Restarter, I can list all groups via the API', persona: 'Restarter', theme: 'Find & browse groups')]
+    public static function getGroupList(): JsonResponse
     {
         $groups = Group::orderBy('created_at', 'desc');
 
@@ -192,23 +238,1126 @@ class GroupController extends Controller
         return response()->json($groups);
     }
 
-    public static function getEventsForGroup(Request $request, Group $group)
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/names",
+     *      operationId="getGroupListv2",
+     *      tags={"Groups"},
+     *      summary="Get list of group names",
+     *      @OA\Parameter(
+     *          name="includeArchived",
+     *          description="Include archived groups",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of group names",
+     *                type="array",
+     *                @OA\Items(
+     *                   type="object",
+     *                   @OA\Property(property="id", type="integer", example=1),
+     *                   @OA\Property(property="name", type="string", example="Group Name"),
+     *                   @OA\Property(property="lat", type="number", nullable=true, example=51.5),
+     *                   @OA\Property(property="lng", type="number", nullable=true, example=-0.12),
+     *                   @OA\Property(property="country", type="string", nullable=true, example="United Kingdom"),
+     *                   @OA\Property(property="network_ids", type="array", @OA\Items(type="integer")),
+     *                   @OA\Property(property="tag_ids", type="array", @OA\Items(type="integer")),
+     *                   @OA\Property(property="archived_at", type="string", format="date-time", nullable=true),
+     *                )
+     *             )
+     *          )
+     *       ),
+     *     )
+     */
+
+    #[UserStory('As a Guest, I can get a list of group names via the API', persona: 'Guest', theme: 'Find & browse groups')]
+    #[UserStory('As a ThirdParty, I can retrieve group names to display on my own platform', persona: 'ThirdParty', theme: 'Find & browse groups')]
+    public static function listNamesv2(Request $request) {
+        $request->validate([
+            'includeArchived' => ['string', 'in:true,false'],
+        ]);
+
+        // We only return a small number of attributes, for speed: this index
+        // drives the groups map (positions/tooltips) and the client-side
+        // name/country/network/tag filters, with full rows hydrated on demand
+        // via /groups/summary?ids=.
+        $query = Group::select('idgroups', 'name', 'latitude', 'longitude', 'country_code', 'archived_at');
+
+        if (!$request->has('includeArchived') || $request->get('includeArchived') == 'false') {
+            $query = $query->whereNull('archived_at');
+        }
+
+        $groups = $query->get();
+
+        // Two cheap lookups instead of per-group relation loads.
+        $networkIds = \DB::table('group_network')
+            ->whereIn('group_id', $groups->pluck('idgroups'))
+            ->get()
+            ->groupBy('group_id');
+        $tagIds = \DB::table('grouptags_groups')
+            ->whereIn('group', $groups->pluck('idgroups'))
+            ->get()
+            ->groupBy('group');
+
+        $ret = [];
+
+        foreach ($groups as $group) {
+            $ret[] = [
+                'id' => $group->idgroups,
+                'name' => $group->name,
+                'lat' => $group->latitude !== null ? (float) $group->latitude : null,
+                'lng' => $group->longitude !== null ? (float) $group->longitude : null,
+                'country' => \App\Helpers\Fixometer::getCountryFromCountryCode($group->country_code),
+                'network_ids' => $networkIds->has($group->idgroups) ? $networkIds[$group->idgroups]->pluck('network_id')->map(fn ($id) => (int) $id)->all() : [],
+                // The pivot columns are varchars; the API contract is integers.
+                'tag_ids' => $tagIds->has($group->idgroups) ? $tagIds[$group->idgroups]->pluck('group_tag')->map(fn ($id) => (int) $id)->all() : [],
+                'archived_at' => $group->archived_at ? Carbon::parse($group->archived_at)->toIso8601String() : null
+            ];
+        }
+
+        return [
+            'data' => $ret
+        ];
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/summary",
+     *      operationId="getGroupSummariesv2",
+     *      tags={"Groups"},
+     *      summary="Get list of groups with summary information",
+     *      @OA\Parameter(
+     *          name="archived",
+     *          description="Include archived groups.  Default false.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="includeNextEvent",
+     *          description="Include the next event for the group.  This makes the call slower.  Default false.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="includeCounts",
+     *          description="Include the counts of hosts and restarters.  This makes the call slower.  Default false.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="ids",
+     *          description="Comma-separated group ids.  When present, only these groups are returned (used by the groups list to hydrate the visible rows).  Maximum 200 ids.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of events",
+     *                type="array",
+     *                @OA\Items(
+     *                    @OA\Schema(
+     *                       ref="#/components/schemas/GroupSummary"
+     *                    ),
+     *                 )
+     *              )
+     *          )
+     *       ),
+     *     )
+     */
+
+    #[UserStory('As a Guest, I can list summaries of groups (optionally only chosen ids) via the API', persona: 'Guest', theme: 'Browse groups')]
+    #[UserStory('As a ThirdParty, I can retrieve group summaries to display on my platform', persona: 'ThirdParty', theme: 'Browse groups')]
+    public static function listSummaryv2(Request $request) {
+        $request->validate([
+            'archived' => ['string', 'in:true,false'],
+            'ids' => ['string', 'regex:/^\d+(,\d+)*$/', function ($attribute, $value, $fail) {
+                if (count(explode(',', $value)) > 200) {
+                    $fail('A maximum of 200 ids may be requested at once.');
+                }
+            }],
+        ]);
+
+        // Eager-load everything the GroupSummary resource touches, otherwise
+        // each group lazy-loads its relations and the call scales O(N).
+        $query = Group::with(['networks', 'groupImage.image', 'group_tags']);
+
+        if ($request->get('archived', 'false') !== 'true') {
+            $query = $query->whereNull('archived_at');
+        }
+
+        // The groups list hydrates just its visible rows this way, instead of
+        // paying to serialise every group on page load.
+        if ($request->filled('ids')) {
+            $query = $query->whereIn('idgroups', explode(',', $request->get('ids')));
+        }
+
+        $groups = $query->get();
+
+        return [
+            'data' => \App\Http\Resources\GroupSummaryCollection::make($groups)
+        ];
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/tags",
+     *      operationId="getGroupTagsv2",
+     *      tags={"Groups"},
+     *      summary="Get list of group tags",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of group tags",
+     *                type="array",
+     *                @OA\Items(
+     *                   ref="#/components/schemas/Tag"
+     *                )
+     *             )
+     *          )
+     *       ),
+     *     )
+     */
+    #[UserStory('As a Guest, I can get a list of group tags via the API', persona: 'Guest', theme: 'Find & browse groups')]
+    #[UserStory('As a ThirdParty, I can retrieve group tags to categorise groups on my platform', persona: 'ThirdParty', theme: 'Find & browse groups')]
+    public static function listTagsv2(Request $request) {
+        // Try session auth first, then API token auth
+        $user = Auth::user();
+        if (!$user) {
+            $user = auth('api')->user();
+        }
+
+        // Unauthenticated users cannot see any tags
+        if (!$user) {
+            return [
+                'data' => []
+            ];
+        }
+
+        // Admins see all tags
+        if ($user->hasRole('Administrator')) {
+            return [
+                'data' => TagCollection::make(GroupTags::with('network')->get())
+            ];
+        }
+
+        // Network Coordinators only see tags from their networks (NOT global tags - those are admin-only)
+        $userNetworkIds = $user->networks->pluck('id')->toArray();
+
+        $tags = GroupTags::with('network')
+            ->whereIn('network_id', $userNetworkIds)
+            ->get();
+
+        return [
+            'data' => TagCollection::make($tags)
+        ];
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/{id}",
+     *      operationId="getGroup",
+     *      tags={"Groups"},
+     *      summary="Get Group",
+     *      description="Returns information about a group.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Group id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                ref="#/components/schemas/Group"
+     *              )
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Group not found",
+     *      ),
+     *     )
+     */
+    #[UserStory('As a Guest, I can view group details via the API', persona: 'Guest', theme: 'Find & browse groups')]
+    #[UserStory('As a ThirdParty, I can retrieve group details to display on my platform', persona: 'ThirdParty', theme: 'Find & browse groups')]
+    public static function getGroupv2(Request $request, $idgroups) {
+        $group = Group::findOrFail($idgroups);
+        return \App\Http\Resources\Group::make($group);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/{id}/events",
+     *      operationId="getGroupv2",
+     *      tags={"Groups"},
+     *      summary="Get Group",
+     *      description="Returns the list of events for a group.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Group id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          description="The minimum start date for an event in ISO8601 format.  Inclusive.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="2022-09-18T11:30:00+00:00"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="end",
+     *          description="The maximum end date for an event in ISO8601 format.  Inclusive.",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="2022-09-18T12:30:00+00:00"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of events",
+     *                type="array",
+     *                @OA\Items(
+     *                    ref="#/components/schemas/EventSummary"
+     *                )
+     *              )
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Group not found",
+     *      ),
+     *     )
+     */
+
+    #[UserStory('As a Guest, I can list events for a group via the API', persona: 'Guest', theme: 'Events for group')]
+    #[UserStory('As a ThirdParty, I can retrieve events for a group to display on my platform', persona: 'ThirdParty', theme: 'Events for group')]
+    public static function getEventsForGroupv2(Request $request, $idgroups) {
+        $group = Group::findOrFail($idgroups);
+
+        $parties = collect([]);
+
+        // Only show events on approved groups.
+        if ($group->approved) {
+            // Get date filters.  We default to far past and far future so that we don't need multiple code branches.  We
+            // don't need to validate the date format - if they put junk in then they'll get junk matches back.
+            $start = Carbon::parse($request->get('start', '1970-01-01'))->setTimezone('UTC')->toIso8601String();
+            $end = Carbon::parse($request->get('end', '3000-01-01'))->setTimezone('UTC')->toIso8601String();
+
+            $parties = Party::undeleted()->forGroup($idgroups)
+                ->where('event_start_utc', '>=', $start)
+                ->where('event_end_utc', '<=', $end)
+                ->get();
+        }
+
+        return PartySummaryCollection::make($parties);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/groups/{id}/volunteers",
+     *      operationId="getVolunteersForGroupv2",
+     *      tags={"Groups","Volunteers"},
+     *      summary="Get Group Volunteers",
+     *      description="Returns the list of confirmed volunters for a group.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Group id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                property="data",
+     *                title="data",
+     *                description="An array of volunteers",
+     *                type="array",
+     *                @OA\Items(
+     *                    ref="#/components/schemas/Volunteer"
+     *                )
+     *              )
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Group not found",
+     *      ),
+     *     )
+     */
+
+    #[UserStory('As a Guest, I can view a group\'s volunteers via the API', persona: 'Guest', theme: 'Manage volunteers')]
+    #[UserStory('As a ThirdParty, I can retrieve volunteer data for a group via the API', persona: 'ThirdParty', theme: 'Manage volunteers')]
+    public function getVolunteersForGroupv2(Request $request, $idgroups) {
+        $group = Group::findOrFail($idgroups);
+        $query = $group->allConfirmedVolunteers();
+
+        // Optionally exclude users already confirmed at a specific event.
+        $excludeEvent = $request->query('exclude_event');
+        if ($excludeEvent) {
+            $confirmedUserIds = EventsUsers::where('event', $excludeEvent)
+                ->where(function ($query) {
+                    $query->where('status', '1')
+                          ->orWhereNull('status');
+                })
+                ->whereNotNull('user')
+                ->pluck('user');
+            $query = $query->whereNotIn('users_groups.user', $confirmedUserIds);
+        }
+
+        return VolunteerCollection::make($query->get());
+    }
+
+    /**
+     * @OA\Delete(
+     *      path="/api/v2/groups/{id}/volunteers/{iduser}",
+     *      operationId="deleteVolunteerForGroupv2",
+     *      tags={"Groups","Volunteers"},
+     *      summary="Delete Group Volunteer",
+     *      description="Removes a volunteer from a group",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Group id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="iduser",
+     *          description="User id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Group not found",
+     *      ),
+     *     )
+     */
+
+    #[UserStory('As a Host, I can remove a volunteer from my group', persona: 'Host', theme: 'Manage volunteers')]
+    public function deleteVolunteerForGroupv2(Request $request, $id, $iduser)
     {
-        $group = $group->load('parties');
+        $user = $this->getUser();
 
-        $events = $group->parties->sortByDesc('event_date');
+        $group = Group::findOrFail($id);
+        $is_host_of_group = Fixometer::userHasEditGroupPermission($id, $user->id);
+        $isCoordinatorForGroup = $user->isCoordinatorForGroup($group);
 
-        if ($request->has('format') && $request->input('format') == 'location') {
-            $events = $events->map(function ($event) {
-                return (object) [
-                    'id' => $event->idevents,
-                    'location' => $event->FriendlyLocation,
-                ];
-            });
+        if (!Fixometer::hasRole($user, 'Administrator') && !$is_host_of_group && !$isCoordinatorForGroup) {
+            throw new AuthenticationException();
+        }
+
+        $userGroupAssociation = UserGroups::where('group', $id)->where('user', $iduser)->first();
+
+        if (!is_null($userGroupAssociation)) {
+            $userGroupAssociation->delete();
+        }
+    }
+
+    /**
+     * @OA\Patch(
+     *      path="/api/v2/groups/{id}/volunteers/{iduser}",
+     *      operationId="patchVolunteerForGroupv2",
+     *      tags={"Groups","Volunteers"},
+     *      summary="Modify Group Volunteer",
+     *      description="Modify a volunteer's status on a group",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Group id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="host",
+     *          description="Host",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="boolean"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Group not found",
+     *      ),
+     *     )
+     */
+
+    #[UserStory('As a Host, I can change a volunteer\'s role in my group', persona: 'Host', theme: 'Manage volunteers')]
+    public function patchVolunteerForGroupv2(Request $request, $id, $iduser)
+    {
+        $user = $this->getUser();
+        $host = $request->get('host', false);
+        $volunteer = User::findOrFail($iduser);
+
+        $group = Group::findOrFail($id);
+        $is_host_of_group = Fixometer::userHasEditGroupPermission($id, $user->id);
+        $isCoordinatorForGroup = $user->isCoordinatorForGroup($group);
+
+        if (!Fixometer::hasRole($user, 'Administrator') && !$is_host_of_group && !$isCoordinatorForGroup) {
+            throw new AuthenticationException();
+        }
+
+        $userGroupAssociation = UserGroups::where('group', $id)->where('user', $iduser)->first();
+
+        if (!is_null($userGroupAssociation)) {
+            $userGroupAssociation->role = $host ? Role::HOST : Role::RESTARTER;
+            $userGroupAssociation->save();
+
+            if ($host) {
+                $group->refresh();
+                $group->makeMemberAHost($volunteer);
+            }
+        }
+    }
+
+    private function getUser() {
+        // We want to allow this call to work if a) we are logged in as a user, or b) we have a valid API token.
+        //
+        // This is a slightly odd thing to do, but it is necessary to get both the PHPUnit tests and the
+        // real client use of the API to work.
+        $user = Auth::user();
+
+        if (!$user) {
+            $user = auth('api')->user();
+        }
+
+        if (!$user) {
+            throw new AuthenticationException();
+        }
+
+        return $user;
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/v2/moderate/groups",
+     *      operationId="getGroupsModeratev2",
+     *      tags={"Groups"},
+     *      summary="Get Groups for Moderation",
+     *      description="Only available for Administrators and Network Coordinators. ",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *             description="An array of groups",
+     *             type="array",
+     *             @OA\Items(
+     *                 ref="#/components/schemas/Group"
+     *             )
+     *          )
+     *       ),
+     *     )
+     */
+    #[UserStory('As a NetworkCoordinator, I can view groups pending moderation in my networks', persona: 'NetworkCoordinator', theme: 'Create & manage groups')]
+    #[UserStory('As an Admin, I can view all groups pending moderation', persona: 'Admin', theme: 'Create & manage groups')]
+    public function moderateGroupsv2(Request $request): JsonResponse {
+        $user = $this->getUser();
+        $ret = \App\Http\Resources\GroupCollection::make(Group::unapprovedVisibleTo($user->id));
+        return response()->json($ret);
+    }
+
+    /**
+     * @OA\Post(
+     *      path="/api/v2/groups",
+     *      operationId="createGroup",
+     *      tags={"Groups"},
+     *      summary="Create Group",
+     *      description="Creates a group.",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                required={"name","location","description"},
+     *                @OA\Property(
+     *                   property="name",
+     *                   ref="#/components/schemas/Group/properties/name",
+     *                ),
+     *                @OA\Property(
+     *                   property="location",
+     *                   ref="#/components/schemas/Group/properties/location",
+     *                ),
+     *                @OA\Property(
+     *                   property="phone",
+     *                   ref="#/components/schemas/Group/properties/phone"
+     *                ),
+     *                @OA\Property(
+     *                   property="website",
+     *                   ref="#/components/schemas/Group/properties/website"
+     *                ),
+     *                @OA\Property(
+     *                   property="email",
+     *                   ref="#/components/schemas/Group/properties/email"
+     *                ),
+     *                @OA\Property(
+     *                   property="description",
+     *                   ref="#/components/schemas/Group/properties/description",
+     *                ),
+     *                @OA\Property(
+     *                   property="timezone",
+     *                   ref="#/components/schemas/Group/properties/timezone"
+     *                ),
+     *                @OA\Property(
+     *                   description="Image for the group",
+     *                   property="image",
+     *                   type="string", format="binary"
+     *                ),
+     *                @OA\Property(
+     *                   description="Network-defined JSON data",
+     *                   property="network_data",
+     *                   @OA\Schema()
+     *                ),
+     *             )
+     *         )
+     *    ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="Successful operation",
+     *        @OA\JsonContent(
+     *            @OA\Property(
+     *              property="data",
+     *              title="data",
+     *              ref="#/components/schemas/Group"
+     *            )
+     *        ),
+     *     )
+     *  )
+     */
+    #[UserStory('As a Restarter, I can create a new group via the API', persona: 'Restarter', theme: 'Create & manage groups')]
+    public function createGroupv2(Request $request): JsonResponse {
+        $user = $this->getUser();
+        $user->convertToHost();
+
+        list($name, $area, $postcode, $location, $phone, $website, $description, $timezone, $latitude, $longitude, $country, $network_data, $email) = $this->validateGroupParams(
+            $request,
+            true
+        );
+
+        $data = [
+            'name' => $name,
+            'website' => $website,
+            'location' => $location,
+            'area' => $area,
+            'postcode' => $postcode,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'country_code' => $country,
+            'free_text' => $description,
+            'shareable_code' => Fixometer::generateUniqueShareableCode(\App\Group::class, 'shareable_code'),
+            'timezone' => $timezone,
+            'phone' => $phone,
+            'network_data' => $network_data,
+            'email' => $email,
+        ];
+
+        $group = Group::create($data);
+        $idGroup = $group->idgroups;
+
+        // Add the group to the same network as this logged in user.  Note that the CheckForRepairNetwork middleware
+        // which checks the host name is only used for the web interface, not the API.
+        //
+        // The networks can be amended in the update call.
+        if ($user->repair_network) {
+            $network = Network::find($user->repair_network);
+
+            if ($network) {
+                $network->addGroup($group);
+            }
+        }
+
+        //Associate currently logged-in user as a host.
+        UserGroups::create([
+                               'user' => $user->id,
+                               'group' => $idGroup,
+                               'status' => 1,
+                               'role' => Role::HOST,
+                           ]);
+
+        if (isset($_FILES) && !empty($_FILES)) {
+            $file = new \FixometerFile();
+            $file->upload('image', 'image', $idGroup, env('TBL_GROUPS'), false, true, true);
+        }
+
+        // Notify relevant admins.
+        $notify_admins = Fixometer::usersWhoHavePreference('admin-moderate-group');
+        Notification::send($notify_admins, new AdminModerationGroup([
+                                                                        'group_name' => $name,
+                                                                        'group_url' => url('/group/edit/'.$idGroup),
+                                                                    ]));
+
+        return response()->json([
+            'id' => $idGroup,
+        ]);
+    }
+
+    /**
+     * @OA\Patch(
+     *      path="/api/v2/groups/{id}",
+     *      operationId="editGroup",
+     *      tags={"Groups"},
+     *      summary="Edit Group",
+     *      description="Edit a group.",
+     *      @OA\Parameter(
+     *          name="api_token",
+     *          description="A valid user API token",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="1234"
+     *          )
+     *      ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                required={"name","location","description"},
+     *                @OA\Property(
+     *                   property="name",
+     *                   ref="#/components/schemas/Group/properties/name",
+     *                ),
+     *                @OA\Property(
+     *                   property="location",
+     *                   ref="#/components/schemas/Group/properties/location",
+     *                ),
+     *                @OA\Property(
+     *                   property="phone",
+     *                   ref="#/components/schemas/Group/properties/phone"
+     *                ),
+     *                @OA\Property(
+     *                   property="website",
+     *                   ref="#/components/schemas/Group/properties/website"
+     *                ),
+     *                @OA\Property(
+     *                   property="email",
+     *                   ref="#/components/schemas/Group/properties/email"
+     *                ),
+     *                @OA\Property(
+     *                   property="description",
+     *                   ref="#/components/schemas/Group/properties/description",
+     *                ),
+     *                @OA\Property(
+     *                   property="timezone",
+     *                   ref="#/components/schemas/Group/properties/timezone"
+     *                ),
+     *                @OA\Property(
+     *                   description="Image for the group",
+     *                   property="image",
+     *                   type="string", format="binary"
+     *                 ),
+     *                @OA\Property(
+     *                   description="Network-defined JSON data",
+     *                   property="network_data",
+     *                   @OA\Schema()
+     *                ),
+     *                @OA\Property(
+     *                   property="archived_at",
+     *                   title="archived_at",
+     *                   description="If present, this group has been archived and is no longer active.",
+     *                   format="date-time",
+     *                )
+     *            )
+     *         )
+     *    ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="Successful operation",
+     *        @OA\JsonContent(
+     *            @OA\Property(
+     *              property="data",
+     *              title="data",
+     *              ref="#/components/schemas/Group"
+     *            )
+     *        ),
+     *     )
+     *  )
+     */
+    #[UserStory('As a Host, I can update my group via the API', persona: 'Host', theme: 'Create & manage groups')]
+    public function updateGroupv2(Request $request, $idGroup): JsonResponse {
+        $user = $this->getUser();
+
+        $group = Group::findOrFail($idGroup);
+
+        list($name, $area, $postcode, $location, $phone, $website, $description, $timezone,
+            $latitude, $longitude, $country, $network_data, $email,
+            $archived_at) = $this->validateGroupParams(
+            $request,
+            false,
+            $group
+        );
+
+        $is_host_of_group = Fixometer::userHasEditGroupPermission($idGroup, $user->id);
+        $isCoordinatorForGroup = $user->isCoordinatorForGroup($group);
+
+        if (! Fixometer::hasRole($user, 'Administrator') && ! $is_host_of_group && ! $isCoordinatorForGroup) {
+            abort(403);
+        }
+
+        $old_zone = $group->timezone;
+
+        // Only update the fields the request sends.  A partial update (e.g. the archive action, or an API client
+        // setting one field) must leave the rest of the group alone rather than blanking it.
+        $fields = [
+            'name' => $name,
+            'website' => $website,
+            'free_text' => $description,
+            'timezone' => $timezone,
+            'phone' => $phone,
+            'network_data' => $network_data,
+            'email' => $email,
+        ];
+        $requestKeys = [
+            'free_text' => 'description',
+        ];
+
+        $data = [];
+        foreach ($fields as $column => $value) {
+            if ($request->has($requestKeys[$column] ?? $column)) {
+                $data[$column] = $value;
+            }
+        }
+
+        if ($request->has('location')) {
+            // The coordinates and country come from geocoding the location.
+            $data['location'] = $location;
+            $data['latitude'] = $latitude;
+            $data['longitude'] = $longitude;
+            $data['country_code'] = $country;
+        }
+
+        // Hosts can edit the postcode (area stays admin/coordinator only, below).  Only touch it when sent, so a
+        // partial update doesn't blank it.
+        if ($request->has('postcode')) {
+            $data['postcode'] = $postcode;
+        }
+
+        if ($user->hasRole('Administrator') || ($user->hasRole('NetworkCoordinator') && $isCoordinatorForGroup)) {
+            // Got permission to update these.
+            foreach (['area' => $area, 'archived_at' => $archived_at] as $column => $value) {
+                if ($request->has($column)) {
+                    $data[$column] = $value;
+                }
+            }
+        }
+
+        if (isset($_FILES) && !empty($_FILES)) {
+            // Update the group image.  We don't pass a URL through in the event data - the listeners which
+            // push to WordPress read the image back off the group via groupImagePath().
+            $file = new \FixometerFile();
+            $file->upload('image', 'image', $idGroup, env('TBL_GROUPS'), false, true, true);
+        }
+
+        $group->update($data);
+
+        if (Fixometer::hasRole($user, 'Administrator')) {
+            // We can update the networks.  The parameter is an array of ids.
+            $networks = $request->networks;
+
+            if ($networks) {
+                $networks = json_decode($networks);
+                $group->networks()->sync($networks);
+            }
+
+            // Administrators can update tags with any tag (global or any network's tags)
+            $tags = $request->tags;
+
+            if ($tags) {
+                $tags = json_decode($tags);
+                $group->group_tags()->sync($tags);
+            }
+        } elseif ($isCoordinatorForGroup) {
+            // Network Coordinators can update tags, but only with tags that belong to
+            // networks they coordinate (global tags are admin-only).
+            // IMPORTANT: Preserve tags from networks the NC doesn't coordinate.
+            $tags = $request->tags;
+
+            if ($tags !== null) {
+                $tags = json_decode($tags);
+
+                // Get the network IDs this user coordinates
+                $userNetworkIds = $user->networks->pluck('id')->toArray();
+
+                // Get the network IDs the group belongs to
+                $groupNetworkIds = $group->networks->pluck('id')->toArray();
+
+                // Find the intersection: networks where NC coordinates AND group belongs
+                $editableNetworkIds = array_intersect($userNetworkIds, $groupNetworkIds);
+
+                // Get existing tags on the group that are from networks the NC CANNOT edit
+                // (either global tags, or tags from networks the NC doesn't coordinate,
+                // or tags from networks the group doesn't belong to)
+                $existingTagIds = $group->group_tags->pluck('id')->toArray();
+                $tagsToPreserve = [];
+                foreach ($existingTagIds as $existingTagId) {
+                    $existingTag = \App\GroupTags::find($existingTagId);
+                    if ($existingTag) {
+                        // Preserve if: global tag OR not in editable networks
+                        if ($existingTag->network_id === null || !in_array($existingTag->network_id, $editableNetworkIds)) {
+                            $tagsToPreserve[] = $existingTagId;
+                        }
+                    }
+                }
+
+                // Validate each submitted tag belongs to an editable network
+                $validNewTags = [];
+                foreach ($tags as $tagId) {
+                    $tag = \App\GroupTags::find($tagId);
+                    if ($tag) {
+                        // Tag is valid only if it belongs to an editable network
+                        if ($tag->network_id !== null && in_array($tag->network_id, $editableNetworkIds)) {
+                            $validNewTags[] = $tagId;
+                        }
+                    }
+                }
+
+                // Combine preserved tags with new valid tags
+                $finalTags = array_unique(array_merge($tagsToPreserve, $validNewTags));
+
+                $group->group_tags()->sync($finalTags);
+            }
+        }
+
+        if (array_key_exists('timezone', $data) && !empty($timezone) && $timezone != $old_zone) {
+            // The timezone of the group has changed.  Update the zone of any future events.  This happens
+            // sometimes when a group is created and events are created before the group is approved (and therefore
+            // before the admin has a chance to set the zone on the group.  Clearing the group's timezone leaves
+            // events alone, so their times don't move.
+            foreach ($group->upcomingParties() as $party) {
+                $party->update([
+                                   'timezone' => $timezone
+                               ]);
+            }
+        }
+
+        $moderate = $request->input('moderate');
+
+        if ($moderate == 'approve' && (Fixometer::hasRole($user, 'Administrator') || $isCoordinatorForGroup)) {
+            // We've been asked to approve this group.
+            event(new ApproveGroup($group, $data));
+
+            // Notify the creator, as long as it's not the current user.
+            $creator = User::find(UserGroups::where('group', $idGroup)->first()->user);
+
+            if ($creator->id != $user->id) {
+                Notification::send($creator, new GroupConfirmed($group));
+            }
+
+            // Notify nearest users.  Use the group's saved position: an approval that doesn't resend the location
+            // has none in the request.
+            if (! is_null($group->latitude) && ! is_null($group->longitude)) {
+                $restarters_nearby = User::nearbyRestarters($group->latitude, $group->longitude, 25)
+                    ->orderBy('name', 'ASC')
+                    ->get();
+
+                Notification::send($restarters_nearby, new NewGroupWithinRadius([
+                                                                                    'group_name' => $group->name,
+                                                                                    'group_url' => url('/group/view/'.$idGroup),
+                                                                                ]));
+            }
+        } elseif (!empty($group->wordpress_post_id)) {
+            event(new EditGroup($group, $data));
         }
 
         return response()->json([
-            'events' => $events->values()->toJson(),
-        ]);
+                                    'id' => $idGroup,
+                                ]);
+    }
+
+    private function validateGroupParams(Request $request, $create, ?Group $existingGroup = null): array {
+        // We don't validate max lengths of other strings, to avoid duplicating the length information both here
+        // and in the migrations.  If we wanted to do that we should extract the length dynamically from the
+        // schema, which is possible but not trivial.
+        if ($create) {
+            $request->validate([
+                                   'name' => ['required', 'unique:groups', 'max:255'],
+                                   'location' => ['required', 'max:255'],
+                                   'description' => ['required'],
+                                   'website' => ['nullable', 'url', 'max:255'],
+                                   'postcode' => ['nullable', 'max:32'],
+                                   'lat' => ['nullable', 'numeric', 'between:-90,90', 'required_with:lng'],
+                                   'lng' => ['nullable', 'numeric', 'between:-180,180', 'required_with:lat'],
+                               ]);
+        } else {
+            $request->validate([
+                                   'name' => ['max:255'],
+                                   'location' => ['max:255'],
+                                   'website' => ['nullable', 'url', 'max:255'],
+                                   'archived_at' => ['nullable', 'date'],
+                                   'postcode' => ['nullable', 'max:32'],
+                                   'lat' => ['nullable', 'numeric', 'between:-90,90', 'required_with:lng'],
+                                   'lng' => ['nullable', 'numeric', 'between:-180,180', 'required_with:lat'],
+                               ]);
+        }
+
+        $name = $request->input('name');
+        $area = $request->input('area');
+        $postcode = $request->input('postcode', '');
+        $location = $request->input('location');
+        $phone = $request->input('phone');
+        $website = $request->input('website');
+        $description = $request->input('description');
+        $timezone = $request->input('timezone');
+        $network_data = $request->input('network_data');
+        $email = $request->input('email');
+        $archived_at = $request->input('archived_at');
+
+        $latitude = null;
+        $longitude = null;
+        $country_code = null;
+
+        if ($timezone && !in_array($timezone, \DateTimeZone::listIdentifiers(\DateTimeZone::ALL_WITH_BC))) {
+            throw ValidationException::withMessages(['location ' => __('partials.validate_timezone')]);
+        }
+
+        // The add/edit page shows a draggable map, so the client can send explicit
+        // coordinates that take precedence over geocoding the location text.
+        $clientLat = $request->input('lat');
+        $clientLng = $request->input('lng');
+        $hasClientCoords = $clientLat !== null && $clientLng !== null;
+
+        if (!empty($location)) {
+            // Skip geocoding when the location string hasn't changed — avoids unnecessary API calls
+            // and prevents failures when editing other fields (e.g. group icon) in environments
+            // where the geocoding API key is unavailable.
+            $locationUnchanged = $existingGroup !== null && $location === $existingGroup->location;
+
+            if ($locationUnchanged) {
+                $latitude = $existingGroup->latitude;
+                $longitude = $existingGroup->longitude;
+                $country_code = $existingGroup->country_code;
+            } else {
+                $geocoder = app(\App\Helpers\Geocoder::class);
+                $geocoded = $geocoder->geocode($location);
+
+                if (empty($geocoded)) {
+                    // With an explicit pin we can still place the group; without
+                    // one, an ungeocodable location is fatal as before.
+                    if (!$hasClientCoords) {
+                        throw ValidationException::withMessages(['location ' => __('groups.geocode_failed')]);
+                    }
+                } else {
+                    $latitude = $geocoded['latitude'];
+                    $longitude = $geocoded['longitude'];
+
+                    // Note that the country returned by the geocoder is already in English, which is what we need for the
+                    // value in the database.
+                    $country_code = $geocoded['country_code'] ?? null;
+                }
+            }
+        }
+
+        if ($hasClientCoords) {
+            $latitude = (float) $clientLat;
+            $longitude = (float) $clientLng;
+        }
+
+        return [
+            $name,
+            $area,
+            $postcode,
+            $location,
+            $phone,
+            $website,
+            $description,
+            $timezone,
+            $latitude,
+            $longitude,
+            $country_code,
+            $network_data,
+            $email,
+            $archived_at
+        ];
     }
 }

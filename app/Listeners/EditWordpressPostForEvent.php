@@ -4,17 +4,14 @@ namespace App\Listeners;
 
 use App\Events\EditEvent;
 use App\Group;
-use App\Network;
+use App\Helpers\Fixometer;
 use App\Notifications\AdminWordPressEditEventFailure;
 use App\Party;
-use App\Helpers\Fixometer;
 use HieuLe\WordpressXmlrpcClient\WordpressClient;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Notification;
 
-class EditWordpressPostForEvent
+class EditWordpressPostForEvent extends BaseEvent
 {
     protected $wpClient;
 
@@ -30,50 +27,59 @@ class EditWordpressPostForEvent
 
     /**
      * Handle the event.
-     *
-     * @param  EditEvent  $event
-     * @return void
      */
-    public function handle(EditEvent $event)
+    public function handle(EditEvent $event): void
     {
+        // Read the saved event rather than the update, which only holds the fields that changed.
         $id = $event->party->idevents;
-        $data = $event->data;
 
         $theParty = Party::find($id);
 
-        if (! $theParty->shouldPushToWordpress()) {
-            Log::error('Events for groups in this network are not published');
+        if (! $theParty) {
+            Log::info('Event no longer exists');
 
+            return;
+        }
+
+        if (! $theParty->shouldPushToWordpress()) {
+            Log::info('Events for groups in this network are not published');
+
+            return;
+        }
+
+        if ($theParty->theGroup->archived_at) {
+            // Suppress notifications for archived groups.
             return;
         }
 
         try {
             if (is_numeric($theParty->wordpress_post_id)) {
-                $startTimestamp = strtotime($data['event_date'].' '.$data['start']);
-                $endTimestamp = strtotime($data['event_date'].' '.$data['end']);
+                $startTimestamp = strtotime($theParty->event_start_utc);
+                $endTimestamp = strtotime($theParty->event_end_utc);
 
                 $group = Group::where('idgroups', $theParty->group)->first();
 
                 $custom_fields = [
-                    ['key' => 'party_grouphash', 'value' => $data['group']],
-                    ['key' => 'party_groupcountry', 'value' => $group->country],
+                    ['key' => 'party_grouphash', 'value' => $theParty->group],
+                    ['key' => 'party_groupcountry', 'value' => Fixometer::getCountryFromCountryCode($group->country_code)],
                     ['key' => 'party_groupcity', 'value' => $group->area],
-                    ['key' => 'party_venue', 'value' => $data['venue']],
-                    ['key' => 'party_location', 'value' => $data['location']],
-                    ['key' => 'party_time', 'value' => $data['start'].' - '.$data['end']],
-                    ['key' => 'party_date', 'value' => $data['event_date']],
+                    ['key' => 'party_venue', 'value' => $theParty->venue],
+                    ['key' => 'party_location', 'value' => $theParty->location],
+                    ['key' => 'party_time', 'value' => $theParty->getEventStartEndLocal()],
+                    ['key' => 'party_date', 'value' => $theParty->event_date_local],
                     ['key' => 'party_timestamp', 'value' => $startTimestamp],
                     ['key' => 'party_timestamp_end', 'value' => $endTimestamp],
+                    ['key' => 'party_timezone', 'value' => $theParty->timezone],
                     ['key' => 'party_stats', 'value' => $id],
-                    ['key' => 'party_lat', 'value' => $data['latitude']],
-                    ['key' => 'party_lon', 'value' => $data['longitude']],
-                    ['key' => 'party_online', 'value' => $data['online'] ?? 0],
+                    ['key' => 'party_lat', 'value' => $theParty->latitude],
+                    ['key' => 'party_lon', 'value' => $theParty->longitude],
+                    ['key' => 'party_online', 'value' => $theParty->online ?? 0],
                 ];
 
                 $content = [
                     'post_type' => 'party',
-                    'post_title' => ! empty($data['venue']) ? $data['venue'] : $data['location'],
-                    'post_content' => $data['free_text'],
+                    'post_title' => ! empty($theParty->venue) ? $theParty->venue : $theParty->location,
+                    'post_content' => $theParty->free_text,
                     'custom_fields' => $custom_fields,
                 ];
 

@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TabicatOraSetup extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         if (! Schema::hasTable('devices_faults_tablets_ora_opinions')) {
             Schema::create('devices_faults_tablets_ora_opinions', function (Blueprint $table) {
@@ -237,14 +235,12 @@ class TabicatOraSetup extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('devices_faults_tablets_ora_adjudicated');
         Schema::dropIfExists('devices_faults_tablets_ora_opinions');
         Schema::dropIfExists('fault_types_tablets');
         Schema::dropIfExists('devices_tabicat_ora');
     }
-}
+};

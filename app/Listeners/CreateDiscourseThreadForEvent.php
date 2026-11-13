@@ -3,15 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\ApproveEvent;
-use App\Events\UserFollowedGroup;
 use App\EventsUsers;
 use App\Party;
 use App\User;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class CreateDiscourseThreadForEvent
+class CreateDiscourseThreadForEvent extends BaseEvent
 {
     /**
      * Create the event listener.
@@ -25,11 +22,8 @@ class CreateDiscourseThreadForEvent
 
     /**
      * Handle the event.
-     *
-     * @param  ApproveEvent  $event
-     * @return void
      */
-    public function handle(ApproveEvent $event)
+    public function handle(ApproveEvent $event): void
     {
         if (! config('restarters.features.discourse_integration')) {
             return;
@@ -40,59 +34,85 @@ class CreateDiscourseThreadForEvent
 
         $theParty = Party::find($partyId);
 
-        // Get the user who created the event.
-        $host = User::find(EventsUsers::where('event', $partyId)->get()[0]->user);
-
         if (empty($theParty)) {
             Log::error('Event not found');
 
             return;
         }
 
-        try {
-            // We want the host to create the message, so use their username.  The API key should
-            // allow us to do this - see https://meta.discourse.org/t/how-can-an-api-user-create-posts-as-another-user/45968/3.
-            $client = app('discourse-client', [
-                'username' => $host->username,
-            ]);
+        if ($theParty->theGroup->archived_at) {
+            // Suppress notifications for archived groups.
+            return;
+        }
 
-            // See https://meta.discourse.org/t/private-message-send-api/27593/21.
-            $params = [
-                'raw' => $theParty->free_text,
-                'title' => $theParty->venue.' '.$theParty->event_date,
-                'target_usernames' => $host->username,
-                'archetype' => 'private_message',
-            ];
+        // Get the user who created the event.
+        $users = EventsUsers::where('event', $partyId)->get();
 
-            $endpoint = '/posts.json';
+        if (!count($users)) {
+            Log::error("Can't find event creator");
+        } else {
+            $host = User::find($users[0]->user);
 
-            Log::info('Creating event thread: '.json_encode($params));
-            $response = $client->request(
-                'POST',
-                $endpoint,
-                [
-                    'form_params' => $params,
-                ]
-            );
+            try {
+                // We want the host to create the message, so use their username.  The API key should
+                // allow us to do this - see https://meta.discourse.org/t/how-can-an-api-user-create-posts-as-another-user/45968/3.
+                //
+                // Note that the Discourse instance is expected to be configured to allow this,
+                // by setting personal_message_enabled_groups to 10.
+                $client = app('discourse-client', [
+                    'username' => $host->username,
+                ]);
 
-            Log::info('Response status: '.$response->getStatusCode());
-            Log::info('Response body: '.$response->getBody());
+                // Construct an intro.
+                $group = $theParty->theGroup;
+                $intro = __('events.discourse_intro', [
+                    'name' => $theParty->venue,
+                    'url' => url('/party/view/' . $theParty->idevents),
+                    'start' => $theParty->getFormattedLocalStart('D jS M, H:i'),
+                    'end' => $theParty->getFormattedLocalEnd('H:i'),
+                    'groupname' => $group->name,
+                    'groupurl' => url('/group/' . $group->id),
+                ], $host->language);
 
-            // We want to save the discourse thread id in the event, so that we can invite people to it later
-            // when they RSVP.
-            $json = json_decode($response->getBody(), true);
-            if (empty($json['topic_id'])) {
-                throw new \Exception('Topic id not found in create response');
+                // See https://meta.discourse.org/t/private-message-send-api/27593/21.
+                $params = [
+                    'raw' => $intro,
+                    'title' => $theParty->venue.' '.$theParty->event_date_local,
+                    'target_recipients' => $host->username,
+                    'archetype' => 'private_message',
+                ];
+
+                $endpoint = '/posts.json';
+
+                Log::info('Creating event thread: '.json_encode($params));
+                $response = $client->request(
+                    'POST',
+                    $endpoint,
+                    [
+                        'form_params' => $params,
+                    ]
+                );
+
+                Log::info('Response status: '.$response->getStatusCode());
+                Log::info('Response body: '.$response->getBody());
+
+                if (! $response->getStatusCode() === 200) {
+                    Log::error('Could not create event ('.$partyId.') thread: '.$response->getReasonPhrase());
+                } else {
+                    // We want to save the discourse thread id in the event, so that we can invite people to it later
+                    // when they RSVP.
+                    $json = json_decode($response->getBody(), true);
+                    if (empty($json['topic_id'])) {
+                        Log::error('Topic id not found in create response ' . $response->getBody());
+                        throw new \Exception('Topic id not found in create response');
+                    }
+
+                    $theParty->discourse_thread = $json['topic_id'];
+                    $theParty->save();
+                }
+            } catch (\Exception $ex) {
+                Log::error('Could not create event ('.$partyId.') thread: '.$ex->getMessage());
             }
-
-            $theParty->discourse_thread = $json['topic_id'];
-            $theParty->save();
-
-            if (! $response->getStatusCode() === 200) {
-                Log::error('Could not create event ('.$partyId.') thread: '.$response->getReasonPhrase());
-            }
-        } catch (\Exception $ex) {
-            Log::error('Could not create event ('.$partyId.') thread: '.$ex->getMessage());
         }
     }
 }

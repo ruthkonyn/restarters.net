@@ -7,54 +7,56 @@
       <div class="br d-flex flex-column botwhite">
         <b-card no-body class="p-3 flex-grow-1 border-0">
           <h3 class="mt-2 mb-4">{{ __('devices.title_items') }}</h3>
+          <DeviceType class="mb-2" :type.sync="currentDevice.item_type"
+                      :icon-variant="iconVariant" :disabled="disabled"
+                      :suppress-type-warning="suppressTypeWarning" :powered="powered"
+                      :unknown.sync="unknownItemType"
+                      :auto-focus="add"
+          />
           <DeviceCategorySelect :class="{
             'mb-2': true,
-            'border-thick': missingCategory
-            }" :category.sync="currentDevice.category" :clusters="clusters" :powered="powered"
-                                :icon-variant="add ? 'black' : 'brand'" :disabled="disabled" @changed="categoryChange"/>
-          <DeviceType v-if="!powered || aggregate" class="mb-2" :type.sync="currentDevice.item_type"
-                      :icon-variant="add ? 'black' : 'brand'" :item-types="itemTypes" :disabled="disabled"
-                      :suppress-type-warning="suppressTypeWarning" :powered="powered"/>
-          <div v-if="powered">
-            <DeviceBrand class="mb-2" :brand.sync="currentDevice.brand" :brands="brands" :disabled="disabled"
-                         :suppress-brand-warning="suppressBrandWarning"/>
-            <DeviceModel class="mb-2" :model.sync="currentDevice.model" :icon-variant="add ? 'black' : 'brand'"
-                         :disabled="disabled"/>
-          </div>
-          <DeviceWeight v-if="showWeight" :weight.sync="currentDevice.estimate" :disabled="disabled"/>
+            'border-thick': missingCategory,
+            'suggested': suggested,
+            }"
+            :category.sync="currentDevice.category" :clusters="clusters" :powered="powered" :key="currentDevice.item_type"
+            @open="suggested = false"
+            :icon-variant="iconVariant" :disabled="disabled"
+          />
+          <DeviceBrand class="mb-2" :brand.sync="currentDevice.brand" :brands="brands" :disabled="disabled"
+                       :suppress-brand-warning="suppressBrandWarning"/>
+          <DeviceModel class="mb-2" :model.sync="currentDevice.model" :icon-variant="iconVariant"
+                       :disabled="disabled"/>
           <DeviceAge :age.sync="currentDevice.age" :disabled="disabled"/>
-          <DeviceImages :idevents="idevents" :device="currentDevice" :add="add" :edit="edit" :disabled="disabled"
+          <DeviceWeight v-if="showWeight" :weight.sync="currentDevice.estimate" :disabled="disabled" :required="weightRequired" />
+          <DeviceImages :id="idtouse" :add="add" :edit="edit" :disabled="disabled"
                         class="mt-2" @remove="removeImage($event)"/>
         </b-card>
       </div>
       <div class="d-flex flex-column botwhite">
         <b-card no-body class="p-3 flex-grow-1 border-0">
           <h3 class="mt-2 mb-4">{{ __('devices.title_repair') }}</h3>
-          <DeviceRepairStatus :status.sync="currentDevice.repair_status" :steps.sync="currentDevice.repair_details"
-                              :parts.sync="currentDevice.spare_parts" :barriers.sync="currentDevice.barrier"
+          <DeviceRepairStatus :status.sync="currentDevice.repair_status" :steps.sync="currentDevice.next_steps"
+                              :parts.sync="currentDevice.spare_parts" :barrier.sync="currentDevice.barrier"
                               :barrierList="barrierList" :disabled="disabled"/>
         </b-card>
       </div>
       <div class="bl d-flex flex-column botwhite">
         <b-card no-body class="p-3 flex-grow-1 border-0">
           <h3 class="mt-2 mb-4">{{ __('devices.title_assessment') }}</h3>
-          <DeviceProblem :problem.sync="currentDevice.problem" class="mb-4" :icon-variant="add ? 'black' : 'brand'"
+          <DeviceProblem :problem.sync="currentDevice.problem" class="mb-4" :icon-variant="iconVariant"
                          :disabled="disabled"/>
-          <DeviceNotes :notes.sync="currentDevice.notes" class="mb-4" :icon-variant="add ? 'black' : 'brand'"
+          <DeviceNotes :notes.sync="currentDevice.notes" class="mb-4" :icon-variant="iconVariant"
                        :disabled="disabled"/>
-          <DeviceUsefulUrls :device="device" :urls.sync="currentDevice.urls" class="mb-2" :disabled="disabled"/>
-          <div class="d-flex">
-            <b-form-checkbox v-model="wiki" class="form-check form-check-large ml-4"
-                             :id="'wiki-' + (add ? '' : device.iddevices)" :disabled="disabled"/>
-            <label :for="'wiki-' + (add ? '' : device.iddevices)">
-              {{ __('partials.solution_text2') }}
-            </label>
-          </div>
         </b-card>
       </div>
     </div>
     <b-alert :show="missingCategory" variant="danger">
       <p>{{ __('events.form_error') }}</p>
+    </b-alert>
+    <b-alert :show="axiosError !== null" variant="danger">
+      <p>
+        {{ axiosError }}
+      </p>
     </b-alert>
     <div class="d-flex justify-content-center flex-wrap pt-4 pb-4">
       <b-btn variant="primary" class="mr-2" v-if="add" @click="addDevice">
@@ -67,7 +69,7 @@
         {{ __('devices.delete_device') }}
       </b-btn>
       <DeviceQuantity v-if="add" :quantity.sync="currentDevice.quantity" class="flex-md-shrink-1 ml-2 mr-2"/>
-      <b-btn variant="tertiary" class="ml-2" @click="cancel" v-if="cancelButton">
+      <b-btn variant="tertiary" class="ml-2 cancel" @click="cancel" v-if="cancelButton">
         {{ __('partials.cancel') }}
       </b-btn>
     </div>
@@ -77,37 +79,30 @@
 <script>
 import event from '../mixins/event'
 import {
-  FIXED,
-  REPAIRABLE,
-  END_OF_LIFE,
   SPARE_PARTS_MANUFACTURER,
   SPARE_PARTS_THIRD_PARTY,
-  CATEGORY_MISC, NEXT_STEPS_DIY, NEXT_STEPS_PROFESSIONAL, NEXT_STEPS_MORE_TIME,
+  CATEGORY_MISC_POWERED, CATEGORY_MISC_UNPOWERED, NEXT_STEPS_DIY, NEXT_STEPS_PROFESSIONAL, NEXT_STEPS_MORE_TIME,
   PARTS_PROVIDER_MANUFACTURER,
   PARTS_PROVIDER_THIRD_PARTY, SPARE_PARTS_NOT_NEEDED
 } from '../constants'
-import DeviceCategorySelect from './DeviceCategorySelect'
-import DeviceBrand from './DeviceBrand'
-import DeviceModel from './DeviceModel'
-import DeviceWeight from './DeviceWeight'
-import DeviceAge from './DeviceAge'
-import DeviceType from './DeviceType'
-import DeviceRepairStatus from './DeviceRepairStatus'
-import DeviceProblem from './DeviceProblem'
-import DeviceNotes from './DeviceNotes'
-import DeviceUsefulUrls from './DeviceUsefulUrls'
-import DeviceQuantity from './DeviceQuantity'
-import FileUploader from './FileUploader'
-import DeviceImages from './DeviceImages'
-import ConfirmModal from './ConfirmModal'
+import DeviceCategorySelect from './DeviceCategorySelect.vue'
+import DeviceBrand from './DeviceBrand.vue'
+import DeviceModel from './DeviceModel.vue'
+import DeviceWeight from './DeviceWeight.vue'
+import DeviceAge from './DeviceAge.vue'
+import DeviceType from './DeviceType.vue'
+import DeviceRepairStatus from './DeviceRepairStatus.vue'
+import DeviceProblem from './DeviceProblem.vue'
+import DeviceNotes from './DeviceNotes.vue'
+import DeviceQuantity from './DeviceQuantity.vue'
+import DeviceImages from './DeviceImages.vue'
+import ConfirmModal from './ConfirmModal.vue'
 
 export default {
   components: {
     ConfirmModal,
     DeviceImages,
-    FileUploader,
     DeviceQuantity,
-    DeviceUsefulUrls,
     DeviceNotes,
     DeviceProblem,
     DeviceRepairStatus,
@@ -120,12 +115,18 @@ export default {
   },
   mixins: [event],
   props: {
-    device: {
-      type: Object,
+    showInfo: {
+      // The info icons explain what to enter, so they're no use when just viewing a record.
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    id: {
+      type: Number,
       required: false,
       default: null
     },
-    idevents: {
+    eventid: {
       type: Number,
       required: true
     },
@@ -170,69 +171,107 @@ export default {
       required: false,
       default: null
     },
-    itemTypes: {
-      type: Array,
-      required: false,
-      default: null
-    },
   },
   data () {
     return {
       currentDevice: {},
-      missingCategory: false
+      axiosError: null,
+      missingCategory: false,
+      unknownItemType: false,
+      suggested: false
     }
   },
   watch: {
-    currentCategory (newval) {
-      if (this.missingCategory && newval) {
-        // Reset warning.
-        this.missingCategory = false
+    device(newval) {
+      console.log('Device changed', newval)
+      this.updateCurrentDevice(newval)
+    },
+    suggestedCategory(newval) {
+      if (newval) {
+        // For add we always want to use this - we get called multiple times as they type.
+        // For edit we probably don't, unless we have edited the category away.
+        if (this.add || !this.currentDevice.category) {
+          this.currentDevice.category = newval.idcategories
+
+          // Make it obvious that we have done this to encourage people to review it rather than ignore it.
+          this.suggested = true
+          setTimeout(() => {
+            this.suggested = false
+          }, 5000)
+        }
+      } else {
+        this.currentDevice.category = null
       }
     }
   },
   computed: {
+    iconVariant() {
+      if (!this.showInfo) {
+        return 'none'
+      }
+
+      return this.add ? 'black' : 'brand'
+    },
+    device() {
+      return this.id ? this.$store.getters['devices/byId'](this.id) : null
+    },
+    itemTypes() {
+      return this.$store.getters['items/list'];
+    },
+    idtouse() {
+      return this.currentDevice ? this.currentDevice.id : null
+    },
     disabled () {
       return !this.edit && !this.add
     },
     currentCategory () {
       return this.currentDevice ? this.currentDevice.category : null
     },
-    aggregate () {
-      if (!this.currentCategory) {
-        return false
-      }
+    currentType() {
+      return this.currentDevice ? this.currentDevice.item_type : null
+    },
+    suggestedCategory() {
+      let ret = null
 
-      if (this.powered && this.currentCategory === CATEGORY_MISC) {
-        return true
-      }
-
-      let ret = false
-
-      this.clusters.forEach((cluster) => {
-        let categories = []
-
-        cluster.categories.forEach((c) => {
-          if (this.currentCategory === c.idcategories) {
-            ret = c.aggregate
-          }
+      if (this.currentType) {
+        // Some item types are the same as category names.
+        this.clusters.forEach((cluster) => {
+          cluster.categories.forEach((c) => {
+            const name = this.__(c.name)
+            if (Boolean(c.powered) === Boolean(this.powered) && !name.toLowerCase().localeCompare(this.currentType.toLowerCase())) {
+              ret = {
+                idcategories: c.idcategories,
+                categoryname: c.name,
+                powered: c.powered
+              }
+            }
+          })
         })
-      })
+
+        if (!ret) {
+          // Now check the item types.  Stop at the first match, which is the most popular.
+          this.itemTypes.every(t => {
+            if (!ret && Boolean(t.powered) === Boolean(this.powered) && this.currentType.toLowerCase() == t.type.toLowerCase()) {
+              ret = {
+                idcategories: t.idcategories,
+                categoryname: t.categoryname,
+                powered: t.powered
+              }
+
+              return false
+            }
+
+            return true
+          })
+        }
+      }
 
       return ret
     },
     showWeight () {
       // Powered devices don't allow editing of the weight except for the "None of the above" category, whereas
       // unpowered do.
-      return !this.powered || (this.currentDevice && this.currentDevice.category === CATEGORY_MISC)
-    },
-    wiki: {
-      // Need to convert server's number to/from a boolean.
-      get () {
-        return !!this.currentDevice.wiki
-      },
-      set (newval) {
-        this.currentDevice.wiki = newval
-      }
+      return !this.powered || (this.currentDevice && this.currentDevice.category === CATEGORY_MISC_POWERED)
     },
     suppressTypeWarning () {
       // We don't want to show the warning if we have not changed the type since it was last saved.
@@ -242,176 +281,124 @@ export default {
       // We don't want to show the warning if we have not changed the brand since it was last saved.
       return this.currentDevice && this.device && this.device.brand === this.currentDevice.brand
     },
+    weightRequired() {
+      // Weight is required (if shown) for misc (powered or unpowered).
+      return this.currentDevice &&
+          (this.powered && this.currentDevice.category === CATEGORY_MISC_POWERED ||
+            !this.powered && this.currentDevice.category === CATEGORY_MISC_UNPOWERED)
+    }
   },
   created () {
     // We take a copy of what's passed in so that we can then edit it in here before saving or cancelling.  We need
     this.currentDevice = {
-      event_id: this.idevents,
+      event_id: this.eventid,
       category: null,
       brand: null,
       model: null,
       age: null,
-      repair_details: null,
       repair_status: null,
       spare_parts: null,
       problem: null,
       assessment: null,
       quantity: 1,
-      urls: []
     }
 
     if (this.device) {
-      // Take a deep clone because we're messing with arrays.
-      this.currentDevice = {...this.currentDevice, ...JSON.parse(JSON.stringify(this.device))}
+      this.updateCurrentDevice(this.device)
+    }
 
-      // Some values we need to munge back to the id for our selects.
-      if (this.currentDevice.category) {
-        this.currentDevice.category = this.currentDevice.category.idcategories
-      }
-
-      this.currentDevice.estimate = parseFloat(this.currentDevice.estimate)
-
-      this.nextSteps()
-      this.partsProvider()
+    if (this.add) {
+      // Use a -ve id to give us something to track uploaded photos against.
+      //
+      // Need to ensure this isn't too large as the xref table has an int value.
+      this.currentDevice.id = -Math.round(new Date().getTime() / 1000)
     }
   },
   methods: {
+    updateCurrentDevice(device) {
+      // Take a deep clone because we're messing with arrays.
+      this.currentDevice = {...this.currentDevice, ...JSON.parse(JSON.stringify(device))}
+
+      // Some values we need to munge back to the id for our selects.  This is a bit ugly because we have two lots
+      // of field names, depending on which API we're using.
+      if (typeof this.currentDevice.category === 'object') {
+        if (this.currentDevice.category.idcategories) {
+          this.currentDevice.category = this.currentDevice.category.idcategories
+        } else {
+          this.currentDevice.category = this.currentDevice.category.id
+        }
+      }
+
+      this.currentDevice.estimate = parseFloat(this.currentDevice.estimate)
+      this.currentDevice.age = parseFloat(this.currentDevice.age)
+
+      this.partsProvider()
+    },
     cancel () {
       this.$emit('close')
     },
-    nextSteps () {
-      // The next step value is held in multiple properties of the object.
-      if (this.currentDevice.do_it_yourself) {
-        this.currentDevice.repair_details = NEXT_STEPS_DIY
-      } else if (this.currentDevice.professional_help) {
-        this.currentDevice.repair_details = NEXT_STEPS_PROFESSIONAL
-      } else if (this.currentDevice.more_time_needed) {
-        this.currentDevice.repair_details = NEXT_STEPS_MORE_TIME
-      } else {
-        this.currentDevice.repair_details = null
-      }
-    },
     partsProvider () {
-      // Third part parts are indicated via the parts provider field.
-      if (this.currentDevice.spare_parts === SPARE_PARTS_NOT_NEEDED) {
-        this.currentDevice.spare_parts = SPARE_PARTS_NOT_NEEDED
-      } else if (this.currentDevice.parts_provider === PARTS_PROVIDER_THIRD_PARTY) {
-        this.currentDevice.spare_parts = SPARE_PARTS_THIRD_PARTY
-      } else {
-        this.currentDevice.spare_parts = SPARE_PARTS_MANUFACTURER
-      }
+      // Third party parts are indicated via the parts provider field.
+      return this.currentDevice.spare_parts ? this.currentDevice.spare_parts : null
     },
     async addDevice () {
-      if (!this.currentDevice.category) {
-        this.missingCategory = true
-      } else {
-        this.missingCategory = false
+      try {
+        if (!this.currentDevice.category) {
+          this.missingCategory = true
+        } else {
+          this.missingCategory = false
 
-        const createdDevices = await this.$store.dispatch('devices/add', this.prepareDeviceForServer())
+          // The API only creates a single device, so we loop on the client to create multiple.
+          let toAdd = this.currentDevice
+          toAdd = JSON.parse(JSON.stringify(toAdd))
 
-        if (this.currentDevice.urls) {
-          // We have some useful URLs.  Apply them to each of the created devices.
-          createdDevices.forEach(async (d) => {
-            this.currentDevice.urls.forEach(async (u) => {
-              await this.$store.dispatch('devices/addURL', {
-                iddevices: d.iddevices,
-                url: u
-              })
-            })
-          })
+          for (let i = 0; i < this.currentDevice.quantity; i++) {
+            toAdd.id = this.currentDevice.id--
+            await this.$store.dispatch('devices/add', toAdd)
+          }
+
+          console.log('Close')
+          this.$emit('close')
         }
-
-        this.$emit('close')
+      } catch (e) {
+        console.error('Edit failed', e)
+        this.axiosError = e
       }
     },
     async saveDevice () {
-      await this.$store.dispatch('devices/edit', this.prepareDeviceForServer())
-
-      // We need to update the useful URLs, which might have been added/edited/deleted from what we originally had.
-      this.currentDevice.urls.forEach(async (u) => {
-        if (!u.id) {
-          // This has no id, and hence is a new useful URL added in this edit.  Create it.
-          await this.$store.dispatch('devices/addURL', {
-            iddevices: this.device.iddevices,
-            url: u
-          })
-        } else {
-          // This has an id, and therefore already existed on the server.
-          const existing = this.device.urls.find(u2 => {
-            return u2.id === u.id
-          })
-
-          if (existing.url !== u.url || existing.source !== u.source) {
-            await this.$store.dispatch('devices/editURL', {
-              iddevices: this.device.iddevices,
-              url: u
-            })
-          }
-        }
-      })
-
-      // Now find any URLs which were present originally but are no longer present - these need to be deleted.
-      if (this.device.urls) {
-        this.device.urls.forEach(async (u) => {
-          const present = this.currentDevice.urls.find(u2 => {
-            return u2.id === u.id
-          })
-
-          if (!present) {
-            await this.$store.dispatch('devices/deleteURL', {
-              iddevices: this.device.iddevices,
-              url: u
-            })
-          }
-        })
+      try {
+        await this.$store.dispatch('devices/edit', this.currentDevice)
+        this.$emit('close')
+      } catch (e) {
+        console.error('Edit failed', e)
+        this.axiosError = e
       }
-
-      this.$emit('close')
     },
-    prepareDeviceForServer () {
-      // The device we send to the server is what is in currentDevice, with a couple of tweaks:
-      // - The server takes the brand as a string rather than an id.
-      // - The server only supports a single useful URL on add, via the url and source parameters
-      // We map those here to keep the interface to the components neater.
-      let device = this.currentDevice
-
-      if (device.urls && device.urls.length) {
-        device.url = device.urls[0].url
-        device.source = device.urls[0].source
-      }
-
-      return device
-    },
-    removeImage (image) {
+    async removeImage (image) {
       // TODO LATER The remove of the image should not happen until the edit completes.  At the moment we do it
       // immediately.  The way we set ids here is poor, but this is because the underlying API call for images
       // is weak.
-      image.iddevices = this.currentDevice.iddevices
-      this.$store.dispatch('devices/deleteImage', image)
+      await this.$store.dispatch('devices/deleteImage', {
+        id: this.idtouse,
+        idxref: image.idxref,
+      })
+
+      this.$store.dispatch('devices/fetch', this.id)
     },
     confirmDeleteDevice () {
       this.$refs.confirm.show()
     },
     deleteDevice () {
-      this.$store.dispatch('devices/delete', {
-        iddevices: this.device.iddevices,
-        idevents: this.idevents
-      })
-
-      window.location = '/fixometer'
+      this.$store.dispatch('devices/delete', this.id)
     },
-    categoryChange () {
-      // Any item type we might have is no longer valid.
-      this.currentDevice.item_type = null
-    }
   }
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .icon {
   width: 21px;
@@ -449,10 +436,6 @@ export default {
   @include media-breakpoint-down(sm) {
     grid-template-columns: 100%;
   }
-
-  .useful-repair-urls .input-group .form-control {
-    border-radius: initial;
-  }
 }
 
 h3 {
@@ -469,9 +452,13 @@ h3 {
     border-radius: 0;
   }
 
+  h3 {
+    color: #222;
+  }
+
   ::v-deep {
     label {
-      color: white;
+      color: black;
       font-weight: bold;
     }
   }
@@ -513,12 +500,17 @@ h3 {
   border: 3px solid red;
 }
 
-/deep/ .card .form-control:disabled {
+::v-deep .card .form-control:disabled {
   // Disabled is what happens for the view that people get if they can't edit the device.
   background-color: white;
 }
 
-/deep/ .form-text {
+::v-deep .form-text {
   line-height: 1rem;
+}
+
+::v-deep .suggested .multiselect {
+  border: 3px solid #222 !important;
+  width: calc(100% - 6px) !important;
 }
 </style>

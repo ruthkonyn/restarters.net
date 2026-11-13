@@ -3,11 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\UserFollowedGroup;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Notifications\NewDiscourseMember;
 use Illuminate\Support\Facades\Log;
+use Notification;
 
-class AddUserToDiscourseGroup
+class AddUserToDiscourseGroup extends BaseEvent
 {
     /**
      * Create the event listener.
@@ -21,19 +21,28 @@ class AddUserToDiscourseGroup
 
     /**
      * Handle the event.
-     *
-     * @param  UserFollowedGroup  $event
-     * @return void
      */
-    public function handle(UserFollowedGroup $event)
+    public function handle(UserFollowedGroup $event): void
     {
         if (! config('restarters.features.discourse_integration')) {
             return;
         }
 
-        // add user to the network groups for the group the user followed.
         $repairGroup = $event->group;
         $user = $event->user;
+	
+        if ($repairGroup->archived_at) {
+            // Suppress notifications for archived groups.
+            return;
+        }
+
+        // add user to the network groups for the group the user followed.
+
+        if (!$user->username) {
+            $user->generateAndSetUsername();
+            $user->save();
+            $user->refresh();
+        }
 
         try {
             $discourseGroups = [];
@@ -81,6 +90,10 @@ class AddUserToDiscourseGroup
 
             if (! $response->getStatusCode() === 200) {
                 Log::error('Could not sync user\'s ('.$user->id.') groups to Discourse: '.$response->getReasonPhrase());
+            } else {
+                Notification::send($user, new NewDiscourseMember([
+                    'group_name' => $repairGroup->name
+                ]));
             }
         } catch (\Exception $ex) {
             Log::error('Could not sync user\'s ('.$user->id.') groups to Discourse: '.$ex->getMessage());

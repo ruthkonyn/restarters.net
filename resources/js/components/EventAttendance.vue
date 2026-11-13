@@ -5,9 +5,6 @@
     </template>
     <template slot="content">
       <div class="mt-2">
-        <p v-if="!upcoming && volunteerCountMismatch" class="warningbox small text-danger p-1">
-          {{ __('events.warning_volunteers_message') }}
-        </p>
         <div :class="{
       attendance: true,
       upcoming: upcoming
@@ -15,14 +12,14 @@
           <div class="counts">
             <div v-if="!upcoming" class="count-participants">
               <b>
-                <b-img src="/icons/group_ico.svg" class="mr-2" />
+                <b-img :src="imageUrl('/icons/group_ico.svg')" class="mr-2 icon" />
                 {{ __('events.stat-0') }}
               </b>
               <EventAttendanceCount :count="event.participants" class="mt-2 mb-4" @change="changeParticipants($event)" :canedit="canedit" />
             </div>
             <div v-if="!upcoming" class="count-volunteers">
               <b>
-                <b-img src="/icons/volunteer_ico.svg" class="mr-2" />
+                <b-img :src="imageUrl('/icons/volunteer_ico.svg')" class="mr-2 icon" />
                 {{ __('events.stat-2') }}
               </b>
               <EventAttendanceCount :count="event.volunteers" class="mt-2"  @change="changeVolunteers($event)" :canedit="canedit" />
@@ -42,20 +39,12 @@
                   {{ __('events.confirmed_none') }}
                 </p>
                 <hr />
-                <div v-if="upcoming" class="d-flex justify-content-end">
-                  <!-- TODO LATER In due course these modals should become Vue components.-->
-                  <a data-toggle="modal" data-target="#event-all-attended" href="#" class="mr-2">
-                    {{ __('events.see_all') }}
-                  </a>
-                </div>
-                <div v-else>
-                  <div class="d-flex justify-content-between">
-                    <b-btn variant="link" data-toggle="modal" data-target="#event-add-volunteer">
+                <div>
+                  <div class="d-flex justify-content-between" v-if="!upcoming">
+                    <b-btn variant="link" @click="addVolunteer">
                       {{ __('events.add_volunteer_modal_heading') }}
                     </b-btn>
-                  <b-btn variant="link" data-toggle="modal" data-target="#event-all-attended" href="#">
-                    {{ __('events.see_all') }}
-                    </b-btn>
+                    <EventAddVolunteerModal :idevents="idevents" ref="addVolunteerModal" @hide="fetchVolunteers" />
                   </div>
                 </div>
               </b-tab>
@@ -71,13 +60,11 @@
                 </p>
                 <hr />
                 <div v-if="upcoming && approved" class="d-flex justify-content-between">
-                  <a data-toggle="modal" data-target="#event-invite-to" href="#" class="ml-2">
-                    <img class="icon" src="/images/add-icon.svg" />
+                  <a href="#" class="ml-2" @click.prevent="inviteVolunteers">
+                    <img class="icon" :src="imageUrl('/images/add-icon.svg')" />
                     {{ __('events.invite_to_join') }}
                   </a>
-                  <a data-toggle="modal" data-target="#event-all-volunteers" href="#" class="mr-2" v-if="invited.length">
-                    {{ __('events.see_all') }}
-                  </a>
+                  <EventInviteModal :idevents="idevents" :canedit="canedit" ref="inviteModal" />
                 </div>
               </b-tab>
             </b-tabs>
@@ -89,9 +76,12 @@
 </template>
 <script>
 import event from '../mixins/event'
-import EventAttendanceCount from './EventAttendanceCount'
-import EventAttendee from './EventAttendee'
-import CollapsibleSection from './CollapsibleSection'
+import images from '../mixins/images'
+import EventAttendanceCount from './EventAttendanceCount.vue'
+import EventAttendee from './EventAttendee.vue'
+import CollapsibleSection from './CollapsibleSection.vue'
+import EventAddVolunteerModal from './EventAddVolunteerModal.vue'
+import EventInviteModal from './EventInviteModal.vue'
 
 export default {
   props: {
@@ -104,41 +94,18 @@ export default {
       required: false,
       default: false
     },
-    attendance:  {
-      type: Array,
-      required: false,
-      default: function () { return [] }
-    },
     invitations:  {
       type: Array,
       required: false,
       default: function () { return [] }
-    },
+    }
   },
-  components: {CollapsibleSection, EventAttendee, EventAttendanceCount},
-  mixins: [event],
-  created() {
-    // The attendance is passed from the server to the client via a prop on this component.  When we are created
-    // we put it in the store.  From then on we get the data from the store so that we get reactivity.
-    //
-    // Further down the line this initial data might be provided either by an API call from the client to the server,
-    // or from Vue server-side rendering, where the whole initial state is passed to the client.
-    let attendees = []
-
-    this.attendance.forEach((a) => {
-      a.confirmed = true
-      attendees.push(a)
-    })
-
-    this.invitations.forEach((a) => {
-      a.confirmed = false
-      attendees.push(a)
-    })
-
-    this.$store.dispatch('attendance/set', {
-      idevents: this.idevents,
-      attendees: attendees
-    })
+  components: {EventAddVolunteerModal, EventInviteModal, CollapsibleSection, EventAttendee, EventAttendanceCount},
+  mixins: [event, images],
+  computed: {
+    attendance() {
+      return this.$store.getters['attendance/byEvent'](this.idevents)
+    }
   },
   methods: {
     async changeParticipants(val) {
@@ -164,15 +131,26 @@ export default {
       if (ret && ret.data && ret.data.success) {
         this.event.volunteers = val
       }
+    },
+    addVolunteer() {
+      this.$refs.addVolunteerModal.show()
+    },
+    inviteVolunteers() {
+      this.$refs.inviteModal.show()
+    },
+    fetchVolunteers() {
+      this.$store.dispatch('attendance/fetch', {
+        idevents: this.idevents
+      })
     }
   }
 }
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .attendance {
   display: grid;
@@ -185,7 +163,7 @@ export default {
   }
 
   @include media-breakpoint-down(sm) {
-    grid-template-columns: 100%;
+    grid-template-columns: 100% !important;
   }
 }
 

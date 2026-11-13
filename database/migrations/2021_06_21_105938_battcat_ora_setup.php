@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class BattcatOraSetup extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('devices_faults_batteries_ora_opinions', function (Blueprint $table) {
             $table->increments('id');
@@ -138,14 +136,12 @@ class BattcatOraSetup extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('devices_faults_batteries_ora_adjudicated');
         Schema::dropIfExists('devices_faults_batteries_ora_opinions');
         Schema::dropIfExists('fault_types_batteries');
         Schema::dropIfExists('devices_battcat_ora');
     }
-}
+};

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Group;
+use App\Helpers\Fixometer;
 use Illuminate\Console\Command;
 
 class SyncGroups extends Command
@@ -43,18 +44,16 @@ class SyncGroups extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
-        $groups = Group::whereNotNull('wordpress_post_id')->where('wordpress_post_id', '<>', 99999)->get();
+        $groups = Group::where('approved', true)->whereNotNull('wordpress_post_id')->get();
 
         foreach ($groups as $group) {
             try {
                 $custom_fields = [
                     ['key' => 'group_city', 'value' => $group->area],
-                    ['key' => 'group_country', 'value' => $group->country],
+                    ['key' => 'group_country', 'value' => Fixometer::getCountryFromCountryCode($group->country_code)],
                     ['key' => 'group_website', 'value' => $group->website],
                     ['key' => 'group_hash', 'value' => $group->idgroups],
                     ['key' => 'group_latitude', 'value' => $group->latitude],

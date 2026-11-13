@@ -19,25 +19,23 @@ class NullProblemTest extends TestCase
         Device::truncate();
         DB::statement('SET foreign_key_checks=1');
 
-        $event = factory(Party::class)->create();
-        $this->device_inputs = factory(Device::class)->raw([
-                                                               'event_id' => $event->idevents,
-                                                               'quantity' => 1,
-                                                           ]);
-
-        $admin = factory(User::class)->state('Administrator')->create();
+        $this->event = Party::factory()->create();
+        $admin = User::factory()->administrator()->create();
         $this->actingAs($admin);
 
         $this->withoutExceptionHandling();
     }
 
-    /** @test */
-    public function null_problem_mapped_to_empty_string()
+    /**
+     * @test
+     * @story:DeviceController::createDevicev2
+     */
+    public function null_problem_mapped_to_empty_string(): void
     {
-        $this->device_inputs['problem'] = null;
-        $this->post('/device/create', $this->device_inputs);
+        $iddevices = $this->createDevice($this->event->idevents, 'misc', null, 1, 100, null);
+        $iddevices = Device::latest()->first()->iddevices;
 
-        $device = Device::find(1);
+        $device = Device::find($iddevices);
         $this->assertEquals('', $device->problem);
     }
 }

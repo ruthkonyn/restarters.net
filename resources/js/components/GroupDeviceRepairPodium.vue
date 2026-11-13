@@ -24,7 +24,7 @@
           {{ device.counter }}
         </span>
         <span class="font-weight-bold align-content-center mt-2">
-          {{ device.name }}
+          {{ translatedName }}
         </span>
       </div>
     </div>
@@ -44,28 +44,28 @@ export default {
   },
   computed: {
     translatedName() {
-      return this.$lang.get('strings.' + this.device.name)
+      return this.__(this.device.name)
     }
   }
 }
 </script>
 <style scoped lang="scss">
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .height {
   height: 152px;
 
-  /deep/ .medal-1 {
+  ::v-deep .medal-1 {
     height: 152px
   }
 
-  /deep/ .medal-2 {
+  ::v-deep .medal-2 {
     height: 132px;
   }
 
-  /deep/ .medal-3 {
+  ::v-deep .medal-3 {
     height: 112px;
   }
 }

@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\NoStory;
+use App\Attributes\UserStory;
 use App\Group;
-use App\GrouptagsGroups;
 use App\Party;
 use App\User;
+use App\Network;
 use Carbon\Carbon;
-use App\Helpers\Fixometer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+#[Feature('Events', description: 'Community repair event management')]
 class CalendarEventsController extends Controller
 {
     public $ical_format;
@@ -20,6 +23,7 @@ class CalendarEventsController extends Controller
         $this->ical_format = 'Ymd\THis';
     }
 
+    #[UserStory('As a Restarter, I can subscribe to my events as an iCal feed', persona: 'Restarter', theme: 'Calendar feeds')]
     public function allEventsByUser(Request $request, $calendar_hash)
     {
         if (empty($calendar_hash)) {
@@ -31,22 +35,30 @@ class CalendarEventsController extends Controller
             throw new \Exception('No user calendar found for provided calendar hash');
         }
 
-        $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
-      ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
-      ->join('events_users', 'events_users.event', '=', 'events.idevents')
-      ->whereNull('users_groups.deleted_at')
-      ->where(function ($query) use ($user) {
-          $query->where('events_users.user', $user->id)
-        ->orWhere('users_groups.user', $user->id);
-      })
-      ->select('events.*', 'groups.name')
-      ->groupBy('idevents')
-      ->orderBy('event_date', 'ASC')
-      ->get();
+        // We use two separate queries because they are a lot more efficient in DB terms than using an OR clause.
+        $attendingEvents = Party::with('theGroup')
+          ->join('groups', 'groups.idgroups', '=', 'events.group')
+          ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+          ->join('events_users', 'events_users.event', '=', 'events.idevents')
+          ->where('events_users.user', $user->id)
+          ->whereNull('users_groups.deleted_at')
+          ->select('events.*');
+
+        $groupEvents = Party::with('theGroup')
+            ->join('groups', 'groups.idgroups', '=', 'events.group')
+            ->join('users_groups', 'users_groups.group', '=', 'groups.idgroups')
+            ->join('events_users', 'events_users.event', '=', 'events.idevents')
+            ->where('users_groups.user', $user->id)
+            ->whereNull('users_groups.deleted_at')
+            ->select('events.*');
+
+        // GROUP BY doesn't seem to be enough to get unique values, so do unique() on the results.
+        $events = $attendingEvents->union($groupEvents)->groupBy('idevents')->orderBy('event_start_utc', 'asc')->get()->unique();
 
         $this->exportCalendar($events);
     }
 
+    #[UserStory('As a Guest, I can subscribe to a group\'s events as an iCal feed', persona: 'Guest', theme: 'Calendar feeds')]
     public function allEventsByGroup(Request $request, Group $group)
     {
         $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
@@ -56,16 +68,38 @@ class CalendarEventsController extends Controller
       })
       ->select('events.*', 'groups.name')
       ->groupBy('events.idevents')
-      ->orderBy('events.event_date', 'ASC')
+      ->orderBy('events.event_start_utc', 'ASC')
       ->get();
 
-        if (empty($events)) {
+        if (empty($events) || !$events->count()) {
             return abort(404, 'No events found.');
         }
 
         $this->exportCalendar($events);
     }
 
+    #[UserStory('As a Guest, I can subscribe to a network\'s events as an iCal feed', persona: 'Guest', theme: 'Calendar feeds')]
+    public function allEventsByNetwork(Request $request, Network $network)
+    {
+        $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
+            ->join('group_network', 'group_network.group_id', '=', 'groups.idgroups')
+            ->where(function ($query) use ($network) {
+                $query->where('group_network.network_id', $network->id)
+                    ->whereNull('events.deleted_at');
+            })
+            ->select('events.*', 'groups.name')
+            ->groupBy('events.idevents')
+            ->orderBy('events.event_start_utc', 'ASC')
+            ->get();
+
+        if (empty($events) || !$events->count()) {
+            return abort(404, 'No events found.');
+        }
+
+        $this->exportCalendar($events);
+    }
+
+    #[UserStory('As a Guest, I can subscribe to events in my area as an iCal feed', persona: 'Guest', theme: 'Calendar feeds')]
     public function allEventsByArea(Request $request, $area)
     {
         $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
@@ -74,39 +108,20 @@ class CalendarEventsController extends Controller
       })
       ->select('events.*', 'groups.name')
       ->groupBy('events.idevents')
-      ->orderBy('events.event_date', 'ASC')
+      ->orderBy('events.event_start_utc', 'ASC')
       ->get();
 
-        if (empty($events)) {
+        if (empty($events) || !$events->count()) {
             return abort(404, 'No events found.');
         }
 
         $this->exportCalendar($events);
     }
 
-    public function allEventsByGroupTag(Request $request, GrouptagsGroups $grouptags_groups)
-    {
-        $events = Party::join('groups', 'groups.idgroups', '=', 'events.group')
-      ->join('grouptags_groups', 'grouptags_groups.group', '=', 'groups.idgroups')
-      ->where(function ($query) use ($grouptags_groups) {
-          $query->where('grouptags_groups.id', $grouptags_groups->id)
-              ->whereNull('events.deleted_at');
-      })
-      ->select('events.*', 'groups.name')
-      ->groupBy('events.idevents')
-      ->orderBy('events.event_date', 'ASC')
-      ->get();
-
-        if (empty($events)) {
-            return abort(404, 'No events found.');
-        }
-
-        $this->exportCalendar($events);
-    }
-
+    #[UserStory('As a ThirdParty holding the shared calendar secret, I can subscribe to every event on the platform as an iCal feed', persona: 'ThirdParty', theme: 'Calendar feeds')]
     public function allEvents(Request $request, $env_hash)
     {
-        if ($env_hash != env('CALENDAR_HASH')) {
+        if ($env_hash !== env('CALENDAR_HASH')) {
             return abort(404);
         }
 
@@ -118,6 +133,7 @@ class CalendarEventsController extends Controller
         $this->exportCalendar($events);
     }
 
+    #[NoStory(reason: 'Internal iCal generation helper')]
     public function exportCalendar($events)
     {
         $ical = [];
@@ -126,22 +142,49 @@ class CalendarEventsController extends Controller
         $ical[] = 'PRODID:-//Restarters//NONSGML Events Calendar/EN';
 
         // loop over events
+        $me = auth()->user();
+
+        // We cache the group approval status to reduce DB queries.
+        $groupApproved = [];
+        $groups = [];
+
         foreach ($events as $event) {
-            if (! is_null($event->event_date) && $event->event_date != '0000-00-00') {
+            if (!array_key_exists($event->group, $groupApproved)) {
+                $group = Group::find($event->group);
+
+                $groupApproved[$event->group] = $group ? $group->approved : false;
+                $groups[$event->group] = $group;
+            }
+
+            // We need to filter by approval status.  If the event is not approved, we can only see it if we are
+            // an admin, network coordinator, or the host of the event.
+
+            if (!User::userCanSeeEvent($me, $event, $groups[$event->group])) {
+                continue;
+            }
+
+            if (! is_null($event->event_start_utc) ) {
                 $ical[] = 'BEGIN:VEVENT';
 
-                // Timezone currently fixed to Europe/London, but in future when we
-                // have better timezone support in the app this will need amending.
-                $ical[] = 'TZID:Europe/London';
+                $ical[] = 'TZID:' . $event->timezone;
                 $ical[] = "UID:{$event->idevents}";
                 $ical[] = 'DTSTAMP:'.date($this->ical_format).'';
                 $ical[] = "SUMMARY:{$event->venue} ({$event->name})";
-                $ical[] = 'DTSTART;TZID=Europe/London:'.date($this->ical_format, strtotime($event->event_date.' '.$event->start)).'';
-                $ical[] = 'DTEND;TZID=Europe/London:'.date($this->ical_format, strtotime($event->event_date.' '.$event->end)).'';
+                $ical[] = 'DTSTART;TZID=' . $event->timezone . ':'.$event->getFormattedLocalStart($this->ical_format);
+                $ical[] = 'DTEND;TZID=' . $event->timezone . ':'.$event->getFormattedLocalEnd($this->ical_format);
                 $ical[] = 'DESCRIPTION:'.url('/party/view').'/'.$event->idevents;
                 $ical[] = "LOCATION:{$event->location}";
                 $ical[] = 'URL:'.url('/party/view').'/'.$event->idevents;
-                $ical[] = 'STATUS:CONFIRMED';
+
+                if ($event->cancelled) {
+                    $ical[] = 'STATUS:CANCELLED';
+                } else if ($event->approved && $event->theGroup->approved) {
+                    // Events are only confirmed once the event and the group are approved.
+                    $ical[] = 'STATUS:CONFIRMED';
+                } else {
+                    $ical[] = 'STATUS:TENTATIVE';
+                }
+
                 $ical[] = 'END:VEVENT';
             }
         }
@@ -155,36 +198,5 @@ class CalendarEventsController extends Controller
         header('Content-Disposition: attachment; filename="cal.ics"');
 
         echo $ical;
-    }
-
-    protected function ical_split($preamble, $value)
-    {
-        $value = trim($value);
-        $value = strip_tags($value);
-        $value = preg_replace('/\n+/', ' ', $value);
-        $value = preg_replace('/\s{2,}/', ' ', $value);
-        $preamble_len = strlen($preamble);
-        $lines = [];
-        while (strlen($value) > (75 - $preamble_len)) {
-            $space = (75 - $preamble_len);
-            $mbcc = $space;
-            while ($mbcc) {
-                $line = mb_substr($value, 0, $mbcc);
-                $oct = strlen($line);
-                if ($oct > $space) {
-                    $mbcc -= $oct - $space;
-                } else {
-                    $lines[] = $line;
-                    $preamble_len = 1; // Still take the tab into account
-                    $value = mb_substr($value, $mbcc);
-                    break;
-                }
-            }
-        }
-        if (! empty($value)) {
-            $lines[] = $value;
-        }
-
-        return implode($lines, "\n\t");
     }
 }

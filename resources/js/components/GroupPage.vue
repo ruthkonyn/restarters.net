@@ -1,22 +1,40 @@
 <template>
   <div v-if="group">
+    <AlertBanner />
     <div class="alert alert-success" v-if="haveLeft" v-html="translatedHaveLeft" />
-    <GroupHeading :idgroups="idgroups" :canedit="canedit" :can-see-delete="canSeeDelete" :can-perform-delete="canPerformDelete" :ingroup="ingroup" @left="haveLeft = true" />
+    <GroupHeading
+        :idgroups="idgroups"
+        :canedit="canedit"
+        :can-see-delete="canSeeDelete"
+        :can-perform-delete="canPerformDelete"
+        :can-perform-archive="canPerformArchive"
+        :ingroup="ingroup"
+        :reporting-url="reportingUrl || null"
+        @left="haveLeft = true"
+    />
 
     <div class="d-flex flex-wrap">
       <div class="w-xs-100 w-md-50">
-        <GroupDescription class="pr-md-3" :idgroups="idgroups" />
+        <GroupDescription class="pr-md-3" :idgroups="idgroups" :discourse-group="discourseGroup" />
       </div>
       <div class="w-xs-100 w-md-50">
         <GroupVolunteers class="pl-md-3" :idgroups="idgroups" :canedit="canedit" />
       </div>
     </div>
 
-    <div class="vue w-100 mt-md-50">
-      <GroupStats :idgroups="idgroups" :stats="groupStats "/>
+    <div v-if="statsLayout !== 'after'" class="vue w-100 mt-md-50 mb-4 stats-before-events">
+      <GroupStats
+          :idgroups="idgroups"
+          :stats="groupStats"
+          :device-stats="deviceStats"
+          :top-devices="topDevices"
+          :reporting-url="reportingUrl || null"
+          :part="statsLayout === 'split' ? 'headline' : 'all'"
+          :compact="statsLayout === 'compact'"
+      />
     </div>
 
-    <hr style="color: white; border-top: 1px solid black;" />
+    <hr class="my-4" style="color: white; border-top: 1px solid black;" />
     <GroupEvents
         heading-level="h2"
         heading-sub-level="h3"
@@ -28,39 +46,44 @@
         add-button
     />
 
-    <div class="d-flex flex-wrap flex-md-nowrap pt-4">
-      <div class="w-100 mt-md-50 mr-md-4">
-        <GroupDevicesWorkedOn :idgroups="idgroups" :stats="deviceStats" class="pt-2 dashbord" />
-      </div>
-      <div class="w-100 mt-md-50">
-        <GroupDevicesMostRepaired :idgroups="idgroups" :devices="topDevices" class="pt-2 dashbord mt-4 mt-md-0" />
-      </div>
+    <div v-if="statsLayout === 'after' || statsLayout === 'split'" class="vue w-100 mt-md-50 stats-after-events">
+      <GroupStats
+          :idgroups="idgroups"
+          :stats="groupStats"
+          :device-stats="deviceStats"
+          :top-devices="topDevices"
+          :reporting-url="reportingUrl || null"
+          :part="statsLayout === 'split' ? 'items' : 'all'"
+      />
     </div>
 
-    <GroupDevicesBreakdown :idgroups="idgroups" :cluster-stats="clusterStats" />
   </div>
 </template>
 <script>
-import GroupHeading from './GroupHeading'
-import GroupDescription from './GroupDescription'
-import GroupVolunteers from './GroupVolunteers'
-import GroupStats from './GroupStats'
-import GroupEvents from './GroupEvents'
-import GroupDevicesWorkedOn from './GroupDevicesWorkedOn'
-import GroupDevicesMostRepaired from './GroupDevicesMostRepaired'
-import GroupDevicesBreakdown from './GroupDevicesBreakdown'
+import GroupHeading from './GroupHeading.vue'
+import GroupDescription from './GroupDescription.vue'
+import GroupVolunteers from './GroupVolunteers.vue'
+import GroupStats from './GroupStats.vue'
+import GroupEvents from './GroupEvents.vue'
+import AlertBanner from './AlertBanner.vue'
 import auth from '../mixins/auth'
+
+// Where the stats go, while we choose between them (#922):
+// - compact: all of them before the events, achievements over impact beside items worked on over most repaired
+// - after: all of them after the events
+// - split: achievements and impact before the events, items worked on and most repaired after
+// ?stats_layout= on the page address picks one, so they can be compared.
+const STATS_LAYOUTS = ['compact', 'after', 'split']
+const DEFAULT_STATS_LAYOUT = 'after'
 
 export default {
   components: {
-    GroupDevicesBreakdown,
-    GroupDevicesMostRepaired,
-    GroupDevicesWorkedOn,
     GroupEvents,
     GroupStats,
     GroupVolunteers,
     GroupDescription,
-    GroupHeading
+    GroupHeading,
+    AlertBanner
   },
   mixins: [ auth ],
   props: {
@@ -76,11 +99,12 @@ export default {
       type: Array,
       required: true
     },
-    volunteers: {
-      type: Array,
-      required: true
-    },
     canedit: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    candemote: {
       type: Boolean,
       required: false,
       default: false
@@ -91,6 +115,11 @@ export default {
       default: false
     },
     canPerformDelete: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    canPerformArchive: {
       type: Boolean,
       required: false,
       default: false
@@ -118,14 +147,20 @@ export default {
       required: true,
       type: Object
     },
-    clusterStats: {
-      type: Object,
-      required: true
-    },
     topDevices: {
       type: Array,
       required: true
-    }
+    },
+    discourseGroup: {
+      type: String,
+      required: false,
+      default: null
+    },
+    reportingUrl: {
+      type: String,
+      required: false,
+      default: null
+    },
   },
   data () {
     return {
@@ -133,12 +168,27 @@ export default {
     }
   },
   computed: {
+    statsLayout() {
+      try {
+        const asked = new URLSearchParams(window.location.search).get('stats_layout')
+
+        if (STATS_LAYOUTS.includes(asked)) {
+          return asked
+        }
+      } catch (e) {
+        // No usable address; use the default.
+      }
+
+      return DEFAULT_STATS_LAYOUT
+    },
     group() {
       return this.$store.getters['groups/get'](this.idgroups)
     },
     translatedHaveLeft() {
-      return this.$lang.get('groups.now_unfollowed', {
-        name: this.group.name,
+      // The string wraps :name in an <a> and this is rendered with v-html, so the group
+      // name has to be escaped here.
+      return this.__('groups.now_unfollowed', {
+        name: this.escapeHtml(this.group.name),
         link: '/group/view/' + this.group.id
       })
     }
@@ -149,12 +199,11 @@ export default {
     //
     // Further down the line this may change so that the data is obtained via an AJAX call and perhaps SSR.
     // TODO LATER We add some properties to the group before adding it to the store.  These should move into
-    // computed properties once we have good access to the session on the client, and there should be a separate store
-    // for volunteers, shared between groups and events.
+    // computed properties once we have good access to the session on the client.
     this.initialGroup.idgroups = this.idgroups
     this.initialGroup.canedit = this.canedit
+    this.initialGroup.candemote = this.candemote
     this.initialGroup.ingroup = this.ingroup
-    this.initialGroup.volunteers = this.volunteers
 
     this.$store.dispatch('groups/set', this.initialGroup)
 

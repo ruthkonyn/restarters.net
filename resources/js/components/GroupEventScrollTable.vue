@@ -19,6 +19,8 @@
         :items="filteredItems"
         sort-null-last
         :sort-compare="sortCompare"
+        :sort-by="sortBy"
+        :sort-desc="sortDesc"
         sticky-header="50vh"
         responsive
         class="mt-2 pl-0 pl-md-3 pr-0 pr-md-3 pb-2 mb-2"
@@ -35,7 +37,7 @@
 
       <template slot="head(date_long)">
         <div class="text-left">
-          <b-img class="icon mt-3 ml-3" src="/images/clock.svg" />
+          <b-img class="icon mt-3 ml-3" :src="imageUrl('/images/clock.svg')" />
         </div>
       </template>
       <template slot="cell(date_long)" slot-scope="data">
@@ -45,10 +47,10 @@
       <template slot="head(title)">
         <span />
       </template>
-      <template slot="cell(title)" slot-scope="data" v-bind:addGroupName="addGroupName">
+      <template slot="cell(title)" slot-scope="data">
         <b><EventTitle :idevents="data.item.title.idevents" component="a" :href="'/party/view/' + data.item.title.idevents" /></b>
         <div class="hidecell">
-          <span v-if="addGroupName" class="small">
+          <span v-if="addGroupName && data.item.title.group" class="small">
             <a :href="'/group/view/' + data.item.title.group.idgroups">{{ data.item.title.group.name }}</a>
           </span>
         </div>
@@ -56,7 +58,7 @@
 
       <template slot="head(invited)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/mail_ico.svg" :title="__('groups.volunteers_invited')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/mail_ico.svg')" :title="__('groups.volunteers_invited')" />
         </div>
       </template>
       <template slot="cell(invited)" slot-scope="data">
@@ -65,7 +67,7 @@
 
       <template slot="head(volunteers)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/participants.svg" :title="__('groups.volunteers_confirmed')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/participants.svg')" :title="__('groups.volunteers_confirmed')" />
         </div>
       </template>
       <template slot="cell(volunteers)" slot-scope="data">
@@ -75,13 +77,13 @@
       <template slot="head(actions)">
         <span />
       </template>
-      <template slot="cell(actions)" slot-scope="data" v-bind:upcoming="upcoming">
+      <template slot="cell(actions)" slot-scope="data">
         <GroupEventsScrollTableActions :idevents="data.item.actions.idevents" class="actionsHeight" />
       </template>
 
       <template slot="head(participants_count)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/participants.svg" :title="__('groups.participants_attended')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/participants.svg')" :title="__('groups.participants_attended')" />
         </div>
       </template>
       <template slot="cell(participants_count)" slot-scope="data">
@@ -90,61 +92,61 @@
 
       <template slot="head(volunteers_count)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/icons/volunteer_ico-thick.svg" :title="__('groups.volunteers_attended')" />
+          <b-img class="icon mt-3" :src="imageUrl('/icons/volunteer_ico-thick.svg')" :title="__('groups.volunteers_attended')" />
         </div>
       </template>
       <template slot="cell(volunteers_count)" slot-scope="data">
         <GroupEventsScrollTableNumber :value="data.item.volunteers_count.volunteers_count" />
       </template>
 
-      <template slot="head(ewaste)">
+      <template slot="head(waste)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/trash.svg" :title="__('groups.waste_prevented')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/trash.svg')" :title="__('groups.waste_prevented')" />
         </div>
       </template>
-      <template slot="cell(ewaste)" slot-scope="data" v-bind="stats">
-        <div v-if="noDevices(data.item.ewaste)" class="d-none d-md-block">
+      <template slot="cell(waste)" slot-scope="data">
+        <div v-if="noDevices(data.item.waste)" class="d-none d-md-block">
           {{ __('partials.no_devices_added') }}
-          <a :href="'/party/view/' + data.item.ewaste.idevents">
+          <a :href="'/party/view/' + data.item.waste.idevents">
             {{ __('partials.add_a_device') }}
           </a>
         </div>
-        <GroupEventsScrollTableNumber v-else :value="Math.round(stats(data.item.ewaste).ewaste)" units="kg" />
+        <GroupEventsScrollTableNumber v-else :value="Math.round(stats(data.item.waste).waste_total)" units="kg" />
       </template>
 
       <template slot="head(co2)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/cloud_empty.svg" :title="__('groups.co2_emissions_prevented')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/cloud_empty.svg')" :title="__('groups.co2_emissions_prevented')" />
         </div>
       </template>
-      <template slot="cell(co2)" slot-scope="data" v-bind="stats">
-        <GroupEventsScrollTableNumber :value="Math.round(stats(data.item.co2).co2)" units="kg" />
+      <template slot="cell(co2)" slot-scope="data">
+        <GroupEventsScrollTableNumber :value="Math.round(stats(data.item.co2).co2_total)" units="kg" />
       </template>
 
       <template slot="head(fixed_devices)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/fixed.svg" :title="__('groups.fixed_items')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/fixed.svg')" :title="__('groups.fixed_items')" />
         </div>
       </template>
-      <template slot="cell(fixed_devices)" slot-scope="data" v-bind="stats">
+      <template slot="cell(fixed_devices)" slot-scope="data">
         <GroupEventsScrollTableNumber :value="stats(data.item.fixed_devices).fixed_devices" v-if="stats(data.item.fixed_devices)" />
       </template>
 
       <template slot="head(repairable_devices)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/repairable_ico.svg" :title="__('groups.repairable_items')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/repairable_ico.svg')" :title="__('groups.repairable_items')" />
         </div>
       </template>
-      <template slot="cell(repairable_devices)" slot-scope="data" v-bind="stats">
+      <template slot="cell(repairable_devices)" slot-scope="data">
         <GroupEventsScrollTableNumber :value="stats(data.item.repairable_devices).repairable_devices" v-if="stats(data.item.repairable_devices)" />
       </template>
 
       <template slot="head(dead_devices)">
         <div class="hidecell text-center">
-          <b-img class="icon mt-3" src="/images/dead_ico.svg" :title="__('groups.end_of_life_items')" />
+          <b-img class="icon mt-3" :src="imageUrl('/images/dead_ico.svg')" :title="__('groups.end_of_life_items')" />
         </div>
       </template>
-      <template slot="cell(dead_devices)" slot-scope="data" v-bind="stats">
+      <template slot="cell(dead_devices)" slot-scope="data">
         <GroupEventsScrollTableNumber :value="stats(data.item.dead_devices).dead_devices" v-if="stats(data.item.dead_devices)" />
       </template>
 
@@ -153,15 +155,16 @@
 </template>
 <script>
 import moment from 'moment'
-import InfiniteLoading from 'vue-infinite-loading'
-import GroupEventsScrollTableDateShort from './GroupEventsScrollTableDateShort'
-import GroupEventsScrollTableDateLong from './GroupEventsScrollTableDateLong'
-import GroupEventsScrollTableNumber from './GroupEventsScrollTableNumber'
-import GroupEventsScrollTableActions from './GroupEventsScrollTableActions'
-import GroupEventsScrollTableFilters from './GroupEventsScrollTableFilters'
-import EventTitle from './EventTitle'
+import images from '../mixins/images'
+import GroupEventsScrollTableDateShort from './GroupEventsScrollTableDateShort.vue'
+import GroupEventsScrollTableDateLong from './GroupEventsScrollTableDateLong.vue'
+import GroupEventsScrollTableNumber from './GroupEventsScrollTableNumber.vue'
+import GroupEventsScrollTableActions from './GroupEventsScrollTableActions.vue'
+import GroupEventsScrollTableFilters from './GroupEventsScrollTableFilters.vue'
+import EventTitle from './EventTitle.vue'
 
 export default {
+  mixins: [images],
   components: {
     EventTitle,
     GroupEventsScrollTableFilters,
@@ -169,7 +172,6 @@ export default {
     GroupEventsScrollTableNumber,
     GroupEventsScrollTableDateLong,
     GroupEventsScrollTableDateShort,
-    InfiniteLoading
   },
   props: {
     events: {
@@ -198,6 +200,16 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    sortBy: {
+      type: String,
+      required: false,
+      default: 'date_long'
+    },
+    sortDesc: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {
@@ -219,7 +231,7 @@ export default {
           { key: 'actions', label: 'Actions', },
           { key: 'participants_count', label: 'Participants', sortable: true, tdClass: this.dangerIfZero},
           { key: 'volunteers_count', label: 'Volunteers', sortable: true, tdClass: this.dangerIfOne},
-          { key: 'ewaste', label: 'ewaste', sortable: true, tdClass: this.noDevicesError},
+          { key: 'waste', label: 'waste', sortable: true, tdClass: this.noDevicesError},
           { key: 'co2', label: 'co2', sortable: true},
           { key: 'fixed_devices', label: 'Fixed Devices', sortable: true},
           { key: 'repairable_devices', label: 'Repairable Devices', sortable: true},
@@ -246,7 +258,7 @@ export default {
             actions: e,
             participants_count: e,
             volunteers_count: e,
-            ewaste: e,
+            waste: e,
             co2: e,
             fixed_devices: e,
             repairable_devices: e,
@@ -284,7 +296,7 @@ export default {
 
         if (this.searchStart || this.searchEnd) {
           // Either or both can be set.  This allows searching for all past or all future.
-          const date = new moment(event.event_date)
+          const date = new moment(event.event_date_local)
 
           if (this.searchStart && this.searchEnd) {
             match &= date.isBetween(new moment(this.searchStart), new moment(this.searchEnd), undefined, '[]')
@@ -303,46 +315,56 @@ export default {
     sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
       const a = aRow[key]
       const b = bRow[key]
+      let ret = 0
 
-      switch (key) {
-        case 'date_short':
-        case 'date_long':
-          return new moment(b.event_date + ' ' + b.start).unix() - new moment(a.event_date + ' ' + a.start).unix()
-        case 'title':
-          const atitle = a.venue ? a.venue : a.location
-          const btitle = b.venue ? b.venue : b.location
-          return atitle.toLowerCase().localeCompare(btitle.toLowerCase())
-        case 'participants_count':
-        case 'volunteers_count':
-        case 'ewaste':
-        case 'co2':
-        case 'fixed_devices':
-        case 'repairable_devices':
-        case 'dead_devices':
-        case 'invited':
-        case 'volunteers':
-          return parseInt(a['stats'][key]) - parseInt(b['stats'][key])
-        default:
-          return toString(a).localeCompare(toString(b), compareLocale, compareOptions)
+      try {
+        switch (key) {
+          case 'date_short':
+          case 'date_long':
+            if (this.past) {
+              // Show past events most recent first.
+              ret = new moment(a.event_start_utc).unix() - new moment(b.event_start_utc).unix()
+            } else {
+              ret = new moment(b.event_start_utc).unix() - new moment(a.event_start_utc).unix()
+            }
+            break
+          case 'title':
+            const atitle = a.venue ? a.venue : a.location
+            const btitle = b.venue ? b.venue : b.location
+            ret = atitle.toLowerCase().localeCompare(btitle.toLowerCase())
+            break
+          case 'participants_count':
+          case 'volunteers_count':
+          case 'waste':
+          case 'co2':
+          case 'fixed_devices':
+          case 'repairable_devices':
+          case 'dead_devices':
+          case 'invited':
+          case 'volunteers':
+            ret = parseInt(a['stats'][key]) - parseInt(b['stats'][key])
+            break
+          default:
+            ret = toString(a).localeCompare(toString(b), compareLocale, compareOptions)
+            break
+        }
+      } catch (e) {
+        console.error("Sort exception", e)
       }
-    },
-    stats(event) {
-      return this.$store.getters['events/getStats'](event.idevents)
-    },
-    finished(event) {
-      let ret = false;
 
-      if (event) {
-        const end = new moment(event.event_date + ' ' + event.end)
-        ret = end.isBefore()
+      if (!this.sortDesc) {
+        ret = -ret
       }
 
       return ret
     },
+    stats(event) {
+      return this.$store.getters['events/getStats'](event.idevents)
+    },
     noDevices(event) {
       const stats = this.stats(event)
 
-      return stats && (stats.fixed_devices + stats.repairable_devices + stats.dead_devices === 0) && this.canedit && this.finished(event)
+      return stats && (stats.fixed_devices + stats.repairable_devices + stats.dead_devices === 0) && this.canedit && event.finished
     },
     rowClass(item) {
       // This gets called to supply a class for the tr of the table.  We want to highlight the rows where we are
@@ -378,11 +400,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
-/deep/ .hidecell {
+::v-deep .hidecell {
   display: none;
 
   @include media-breakpoint-up(md) {
@@ -390,27 +412,27 @@ export default {
   }
 }
 
-/deep/ .nounderline {
+::v-deep .nounderline {
   text-decoration: none !important;
 }
 
-/deep/ .icon {
+::v-deep .icon {
   width: 30px;
   height: 30px;
 }
 
-/deep/ {
+::v-deep {
   .datetd {
     width: 87px;
     min-height: 87px;
   }
 }
 
-/deep/ .table.b-table > thead > tr {
+::v-deep .table.b-table > thead > tr {
   background-position-x: center !important;
 }
 
-/deep/ .attending {
+::v-deep .attending {
   background-color: $brand-grey;
 
   .datetd {
@@ -429,7 +451,7 @@ export default {
 
 // The multiselect is used in a few places, and we have some inconsistencies in styling.  Here we force it to match
 // the behaviour of the inputs.
-/deep/ .multiselect {
+::v-deep .multiselect {
   &.multiselect--active {
     border: 0 !important;
 
@@ -446,7 +468,7 @@ export default {
   }
 }
 
-/deep/ td[aria-colindex="6"] {
+::v-deep td[aria-colindex="6"] {
   // Hack so we can get the cell warning full height.
   height: 1px;
 

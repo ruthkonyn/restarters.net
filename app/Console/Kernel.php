@@ -2,12 +2,12 @@
 
 namespace App\Console;
 
+use App\Helpers\Fixometer;
 use App\Mail\NotifyAdminNoDevices;
 use App\Notifications\NotifyAdminNoDevices as Mail;
 use App\Party;
 use App\User;
 use Carbon\Carbon;
-use App\Helpers\Fixometer;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Notification;
@@ -15,26 +15,14 @@ use Notification;
 class Kernel extends ConsoleKernel
 {
     /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
-    protected $commands = [
-        //
-    ];
-
-    /**
      * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {
         $schedule->call(function () {
             $parties = Party::doesnthave('devices')
-            ->where('event_date', '>=', date('Y-m-d', strtotime(Carbon::now()->subDays(env('NO_DATA_ENTERED', 5)))))
-              ->where('event_date', '<=', date('Y-m-d', strtotime(Carbon::now())))
+            ->where('event_start_utc', '>=', date('Y-m-d', strtotime(Carbon::now()->subDays(env('NO_DATA_ENTERED', 5)))))
+              ->where('event_end_utc', '<', date('Y-m-d', strtotime(Carbon::now())))
                 ->get();
 
             foreach ($parties as $party) {
@@ -51,15 +39,20 @@ class Kernel extends ConsoleKernel
             ->sendOutputTo(storage_path().'/logs/discourse_usernames.log')
             ->emailOutputTo(env('SEND_COMMAND_LOGS_TO'), 'tech@therestartproject.org');
 
-        $schedule->command('faultcat:sync')->daily();
+        $schedule->command('groups:country')->hourly();
+
+        $schedule->command('event:timezones')->hourly();
+
+        $schedule->command('wordpress:event:create_failed')->daily();
+
+        // Rebuilds at most daily; hourly so that a new machine gets the file soon after it starts.
+        $schedule->command('export:repair-data')->hourly()->withoutOverlapping();
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
-    protected function commands()
+    protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
 

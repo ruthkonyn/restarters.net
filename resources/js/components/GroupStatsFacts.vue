@@ -4,14 +4,14 @@
     <div class="items-container">
       <StatsValue :count="stats.parties" icon="coffee" size="md" variant="primary" title="groups.events" class="group-stat-events" />
       <div />
-      <StatsValue :count="stats.pax" icon="participants" size="md" title="groups.participants" class="group-stat-participants" />
+      <StatsValue :count="stats.participants" icon="participants" size="md" title="groups.participants" class="group-stat-participants" />
       <div />
-      <StatsValue :count="stats.hours" icon="clock" size="md" title="groups.hours_volunteered" class="group-stat-hours-volunteered" />
+      <StatsValue :count="stats.hours_volunteered" icon="clock" size="md" title="groups.hours_volunteered" class="group-stat-hours-volunteered" />
     </div>
   </div>
 </template>
 <script>
-import StatsValue from './StatsValue'
+import StatsValue from './StatsValue.vue'
 
 export default {
   components: {StatsValue},
@@ -24,9 +24,9 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .items-container {
   display: grid;

@@ -4,17 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class FaultcatRefactor extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
      *
      * Includes missed migrations for tables
      * `devices_faults` and `devices_faults_opinions`.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         if (Schema::hasTable('devices_faults')) {
             Schema::rename('devices_faults', 'devices_faults_events');
@@ -81,10 +79,8 @@ class FaultcatRefactor extends Migration
      * Reverse the migrations.
      *
      * DO NOT DROP `devices_faults` or `devices_faults_opinions`.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('devices_faults_adjudicated');
 
@@ -101,4 +97,4 @@ class FaultcatRefactor extends Migration
             $table->dropColumn('fault_type');
         });
     }
-}
+};

@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+/**
+ * @OA\Schema(
+ *     title="TagCollection",
+ *     schema="TagCollection",
+ *     description="A collection of group tags.",
+ *     type="array",
+ *     @OA\Items(
+ *         ref="#/components/schemas/Tag"
+ *     )
+ * )
+ */
+
+class TagCollection extends ResourceCollection
+{
+    /**
+     * Transform the resource collection into an array.
+     */
+    public function toArray(Request $request): array
+    {
+        return parent::toArray($request);
+    }
+}

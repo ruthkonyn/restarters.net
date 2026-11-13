@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleRetry\GuzzleRetryMiddleware;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Log;
 
 class DiscourseServiceProvider extends ServiceProvider
 {
@@ -18,16 +19,22 @@ class DiscourseServiceProvider extends ServiceProvider
      *
      * @return \GuzzleHttp\Client
      */
-    public function register()
+
+    private $logger = null;
+
+    public function register(): void
     {
-        if (config('restarters.features.discourse_integration') === false) {
-            return;
-        }
+        // We need to register the service whether or not the feature is turned on, so that we can mock it in testing.
 
         // We use the retry middleware to work around Discourse throttling requests.  This is necessary for UT and
         // could be necessary live under load.
         $this->app->bind('discourse-client', function ($app, $parameters) {
             $stack = HandlerStack::create();
+
+            $stack->push(
+                $this->createGuzzleLoggingMiddleware(" {method} {uri} HTTP/{version} {req_body}")
+            );
+
             $stack->push(GuzzleRetryMiddleware::factory());
 
             return new Client([
@@ -39,11 +46,17 @@ class DiscourseServiceProvider extends ServiceProvider
                 ],
                 'http_errors' => false,
                 'handler' => $stack,
+                'timeout' => 5,
+                'connect_timeout' => 5
             ]);
         });
 
         $this->app->bind('discourse-client-anonymous', function ($app, $parameters) {
             $stack = HandlerStack::create();
+            $stack->push(
+                $this->createGuzzleLoggingMiddleware(" {method} {uri} HTTP/{version} {req_body}")
+            );
+
             $stack->push(GuzzleRetryMiddleware::factory());
 
             return new Client([
@@ -55,5 +68,13 @@ class DiscourseServiceProvider extends ServiceProvider
                                   'handler' => $stack,
                               ]);
         });
+    }
+
+    private function createGuzzleLoggingMiddleware(string $messageFormat)
+    {
+        return \GuzzleHttp\Middleware::log(
+            Log::channel('discourse'),
+            new \GuzzleHttp\MessageFormatter($messageFormat)
+        );
     }
 }

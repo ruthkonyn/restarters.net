@@ -5,21 +5,19 @@ namespace Tests\Feature;
 use App\Notifications\AdminModerationEvent;
 use App\Party;
 use App\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ModerationEventEmailTest extends TestCase
 {
     /** @test */
-    public function a_moderation_email_is_sent_to_admins_when_an_event_is_created()
+    public function a_moderation_email_is_sent_to_admins_when_an_event_is_created(): void
     {
         Notification::fake();
 
-        $admins = factory(User::class, 5)->states('Administrator')->create();
+        $admins = User::factory()->count(5)->administrator()->create();
 
-        $event = factory(Party::class)->create();
+        $event = Party::factory()->create();
 
         $arr = [
             'event_venue' => $event->venue,

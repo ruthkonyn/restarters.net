@@ -43,57 +43,81 @@ class ZapierNetworkTests extends TestCase
 
     //         When a new group is created that is in the Restart network, it IS included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_restart_network_when_new_group_created_included_in_trigger()
+    /**
+     * @test
+     * @story:GroupController::createGroupv2
+     * @story:GroupController::getGroupChanges
+     */
+    public function given_restart_network_when_new_group_created_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network = factory(Network::class)->create([
+        $network = Network::factory()->create([
             'shortname' => 'restarters',
             'include_in_zapier' => true,
         ]);
 
-        $groupAttributes = factory(Group::class)->raw();
-        $groupAttributes['name'] = 'Lancaster Fixers';
+        // Get dashboard, which will set the repair_network in the logged in user.
+        $response = $this->get('/');
 
         // act
-        $response = $this->post('/group/create/', $groupAttributes);
+        $response = $this->post('/api/v2/groups', [
+            'name' => 'Lancaster Fixers',
+            'location' => 'Lancaster, UK',
+            'description' => 'A repair group',
+            'timezone' => 'Europe/London'
+        ]);
+
+        $response->assertSuccessful();
+
         $group = Group::all()->shift();
 
         // assert
         $response = $this->get('/api/groups/changes?api_token=1234');
-        $response->assertSee($group->name);
+        $response->assertSee($group->name, false);
     }
 
     //     When a new group is created that is in Repair Together network, it is not included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_nonrestart_network_when_new_group_created_not_included_in_trigger()
+    /**
+     * @test
+     * @story:GroupController::createGroupv2
+     * @story:GroupController::getGroupChanges
+     */
+    public function given_nonrestart_network_when_new_group_created_not_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network = factory(Network::class)->create([
+        $network = Network::factory()->create([
             'shortname' => 'restarters',
             'include_in_zapier' => false,
         ]);
 
-        $groupAttributes = factory(Group::class)->raw();
-        $groupAttributes['name'] = 'Ghent Fixers';
+        // Get dashboard, which will set the repair_network in the logged in user.
+        $response = $this->get('/');
 
         // act
-        $response = $this->post('/group/create/', $groupAttributes);
+        $response = $this->post('/api/v2/groups', [
+            'name' => 'Ghent Fixers',
+            'location' => 'Ghent, Belgium',
+            'description' => 'A repair group',
+            'timezone' => 'Europe/Brussels'
+        ]);
+
+        $response->assertSuccessful();
+
         $group = Group::all()->shift();
 
         // assert
@@ -103,80 +127,89 @@ class ZapierNetworkTests extends TestCase
 
     //         When a new user is created that is in the Restart network, it IS included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_restart_network_when_new_user_created_then_included_in_trigger()
+    /**
+     * @test
+     * @story:UserController::changes
+     */
+    public function given_restart_network_when_new_user_created_then_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network = factory(Network::class)->create([
+        $network = Network::factory()->create([
             'shortname' => 'restart',
             'include_in_zapier' => true,
         ]);
 
         // act
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'repair_network' => $network->id,
         ]);
 
         // assert
         $response = $this->get('/api/users/changes?api_token=1234');
-        $response->assertSee($user->name);
+        $response->assertSee($user->name, false);
     }
 
     // When a new user is created that is in the Repair Together network, it is not included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_nonrestart_network_when_new_user_created_then_not_included_in_trigger()
+    /**
+     * @test
+     * @story:UserController::changes
+     */
+    public function given_nonrestart_network_when_new_user_created_then_not_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network = factory(Network::class)->create([
+        $network = Network::factory()->create([
             'shortname' => 'repairtogether',
             'include_in_zapier' => false,
         ]);
 
         // act
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'repair_network' => $network->id,
         ]);
 
         // assert
         $response = $this->get('/api/users/changes?api_token=1234');
-        $response->assertDontSee($user->name);
+        $response->assertDontSee($user->name, false);
     }
 
     // When a new user/group association is created for a user in the Restart network joining a group in the Restart network, it IS included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_restart_group_and_restart_user_when_user_joins_group_then_included_in_trigger()
+    /**
+     * @test
+     * @story:UserGroupsController::changes
+     */
+    public function given_restart_group_and_restart_user_when_user_joins_group_then_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network = factory(Network::class)->create([
+        $network = Network::factory()->create([
             'shortname' => 'restart',
             'include_in_zapier' => true,
         ]);
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         $network->addGroup($group);
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'repair_network' => $network->id,
         ]);
 
@@ -185,33 +218,36 @@ class ZapierNetworkTests extends TestCase
 
         // assert
         $response = $this->get('/api/usersgroups/changes?api_token=1234');
-        $response->assertSee($user->email);
+        $response->assertSee($user->email, false);
     }
 
     // When a new user/group association is created and either the user or the group is not in the Restart network, it isn't included in the Restart Zapier trigger
 
-    /** @test */
-    public function given_nonrestart_group_or_nonrestart_user_when_user_joins_group_then_not_included_in_trigger()
+    /**
+     * @test
+     * @story:UserGroupsController::changes
+     */
+    public function given_nonrestart_group_or_nonrestart_user_when_user_joins_group_then_not_included_in_trigger(): void
     {
         $this->withoutExceptionHandling();
 
         // arrange
-        $admin = factory(User::class)->states('Administrator')->create([
+        $admin = User::factory()->administrator()->create([
             'api_token' => '1234',
         ]);
         $this->actingAs($admin);
 
-        $network1 = factory(Network::class)->create([
+        $network1 = Network::factory()->create([
             'shortname' => 'restart',
             'include_in_zapier' => true,
         ]);
-        $network2 = factory(Network::class)->create([
+        $network2 = Network::factory()->create([
             'shortname' => 'repairtogether',
             'include_in_zapier' => false,
         ]);
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         $network1->addGroup($group);
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'repair_network' => $network2->id,
         ]);
 

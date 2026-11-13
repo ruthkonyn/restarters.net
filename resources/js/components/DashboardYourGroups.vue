@@ -6,10 +6,10 @@
           <div class="align-self-center">
             {{ __('dashboard.your_groups_heading') }}
           </div>
-          <b-img class="height ml-4" src="/images/group_doodle_ico.svg" />
+          <b-img class="height ml-4" :src="imageUrl('/images/group_doodle_ico.svg')" />
         </div>
-        <a href="/group/nearby" v-if="newGroups" class="added added-md d-none d-md-block pr-3">
-          <b-img src="/images/arrow-right-doodle-white.svg" />
+        <a href="/group/nearby" v-if="newGroups && newGroups.length" class="added added-md d-none d-md-block pr-3">
+          <b-img :src="imageUrl('/images/arrow-right-doodle-white.svg')" />
           {{ translatedNewlyAdded }}
         </a>
       </div>
@@ -19,11 +19,11 @@
       <div class="content">
         <DashboardNoGroups v-if="!myGroups || !myGroups.length" :nearby-groups="nearbyGroups" :location="location" />
         <div v-else>
-          <a href="/group/nearby" v-if="newGroups" class="added added-xs d-block d-md-none pr-3 pt-3 pb-3 mb-2">
-            <b-img src="/images/arrow-right-doodle-white.svg" />
+          <a href="/group/nearby" v-if="newGroups && newGroups.length" class="added added-xs d-block d-md-none pr-3 pt-3 pb-3 mb-2">
+            <b-img :src="imageUrl('/images/arrow-right-doodle-white.svg')" />
             {{ translatedNewlyAdded }}
           </a>
-          <div class="layout">
+          <div class="dyg-layout">
             <div class="group-intro">
               <h3>
                 {{ __('dashboard.groups_heading') }}
@@ -62,7 +62,7 @@
                   </p>
                 </div>
                 <div>
-                  <b-btn variant="primary" href="/party/create" class="text-nowrap">
+                  <b-btn variant="primary" href="/party/create" class="text-nowrap" v-if="amAHost">
                     {{ __('dashboard.add_event') }}
                   </b-btn>
                 </div>
@@ -75,7 +75,7 @@
             <div class="event-seeall">
               <div class="d-flex justify-content-end">
                 <a href="/party" class="mr-1">
-                  {{ __('dashboard.see_all_groups') }}
+                  {{ __('partials.see_all_events') }}
                 </a>
               </div>
             </div>
@@ -86,19 +86,23 @@
   </CollapsibleSection>
 </template>
 <script>
-import DashboardGroup from './DashboardGroup'
-import CollapsibleSection from './CollapsibleSection'
-import DashboardEvent from './DashboardEvent'
-import DashboardNoGroups from './DashboardNoGroups'
+import moment from 'moment'
+import DashboardGroup from './DashboardGroup.vue'
+import CollapsibleSection from './CollapsibleSection.vue'
+import DashboardEvent from './DashboardEvent.vue'
+import DashboardNoGroups from './DashboardNoGroups.vue'
+import images from '../mixins/images'
+import { HOST } from '../constants'
 
 export default {
+  mixins: [images],
   props: {
     location: {
       type: String,
       required: true
     },
     newGroups: {
-      type: Number,
+      type: Array,
       required: true
     },
     nearbyGroups: {
@@ -121,15 +125,28 @@ export default {
         return g.ingroup
       })
     },
+    amAHost() {
+      let ret = false
+
+      this.myGroups.forEach(g => {
+        // Even if the user has Administrator role, their role on the group would be HOST or RESTARTER, not
+        // ADMINISTRATOR.
+        if (g.role === HOST) {
+          ret = true
+        }
+      })
+
+      return ret
+    },
     events() {
       return this.$store.getters['events/getByGroup'](null).filter(e => e.upcoming).sort((a, b) => {
         // Sort soonest first.
-        return Date.parse(a.event_date + ' ' + a.start) - Date.parse(b.event_date + ' ' + b.start)
+        return new moment(a.event_start_utc).unix() - new moment(b.event_start_utc).unix()
       })
     },
     translatedNewlyAdded() {
-      return this.$lang.choice('dashboard.newly_added', this.newGroups, {
-        count: this.newGroups
+      return this.__('dashboard.newly_added', {
+        count: this.newGroups ? this.newGroups.length : 0
       })
     },
   },
@@ -137,9 +154,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'resources/global/css/_variables';
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins/_breakpoints';
 
 .content {
   border-top: 3px dashed black;
@@ -151,12 +168,12 @@ h3 {
   font-weight: bold;
 }
 
-/deep/ a {
-  color: $brand;
+::v-deep a {
+  color: black;
   text-decoration: underline;
 }
 
-.layout {
+.dyg-layout {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto auto auto 40px auto auto auto;

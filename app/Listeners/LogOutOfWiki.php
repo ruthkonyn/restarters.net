@@ -2,15 +2,12 @@
 
 namespace App\Listeners;
 
-use App\User;
-use App\WikiSyncStatus;
 use Cookie;
 use Illuminate\Auth\Events\Logout;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
+// Don't extend BaseEvent - we don't want to queue because this needs to happen before we return to the client.
 class LogOutOfWiki
 {
     /**
@@ -25,11 +22,8 @@ class LogOutOfWiki
 
     /**
      * Handle the event.
-     *
-     * @param  Logout  $event
-     * @return void
      */
-    public function handle(Logout $event)
+    public function handle(Logout $event): void
     {
         $user = $event->user;
 

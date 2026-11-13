@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Attributes\Feature;
+use App\Attributes\UserStory;
+use Illuminate\View\View;
+use App\Helpers\Fixometer;
+use App\Providers\RouteServiceProvider;
 use App\Role;
 use App\RolePermissions;
 use App\User;
 use Auth;
-use App\Helpers\Fixometer;
 use Illuminate\Http\Request;
 
+#[Feature('Administration', description: 'Platform administration and configuration')]
 class RoleController extends Controller
 {
     //Custom Functions
+    #[UserStory('As an Admin, I can view all roles and their permissions', persona: 'Admin', theme: 'Roles & permissions')]
     public function index()
     {
         $user = User::find(Auth::id());
@@ -22,28 +28,43 @@ class RoleController extends Controller
             // $this->set('roleList', $this->Role->findAll());
 
             $Role = new Role;
+            $roleList = $Role->findAll();
+
+            // Prepare data for Vue table
+            $tableData = [];
+            foreach ($roleList as $role) {
+                $tableData[] = [
+                    'id' => $role->id,
+                    'role' => $role->role,
+                    'permissions_list' => $role->permissions_list,
+                ];
+            }
 
             return view('role.all', [//role.index
               'title' => 'Roles',
-              'roleList' => $Role->findAll(),
+              'roleList' => $roleList,
+              'tableData' => $tableData,
             ]);
         }
+
+        return redirect(RouteServiceProvider::HOME);
     }
 
-    public function edit($id)
+    #[UserStory('As an Admin, I can edit the permissions assigned to a role', persona: 'Admin', theme: 'Roles & permissions')]
+    public function edit($id, Request $request): View
     {
         $user = Auth::user();
 
         if (Fixometer::hasRole($user, 'Administrator')) {
             $role = Role::where('idroles', $id)->first();
 
-            if ($_SERVER['REQUEST_METHOD'] == 'POST' && ! empty($_POST)) {
-                $permissions = $_POST['permissions'];
-                $formid = (int) substr(strrchr($_POST['formId'], '_'), 1);
+            if ($request->getMethod() == 'POST') {
+                $permissions = $request->get('permissions');
 
-                $update = $role->edit($formid, $permissions);
+                $update = $role->edit($id, $permissions);
                 if (! $update) {
                     $response['danger'] = 'Something went wrong. Could <strong>not</strong> update the permissions.';
+                    \Sentry\CaptureMessage($response['danger']);
                 } else {
                     $response['success'] = 'Permissions for this Role have been updated.';
                 }
@@ -69,9 +90,4 @@ class RoleController extends Controller
             ]);
         }
     }
-
-    // public function test() {
-    //   $r = new Role;
-    //   dd($r->permissions());//NB::findAll on Role isn't working
-    // }
 }

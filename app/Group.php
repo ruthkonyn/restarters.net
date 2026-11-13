@@ -2,18 +2,29 @@
 
 namespace App;
 
-use App\Network;
+use App\User;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use DB;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Group extends Model implements Auditable
 {
+    use HasFactory;
+
     use \OwenIt\Auditing\Auditable;
 
     protected $table = 'groups';
     protected $primaryKey = 'idgroups';
+
+    // Eager-loading reduces N+1 queries.
+    protected $with = ['networks', 'group_tags'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,17 +38,31 @@ class Group extends Model implements Auditable
         'postcode',
         'latitude',
         'longitude',
-        'country',
+        'country_code',
         'free_text',
         'facebook',
         'wordpress_post_id',
+        'approved',
         'shareable_code',
         'network_id',
         'external_id',
         'devices_updated_at',
+        'timezone',
+        'phone',
+        'network_data',
+        'email',
+        'archived_at'
     ];
 
-    protected $appends = ['ShareableLink', 'approved'];
+    protected $appends = ['ShareableLink', 'auto_approve'];
+
+    protected $casts = [
+        // JSON fields in the database should be converted to/from arrays.
+        'network_data' => 'array'
+    ];
+
+    // The distance is not in the groups table; we add it on some queries from the select.
+    private $distance = null;
 
     /**
      * The attributes that should be hidden for arrays.
@@ -57,6 +82,14 @@ class Group extends Model implements Auditable
         static::addGlobalScope('all_restarters_count', function ($builder) {
             $builder->withCount('allRestarters');
         });
+
+        static::addGlobalScope('all_confirmed_hosts_count', function ($builder) {
+            $builder->withCount('allConfirmedHosts');
+        });
+
+        static::addGlobalScope('all_confirmed_restarters_count', function ($builder) {
+            $builder->withCount('allConfirmedRestarters');
+        });
     }
 
     public function addTag($tag)
@@ -66,18 +99,86 @@ class Group extends Model implements Auditable
 
     // NGM: when tests in place, this method name should be changed to just `tags`.
     // It's on a group, the group_ prefix is superfluous.
-    public function group_tags()
+    public function group_tags(): BelongsToMany
     {
         return $this->belongsToMany(\App\GroupTags::class, 'grouptags_groups', 'group', 'group_tag');
     }
 
+    /**
+     * Get tags filtered based on current user's permissions.
+     * Admins see all tags, NCs only see tags from their networks (not global tags).
+     */
+    public function getFilteredTagsForUser()
+    {
+        $user = auth()->user() ?? auth('api')->user();
+
+        // No user or admin - return all tags
+        if (!$user || $user->hasRole('Administrator')) {
+            return $this->group_tags;
+        }
+
+        // Network coordinators only see tags from networks they coordinate
+        $userNetworkIds = $user->networks->pluck('id')->toArray();
+
+        return $this->group_tags->filter(function ($tag) use ($userNetworkIds) {
+            // Exclude global tags (network_id is null) for non-admins
+            if ($tag->network_id === null) {
+                return false;
+            }
+            // Only include tags from networks the user coordinates
+            return in_array($tag->network_id, $userNetworkIds);
+        });
+    }
+
+    /**
+     * Override toArray to filter tags based on user permissions.
+     * This ensures tags are filtered when the model is serialized to JSON in Blade templates.
+     */
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        // Replace group_tags with filtered tags
+        if (isset($array['group_tags'])) {
+            $array['group_tags'] = $this->getFilteredTagsForUser()->values()->toArray();
+        }
+
+        return $array;
+    }
+
     // Setters
+
+    /**
+     * Keep the legacy `country` column in step with `country_code`.  `country` is still read by external
+     * consumers (e.g. ORA exports, direct DB reporting) so it must be populated as soon as the group is saved,
+     * rather than waiting for the hourly groups:country job.  Countries are stored in English.
+     */
+    public function setCountryCodeAttribute($value)
+    {
+        $this->attributes['country_code'] = $value;
+        $this->attributes['country'] = self::countryNameForCode($value);
+    }
+
+    /**
+     * The English country name stored in the legacy `country` column; '' for an empty or unknown code.  Group
+     * imports have used 'UK' for the United Kingdom, which isn't an ISO code.
+     */
+    public static function countryNameForCode($code): string
+    {
+        if (! $code) {
+            return '';
+        }
+
+        $code = strtoupper($code) === 'UK' ? 'GB' : $code;
+
+        return \App\Helpers\Fixometer::getAllCountries('en')[$code] ?? '';
+    }
 
     //Getters
     public function findAll()
     {
         try {
-            return DB::select(DB::raw('SELECT
+            return DB::select('SELECT
                     `g`.`idgroups` AS `id`,
                     `g`.`name` AS `name`,
                     `g`.`location` AS `location`,
@@ -92,7 +193,7 @@ class Group extends Model implements Auditable
                 LEFT JOIN `users_groups` AS `ug` ON `g`.`idgroups` = `ug`.`group`
                 LEFT JOIN `users` AS `u` ON `ug`.`user` = `u`.`id`
                 GROUP BY `g`.`idgroups`
-                ORDER BY `g`.`name` ASC'));
+                ORDER BY `g`.`name` ASC');
         } catch (\Illuminate\Database\QueryException $e) {
             dd($e);
         }
@@ -101,7 +202,7 @@ class Group extends Model implements Auditable
     public function findList()
     {
         try {
-            return DB::select(DB::raw('SELECT
+            return DB::select('SELECT
                 `g`.`idgroups` AS `id`,
                 `g`.`name` AS `name`,
                 `g`.`location` AS `location`,
@@ -122,61 +223,15 @@ class Group extends Model implements Auditable
 
             GROUP BY `g`.`idgroups`
 
-            ORDER BY `g`.`name` ASC'));
+            ORDER BY `g`.`name` ASC');
         } catch (\Illuminate\Database\QueryException $e) {
             dd($e);
         }
-    }
-
-    public function findOne($id)
-    {
-        //Took out GROUP BY `images`.`path` NB:Error message -> 'fixometer_laravel.images.idimages' isn't in GROUP BY
-        try {
-            $group = DB::select(DB::raw('SELECT * FROM `'.$this->table.'` AS `g`
-                LEFT JOIN (
-                    SELECT * FROM `images`
-                        INNER JOIN `xref` ON `xref`.`object` = `images`.`idimages`
-                        WHERE `xref`.`object_type` = 5
-                        AND `xref`.`reference_type` = '.env('TBL_GROUPS').'
-                        GROUP BY `images`.`path`
-                ) AS `xi`
-                ON `xi`.`reference` = `g`.`idgroups`
-                WHERE `id'.$this->table.'` = :id'), ['id' => $id]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
-        }
-
-        if (! empty($group)) {
-            return $group[0];
-        }
-    }
-
-    public function findHost($id)
-    {
-        return DB::select(DB::raw('SELECT *,
-                    `g`.`name` AS `groupname`,
-                    `u`.`name` AS `hostname`
-                FROM `'.$this->table.'` AS `g`
-                INNER JOIN `users_groups` AS `ug`
-                    ON `ug`.`group` = `g`.`idgroups`
-                INNER JOIN `users` AS `u`
-                    ON `u`.`id` = `ug`.`user`
-                LEFT JOIN (
-                    SELECT * FROM `images`
-                        INNER JOIN `xref` ON `xref`.`object` = `images`.`idimages`
-                        WHERE `xref`.`object_type` = 5
-                        AND `xref`.`reference_type` = '.env('TBL_USERS').'
-                        GROUP BY `images`.`path`
-                ) AS `xi`
-                ON `xi`.`reference` = `u`.`id`
-
-                WHERE `g`.`idgroups` = :id
-                AND `u`.`role` = 3'), ['id' => $id]);
     }
 
     public function ofThisUser($id)
     {
-        return DB::select(DB::raw('SELECT * FROM `'.$this->table.'` AS `g`
+        return DB::select('SELECT * FROM `'.$this->table.'` AS `g`
                 INNER JOIN `users_groups` AS `ug`
                     ON `ug`.`group` = `g`.`idgroups`
 
@@ -184,31 +239,31 @@ class Group extends Model implements Auditable
                     SELECT * FROM `images`
                         INNER JOIN `xref` ON `xref`.`object` = `images`.`idimages`
                         WHERE `xref`.`object_type` = 5
-                        AND `xref`.`reference_type` = '.env('TBL_GROUPS').'
+                        AND `xref`.`reference_type` = :tblGroups
                         GROUP BY `images`.`path`
                 ) AS `xi`
                 ON `xi`.`reference` = `g`.`idgroups`
 
                 WHERE `ug`.`user` = :id
-                ORDER BY `g`.`name` ASC'), ['id' => $id]);
+                ORDER BY `g`.`name` ASC', ['id' => $id, 'tblGroups' => env('TBL_GROUPS')]);
     }
 
-    public function groupImage()
+    public function groupImage(): HasOne
     {
         return $this->hasOne(\App\Xref::class, 'reference', 'idgroups')->where('reference_type', env('TBL_GROUPS'))->where('object_type', 5);
     }
 
-    public function allHosts()
+    public function allHosts(): HasMany
     {
-        return $this->hasMany(\App\UserGroups::class, 'group', 'idgroups')->where('role', 3);
+        return $this->hasMany(\App\UserGroups::class, 'group', 'idgroups')->where('role', Role::HOST);
     }
 
-    public function allRestarters()
+    public function allRestarters(): HasMany
     {
-        return $this->hasMany(\App\UserGroups::class, 'group', 'idgroups')->where('role', 4);
+        return $this->hasMany(\App\UserGroups::class, 'group', 'idgroups')->where('role', Role::RESTARTER);
     }
 
-    public function allVolunteers()
+    public function allVolunteers(): HasMany
     {
         return $this->hasMany(\App\UserGroups::class, 'group', 'idgroups')->orderBy('role', 'ASC');
     }
@@ -229,8 +284,9 @@ class Group extends Model implements Auditable
     {
         return $this->allVolunteers()
             ->where(function ($query) {
-                $query->where('status', 1)
-                    ->orWhereNull('status');
+                $query->whereNull('deleted_at')
+                    ->where('status', '1')
+                        ->orWhereNull('status');
             });
     }
 
@@ -242,64 +298,78 @@ class Group extends Model implements Auditable
     public function canDelete()
     {
         // Groups are deletable unless they have an event with a device.
-        $ret = true;
-
-        $allEvents = Party::where('events.group', $this->idgroups)
-            ->get();
-
-        foreach ($allEvents as $event) {
-            $stats = $event->getEventStats();
-
-            if ($stats['devices_powered'] || $stats['devices_unpowered']) {
-                $ret = false;
-            }
-        }
-
-        return $ret;
+        return !Party::withTrashed()->where('events.group', $this->idgroups)
+            ->join('devices', 'event', '=', 'events.idevents')->first();
     }
 
-    public function getGroupStats($emissionRatio = null)
+    public static function getGroupStatsArrayKeys()
     {
-        if (is_null($emissionRatio)) {
-            $emissionRatio = \App\Helpers\FootprintRatioCalculator::calculateRatio();
+        return \App\Party::getEventStatsArrayKeys() + ['parties' => 0];
+    }
+
+    public function getGroupStats($eEmissionRatio = null, $uEmissionratio = null)
+    {
+        return static::bulkGroupStats([$this], $eEmissionRatio, $uEmissionratio)[$this->idgroups];
+    }
+
+    /**
+     * Compute stats for multiple groups in O(1) queries instead of O(N).
+     * Returns a map of [groupId => stats array].
+     */
+    public static function bulkGroupStats(iterable $groups, ?float $eEmissionRatio = null, ?float $uEmissionratio = null): array
+    {
+        $groups = collect($groups);
+        if ($groups->isEmpty()) {
+            return [];
         }
 
-        $allPastEvents = Party::pastEvents()
-            ->where('events.group', $this->idgroups)
-            ->get();
+        if (is_null($eEmissionRatio)) {
+            $eEmissionRatio = \App\Helpers\LcaStats::getEmissionRatioPowered();
+        }
+        if (is_null($uEmissionratio)) {
+            $uEmissionratio = \App\Helpers\LcaStats::getEmissionRatioUnpowered();
+        }
 
-        $groupStats = [];
-        // Rollup all events stats into stats for this group.
-        foreach ($allPastEvents as $event) {
-            $eventStats = $event->getEventStats($emissionRatio);
+        $groupIds = $groups->pluck('idgroups')->toArray();
 
-            foreach ($eventStats as $statKey => $statValue) {
-                if (! array_key_exists($statKey, $groupStats)) {
-                    $groupStats[$statKey] = 0;
+        $statsByGroup = [];
+        foreach ($groupIds as $id) {
+            $statsByGroup[$id] = self::getGroupStatsArrayKeys();
+        }
+
+        // Stream events in chunks with lazy() rather than loading them all with get().
+        // A large network can have thousands of past events, each eager-loading all of its
+        // devices (joined to categories) — get() would hold every device of every event in
+        // memory at once and can exhaust it. lazy() keeps only one chunk resident at a time,
+        // releasing each batch before fetching the next, so peak memory stays bounded by the
+        // chunk size regardless of how big the network is. The accumulator below is small
+        // (one row per group), so it is safe to keep across chunks.
+        //
+        // withCount('allInvited') pre-loads the invited tally as an aggregate column, avoiding
+        // an N+1 query (one COUNT per event) inside getEventStats().
+        Party::past()
+            ->with('allDevices')
+            ->withCount('allInvited')
+            ->whereIn('events.group', $groupIds)
+            // lazyById pages on the primary key (WHERE idevents > last) rather than lazy()'s growing
+            // OFFSET, which made MySQL rescan every earlier row for each chunk on large networks.  past()
+            // orders by date, and keyset paging needs the id to be the only sort key or events are skipped
+            // and double-counted - hence reorder().
+            ->reorder()
+            ->lazyById(200, 'events.idevents', 'idevents')
+            ->each(function ($event) use (&$statsByGroup, $eEmissionRatio, $uEmissionratio) {
+                $gid = $event->group;
+                if (! isset($statsByGroup[$gid])) {
+                    return;
                 }
-                $groupStats[$statKey] += $statValue;
-            }
-        }
+                $statsByGroup[$gid]['parties']++;
+                $eventStats = $event->getEventStats($eEmissionRatio, $uEmissionratio);
+                foreach ($eventStats as $key => $value) {
+                    $statsByGroup[$gid][$key] += $value;
+                }
+            });
 
-        // Keeping the specific subset of stats returned for now,
-        // with existing names.
-        return [
-            'pax' => $groupStats['participants'] ?? 0,
-            'hours' => $groupStats['hours_volunteered'] ?? 0,
-            'parties' => count($allPastEvents),
-            'co2' => $groupStats['co2'] ?? 0,
-            'ewaste' => $groupStats['ewaste'] ?? 0,
-            'unpowered_waste' => $groupStats['unpowered_waste'] ?? 0,
-            'waste' => ($groupStats['ewaste'] ?? 0) + ($groupStats['unpowered_waste'] ?? 0),
-            'fixed_devices' => $groupStats['fixed_devices'] ?? 0,
-            'fixed_powered' => $groupStats['fixed_powered'] ?? 0,
-            'fixed_unpowered' => $groupStats['fixed_unpowered'] ?? 0,
-            'repairable_devices' => $groupStats['repairable_devices'] ?? 0,
-            'dead_devices' => $groupStats['dead_devices'] ?? 0,
-            'no_weight' => $groupStats['no_weight'] ?? 0,
-            'devices_powered' => $groupStats['devices_powered'] ?? 0,
-            'devices_unpowered' => $groupStats['devices_unpowered'] ?? 0,
-        ];
+        return $statsByGroup;
     }
 
     /**
@@ -307,7 +377,7 @@ class Group extends Model implements Auditable
      *
      * @param \App\User $volunteer A registered user.
      */
-    public function addVolunteer($volunteer)
+    public function addVolunteer(User $volunteer)
     {
         UserGroups::updateOrCreate([
             'user' => $volunteer->id,
@@ -349,89 +419,45 @@ class Group extends Model implements Auditable
         return '';
     }
 
-    /**
-     * @param int|null $user_id
-     * @return bool
-     */
-    public function isVolunteer($user_id = null)
+    public function isVolunteer(?int $user_id = null): bool
     {
         $attributes = ['user' => $user_id ?: auth()->id()];
 
         return $this->allConfirmedVolunteers()->where($attributes)->exists();
     }
 
-    public function addEvent($event)
-    {
-        $event->theGroup()->associate($this);
-    }
-
-    public function parties()
+    public function parties(): HasMany
     {
         return $this->hasMany(Party::class, 'group', 'idgroups');
     }
 
     /**
-     * All parties for the group that are taking place today or later.
+     * All parties for the group that are taking place in the future.
      *
      * @author Christopher Kelker - @date 2019-03-21
      * @editor  Christopher Kelker, Neil Mather
      * @version 1.0.1
      * @return  [type]
      */
-    public function upcomingParties($exclude_parties = [])
+    public function upcomingParties()
     {
-        $from = date('Y-m-d');
-
-        if (! empty($exclude_parties)) {
-            return $this->parties()
-                ->where('event_date', '>=', $from)
-                ->whereNotIn('idevents', $exclude_parties)
-                ->get();
-        }
-
-        return $this->parties()->where('event_date', '>=', $from)->get();
+        $from = date('Y-m-d H:i:s');
+        return $this->parties()->where('event_end_utc', '>', $from)->get();
     }
 
     /**
      * [pastParties description]
-     * All Past Parties where between the Start Parties Date
-     * is yesterday or a month earlier.
+     * All Past Parties.
      *
      * @author Christopher Kelker - @date 2019-03-21
      * @editor  Christopher Kelker
      * @version 1.0.0
      * @return  [type]
      */
-    public function pastParties($exclude_parties = [])
+    public function pastParties()
     {
-        if (! empty($exclude_parties)) {
-            return $this->parties()
-                ->where('event_date', '<', date('Y-m-d'))
-                ->whereNotIn('idevents', $exclude_parties)
-                ->get();
-        }
-
-        return $this->parties()->where('event_date', '<', date('Y-m-d'))->get();
-    }
-
-    /**
-     * [totalPartiesHours description]
-     * Total Group Parties Hours.
-     *
-     * @author Christopher Kelker - @date 2019-03-21
-     * @editor  Christopher Kelker
-     * @version 1.0.0
-     * @return  [type]
-     */
-    public function totalPartiesHours()
-    {
-        $sum = 0;
-
-        foreach ($this->parties as $party) {
-            $sum += $party->hours;
-        }
-
-        return $sum;
+        $now = date('Y-m-d H:i:s');
+        return $this->parties()->where('event_end_utc', '<', $now)->get();
     }
 
     public function groupImagePath()
@@ -443,12 +469,21 @@ class Group extends Model implements Auditable
         return url('/uploads/mid_1474993329ef38d3a4b9478841cc2346f8e131842fdcfd073b307.jpg');
     }
 
+    public function nextUpcomingParty(): HasOne
+    {
+        return $this->hasOne(Party::class, 'group', 'idgroups')
+            ->ofMany(['event_start_utc' => 'min'], function ($query) {
+                $query->where('approved', true)
+                      ->where('event_start_utc', '>=', now());
+            });
+    }
+
     public function getNextUpcomingEvent()
     {
         $event = $this->parties()
-            ->whereNotNull('wordpress_post_id')
-            ->whereDate('event_date', '>=', date('Y-m-d'))
-            ->orderBy('event_date', 'asc');
+            ->where('approved', true)
+            ->where('event_start_utc', '>=', date('Y-m-d H:i:s'))
+            ->orderBy('event_start_utc', 'asc');
 
         if (! $event->count()) {
             return null;
@@ -457,26 +492,7 @@ class Group extends Model implements Auditable
         return $event->first();
     }
 
-    public function userEvents()
-    {
-        return $this->parties()
-            ->join('events_users', 'events.idevents', '=', 'events_users.event')
-            ->where(function ($query) {
-                $query->where('events.group', $this->idgroups)
-                    ->where('events_users.user', auth()->id());
-            })
-            ->select('events.*')
-            ->groupBy('events.idevents')
-            ->orderBy('events.idevents', 'ASC')
-            ->get();
-    }
-
-    public function getApprovedAttribute()
-    {
-        return ! is_null($this->wordpress_post_id);
-    }
-
-    public function networks()
+    public function networks(): BelongsToMany
     {
         return $this->belongsToMany(Network::class, 'group_network', 'group_id', 'network_id');
     }
@@ -486,10 +502,46 @@ class Group extends Model implements Auditable
         return $this->networks->contains($network);
     }
 
-    // If just one of the networks that the group is a member of
-    // should push to Wordpress, then we should push.
+    /**
+     * The group reporting dashboard, filtered to this group, or null if reporting isn't set up.
+     *
+     * The dashboard is in the language of the group's network, falling back to English when there's no
+     * dashboard in that language or its base language.
+     */
+    public function reportingUrl(): ?string
+    {
+        $templates = config('restarters.reporting.group_urls', []);
+        $network = $this->networks->first();
+        $language = $network ? $network->default_language : null;
+
+        // A regional language (e.g. Repair Together's fr-BE) uses the dashboard for its base language.
+        $base = $language ? explode('-', $language)[0] : null;
+        $template = ($language ? ($templates[$language] ?? null) : null)
+            ?: ($base ? ($templates[$base] ?? null) : null)
+            ?: ($templates['en'] ?? null);
+
+        if (! $template) {
+            return null;
+        }
+
+        return str_replace(
+            ['{group}', '{group_name}'],
+            [$this->idgroups, rawurlencode($this->name)],
+            $template
+        );
+    }
+
+    // If just one of the networks that the group is a member of should push to Wordpress, then we should push.
+    // If an group is not approved, then we should not push the events to Wordpress.
     public function eventsShouldPushToWordpress()
     {
+        // Central gate for all WordPress publishing: every listener and
+        // scheduled command routes through here, so preview/staging apps
+        // can never post to the live site.
+        if (! config('restarters.features.wordpress_integration')) {
+            return false;
+        }
+
         foreach ($this->networks as $network) {
             if ($network->events_push_to_wordpress) {
                 return true;
@@ -515,5 +567,270 @@ class Group extends Model implements Auditable
     public function getMaxUpdatedAtDevicesUpdatedAtAttribute()
     {
         return strtotime($this->updated_at) > strtotime($this->devices_updated_at) ? $this->updated_at : $this->devices_updated_at;
+    }
+
+    public function getAutoApproveAttribute()
+    {
+        // A group's events are auto-approved iff all the networks that the group belongs to are set to auto-approve
+        // events.
+        $autoapprove = false;
+
+        $networks = $this->networks;
+
+        if ($networks && count($networks)) {
+            $autoapprove = true;
+
+            foreach ($networks as $network) {
+                $autoapprove &= $network->auto_approve_events;
+            }
+        }
+
+        return $autoapprove;
+    }
+
+    public function getDistanceAttribute()
+    {
+        return $this->distance;
+    }
+
+    public function setDistanceAttribute($val)
+    {
+        $this->distance = $val;
+    }
+
+    /**
+     * The group description is Quill-authored HTML which we render unescaped, so it has to
+     * be sanitised.  Doing it in the mutator rather than in the controllers means every
+     * write path - v2 API, web forms, imports, seeders - is covered by one rule.
+     */
+    public function setFreeTextAttribute($val)
+    {
+        $this->attributes['free_text'] = is_null($val) ? null : \Stevebauman\Purify\Facades\Purify::clean($val);
+    }
+
+    public function createDiscourseGroup() {
+        // Get the host who created the group.
+        $success = false;
+        $member = UserGroups::where('group', $this->idgroups)->first();
+        $host = null;
+
+        if (!empty($member)) {
+            $host = User::find($member->user);
+        }
+
+        $unique = '';
+
+        do {
+            $retry = false;
+
+            try {
+                // We want to internationalise the message.  Use the languages of any networks that the group
+                // is in.
+                $text = '';
+                $langs = [];
+
+                foreach ($this->networks as $network) {
+                    $lang = $network->default_language;
+
+                    if (!in_array($lang, $langs)) {
+                        $text .= Lang::get('groups.discourse_title',[
+                            'group' => $this->name,
+                            'link' => url('/group/view/' . $this->idgroups),
+                            'help' => 'https://talk.restarters.net/t/how-to-communicate-with-your-repair-group/6293'
+                        ],$lang);
+
+                        $langs[] = $lang;
+                    }
+                }
+
+                // We want the host to create the group, so use their username.  The API key should
+                // allow us to do this - see https://meta.discourse.org/t/how-can-an-api-user-create-posts-as-another-user/45968/3.
+                $client = app('discourse-client', [
+                    'username' => env('DISCOURSE_APIUSER'),
+                ]);
+
+                $name = $this->getDiscourseGroupName($unique);
+
+                $params = [
+                    'group' => [
+                        'name' => "$name$unique",
+                        'full_name' => $this->name,
+                        'mentionable_level' => 4,
+                        'messageable_level' => 4,
+                        'visibility_level' => 0,
+                        'members_visibility_level' => 0,
+                        'automatic_membership_email_domains' => null,
+                        'automatic_membership_retroactive' => false,
+                        'primary_group' => false,
+                        'flair_url' => $this->groupImagePath(),
+                        'flair_bg_color' => null,
+                        'flair_color' => null,
+                        'bio_raw' => $text,
+                        'public_admission' => false,
+                        'public_exit' => false,
+                        'default_notification_level' => 3,
+                        'publish_read_state' => true,
+                        'owner_usernames' => $host ? $host->username : env('DISCOURSE_APIUSER')
+                    ]
+                ];
+
+                $endpoint = '/admin/groups.json';
+
+                Log::info('Creating group : '.json_encode($params));
+                $response = $client->request(
+                    'POST',
+                    $endpoint,
+                    [
+                        'form_params' => $params,
+                    ]
+                );
+
+                Log::info('Response status: '.$response->getStatusCode());
+                Log::info('Response body: '.$response->getBody());
+
+                if ($response->getStatusCode() !== 200) {
+                    if (strpos($response->getBody(), 'Name has already been taken') !== false) {
+                        // Discourse sometimes seems to have groups stuck in a bad state which are not accessible.
+                        // This may be a consequence of testing with multiple Restarters instances against the same
+                        // Discourse instance.
+                        //
+                        // This can result in a create failure, and a group which we cannot then locate to delete.
+                        // So skip over it and retry creation with a different name.
+                        $retry = true;
+                        $unique = $unique ? ($unique + 1) : 1;
+                    } else {
+                        Log::error('Could not create group ('.$this->idgroups.') thread: '.$response->getReasonPhrase());
+                    }
+                } else {
+                    // We want to save the discourse thread id in the group, so that we can invite people to it later
+                    // when they join.
+                    $json = json_decode($response->getBody(), true);
+                    if (empty($json['basic_group'])) {
+                        throw new \Exception('Group not found in create response');
+                    }
+
+                    $this->discourse_group = "$name$unique";
+                    $this->save();
+                    $success = true;
+                }
+            } catch (\Exception $ex) {
+                Log::error('Could not create group ('.$this->idgroups.') thread: '.$ex->getMessage());
+            }
+    	} while ($retry);
+
+        return $success;
+    }
+
+    public function getTimezoneAttribute($value)
+    {
+        // We might have a timezone attribute on the group.
+        if ($value) {
+            return $value;
+        }
+
+        // See if the network(s) the group is in have a consensus timezone.
+        $timezone = null;
+
+        foreach ($this->networks as $network) {
+            if ($network->timezone) {
+                if ($timezone) {
+                    if ($timezone != $network->timezone) {
+                        // This should not occur if the networks are set up correctly.
+                        \Sentry\captureMessage("Problem getting timezone for group {$this->idgroups} - networks conflict with $timezone and {$network->timezone}.  Will use $timezone.");
+                        // TODO Convert to exception once groups have timezones set by Neil.
+                        // throw new \Exception("Group does not have own timezone and is in networks with conflicting timezones");
+                    }
+                } else {
+                    // First timezone found.
+                    $timezone = $network->timezone;
+                }
+            }
+        }
+
+        if (!$timezone) {
+            // This should not occur if the networks are set up correctly.
+            // TODO Later on we should throw an exception, but only once this code has gone live, as we rely on
+            // the default behaviour during migration.
+            //throw new \Exception("Group {$this->idgroups} cannot resolve timezone");
+            $timezone = 'Europe/London';
+        }
+
+        return $timezone;
+    }
+
+    // TODO We've started to refactor into scopes, but this isn't complete yet.
+    public function scopeMembers() {
+        return User::join('users_groups', 'users_groups.user', '=', 'users.id')
+            ->where('users_groups.group', $this->idgroups)
+            ->select('users.*');
+    }
+
+    public function scopeMembersUndeleted($query) {
+        $query = $query->members();
+        return $query->whereNull('users_groups.deleted_at');
+    }
+
+    public function scopeMembersJoined($query) {
+        $query = $query->membersUndeleted();
+        return $query->where('users_groups.status', 'like', 1);
+    }
+
+    public function scopeMembersRestarters($query) {
+        $query = $query->membersJoined();
+        return $query->where('users_groups.role', Role::RESTARTER);
+    }
+
+    public function scopeMembersHosts($query) {
+        $query = $query->membersJoined();
+        return $query->where('users_groups.role', Role::HOST);
+    }
+
+    public function scopeUnapproved($query) {
+        return $query->where('approved', false);
+    }
+
+    public function scopeUnapprovedVisibleTo($query, $user_id) {
+        $u = User::findOrFail($user_id);
+        $unetworks = $u->networks;
+        $ret = [];
+
+        if ($u->hasRole('Administrator')) {
+            // Can see all.
+            $ret = $this->unapproved()->get();
+        } else if ($u->hasRole('NetworkCoordinator')) {
+            // Can see groups for this network.  Logic doesn't scale well, but we will have few unapproved
+            // groups at any one time.
+            $groups = $this->unapproved()->get();
+
+            foreach ($groups as $group) {
+                foreach ($group->networks as $network) {
+                    foreach ($unetworks as $user_network) {
+                        if ($network->id == $user_network->id) {
+                            $ret[] = $group;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $ret = array_unique($ret);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get a name for the Discourse group.
+     */
+    public function getDiscourseGroupName($unique): string
+    {
+        // Restricted characters allowed in name, and only 20 characters.
+        //
+        // Leave 1 spare for uniqueness.
+        $name = str_replace(' ', '_', trim($this->name));
+        $name = preg_replace("/[^A-Za-z0-9]/", '', $name);
+        $name = substr($name, 0, 19);
+
+        return $name . $unique;
     }
 }

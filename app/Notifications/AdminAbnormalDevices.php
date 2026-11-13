@@ -2,70 +2,42 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class AdminAbnormalDevices extends Notification implements ShouldQueue
+class AdminAbnormalDevices extends BaseNotification
 {
-    use Queueable;
-
-    protected $arr;
-    protected $user;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($arr, $user = null)
-    {
-        $this->arr = $arr;
-        $this->user = $user;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        if ($notifiable->invites == 1) {
-            return ['mail', 'database'];
-        }
-
-        return ['database'];
-    }
-
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-                  ->subject('Abnormal number of miscellaneous devices')
-                  ->greeting('Hello!')
-                  ->line('The event \''.$this->arr['event_venue'].'\' has an abnormal number of miscellaneous devices.')
-                  ->action('View event', $this->arr['event_url'])
-                  ->line('If you would like to stop receiving these emails, please visit <a href="'.url('/user/edit/'.$notifiable->id).'">your preferences</a> on your account.');
+            ->subject(__('notifications.abnormal_devices_subject', [], $notifiable->language))
+            ->greeting(__('notifications.greeting', [], $notifiable->language))
+            ->line(
+                __('notifications.abnormal_devices_line1', [
+                    'name' => $this->arr['event_venue']
+                ], $notifiable->language)
+            )
+            ->action(__('notifications.view_event', [], $notifiable->language), $this->arr['event_url'])
+            ->line(
+                __('notifications.email_preferences', [
+                    'url' => url('/user/edit/' . $notifiable->id)
+                ], $notifiable->locale)
+            );
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param mixed $notifiable
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
-            'title' => 'Event has abnormal number of miscellaneous devices:',
+            'title' => __('notifications.abnormal_devices_title', [], $notifiable->language),
             'name' => $this->arr['event_venue'],
             'url' => $this->arr['event_url'],
         ];
